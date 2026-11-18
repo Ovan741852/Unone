@@ -24,6 +24,8 @@ import {createGpuUi} from './ui-gpu.js';
 import {DRAW_COMPLETED,DRAW_SKIPPED} from '../shared/player-completion.mjs';
 import {normalizeAntialias,normalizeWebglDesynchronized} from '../shared/renderer-selection.mjs';
 import {prepareDesynchronizedWebGL,webglDesynchronizedMetrics} from './webgl-desynchronized.js';
+import {normalizeWebglDefaultDepth,resolveDefaultDepthOptions,defaultDepthFrameNeedsFallback,webglDefaultDepthMetrics,createPresentationHookGate} from './webgl-default-depth.js';
+import {createScreenFrameTarget} from './screen-frame-target.js';
 import {parseProjectedRaster,assertRasterBackend,assertRasterProfile,assertRasterSnapshot} from './projected-raster-policy.js';
 import {createRasterCapability} from './projected-raster-capability.js';
 import {createProjectedRasterPass} from './projected-raster.js';
@@ -84,6 +86,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   if(options.getImageAssets!==undefined&&typeof options.getImageAssets!=='function')throw Error('IMAGE_ASSET_PROVIDER_INVALID: getImageAssets must be a function');
   const antialias=normalizeAntialias(options.antialias);
   const desynchronized=normalizeWebglDesynchronized(options.webglDesynchronized);
+  const requestedDefaultDepth=normalizeWebglDefaultDepth(options.webglDefaultDepth);
   let desynchronizedPreparation={requested:desynchronized,attempted:false,precreated:false};
   const rasterPolicy=parseProjectedRaster(options.projectedRaster),checkedRaster=rasterPolicy.requested==='upper_left_checked';
   const frameProfile=parseFrameProfile(options.projectedMaterialProfile);let framePublication=null,framePublicationIdentity=null;
@@ -92,6 +95,12 @@ export async function createThreeRenderer(canvas, options = {}) {
   const forceWebGl = options.kind === "three-webgl";
   if(forceWebGpu&&postprocessing)throw Error('POSTPROCESSING_BACKEND_UNSUPPORTED: select the official WebGL player');
   const useWebGpu = !forceWebGl && !postprocessing && (forceWebGpu || Boolean(navigator.gpu));
+  const passKinds=options.renderPasses??{};
+  if(typeof passKinds!=='object'||passKinds===null||Array.isArray(passKinds)||Object.values(passKinds).some(create=>typeof create!=='function'))throw Error('RENDER_PASSES_INVALID: expected {kind: createPass}');
+  const callbacks=typeof options.onReady==='function'||typeof options.beforeRender==='function';
+  const transactional=options.frameTransaction===true&&!useWebGpu&&!antialias&&!desynchronized&&!checkedRaster&&!frameProfile&&!callbacks&&!Object.keys(passKinds).length;
+  const depthPolicy=resolveDefaultDepthOptions({depth:requestedDefaultDepth,backend:useWebGpu?'webgpu':'webgl',checkedRaster,frameProfile,renderPasses:passKinds,presentationCallbacks:callbacks,antialias,desynchronized,atomicHost:transactional});
+  const defaultDepth=depthPolicy.effective;
   assertRasterBackend(rasterPolicy,useWebGpu?'webgpu':'webgl');
   assertFrameOptions(frameProfile,{backend:useWebGpu?'webgpu':'webgl',raster:rasterPolicy.requested,antialias,bloom:options.bloom??false,ao:options.ao??false});
   let THREE = await loadThree(options.threeModuleUrl ?? (useWebGpu ? LOCAL_THREE_WEBGPU_URL : LOCAL_THREE_URL));
@@ -110,14 +119,15 @@ export async function createThreeRenderer(canvas, options = {}) {
     }
   }
   if (!renderer) {
-    desynchronizedPreparation=prepareDesynchronizedWebGL(canvas,antialias,desynchronized);
-    renderer = new THREE.WebGLRenderer({ canvas, antialias, alpha: false });
+    desynchronizedPreparation=prepareDesynchronizedWebGL(canvas,antialias,desynchronized,defaultDepth);
+    renderer = new THREE.WebGLRenderer({ canvas, antialias, alpha: false,...(options.webglDefaultDepth===undefined?{}:{depth:defaultDepth}) });
   }
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.setClearColor(0x111827, 1);
   const clearRecovery=backend==='webgl'?installContextClearRecovery(THREE,renderer,canvas):null;
+  const screenFrame=transactional?createScreenFrameTarget(THREE,renderer):null;
   // A program that failed to link with empty logs on a live context opens a
   // bounded wait for the loss; draws skip until it closes (link-loss.js).
   const presentationListeners=new Set();
@@ -132,8 +142,6 @@ export async function createThreeRenderer(canvas, options = {}) {
   let bloomEnabled=options.bloom??false,aoEnabled=options.ao??false;
   // Extension pass kinds a host registered (render_extensions), and one
   // instance per declared pass id, created on first use.
-  const passKinds=options.renderPasses??{};
-  if(typeof passKinds!=='object'||Array.isArray(passKinds)||Object.values(passKinds).some(create=>typeof create!=='function'))throw Error('RENDER_PASSES_INVALID: expected {kind: createPass}');
   const passInstances=new Map();
   function extensionRunner(pass){
     let instance=passInstances.get(pass.id);
@@ -193,7 +201,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   const textureCache = createTextureCachePolicy(textureRecords,options.textureCache);
   // The render pipeline's ui stage: game UI drawn into this frame after the world.
   let worldSubmitted=false;
-  const ui=backend==='webgl'?createGpuUi(THREE,renderer,{available:()=>worldSubmitted&&rasterAvailable(),textureCache,uiTextAtlasSize:options.uiTextAtlasSize,getImageAssets:options.getImageAssets,getAssetCatalog:options.getAssetCatalog,dataTextures:{get:id=>dataTextures.get(id)}}):null;
+  const ui=backend==='webgl'?createGpuUi(THREE,renderer,{available:()=>worldSubmitted&&rasterAvailable(),textureCache,uiTextAtlasSize:options.uiTextAtlasSize,getImageAssets:options.getImageAssets,getAssetCatalog:options.getAssetCatalog,dataTextures:{get:id=>dataTextures.get(id)},getFrameTarget:()=>screenFrame?.target()??null}):null;
   let assetRequestPending=false;
   const rasterPass=checkedRaster?createProjectedRasterPass(THREE,renderer):null;
   // Retained across redraws: unchanged packed geometry is validated once, not on every frame.
@@ -231,6 +239,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
   function rasterLost(){
     if(['lost','failed','disposed'].includes(rasterCapability.metrics().status))return;
+    screenFrame?.contextLost();pendingWorldSubmission=null;worldSubmitted=false;
     spriteResources?.contextLost();retireWorldGpuBindings();ui?.contextLost();
     projected.clear();uiImageBatchPrefix.clear();frameDraws?.clear();framePass?.contextLost?.();rasterPass?.contextLost?.();framePass?.invalidate();rasterPass?.invalidate();rasterCapability.lost();
     profile?.record('context','lost',{context_epoch:rasterCapability.metrics().context_epoch});
@@ -279,16 +288,15 @@ export async function createThreeRenderer(canvas, options = {}) {
   // pass getAssetManifest keep the exact legacy per-draw rebuild, so their in-place edits stay visible.
   if(options.getAssetCatalog!==undefined&&typeof options.getAssetCatalog!=='function')throw Error('ASSET_CATALOG_PROVIDER_INVALID: getAssetCatalog must be a function');
   const specsOf = options.getAssetCatalog ? () => assetCatalogSpecs(options.getAssetCatalog()) : () => new Map((options.getAssetManifest?.()?.assets ?? []).map((asset) => [String(asset.id), asset]));
-  const presentationHooks = new Set();
-  const disposeHooks = [];
+  const hookGate=createPresentationHookGate({restricted:transactional,onReject:reason=>{
+    if(typeof options.onPresentationHookRejected==='function')options.onPresentationHookRejected(reason);
+    else globalThis.console?.warn?.(reason);
+  }});
+  const presentationHooks=hookGate.hooks,disposeHooks=hookGate.disposeHooks;
   let lastDrawTime = null;
 
   function attachPresentation(value) {
-    const hook = typeof value === "function" ? { beforeRender: value } : value;
-    if (typeof hook?.beforeRender !== "function") throw new Error("presentation hook requires beforeRender(context)");
-    presentationHooks.add(hook);
-    if (typeof hook.onDispose === "function") disposeHooks.push(hook.onDispose);
-    return () => presentationHooks.delete(hook);
+    return hookGate.attach(value);
   }
 
   if (typeof options.beforeRender === "function") attachPresentation({ beforeRender: options.beforeRender });
@@ -301,7 +309,13 @@ export async function createThreeRenderer(canvas, options = {}) {
   // write even at the same value, so it runs only when the CSS size, the pixel ratio (whoever
   // set it) or the canvas's own buffer changed (Ovan741852/Unone#2). The viewport reset setSize
   // also made stays every frame, for passes that move the viewport and rely on it.
-  let resizedTo = null;
+  let resizedTo = null, pendingWorldSubmission=null;
+  let pendingPixelRatio=null;
+  function frameResizeRequired(){
+    const width=Math.max(1,canvas.clientWidth||canvas.width||16),height=Math.max(1,canvas.clientHeight||canvas.height||9);
+    const ratio=pendingPixelRatio??renderer.getPixelRatio();
+    return resizedTo?.width!==width||resizedTo.height!==height||resizedTo.ratio!==ratio||canvas.width!==Math.floor(width*ratio)||canvas.height!==Math.floor(height*ratio);
+  }
   function resize(world) {
     const width = Math.max(1, canvas.clientWidth || canvas.width || 16);
     const height = Math.max(1, canvas.clientHeight || canvas.height || 9);
@@ -322,6 +336,34 @@ export async function createThreeRenderer(canvas, options = {}) {
     camera.position.y = world.camera?.position?.y ?? 0;
     camera.updateProjectionMatrix();
   }
+
+  function beginAtomicFrame(snapshot,{allowResize=false}={}){
+    if(!screenFrame)return {status:'skipped',reason:'frame_transaction_unavailable',presentation:'unchanged'};
+    pendingWorldSubmission=null;worldSubmitted=false;
+    const resizing=frameResizeRequired();
+    if(resizing&&!allowResize)return {status:'skipped',reason:'frame_resize_required',presentation:'unchanged',epoch:screenFrame.metrics().epoch};
+    // Resizing an HTML canvas clears its published backing store. The host
+    // must first cover and block input, and must keep that recovery surface up
+    // until a later whole-frame commit succeeds.
+    if(pendingPixelRatio!==null){const next=pendingPixelRatio;pendingPixelRatio=null;renderer.setPixelRatio(next);}
+    const world=worldOf(snapshot);resize(world);
+    const projectedBatches=projected.entries(snapshot),visible=(snapshot?.world??snapshot)?.projected_world_visible!==false;
+    const terrain=heightfieldEntries(snapshot),pipeline=world.render_pipeline?pipelineFrame(world.render_pipeline):null;
+    const depth=defaultDepthFrameNeedsFallback({depth:false,world,worldVisible:visible||!spritePresentation,terrain,projected:projectedBatches,
+      offscreenDepth:!!bloom?.active(pipeline),sceneEnabled:!pipeline||pipeline.scene,hooksMayDraw:false});
+    renderer.getDrawingBufferSize(bufferSize);
+    const outcome=screenFrame.begin({width:bufferSize.x,height:bufferSize.y,depth});
+    return resizing?{...outcome,presentation:'unknown'}:outcome;
+  }
+  function commitAtomicFrame(){
+    if(!screenFrame||!pendingWorldSubmission)return {status:'skipped',reason:'frame_world_not_ready',presentation:'unchanged'};
+    const pending=pendingWorldSubmission;pendingWorldSubmission=null;
+    const outcome=screenFrame.commit();
+    if(outcome.status==='completed'){spritePresentation?.submitted(pending.worldSubmitted);startupPresentation?.drawn();}
+    else worldSubmitted=false;
+    return outcome;
+  }
+  function abortAtomicFrame(){pendingWorldSubmission=null;worldSubmitted=false;return screenFrame?.abort()??{status:'skipped',reason:'frame_transaction_unavailable',presentation:'unchanged'};}
 
   function textureFor(asset,owner='persistent') {
     const id = String(asset?.id ?? "");
@@ -460,6 +502,9 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
   function draw(snapshot, drawOptions = {}) {
     assetRequestPending=false;worldSubmitted=false;
+    // In transactional mode the host must acquire a staging target before any
+    // render work. Never silently fall through to the visible framebuffer.
+    if(screenFrame&&!screenFrame.target())return DRAW_SKIPPED.raster_unavailable;
     textureCache.begin();
     assertProjectedBackend(snapshot,backend);
     assertRasterSnapshot(rasterPolicy,snapshot);
@@ -558,7 +603,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     if(frameProfile)profile?.mark('frame_resource_prepare');
     if(!prepared){profile?.outcome('pending_frame_resources');return DRAW_SKIPPED.frame_resources_pending;}
     if(frameProfile)assertFrameGpuError(renderer.getContext(),'official.prepare');
-    const overlay=worldVisible&&effects?()=>{effects.draw(world,activeCamera);renderer.resetState();}:null;
+    const overlay=worldVisible&&effects?()=>{effects.draw(world,activeCamera);renderer.resetState();screenFrame?.rebind();}:null;
     const pipeline=world.render_pipeline?pipelineFrame(world.render_pipeline):null;
     // Projected batches composite after the world, so they cannot follow an
     // active post-processing pass; plain world rendering is fine.
@@ -573,7 +618,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       if(bloom?.active(pipeline)||pipeline&&!pipeline.scene)throw Error('CAMERA_RECT_UNSUPPORTED: a camera rect cannot combine with bloom, tone mapping or render pipeline passes yet');
       drawInRect(rect,()=>{renderer.render(scene,activeCamera);overlay?.();});
     }
-    else if(bloom) bloom.draw(scene,activeCamera,overlay,pipeline);
+    else if(bloom) bloom.draw(scene,activeCamera,overlay,pipeline,screenFrame?.target()??null);
     else {renderer.render(scene,activeCamera);overlay?.();}
     worldSubmitted=true;
     if(frameProfile)assertFrameGpuError(renderer.getContext(),'official.ordinary-render');
@@ -583,8 +628,8 @@ export async function createThreeRenderer(canvas, options = {}) {
     else projected.draw(renderer,activeCamera,!worldVisible);profile?.mark('projected_pass_submit');}
     if(!rasterAvailable()){startupPresentation?.invalidate();profile?.outcome('skipped_raster_unavailable');return DRAW_SKIPPED.raster_unavailable;}
     if(assetRequestPending){profile?.outcome('pending_world_assets');return DRAW_SKIPPED.world_assets_pending;}
-    spritePresentation?.submitted(worldVisible&&(!pipeline||pipeline.scene));
-    startupPresentation?.drawn();
+    if(screenFrame)pendingWorldSubmission={worldSubmitted:worldVisible&&(!pipeline||pipeline.scene)};
+    else{spritePresentation?.submitted(worldVisible&&(!pipeline||pipeline.scene));startupPresentation?.drawn();}
     profile?.outcome('completed');
     return DRAW_COMPLETED;
   }
@@ -614,7 +659,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
 
   function dispose() {
-    spriteResources?.dispose();linkLoss.dispose();presentationListeners.clear();
+    screenFrame?.dispose();spriteResources?.dispose();linkLoss.dispose();presentationListeners.clear();
     canvas.removeEventListener('webglcontextlost',rasterLost);canvas.removeEventListener('webglcontextrestored',rasterRestored);
     rasterCapability.dispose();startupPresentation?.dispose();rasterPass?.dispose();framePass?.dispose();clearRecovery?.dispose();uiImageBatchPrefix.dispose();ui?.dispose();
     for (const hook of [...disposeHooks].reverse()) {
@@ -658,6 +703,7 @@ export async function createThreeRenderer(canvas, options = {}) {
 
   return {
     draw: drawOrSkip,
+    frameTransaction:screenFrame?Object.freeze({begin:beginAtomicFrame,commit:commitAtomicFrame,abort:abortAtomicFrame,requiresResize:frameResizeRequired,metrics:screenFrame.metrics}):null,
     uiImageBatchPrefix,
     ui,
     isPresentationAvailable:()=>rasterAvailable(),
@@ -677,9 +723,9 @@ export async function createThreeRenderer(canvas, options = {}) {
     backend,
     // The drawing buffer's pixel ratio. The player keeps it in step with the browser's (capped
     // at 2) when the device pixel ratio changes; one a presentation hook set is left alone.
-    pixelRatio: () => renderer.getPixelRatio(),
-    setPixelRatio: ratio => renderer.setPixelRatio(ratio),
-      metrics: () => ({webgl_desynchronized:webglDesynchronizedMetrics(renderer,desynchronizedPreparation,backend),sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,link_loss:linkLoss.metrics(),instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),...dataTextures.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, geometries:renderer.info.memory.geometries, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
+    pixelRatio: () => pendingPixelRatio??renderer.getPixelRatio(),
+    setPixelRatio: ratio => {if(screenFrame){if(ratio!==undefined)pendingPixelRatio=ratio;}else renderer.setPixelRatio(ratio);},
+      metrics: () => ({webgl_desynchronized:webglDesynchronizedMetrics(renderer,desynchronizedPreparation,backend),webgl_default_depth:webglDefaultDepthMetrics(renderer,requestedDefaultDepth,backend,depthPolicy.reason),frame_transaction:screenFrame?.metrics()??null,presentation_hook_gate:hookGate.metrics(),sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,link_loss:linkLoss.metrics(),instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),...dataTextures.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, geometries:renderer.info.memory.geometries, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

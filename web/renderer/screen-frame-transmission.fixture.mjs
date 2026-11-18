@@ -1,0 +1,10 @@
+import * as THREE from '/three.module.js';import {createDepthBlitProbe} from '/prototype.js';
+const W=192,H=128;
+function draw(depth,fallback){const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;document.body.appendChild(canvas);const r=new THREE.WebGLRenderer({canvas,alpha:false,antialias:false,depth,preserveDrawingBuffer:true});r.setPixelRatio(1);r.setSize(W,H,false);r.outputColorSpace=THREE.SRGBColorSpace;r.setClearColor(0x27384a,1);
+ const s=new THREE.Scene(),cam=new THREE.OrthographicCamera(-2,2,1.3,-1.3,.1,20);cam.position.z=6;cam.lookAt(0,0,0);s.add(new THREE.AmbientLight(0xffffff,2));const light=new THREE.DirectionalLight(0xffffff,2);light.position.set(3,2,5);s.add(light);
+ const bg=new THREE.Mesh(new THREE.PlaneGeometry(3.6,2.2),new THREE.MeshBasicMaterial({color:0xd8a974}));bg.position.z=0;s.add(bg);
+ const foreground=new THREE.Mesh(new THREE.PlaneGeometry(.8,1),new THREE.MeshBasicMaterial({color:0x315ad5}));foreground.position.set(.1,.1,1);s.add(foreground);
+ const mat=new THREE.MeshPhysicalMaterial({color:0xfec2e6,transmission:.85,thickness:0.5,ior:1.4,roughness:.1,transparent:false});const glass=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1),mat);glass.position.set(.35,-.1,2);s.add(glass);
+ let targetSwitches=0;const set=r.setRenderTarget;r.setRenderTarget=function(target,...args){if(target)targetSwitches++;return set.call(this,target,...args)};
+ const world=()=>r.render(s,cam);if(fallback)createDepthBlitProbe(THREE,r).draw(world);else world();const gl=r.getContext(),pixels=new Uint8Array(W*H*4);gl.readPixels(0,0,W,H,gl.RGBA,gl.UNSIGNED_BYTE,pixels);const out={pixels,targetSwitches,attrs:gl.getContextAttributes(),error:gl.getError()};r.dispose();canvas.remove();return out;}
+window.runDepthFixture=()=>{const a=draw(true,false),b=draw(false,true);let changedBytes=0,maxDelta=0;for(let i=0;i<a.pixels.length;i++){let d=Math.abs(a.pixels[i]-b.pixels[i]);if(d)changedBytes++;maxDelta=Math.max(maxDelta,d);}return [{changedBytes,maxDelta,targetSwitches:[a.targetSwitches,b.targetSwitches],errors:[a.error,b.error],referenceAttrs:a.attrs,candidateAttrs:b.attrs}];};

@@ -70,3 +70,14 @@ test('other active passes retain the target even when bloom is off',()=>{
   assert.equal(base.width,1);assert.equal(f.bloom.metrics().postprocess_target_releases,1);
  }finally{f.dispose();}
 });
+
+test('transaction destination receives both inactive world and active Bloom output',()=>{
+ const f=fixture();try{
+  const world=new THREE.Scene(),camera=new THREE.PerspectiveCamera(),stage=new THREE.WebGLRenderTarget(2,2);
+  const pipeline=on=>({ids:['world','bloom','ui'],scene:true,bloom:{on},ao:{on:false},tone:null,extensions:[]});
+  f.bloom.draw(world,camera,null,pipeline(false),stage);assert.equal(f.rendered.find(row=>row.scene===world).target,stage);
+  f.rendered.length=0;f.bloom.draw(world,camera,null,pipeline(true),stage);
+  assert.notEqual(f.rendered.find(row=>row.scene===world).target,stage);assert.equal(f.rendered.at(-1).target,stage);
+  assert(f.rendered.every(row=>row.target!==null),'no active pass may write the visible framebuffer');stage.dispose();
+ }finally{f.dispose();}
+});

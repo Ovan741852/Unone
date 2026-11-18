@@ -2,6 +2,8 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "player/main.js",
         "renderer/three.js",
         "renderer/webgl-desynchronized.js",
+        "renderer/webgl-default-depth.js",
+        "renderer/screen-frame-target.js",
         "renderer/mesh.js",
         "renderer/projected.js",
         "renderer/ui-image-batch-prefix.js",
@@ -771,6 +773,29 @@ mod tests {
             json!({"ui_capacity":"fail","script_errors":"continue","max_consecutive_script_errors":5}));
         assert_eq!(resolved(Some(json!({"ui_capacity":"keep_previous"})),true),strict,"a declaration never relaxes a development player");
     }
+    #[test]
+    fn web_default_depth_export_is_optional_and_preserves_explicit_values() {
+        assert!(WEB_FILES.contains(&"renderer/webgl-default-depth.js"));
+        assert!(WEB_FILES.contains(&"renderer/screen-frame-target.js"));
+        let dir=tempfile::tempdir().unwrap();
+        let run=|declared:Option<Value>| {
+            match declared {
+                Some(value)=>fs::write(dir.path().join("player.presentation.json"),serde_json::to_vec(&value).unwrap()).unwrap(),
+                None=>{let _=fs::remove_file(dir.path().join("player.presentation.json"));}
+            }
+            let mut files=vec![];
+            let mut presentation=append_presentation(dir.path(),&mut files).unwrap();
+            resolve_error_policy(&mut presentation,&mut files,false).unwrap();
+            serde_json::from_slice::<Value>(&files.iter().find(|(path,_)|path=="content/presentation.json").unwrap().1).unwrap()
+        };
+        assert!(run(None).get("webgl_default_depth").is_none());
+        for value in [true,false] {
+            assert_eq!(run(Some(json!({"webgl_default_depth":value})))["webgl_default_depth"],value);
+        }
+        fs::write(dir.path().join("player.presentation.json"),br#"{"webgl_default_depth":null}"#).unwrap();
+        assert!(append_presentation(dir.path(),&mut vec![]).is_err());
+    }
+
     #[test]
     fn both_hosts_package_default_presentation_and_explicit_font() {
         let dir=tempfile::tempdir().unwrap();let mut files=vec![];
