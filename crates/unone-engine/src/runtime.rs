@@ -111,6 +111,7 @@ pub struct SourceProject {
     pub image_groups: Vec<String>,
     /// The host applies api.assets.imageGroups requests and reports their state.
     pub image_group_host: bool,
+    pub sprite_resource_host: crate::SpriteHostSupport,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -625,7 +626,7 @@ impl EngineRuntime {
             Ok::<_, Box<Diagnostic>>((config, paths, world, data_assets, catalog, image_groups))
         })?;
         // Tools validate requests against the plan, but no host holds the images.
-        let mut runtime = Self::with_world(config, paths, world, None, None, None, seed, restored_save, None, None, data_assets, catalog, crate::ErrorPolicy::strict(), (image_groups, false))?;
+        let mut runtime = Self::with_world(config, paths, world, None, None, None, seed, restored_save, None, None, data_assets, catalog, crate::ErrorPolicy::strict(), (image_groups, false, crate::SpriteHostSupport::Unsupported))?;
         (runtime.startup.imports_ms, runtime.startup.project_ms) = (startup.imports_ms, startup.project_ms);
         Ok(runtime)
     }
@@ -736,6 +737,7 @@ impl EngineRuntime {
             error_policy,
             image_groups,
             image_group_host,
+            sprite_resource_host,
         } = project;
         let module_count = script_modules.len().max(script_module_bytecode.len());
         if module_count > MAX_SCRIPT_MODULES {
@@ -786,7 +788,7 @@ impl EngineRuntime {
             data_assets,
             asset_catalog,
             error_policy,
-            (image_groups, image_group_host),
+            (image_groups, image_group_host, sprite_resource_host),
         )
     }
 
@@ -805,7 +807,7 @@ impl EngineRuntime {
         data_assets: crate::data_assets::DataAssets,
         asset_catalog: Vec<crate::AssetCatalogEntry>,
         error_policy: crate::ErrorPolicy,
-        (image_groups, image_group_host): (Vec<String>, bool),
+        (image_groups, image_group_host, sprite_resource_host): (Vec<String>, bool, crate::SpriteHostSupport),
     ) -> Result<Self, Box<Diagnostic>> {
         let errors = Rc::new(RefCell::new(crate::error_policy::ErrorState::new(error_policy)));
         let image_groups = Rc::new(RefCell::new(crate::image_groups::Registry::new(image_groups, image_group_host)
@@ -813,6 +815,7 @@ impl EngineRuntime {
         let data_assets = Rc::new(RefCell::new(data_assets));
         let sprite_resources = Rc::new(RefCell::new(sprite_resources::Registry::new(asset_catalog)
             .map_err(|e| Box::new(script_diagnostic(&paths, e)))?));
+        sprite_resources.borrow_mut().set_host_support(sprite_resource_host);
         let host_time = Rc::new(RefCell::new(crate::host_time::HostTime::new(config.host_time.clone())
             .map_err(|e| Box::new(script_diagnostic(&paths, e)))?));
         let input = Rc::new(RefCell::new(InputState::default()));

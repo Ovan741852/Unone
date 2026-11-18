@@ -841,6 +841,7 @@ export type SpriteCommitStatus = {
     state: "none" | "pending" | "submitted" | "error", epoch: number, error: string?,
 }
 export type SpriteApi = {
+    hostSupport: () -> "unknown" | "supported" | "unsupported",
     prepare: (assetId: string, materialId: string?) -> SpriteResource,
     status: (resource: SpriteResource) -> SpriteResourceStatus,
     -- nil while not prepared; a revision is accepted intent, not a GPU submission receipt.

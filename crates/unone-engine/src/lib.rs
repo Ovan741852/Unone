@@ -17,7 +17,7 @@ mod shader;
 mod sprite_resources;
 mod sprite_appearance;
 pub use sprite_resources::{AssetCatalogEntry, SpriteAppearance, SpriteAppearanceMetadata,
-    SpriteResourcePlan, SpriteResourcePlanUpdate, SpriteResourceReceipt, SpriteResourceState,
+    SpriteHostSupport, SpriteResourcePlan, SpriteResourcePlanUpdate, SpriteResourceReceipt, SpriteResourceState,
     SpriteAppearanceReceipt, SpriteSubmissionState, PresentationResourceInput,
     MAX_SPRITE_RESOURCES, MAX_PRESENTATION_RECEIPTS, MAX_SPRITE_RESOURCE_BYTES, MAX_PRESENTATION_INTEGER};
 /// Backend-independent packed geometry batches and reference query semantics.

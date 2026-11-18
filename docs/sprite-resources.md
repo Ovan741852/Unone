@@ -103,3 +103,17 @@ scopes; none of these estimates is total process memory or VRAM.
 
 See [immutable byte views](decisions/0049-bounded-immutable-byte-views.md) for
 binary buffer ownership. Sprite resources do not expose a writable buffer alias.
+
+### Host capability
+
+`api.sprite.hostSupport()` returns `supported`, `unsupported`, or `unknown` for
+the lifetime of a runtime. This is a host declaration about whether it supplies
+resource feedback, not readiness, GPU validity, or image-group support. The
+official Web player declares `supported` and delivers errors for unsupported
+renderer services. File-backed authoring tools declare `unsupported`. A host
+project without `sprite_resource_host` returns `unknown`; never treat that as
+`ready` or infer sprite support from an image-group report. A game may omit
+visual-resource waits only for explicitly unsupported presentation. For replay,
+preserve the exact host declaration together with recorded presentation input;
+changing that declaration can change game decisions. Reload retains it and a
+new runtime receives its own declaration.

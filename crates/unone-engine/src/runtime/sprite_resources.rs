@@ -32,6 +32,7 @@ pub(super) struct Registry {
     commits: Rc<BTreeMap<String, Rc<Commit>>>, next_id: u64, next_revision: u64,
     owners: Rc<BTreeMap<String, Rc<Resource>>>,
     plan_revision: u64,
+    host_support: crate::SpriteHostSupport,
     undo: Option<BTreeMap<String, crate::world::EntityState>>,
 }
 
@@ -48,8 +49,11 @@ impl Registry {
                 return Err("SPRITE_CATALOG_INVALID: duplicate texture asset id".into());
             }
         }
-        Ok(Self { catalog: Rc::new(textures), records: Rc::default(), commits: Rc::default(), owners: Rc::default(), next_id: 0, next_revision: 0, plan_revision: 0, undo: None })
+        Ok(Self { catalog: Rc::new(textures), records: Rc::default(), commits: Rc::default(), owners: Rc::default(), next_id: 0, next_revision: 0, plan_revision: 0, host_support: crate::SpriteHostSupport::Unknown, undo: None })
     }
+
+    pub fn set_host_support(&mut self, support: crate::SpriteHostSupport) { self.host_support = support; }
+    pub fn host_support(&self) -> crate::SpriteHostSupport { self.host_support }
 
     pub fn reconcile(&mut self, world: &World) {
         let before = (self.owners.len(), self.records.len());

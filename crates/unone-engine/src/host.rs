@@ -61,6 +61,9 @@ pub struct HostProject {
     /// each group's state as recorded input; status reads unsupported otherwise.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub image_group_host: bool,
+    /// Sprite resource feedback capability, declared independently from image groups.
+    #[serde(default)]
+    pub sprite_resource_host: crate::SpriteHostSupport,
 }
 
 impl HostProject {
@@ -151,6 +154,7 @@ impl HostProject {
             error_policy,
             image_groups: self.image_groups,
             image_group_host: self.image_group_host,
+            sprite_resource_host: self.sprite_resource_host,
         })
     }
 }

@@ -13,6 +13,18 @@ pub const MAX_PRESENTATION_INTEGER: u64 = (1u64 << 53) - 1;
 #[serde(deny_unknown_fields)]
 pub struct AssetCatalogEntry { pub id: String, pub kind: String }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum SpriteHostSupport { Unknown, Supported, Unsupported }
+
+/// A host-claimed sprite feedback capability. Unknown preserves safety with
+/// older hosts that do not declare whether they supply presentation receipts.
+impl Default for SpriteHostSupport { fn default() -> Self { Self::Unknown } }
+impl SpriteHostSupport {
+    pub(crate) fn as_str(self) -> &'static str { match self { Self::Unknown => "unknown", Self::Supported => "supported", Self::Unsupported => "unsupported" } }
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct SpriteResourcePlan {
     pub id: String,
