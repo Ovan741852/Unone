@@ -43,8 +43,6 @@ remain unavailable; repeated failure must not be reported as ready, and the
 player exposes reload as a recovery. The paused scheduler does not advance
 the game while awaiting a retry.
 
-<<<<<<< HEAD
-=======
 In development exports this opt-in disables single-step and manual input
 injection, because an asynchronous queued step cannot safely be canceled after
 input has been leased. The diagnostics are `PRESENTATION_STEP_UNSUPPORTED` and
@@ -53,4 +51,11 @@ During an active wait, mutating tool invocations,
 queued input, transport changes, and restart are rejected until recovery.
 An invocation already dispatched before the wait cannot be retroactively
 canceled. Read-only developer inspection remains available.
->>>>>>> aa95ed5 (Fence queued developer mutations at backend dispatch)
+
+After an offline wait, legacy keyboard repeats cannot resurrect a key held
+across the cover. Gamepad buttons and axes already active on the first resumed
+poll stay neutral until each button is released or each axis reaches the
+neutral threshold (0.08), independently per device and control. This guard is
+opt-in with offline frame waits; hosts without the option keep their existing
+keyboard and gamepad behavior. Devices newly connected after that poll are
+treated as new devices.
