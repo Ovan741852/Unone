@@ -124,6 +124,7 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
   pendingFocus={owner:v.id,key:items.keys[index]};scrollToKey(v.id,items.keys[index]);return true;
  }
  const keydown=e=>{
+  if(e.target.closest?.('[data-unone-frame-wait]'))return false;
   if(e.target.closest?.('input,textarea,select,[contenteditable=true],#unone-developer'))return false;
   if(isInputBlocked()){if(!e.isComposing&&e.keyCode!==229)e.preventDefault?.();return true;}
   const nodeId=getFocusedNode(),node=projected?.children?.find(n=>n.id===nodeId);

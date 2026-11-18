@@ -102,6 +102,7 @@ export function createUiTextInputHost({canvas,document:doc=canvas.ownerDocument?
   function routeKey(event,down){
     const key=event.code||event.key||'Unidentified';
     if(isInputBlocked()){
+      if(event.target?.closest?.('[data-unone-frame-wait]'))return false;
       // Preserve the OS's current composition, while preventing a fresh
       // Enter/shortcut from being queued for a covered, paused screen.
       const composing=active&&(active.composing||event.isComposing||event.keyCode===229);
