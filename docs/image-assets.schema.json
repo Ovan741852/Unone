@@ -1,0 +1,106 @@
+{
+  "$comment": "Generated from Rust deserialization types by game schema. Do not edit. Runtime semantic validators additionally check ranges, references, formats and capabilities.",
+  "$defs": {
+    "ImageAssetsBudgetSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "max_bytes": {
+          "format": "uint64",
+          "maximum": 1073741824,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_entries": {
+          "format": "uint32",
+          "maximum": 65536,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "ImageAssetsDimensionsSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "enum": [
+            "png",
+            "jpeg",
+            "webp"
+          ],
+          "type": "string"
+        },
+        "height": {
+          "format": "uint32",
+          "maximum": 65536,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "width": {
+          "format": "uint32",
+          "maximum": 65536,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "format",
+        "width",
+        "height"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://unone.dev/schema/image-assets.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Authoring shape for player.image-assets.json. Publisher/broker validation\nadditionally checks catalog kinds, UTF-8 byte bounds, scene references,\nimage encoding, startup-group membership and the total encoded size.",
+  "properties": {
+    "budget": {
+      "$ref": "#/$defs/ImageAssetsBudgetSchema"
+    },
+    "defer_scene_assets": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 4096,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "dimensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ImageAssetsDimensionsSchema"
+      },
+      "type": "object"
+    },
+    "groups": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "type": "object"
+    },
+    "startup": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "version": {
+      "const": 1,
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "version",
+    "groups",
+    "startup"
+  ],
+  "title": "ImageAssetsPlanSchema",
+  "type": "object",
+  "x-unone-validation": "Publisher and Web broker validate declared texture IDs and scene-sprite usage; startup groups take precedence over deferral."
+}

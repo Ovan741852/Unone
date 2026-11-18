@@ -131,7 +131,7 @@ function quotedUtf8Length(text) {
   return bytes;
 }
 export function validateImagePreloadPlan(value, catalog) {
-  const specs = assetCatalogSpecs(catalog); preloadRecord(value, 'plan', ['version','groups','startup','budget','dimensions']);
+  const specs = assetCatalogSpecs(catalog); preloadRecord(value, 'plan', ['version','groups','startup','budget','dimensions','defer_scene_assets']);
   if (!Object.hasOwn(value, 'version') || !Object.hasOwn(value, 'groups') || !Object.hasOwn(value, 'startup') || value.version !== IMAGE_PRELOAD_PLAN_VERSION) preloadInvalid('version1, groups and startup are required');
   const budget = Object.hasOwn(value, 'budget') ? value.budget : null;
   if (Object.hasOwn(value, 'budget')) preloadRecord(budget, 'budget', ['max_bytes','max_entries']);
@@ -150,6 +150,19 @@ export function validateImagePreloadPlan(value, catalog) {
   preloadArray(value.startup, 'startup', 128); const startup = [], seen = new Set();
   for (const name of value.startup) { preloadString(name, 'startup group', 128); if (!Object.hasOwn(groups, name) || seen.has(name)) preloadInvalid('startup groups must exist and be unique'); reserve(quotedUtf8Length(name) + (startup.length ? 1 : 0)); seen.add(name); startup.push(name); }
   const canonical = { version: IMAGE_PRELOAD_PLAN_VERSION, groups: Object.freeze(groups), startup: Object.freeze(startup), budget: canonicalBudget };
+  if (Object.hasOwn(value, 'defer_scene_assets')) {
+    preloadArray(value.defer_scene_assets, 'defer_scene_assets', 4096);
+    const deferred = [], seenDeferred = new Set();
+    for (const id of value.defer_scene_assets) {
+      preloadString(id, 'deferred scene asset ID', 2048);
+      const asset = specs.get(id);
+      if (!asset || asset.kind !== 'texture2d') preloadInvalid(`deferred scene asset must be a declared texture2d: ${id}`);
+      requireAssetEncoding(asset, 'image');
+      if (seenDeferred.has(id)) preloadInvalid(`deferred scene assets must be unique: ${id}`);
+      seenDeferred.add(id); deferred.push(id);
+    }
+    canonical.defer_scene_assets = Object.freeze(deferred);
+  }
   if(Object.hasOwn(value,'dimensions')){
     preloadRecord(value.dimensions,'dimensions');const referenced=new Set(Object.values(groups).flat()),dimensions={};
     if(Object.keys(value.dimensions).length>16384)preloadInvalid('dimensions exceeds16384');
@@ -323,10 +336,14 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     if (disposed) throw imageError('IMAGE_ASSET_BROKER_DISPOSED');
     planController?.abort(); const controller = new AbortController(); planController = controller; const epoch = ++planEpoch;
     const entities = scene?.entities ?? [], sceneIds = (Array.isArray(entities) ? entities : Object.values(entities)).flatMap(entity => typeof entity?.sprite?.asset === 'string' ? [entity.sprite.asset] : []);
-    const startupIds = plan ? plan.startup.flatMap(name => plan.groups[name]) : [], requiredIds = new Set(startupIds), ids = [...new Set([...startupIds, ...sceneIds])];
+    const startupIds = plan ? plan.startup.flatMap(name => plan.groups[name]) : [], requiredIds = new Set(startupIds);
+    const sceneSet = new Set(sceneIds), deferred = new Set(plan?.defer_scene_assets ?? []);
+    for (const id of deferred) if (!sceneSet.has(id)) preloadInvalid(`deferred asset must occur on a scene sprite: ${id}`);
+    const admittedSceneIds = sceneIds.filter(id => !deferred.has(id) || requiredIds.has(id));
+    const ids = [...new Set([...startupIds, ...admittedSceneIds])];
     const previous = sceneLeases, next = new Map(); sceneLeases = next;
     for (const [id, lease] of previous) { if (ids.includes(id)) next.set(id, lease); else lease.release(); }
-    const result = { declared_entries: ids.length, scene_declared_entries: new Set(sceneIds).size, startup_entries: requiredIds.size, required_entries: requiredIds.size, required_ready_entries: 0, startup_groups: plan?.startup ?? Object.freeze([]), duplicate_references: startupIds.length + sceneIds.length - ids.length, admitted_entries: 0, ready_entries: 0, reserved_bytes: 0, partial: false, unsupported: [], budget_skipped: [], errors: [], cancelled: false };
+    const result = { declared_entries: ids.length, scene_declared_entries: new Set(sceneIds).size, startup_entries: requiredIds.size, required_entries: requiredIds.size, required_ready_entries: 0, startup_groups: plan?.startup ?? Object.freeze([]), duplicate_references: startupIds.length + admittedSceneIds.length - ids.length, admitted_entries: 0, ready_entries: 0, reserved_bytes: 0, partial: false, unsupported: [], budget_skipped: [], errors: [], cancelled: false };
     const candidates = ids.slice(0, sceneMaxEntries), inspected = new Array(candidates.length); let position = 0, inspectedCount = 0, settledCount = 0, rejectedCount = 0;
     const progress = () => { if (onProgress && candidates.length) try { onProgress({ done: (inspectedCount + settledCount + rejectedCount) / 2, total: candidates.length }); } catch {} };
     for (const id of ids.slice(sceneMaxEntries)) result.budget_skipped.push({ id, reason: 'scene_entry_budget' });

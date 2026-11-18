@@ -90,3 +90,15 @@ test('required failures keep exact IDs and only actual ready required images cou
 test('no preload plan preserves scene-only behavior while malformed plans fail at construction',async()=>{
  const f=broker(null);const result=await f.result.prepareScene({entities:[{sprite:{asset:'a'}}]});assert.deepEqual(f.loaded,['a']);assert.equal(result.startup_entries,0);assert.equal(result.required_entries,0);assert.equal(result.required_ready_entries,0);assert.deepEqual(result.startup_groups,[]);assert.equal(f.result.report().preload_plan,null);f.result.dispose();assert.throws(()=>broker({version:1,groups:{bad:['missing']},startup:[]}),/declared texture2d/);
 });
+
+test('explicit scene deferral leaves ordinary sprites alone, respects required startup, and preserves later acquire',async()=>{
+ const f=broker({version:1,groups:{boot:['b'],later:['a']},startup:['boot'],defer_scene_assets:['a','b']});
+ const result=await f.result.prepareScene({entities:[{sprite:{asset:'a'}},{sprite:{asset:'b',visible:false}},{sprite:{asset:'c',visible:false}}]});
+ assert.deepEqual(f.loaded,['b','c']);assert.equal(result.required_entries,1);assert.equal(result.required_ready_entries,1);assert.equal(result.declared_entries,2);
+ const lease=f.result.acquire('a');await lease.promise;assert.deepEqual(f.loaded,['b','c','a']);lease.release();f.result.dispose();
+});
+test('deferred list is bounded, unique, declared and tied to the actual scene',async()=>{
+ for(const defer_scene_assets of [null,'a',['a','a'],['missing'],['a',1],new Array(1)])assert.throws(()=>validateImagePreloadPlan({...plan(),defer_scene_assets},catalog()),/IMAGE_PRELOAD_PLAN_INVALID/);
+ const other=createAssetCatalog({assets:[asset('a'),{id:'audio',kind:'audio',source:'sound.wav'}]});assert.throws(()=>validateImagePreloadPlan({version:1,groups:{},startup:[],defer_scene_assets:['audio']},other),/texture2d/);
+ const f=broker({version:1,groups:{},startup:[],defer_scene_assets:['a']});await assert.rejects(f.result.prepareScene({entities:[{sprite:{asset:'b'}}]}),/must occur on a scene sprite/);assert.deepEqual(f.loaded,[]);f.result.dispose();
+});

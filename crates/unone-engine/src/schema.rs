@@ -2,12 +2,36 @@
 //! constraints involving values, file contents, cross-references and host capabilities.
 use serde_json::Value;
 
+/// Authoring shape for player.image-assets.json. Publisher/broker validation
+/// additionally checks catalog kinds, UTF-8 byte bounds, scene references,
+/// image encoding, startup-group membership and the total encoded size.
+#[allow(dead_code)]
+#[derive(schemars::JsonSchema, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ImageAssetsPlanSchema {
+    version: u32,
+    groups: std::collections::BTreeMap<String, Vec<String>>,
+    startup: Vec<String>,
+    budget: Option<ImageAssetsBudgetSchema>,
+    dimensions: Option<std::collections::BTreeMap<String, ImageAssetsDimensionsSchema>>,
+    defer_scene_assets: Option<Vec<String>>,
+}
+#[allow(dead_code)]
+#[derive(schemars::JsonSchema, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ImageAssetsBudgetSchema { max_bytes: Option<u64>, max_entries: Option<u32> }
+#[allow(dead_code)]
+#[derive(schemars::JsonSchema, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ImageAssetsDimensionsSchema { format: String, width: u32, height: u32 }
+
 pub const SCHEMA_NAMES: &[&str] = &[
     "ui",
     "project",
     "scene",
     "test",
     "asset",
+    "image-assets",
     "bundle",
     "particle",
     "shader",
@@ -40,6 +64,7 @@ pub fn contract_schema(name: &str) -> Option<Value> {
         "shader" => schemars::schema_for!(crate::ShaderMaterialDefinition),
         "bundle" => schemars::schema_for!(crate::BundleManifest),
         "asset" => schemars::schema_for!(crate::AssetManifest),
+        "image-assets" => schemars::schema_for!(ImageAssetsPlanSchema),
         "input" => schemars::schema_for!(crate::InputFrame),
         "host-project" => schemars::schema_for!(crate::HostProject),
         "developer" => schemars::schema_for!(crate::DeveloperRequest),
@@ -54,6 +79,24 @@ pub fn contract_schema(name: &str) -> Option<Value> {
         _ => return None,
     };
     let mut value = serde_json::to_value(schema).expect("schema serializes");
+    if name == "image-assets" {
+        value["properties"]["version"]["const"] = serde_json::json!(1);
+        value["properties"]["defer_scene_assets"]["maxItems"] = serde_json::json!(4096);
+        value["properties"]["defer_scene_assets"]["type"] = serde_json::json!("array");
+        value["properties"]["defer_scene_assets"]["uniqueItems"] = serde_json::json!(true);
+        value["properties"]["dimensions"]["type"] = serde_json::json!("object");
+        value["properties"]["budget"] = serde_json::json!({"$ref":"#/$defs/ImageAssetsBudgetSchema"});
+        for (key,max) in [("max_bytes",1_073_741_824u64),("max_entries",65_536u64)] {
+            let field = &mut value["$defs"]["ImageAssetsBudgetSchema"]["properties"][key];
+            field["type"] = serde_json::json!("integer"); field["minimum"] = serde_json::json!(1); field["maximum"] = serde_json::json!(max);
+        }
+        for key in ["width","height"] {
+            let field = &mut value["$defs"]["ImageAssetsDimensionsSchema"]["properties"][key];
+            field["minimum"] = serde_json::json!(1); field["maximum"] = serde_json::json!(65_536);
+        }
+        value["$defs"]["ImageAssetsDimensionsSchema"]["properties"]["format"]["enum"] = serde_json::json!(["png","jpeg","webp"]);
+        value["x-unone-validation"] = serde_json::json!("Publisher and Web broker validate declared texture IDs and scene-sprite usage; startup groups take precedence over deferral.");
+    }
     if name == "developer" {
         value["type"] = serde_json::json!("object");
     }
