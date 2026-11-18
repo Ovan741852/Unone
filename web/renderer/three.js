@@ -342,6 +342,7 @@ export async function createThreeRenderer(canvas, options = {}) {
 
   function beginAtomicFrame(snapshot,{allowResize=false}={}){
     if(!screenFrame)return {status:'skipped',reason:'frame_transaction_unavailable',presentation:'unchanged'};
+    if(!rasterAvailable())return {status:'skipped',reason:'raster_unavailable',presentation:'unknown',epoch:screenFrame.metrics().epoch};
     pendingWorldSubmission=null;worldSubmitted=false;
     const resizing=frameResizeRequired();
     if(resizing&&!allowResize)return {status:'skipped',reason:'frame_resize_required',presentation:'unchanged',epoch:screenFrame.metrics().epoch};
@@ -359,6 +360,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     return resizing?{...outcome,presentation:'unknown'}:outcome;
   }
   function commitAtomicFrame(){
+    if(screenFrame&&!rasterAvailable())return {status:'skipped',reason:'raster_unavailable',presentation:'unknown',epoch:screenFrame.metrics().epoch};
     if(!screenFrame||!pendingWorldSubmission)return {status:'skipped',reason:'frame_world_not_ready',presentation:'unchanged'};
     const pending=pendingWorldSubmission;pendingWorldSubmission=null;
     const outcome=screenFrame.commit();

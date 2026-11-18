@@ -19,7 +19,7 @@ export function createScreenFrameTarget(THREE,renderer){
  function begin({width,height,depth}){
   if(disposed)return status(false,'disposed','unchanged');
   if(active)return status(false,'already_active','unchanged');
-  if(lost())return status(false,'context_lost','unchanged');
+  if(lost())return status(false,'context_lost','unknown');
   // Three can retain its logical current target over a WebGL context loss.
   // Reset only our own invalidated target, never a caller's unrelated target.
   if(lostTarget){if(renderer.getRenderTarget()===lostTarget)renderer.setRenderTarget(null);lostTarget.dispose();lostTarget=null;}
@@ -53,8 +53,8 @@ export function createScreenFrameTarget(THREE,renderer){
  }
  function rebind(){if(!active||!target||lost())return false;bindTarget();return true;}
  function commit(){
+  if(lost()){active=false;return status(false,'context_lost','unknown');}
   if(!active||!target)return status(false,'not_active','unchanged');
-  if(lost()){active=false;return status(false,'context_lost','unchanged');}
   if(renderer.getRenderTarget()!==target){active=false;return status(false,'target_changed','unchanged');}
   // Three owns the actual framebuffer; its pinned renderer exposes properties
   // and state as engine-internal contracts. No getParameter GPU round trip.
@@ -77,7 +77,7 @@ export function createScreenFrameTarget(THREE,renderer){
   }catch(error){lastFailure=String(error?.message??error);return status(false,lastFailure,submitted?'unknown':'unchanged');}
   finally{gl.bindFramebuffer(gl.READ_FRAMEBUFFER,null);renderer.setScissorTest(scissor);}
  }
- function abort(){if(active){active=false;aborts++;if(!lost())renderer.setRenderTarget(null);}return status(true,null,'unchanged');}
+ function abort(){const contextLost=lost();if(active){active=false;aborts++;if(!contextLost)renderer.setRenderTarget(null);}return status(!contextLost,contextLost?'context_lost':null,contextLost?'unknown':'unchanged');}
  function contextLost(){invalidate();lastFailure='context_lost';}
  function dispose(){if(disposed)return;abort();release();lostTarget?.dispose();lostTarget=null;disposed=true;}
  return {begin,rebind,commit,abort,contextLost,dispose,target:()=>active?target:null,metrics:()=>({active,disposed,epoch,allocated:!!target,depth_allocated:!!depthBuffer,width:target?.width??0,height:target?.height??0,created,released,depth_created:depthCreated,depth_released:depthReleased,commits,aborts,last_failure:lastFailure,color_bytes_estimate:target?target.width*target.height*4:0,depth_bytes_estimate:depthBuffer?target.width*target.height*4:0})};
