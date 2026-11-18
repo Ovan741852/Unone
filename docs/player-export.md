@@ -312,6 +312,32 @@ Exports report `STARTUP_LOGO_PATH_INVALID`, `STARTUP_LOGO_FORMAT_UNSUPPORTED`,
 `STARTUP_LOGO_SIZE_INVALID`, `STARTUP_LOGO_MISSING` or
 `STARTUP_BACKGROUND_INVALID`.
 
+### Windows native GPU memory profile
+
+Set `"windows_gpu_memory": "memory_usage"` in `player.presentation.json` to
+start the official Windows player with smaller wgpu allocation pools. For
+example, a small 2D project can opt in this way.
+
+```json
+{
+  "windows_gpu_memory": "memory_usage"
+}
+```
+
+`performance` is the existing default and can be selected explicitly. The
+setting takes effect when the GPU device is created, including the startup
+screen and device recreation. Omit it when using older Windows runtimes, or
+select a runtime that advertises the chosen profile in its descriptor. Exports
+for other targets leave this Windows setting out of the packaged presentation.
+
+The profile asks the graphics backend to favor memory use or allocation
+throughput. It does not set a memory cap or change rendering quality. Compare
+startup, asset streaming and frame timing in the real game on target hardware.
+The native `--report` JSON records the selected profile and, when the backend
+exposes a wgpu allocator report, the pool's reserved and allocated bytes before
+the final screenshot. Keep those metrics separate from OS process memory and
+GPU memory counters.
+
 ## Runtime errors
 
 Two kinds of error can reach a released game while it runs: a UI publish over a

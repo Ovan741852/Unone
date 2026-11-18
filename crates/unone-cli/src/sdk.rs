@@ -539,12 +539,14 @@ pub(crate) fn preflight(
     let (_, settings, assets, mut files) = crate::export::content(project)?;
     // Validate the same presentation payload and packaged font paths that the
     // exporters append, while still keeping preflight read-only.
-    crate::export::append_presentation(project, &mut files)?;
+    let presentation = crate::export::append_presentation(project, &mut files)?;
     if selection.host.family == "native-wgpu" {
         crate::export::native_shader_gate(&files)?;
-        crate::hosts::native_wgpu_export_gate(
-            &settings,
-            crate::hosts::load_presentation(project)?.as_ref(),
+        crate::hosts::native_wgpu_export_gate(&settings, Some(&presentation))?;
+        windows_gpu_memory_for_target(
+            selection.host.id,
+            presentation.windows_gpu_memory,
+            &selection.runtime_manifest,
         )?;
         native_asset_gate(&assets, &selection.runtime_manifest)?;
     }
@@ -927,14 +929,13 @@ fn native_export_staged(
     ensure!(!output.exists(), "SDK_OUTPUT_EXISTS");
     let (config, settings, assets, mut files) = crate::export::content(project)?;
     crate::export::native_shader_gate(&files)?;
-    crate::hosts::native_wgpu_export_gate(
-        &settings,
-        crate::hosts::load_presentation(project)?.as_ref(),
-    )?;
     let mut presentation = crate::export::append_presentation(project, &mut files)?;
+    crate::hosts::native_wgpu_export_gate(&settings, Some(&presentation))?;
+    let metadata: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
+    presentation.windows_gpu_memory =
+        windows_gpu_memory_for_target(host.id, presentation.windows_gpu_memory, &metadata)?;
     // Native players are release players: the declared or release error policy.
     let error_policy = crate::export::resolve_error_policy(&mut presentation, &mut files, false)?;
-    let metadata: Value = serde_json::from_slice(&fs::read(runtime.join("runtime.json"))?)?;
     native_asset_gate(&assets, &metadata)?;
     // Native players are release builds and load the entry and modules as
     // bytecode compiled for their own codegen setting.
@@ -945,7 +946,10 @@ fn native_export_staged(
             files.push((name.clone(), fs::read(safe(runtime, name)?)?));
         }
     }
-    let report = json!({"version":1,"project":config.name,"target":host.id,"family":host.family,"profile":"release","renderer_mode":"official","renderer":host.renderer,"presentation":host.presentation,"dev_tools":false,"preview_tools":false,"error_policy":error_policy,"script_sources":script_sources,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
+    let mut report = json!({"version":1,"project":config.name,"target":host.id,"family":host.family,"profile":"release","renderer_mode":"official","renderer":host.renderer,"presentation":host.presentation,"dev_tools":false,"preview_tools":false,"error_policy":error_policy,"script_sources":script_sources,"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":hash(b)})).collect::<Vec<_>>()});
+    if let Some(profile) = presentation.windows_gpu_memory {
+        report[unone_engine::WindowsGpuMemory::CONFIG_KEY] = json!(profile);
+    }
     std::fs::create_dir_all(output)?;
     for (path, bytes) in &files {
         let p = output.join(path);
@@ -1010,6 +1014,34 @@ fn native_asset_gate(assets: &Value, metadata: &Value) -> Result<()> {
     Ok(())
 }
 
+fn windows_gpu_memory_for_target(
+    target: &str,
+    profile: Option<unone_engine::WindowsGpuMemory>,
+    metadata: &Value,
+) -> Result<Option<unone_engine::WindowsGpuMemory>> {
+    if target != "windows" {
+        return Ok(None);
+    }
+    let Some(profile) = profile else {
+        return Ok(None);
+    };
+    let key = unone_engine::WindowsGpuMemory::CONFIG_KEY;
+    let capability = &metadata[key];
+    let default = unone_engine::WindowsGpuMemory::default().as_str();
+    let includes_profiles = capability["profiles"].as_array().is_some_and(|profiles| {
+        profiles.iter().any(|mode| mode == default)
+            && profiles.iter().any(|mode| mode == profile.as_str())
+    });
+    ensure!(
+        capability["config_key"] == key
+            && capability["default"] == default
+            && includes_profiles,
+        "HOST_WINDOWS_GPU_MEMORY_UNSUPPORTED: the selected Windows runtime does not advertise windows_gpu_memory={}; rebuild or update the Windows runtime",
+        profile.as_str()
+    );
+    Ok(Some(profile))
+}
+
 fn native_readiness_gate(metadata: &Value) -> Result<()> {
     let readiness = metadata
         .get("readiness")
@@ -1043,6 +1075,62 @@ mod tests {
             compiled_systems: systems.iter().map(|system| (*system).to_string()).collect(),
             runtime_packages: BTreeMap::new(), bytes,
         }
+    }
+
+    fn gpu_memory_runtime_capability() -> Value {
+        json!({"config_key":"windows_gpu_memory","profiles":["performance","memory_usage"],"default":"performance"})
+    }
+
+    #[test]
+    fn windows_gpu_memory_requires_the_selected_runtime_to_advertise_the_profile() {
+        let profile = Some(unone_engine::WindowsGpuMemory::MemoryUsage);
+        let legacy = json!({});
+        assert_eq!(windows_gpu_memory_for_target("windows", None, &legacy).unwrap(), None);
+        assert_eq!(windows_gpu_memory_for_target("android-arm64", profile, &legacy).unwrap(), None);
+        for capability in [Value::Null, json!({"config_key":"windows_gpu_memory",
+            "profiles":["performance"],"default":"performance"})] {
+            let error = windows_gpu_memory_for_target(
+                "windows", profile, &json!({"windows_gpu_memory":capability}),
+            ).unwrap_err();
+            assert!(error.to_string().contains("HOST_WINDOWS_GPU_MEMORY_UNSUPPORTED"));
+        }
+        let runtime = json!({"windows_gpu_memory":gpu_memory_runtime_capability()});
+        assert_eq!(windows_gpu_memory_for_target("windows", profile, &runtime).unwrap(), profile);
+    }
+
+    #[test]
+    fn direct_windows_export_keeps_explicit_gpu_memory_profile_and_rejects_old_runtime() {
+        let dir = tempfile::tempdir().unwrap();
+        let project = dir.path().join("game");
+        fs::create_dir(&project).unwrap();
+        fs::write(project.join("project.unone.json"), br#"{"name":"GPU profile fixture","entry_script":"main.luau"}"#).unwrap();
+        fs::write(project.join("main.luau"), "return {start=function()end,update=function()end}").unwrap();
+        let runtime = dir.path().join("runtime");
+        fs::create_dir(&runtime).unwrap();
+        fs::write(runtime.join("player.exe"), b"stub").unwrap();
+        let mut descriptor = json!({"target":"windows","files":[{"path":"player.exe","sha256":hash(b"stub")}]});
+        let descriptor_path = runtime.join("runtime.json");
+        fs::write(&descriptor_path, serde_json::to_vec(&descriptor).unwrap()).unwrap();
+        let host = crate::hosts::require_exportable("windows").unwrap();
+        let output = dir.path().join("legacy");
+        let report = native_export_staged(&project, &output, dir.path(), &runtime, host, false).unwrap();
+        assert!(report.get("windows_gpu_memory").is_none());
+        let read_presentation = |output: &Path| serde_json::from_slice::<Value>(
+            &fs::read(output.join("content/presentation.json")).unwrap(),
+        ).unwrap();
+        assert!(read_presentation(&output).get("windows_gpu_memory").is_none());
+
+        fs::write(project.join("player.presentation.json"), br#"{"windows_gpu_memory":"memory_usage"}"#).unwrap();
+        let output = dir.path().join("requested");
+        let error = native_export_staged(&project, &output, dir.path(), &runtime, host, false).unwrap_err();
+        assert!(error.to_string().contains("HOST_WINDOWS_GPU_MEMORY_UNSUPPORTED"));
+        assert!(!output.exists());
+
+        descriptor["windows_gpu_memory"] = gpu_memory_runtime_capability();
+        fs::write(&descriptor_path, serde_json::to_vec(&descriptor).unwrap()).unwrap();
+        let report = native_export_staged(&project, &output, dir.path(), &runtime, host, false).unwrap();
+        assert_eq!(report["windows_gpu_memory"], "memory_usage");
+        assert_eq!(read_presentation(&output)["windows_gpu_memory"], "memory_usage");
     }
 
     #[test]

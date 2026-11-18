@@ -28,7 +28,7 @@ use std::{
     sync::Arc,
     time::{Duration, Instant},
 };
-use unone_engine::{EngineRuntime, HostProject, WorldSnapshot};
+use unone_engine::{EngineRuntime, HostProject, WindowsGpuMemory, WorldSnapshot};
 #[cfg(target_os = "windows")]
 use winit::platform::windows::WindowAttributesExtWindows;
 use winit::{
@@ -336,6 +336,33 @@ struct Settings {
     #[serde(skip)]
     save: Option<PathBuf>,
 }
+
+fn windows_gpu_memory(presentation: &Value) -> R<WindowsGpuMemory> {
+    let Some(profile) = presentation.get(WindowsGpuMemory::CONFIG_KEY) else {
+        return Ok(WindowsGpuMemory::default());
+    };
+    if !cfg!(target_os = "windows") {
+        return Err("WINDOWS_GPU_MEMORY_UNSUPPORTED: this player is not running on Windows".into());
+    }
+    WindowsGpuMemory::deserialize(profile)
+        .map_err(|error| format!("WINDOWS_GPU_MEMORY_INVALID: {error}"))
+}
+
+#[cfg(test)]
+#[test]
+fn windows_gpu_memory_requires_an_explicit_supported_profile() {
+    assert_eq!(windows_gpu_memory(&json!({})).unwrap(), WindowsGpuMemory::Performance);
+    let compact = windows_gpu_memory(&json!({"windows_gpu_memory":"memory_usage"}));
+    if cfg!(target_os = "windows") {
+        assert_eq!(compact.unwrap(), WindowsGpuMemory::MemoryUsage);
+        assert_eq!(windows_gpu_memory(&json!({"windows_gpu_memory":"performance"})).unwrap(), WindowsGpuMemory::Performance);
+        for invalid in [Value::Null, json!(true), json!("balanced")] {
+            assert!(windows_gpu_memory(&json!({"windows_gpu_memory":invalid})).unwrap_err().starts_with("WINDOWS_GPU_MEMORY_INVALID"));
+        }
+    } else {
+        assert!(compact.unwrap_err().starts_with("WINDOWS_GPU_MEMORY_UNSUPPORTED"));
+    }
+}
 // Keep development observation bounded during indefinitely running players.
 #[derive(Default, Serialize)]
 struct SampleWindow {
@@ -430,6 +457,7 @@ fn emit_ready(package_sha256: &str, renderer: &render::Renderer) {
 }
 
 struct App {
+    gpu_memory: WindowsGpuMemory,
     input_replay: Option<replay::InputSequence>,
     save: save::SaveFile,
     replay_pending_presentation: bool,
@@ -578,6 +606,7 @@ impl App {
         let presentation: Value = package.files.get("content/presentation.json")
             .map(|bytes| serde_json::from_slice(bytes)).transpose()
             .map_err(|e| e.to_string())?.unwrap_or_else(|| json!({}));
+        let gpu_memory = windows_gpu_memory(&presentation)?;
         let spatial_backend = settings.spatial_backend.as_deref()
             .or_else(|| presentation.get("spatial_backend").and_then(Value::as_str)).unwrap_or("cpu");
         replay::validate_spatial_backend(settings.input_sequence.is_some(),spatial_backend)?;
@@ -619,6 +648,7 @@ impl App {
         save.persist(&runtime)?;
         let audio = audio::NativeAudio::new(&package);
         Ok(Self {
+            gpu_memory,
             input_replay,
             save,
             replay_pending_presentation: false,
@@ -662,6 +692,9 @@ impl App {
     }
     /// Takes over the window and renderer that a startup screen or `resumed` opened.
     fn adopt(&mut self, window: Arc<Window>, mut renderer: render::Renderer) -> R<()> {
+        if renderer.memory_profile != self.gpu_memory {
+            return Err("WINDOWS_GPU_MEMORY_MISMATCH: startup and game device settings differ".into());
+        }
         renderer.lod_enabled = !self.settings.disable_lod;
         let size = window.inner_size();
         replay::update_runtime_viewport(&mut self.runtime, self.input_replay.is_some(), size.width, size.height)?;
@@ -701,6 +734,13 @@ impl App {
         Ok(())
     }
     fn finish(&mut self) {
+        // Read the renderer's pool before report capture allocates its own
+        // render target and staging buffer. This is not process memory or VRAM.
+        let gpu_allocator = if self.report.is_some() {
+            self.renderer.as_ref().and_then(render::Renderer::gpu_allocator_report)
+        } else {
+            None
+        };
         if let Some(dir) = self
             .settings
             .capture_dir
@@ -727,6 +767,12 @@ impl App {
         value["save"] = self.save.report();
         value["error_policy"] = recovery::report(self.error_policy.0.as_ref(), self.error_policy.1, self.snapshot.recovered_errors.as_ref());
         value["sprite_resources"] = r.map(|r|r.sprite_resource_report()).unwrap_or(Value::Null);
+        value["windows_gpu_memory"] = if cfg!(target_os = "windows") {
+            json!(r.map(|r| r.memory_profile))
+        } else {
+            Value::Null
+        };
+        value["gpu_allocator"] = json!(gpu_allocator);
         if let Some(replay) = &self.input_replay {
             value["input_replay"] = replay.report();
             value["input_replay"]["successful_presentations"] = json!(self.drawn);
@@ -782,7 +828,7 @@ impl ApplicationHandler for App {
                     .map_err(|e| e.to_string())?,
             );
             let renderer =
-                pollster::block_on(render::Renderer::new(window.clone(), &self.package))?;
+                pollster::block_on(render::Renderer::new(window.clone(), &self.package, self.gpu_memory))?;
             Ok((window, renderer))
         })();
         if let Err(e) = result.and_then(|(window, renderer)| self.adopt(window, renderer)) {
@@ -1076,6 +1122,13 @@ pub fn desktop() -> R<()> {
         descriptor["raster"]["projected_raster"]=json!({"omitted":"native_host_raster","explicit":"unsupported_package_admission","before_runtime_or_gpu":true});
         descriptor["raster"]["projected_material_profile"]=json!({"omitted":"legacy_unchanged","explicit":"unsupported_package_admission","snapshot":"unsupported_before_GPU_prepare"});
         descriptor["spatial"] = json!({"api_version":1,"backends":["cpu","wgpu"],"default":"cpu","configured_by":"player.presentation.json:spatial_backend or --spatial-backend cpu|gpu|auto"});
+        if cfg!(target_os = "windows") {
+            descriptor["windows_gpu_memory"] = json!({
+                "config_key": WindowsGpuMemory::CONFIG_KEY,
+                "profiles": [WindowsGpuMemory::Performance, WindowsGpuMemory::MemoryUsage],
+                "default": WindowsGpuMemory::default(),
+            });
+        }
         println!("{descriptor}");
         return Ok(());
     }

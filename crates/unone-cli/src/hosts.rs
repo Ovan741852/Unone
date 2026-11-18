@@ -240,6 +240,9 @@ pub enum JobMode {
 #[derive(Default, serde::Deserialize, serde::Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct PresentationSettings {
+    /// Allocation policy for the Windows wgpu device. Other exports omit it.
+    #[serde(default, skip_serializing_if = "Option::is_none", deserialize_with = "unone_engine::WindowsGpuMemory::deserialize_declared")]
+    pub windows_gpu_memory: Option<unone_engine::WindowsGpuMemory>,
     #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="declared_ui_text_atlas_size")]
     pub ui_text_atlas_size: Option<u32>,
     #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="texture_cache::declared")]
@@ -557,6 +560,10 @@ pub fn inspect_targets() -> Vec<Value> {
     catalog()
         .iter()
         .map(|host| {
+            let mut presentation_overlay_keys = host.presentation_overlay_keys.to_vec();
+            if host.id == "windows" {
+                presentation_overlay_keys.push(unone_engine::WindowsGpuMemory::CONFIG_KEY);
+            }
             json!({
                 "id": host.id,
                 "status": host.status,
@@ -568,7 +575,7 @@ pub fn inspect_targets() -> Vec<Value> {
                 "decoders": host.decoders,
                 "export_blocked_systems": host.export_blocked_systems,
                 "runtime_blocked_systems": host.runtime_blocked_systems,
-                "presentation_overlay_keys": host.presentation_overlay_keys,
+                "presentation_overlay_keys": presentation_overlay_keys,
                 "projected_raster": projected_raster::capability(matches!(host.family,"web-wasm"|"webview-wraps-web")),
                 "physical_input": physical_input::capability(matches!(host.family,"web-wasm"|"webview-wraps-web")),
                 "projected_material_profile": projected_frame::capability(matches!(host.family,"web-wasm"|"webview-wraps-web")),
@@ -658,6 +665,28 @@ pub fn native_wgpu_export_gate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn windows_gpu_memory_is_an_explicit_typed_windows_setting() {
+        let defaults = serde_json::to_value(PresentationSettings::default()).unwrap();
+        assert!(defaults.get("windows_gpu_memory").is_none());
+        for profile in ["performance", "memory_usage"] {
+            let settings: PresentationSettings =
+                serde_json::from_value(json!({"windows_gpu_memory":profile})).unwrap();
+            assert_eq!(settings.windows_gpu_memory.unwrap().as_str(), profile);
+            assert_eq!(serde_json::to_value(settings).unwrap()["windows_gpu_memory"], profile);
+        }
+        for invalid in [json!(null), json!(true), json!("auto"), json!({})] {
+            assert!(serde_json::from_value::<PresentationSettings>(
+                json!({"windows_gpu_memory":invalid})
+            ).is_err());
+        }
+        for target in inspect_targets() {
+            let advertises_setting = target["presentation_overlay_keys"].as_array().unwrap()
+                .iter().any(|key| key == "windows_gpu_memory");
+            assert_eq!(advertises_setting, target["id"] == "windows");
+        }
+    }
 
     #[test]
     fn ui_text_atlas_is_optional_validated_official_web_only() {

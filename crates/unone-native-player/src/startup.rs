@@ -10,7 +10,7 @@ use crate::{App, Package, PackageLoader, R, Settings, save};
 use base64::Engine;
 use resvg::usvg;
 use std::{path::PathBuf, sync::Arc, thread::JoinHandle, time::{Duration, Instant}};
-use unone_engine::{StartupTheme, hex_color};
+use unone_engine::{StartupTheme, WindowsGpuMemory, hex_color};
 #[cfg(target_os = "windows")]
 use winit::platform::windows::WindowAttributesExtWindows;
 use winit::{application::ApplicationHandler, event::WindowEvent, event_loop::ActiveEventLoop, window::{Window, WindowId}};
@@ -132,11 +132,10 @@ impl Look {
         Self { theme, logo: data_uri("image/svg+xml", svg.as_bytes()), size: DEFAULT_LOGO_SIZE, project_logo: false }
     }
     /// `file` reads a hash-verified package file by its package path.
-    pub(crate) fn load(presentation: Option<&[u8]>, mut file: impl FnMut(&str) -> R<Vec<u8>>) -> R<Self> {
-        let presentation: serde_json::Value = match presentation {
-            Some(bytes) => serde_json::from_slice(bytes).map_err(|e| format!("NATIVE_PRESENTATION_INVALID: {e}"))?,
-            None => serde_json::Value::Null,
-        };
+    pub(crate) fn load(presentation: Option<&[u8]>, file: impl FnMut(&str) -> R<Vec<u8>>) -> R<Self> {
+        Self::from_presentation(&read_presentation(presentation)?, file)
+    }
+    fn from_presentation(presentation: &serde_json::Value, mut file: impl FnMut(&str) -> R<Vec<u8>>) -> R<Self> {
         let startup = &presentation["startup"];
         let theme = StartupTheme::for_background(startup["background"].as_str())?;
         let Some(path) = startup["logo"].as_str() else { return Ok(Self::default_logo(theme)) };
@@ -158,6 +157,13 @@ impl Look {
             return Err(format!("STARTUP_LOGO_FORMAT_UNSUPPORTED: {path}"));
         };
         Ok(Self { theme, logo, size, project_logo: true })
+    }
+}
+
+fn read_presentation(bytes: Option<&[u8]>) -> R<serde_json::Value> {
+    match bytes {
+        Some(bytes) => serde_json::from_slice(bytes).map_err(|e| format!("NATIVE_PRESENTATION_INVALID: {e}")),
+        None => Ok(serde_json::Value::Null),
     }
 }
 
@@ -318,7 +324,7 @@ impl PainterGpu {
 }
 
 impl Painter {
-    /// Forget GPU objects of a device that is gone (Android suspend).
+    /// Drop startup-only GPU objects once the device or startup screen is retired.
     pub(crate) fn reset(&mut self) { self.gpu = None; }
     pub(crate) fn draw(&mut self, target: Target<'_>, scale: f64, screen: &Screen, look: &Look, fonts: &mut Fonts) -> R<()> {
         let [width, height] = [target.config.width.max(1), target.config.height.max(1)];
@@ -422,6 +428,7 @@ pub(crate) struct Launcher {
     launch: Option<(Settings, Option<PathBuf>, Instant, save::Store)>,
     size: [u32; 2],
     disable_lod: bool,
+    gpu_memory: WindowsGpuMemory,
     look: Look,
     fonts: Fonts,
     screen: Screen,
@@ -442,9 +449,11 @@ impl Launcher {
         let fonts = Fonts::load();
         let mut screen = Screen::new();
         screen.start("content");
-        let opened = (|| -> R<(PackageLoader<Reader>, Look)> {
+        let opened = (|| -> R<(PackageLoader<Reader>, Look, WindowsGpuMemory)> {
             let mut loader = PackageLoader::open(read)?;
             let presentation = loader.file("content/presentation.json")?;
+            let presentation = read_presentation(presentation.as_deref())?;
+            let gpu_memory = crate::windows_gpu_memory(&presentation)?;
             if let Some(project) = loader.file("content/project.json")? {
                 #[derive(serde::Deserialize, Default)]
                 struct Head { #[serde(default)] config: Config }
@@ -456,16 +465,16 @@ impl Launcher {
                     settings.height = Some(display.height.get());
                 }
             }
-            let look = Look::load(presentation.as_deref(), |path| loader.file(path)?.ok_or_else(|| format!("NATIVE_FILE_MISSING: {path}")))?;
-            Ok((loader, look))
+            let look = Look::from_presentation(&presentation, |path| loader.file(path)?.ok_or_else(|| format!("NATIVE_FILE_MISSING: {path}")))?;
+            Ok((loader, look, gpu_memory))
         })();
         let size = [settings.width.unwrap_or(1280), settings.height.unwrap_or(720)];
         let disable_lod = settings.disable_lod;
-        let (loader, look, stage, error) = match opened {
-            Ok((loader, look)) => (Some(loader), look, Stage::Content, None),
-            Err(error) => { screen.fail(&error); (None, Look::unone(), Stage::Failed, Some(error)) }
+        let (loader, look, gpu_memory, stage, error) = match opened {
+            Ok((loader, look, gpu_memory)) => (Some(loader), look, gpu_memory, Stage::Content, None),
+            Err(error) => { screen.fail(&error); (None, Look::unone(), WindowsGpuMemory::default(), Stage::Failed, Some(error)) }
         };
-        Self { loader, launch: Some((settings, report, boot, store)), size, disable_lod, look, fonts, screen, stage, window: None, gpu: None,
+        Self { loader, launch: Some((settings, report, boot, store)), size, disable_lod, gpu_memory, look, fonts, screen, stage, window: None, gpu: None,
             painter: Painter::default(), package: None, app: None, renderer: None, error }
     }
     /// The startup error, or the game's, once the event loop has ended.
@@ -476,7 +485,7 @@ impl Launcher {
         let Some(window) = &self.window else { return };
         if self.gpu.is_none() && self.renderer.is_none() {
             // A renderer that failed to build took the context with it; open another for the error.
-            match pollster::block_on(Gpu::new(window.clone())) { Ok(gpu) => { self.gpu = Some(gpu); self.painter.reset(); } Err(_) => return }
+            match pollster::block_on(Gpu::new(window.clone(), self.gpu_memory)) { Ok(gpu) => { self.gpu = Some(gpu); self.painter.reset(); } Err(_) => return }
         }
         let target = match (&self.renderer, &self.gpu) { (Some(renderer), _) => renderer.target(), (None, Some(gpu)) => gpu.target(), _ => return };
         if let Err(error) = self.painter.draw(target, window.scale_factor(), &self.screen, &self.look, &mut self.fonts) {
@@ -524,6 +533,9 @@ impl Launcher {
                 let window = self.window.clone().ok_or("NATIVE_STARTUP_STATE")?;
                 let renderer = self.renderer.take().ok_or("NATIVE_STARTUP_STATE")?;
                 self.app.as_mut().ok_or("NATIVE_STARTUP_STATE")?.adopt(window, renderer)?;
+                // Running events now go to App, which owns its own fault screen.
+                // wgpu keeps submitted startup resources alive until GPU work retires.
+                self.painter.reset();
                 self.stage = Stage::Running;
             }
             Stage::Running | Stage::Failed => {}
@@ -553,7 +565,7 @@ impl ApplicationHandler for Launcher {
             }
         }
         if self.gpu.is_none() && self.renderer.is_none() && let Some(window) = &self.window {
-            match pollster::block_on(Gpu::new(window.clone())) {
+            match pollster::block_on(Gpu::new(window.clone(), self.gpu_memory)) {
                 Ok(gpu) => { self.gpu = Some(gpu); self.painter.reset(); }
                 Err(error) => { self.error = Some(error); event_loop.exit(); return; }
             }

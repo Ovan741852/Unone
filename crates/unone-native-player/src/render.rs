@@ -1,6 +1,6 @@
 use crate::Package;
 use std::{collections::{BTreeMap, HashMap}, sync::Arc};
-use unone_engine::WorldSnapshot;
+use unone_engine::{WindowsGpuMemory, WorldSnapshot};
 use wgpu::util::DeviceExt;
 use winit::window::Window;
 type R<T> = Result<T, String>;
@@ -694,9 +694,10 @@ pub struct Gpu {
     config: wgpu::SurfaceConfiguration,
     format: wgpu::TextureFormat,
     name: String,
+    memory_profile: WindowsGpuMemory,
 }
 impl Gpu {
-    pub async fn new(window: Arc<Window>) -> R<Self> {
+    pub async fn new(window: Arc<Window>, memory_profile: WindowsGpuMemory) -> R<Self> {
         let instance = wgpu::Instance::default();
         let surface = instance
             .create_surface(window.clone())
@@ -718,7 +719,10 @@ impl Gpu {
                 required_limits: wgpu::Limits::downlevel_defaults()
                     .using_resolution(adapter.limits()),
                 experimental_features: wgpu::ExperimentalFeatures::disabled(),
-                memory_hints: wgpu::MemoryHints::Performance,
+                memory_hints: match memory_profile {
+                    WindowsGpuMemory::Performance => wgpu::MemoryHints::Performance,
+                    WindowsGpuMemory::MemoryUsage => wgpu::MemoryHints::MemoryUsage,
+                },
                 trace: wgpu::Trace::Off,
             })
             .await
@@ -743,7 +747,7 @@ impl Gpu {
             desired_maximum_frame_latency: 2,
         };
         surface.configure(&device, &config);
-        Ok(Self { surface, adapter, device, queue, config, format, name })
+        Ok(Self { surface, adapter, device, queue, config, format, name, memory_profile })
     }
     pub fn target(&self) -> Target<'_> {
         Target { device: &self.device, queue: &self.queue, surface: &self.surface, config: &self.config }
@@ -763,6 +767,7 @@ pub struct Target<'a> {
     pub config: &'a wgpu::SurfaceConfiguration,
 }
 pub struct Renderer {
+    pub(crate) memory_profile: WindowsGpuMemory,
     projected:crate::projected::Projected,
     world_visible:bool,
     render_pipeline: Option<PipelineFrame>,
@@ -1358,13 +1363,22 @@ impl Renderer {
     pub fn target(&self) -> Target<'_> {
         Target { device: &self.device, queue: &self.queue, surface: &self.surface, config: &self.config }
     }
-    pub async fn new(window: Arc<Window>, package: &Package) -> R<Self> {
-        Self::with_gpu(Gpu::new(window).await?, package)
+    pub async fn new(window: Arc<Window>, package: &Package, memory_profile: WindowsGpuMemory) -> R<Self> {
+        Self::with_gpu(Gpu::new(window, memory_profile).await?, package)
+    }
+    pub(crate) fn gpu_allocator_report(&self) -> Option<serde_json::Value> {
+        let allocator = self.device.generate_allocator_report()?;
+        Some(serde_json::json!({
+            "reserved_bytes": allocator.total_reserved_bytes,
+            "allocated_bytes": allocator.total_allocated_bytes,
+            "block_count": allocator.blocks.len(),
+            "startup_texture_allocations": allocator.allocations.iter().filter(|allocation| allocation.name == "startup screen").count(),
+        }))
     }
     /// Builds the pipelines and package resources on a GPU context that may
     /// already have drawn the startup screen.
     pub fn with_gpu(gpu: Gpu, package: &Package) -> R<Self> {
-        let Gpu { surface, adapter, device, queue, config, format, name } = gpu;
+        let Gpu { surface, adapter, device, queue, config, format, name, memory_profile } = gpu;
         // Explicit "antialias": true selects 4x MSAA for the world and sprite
         // passes, fixed until relaunch like the Web context option. An adapter
         // without 4x support for these formats keeps single sampling.
@@ -1733,6 +1747,7 @@ impl Renderer {
         let sprite_budget=crate::sprite_resources::Budget::from_plan(package.files.get("content/image-assets.json").map(Vec::as_slice))?;
         let texture_estimates=texture_bytes.clone();
         Ok(Self {
+            memory_profile,
             projected,
             world_visible:true,
             render_pipeline: None,

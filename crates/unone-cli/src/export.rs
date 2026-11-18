@@ -251,6 +251,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         );
     }
     let mut presentation = append_presentation(project, &mut files)?;
+    presentation.windows_gpu_memory = None;
     let error_policy = resolve_error_policy(&mut presentation, &mut files, development)?;
     let font_subset = match game_text {
         Some(text) => crate::font_subset::apply(project, &presentation.ui, text, &mut files, development)?,
@@ -573,6 +574,22 @@ mod tests {
         let legacy_output = directory.path().join("legacy");
         web_with_templates(directory.path(), &legacy_output, Some(&runtime), false, &repo).unwrap();
         assert!(legacy_output.join("index.html").exists());
+    }
+
+    #[test]
+    fn web_export_does_not_ship_a_shared_projects_windows_gpu_memory_profile() {
+        let project = tempfile::tempdir().unwrap();
+        let (runtime, repo, descriptor) = package_export_fixture(project.path());
+        fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
+        fs::write(project.path().join("project.unone.json"), br#"{"name":"shared profile fixture","entry_script":"main.luau"}"#).unwrap();
+        fs::write(project.path().join("main.luau"), "return {start=function()end,update=function()end}").unwrap();
+        let default = project.path().join("default");
+        web_with_templates(project.path(), &default, Some(&runtime), false, &repo).unwrap();
+        fs::write(project.path().join("player.presentation.json"), br#"{"windows_gpu_memory":"memory_usage"}"#).unwrap();
+        let shared = project.path().join("with-windows-profile");
+        web_with_templates(project.path(), &shared, Some(&runtime), false, &repo).unwrap();
+        assert_eq!(fs::read(default.join("content/presentation.json")).unwrap(),
+            fs::read(shared.join("content/presentation.json")).unwrap());
     }
 
     #[test]
