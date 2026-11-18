@@ -17,6 +17,23 @@ function setup(routes={}){
 }
 const pointer={pointerId:8,pointerType:'mouse',button:0,buttons:1,clientX:35,clientY:30,shiftKey:true};
 
+test('host resume never cancels a separate presentation or manual pause',()=>{
+ const s=setup();s.router.activate();s.router.setPaused(true);
+ for(let i=0;i<2;i++){s.win.emit('unone-host-pause');s.win.emit('unone-host-pause');s.win.emit('unone-host-resume');}
+ assert.equal(s.router.report().admission,'suspended');
+ s.win.emit('keydown',{code:'KeyW',location:0,repeat:false,isComposing:false});s.canvas.emit('pointerdown',pointer);
+ s.doc.hidden=true;s.doc.emit('visibilitychange');s.doc.hidden=false;s.doc.emit('visibilitychange');
+ assert.equal(s.router.report().admission,'suspended');
+ s.router.setPaused(false);assert.equal(s.router.report().admission,'active');
+ s.win.emit('keydown',{code:'KeyW',location:0,repeat:true,isComposing:false});
+ const rows=s.rows(),tail=rows.filter(e=>e.kind==='key');assert.equal(tail.length,1);assert.equal(tail.at(-1).route,'host_ui');assert.equal(rows.filter(e=>e.kind==='pointer').length,0);s.router.dispose();
+});
+test('clearing presentation pause while host paused waits for host resume',()=>{
+ const s=setup();s.router.activate();s.router.setPaused(true);s.win.emit('unone-host-pause');s.router.setPaused(false);
+ assert.equal(s.router.report().admission,'suspended');s.win.emit('keydown',{code:'KeyW',location:0,repeat:false,isComposing:false});
+ s.win.emit('unone-host-resume');assert.equal(s.router.report().admission,'active');assert.equal(s.rows().filter(e=>e.kind==='key').length,0);s.router.dispose();
+});
+
 test('ordered canvas owns browser touch actions and restores only its own inline value',()=>{
  const s=setup();assert.equal(s.canvas.style.getPropertyValue('touch-action'),'none');
  s.router.dispose();assert.equal(s.canvas.style.getPropertyValue('touch-action'),'');

@@ -336,7 +336,7 @@ function configureAtomicFrame(settings){
  atomicPreflight=createUiAssetPreflight({acquire:id=>imageAssets.acquire(id),onChange:redraw});
  atomicWait=createUiFrameWait({document,window,labels:settings.labels,isComposing:()=>textInputs.report().composing,
   onEnter(){orderedRouter?.setPaused(true);scheduler?.pause();atomicClock.begin();input.releaseNonText();uiRenderer.releaseAll();uiScroll.cancel();releaseLegacyPointer();},
-  onLeave(){clearAtomicRetry();atomicClock.end();if(!frozen&&!atomicHostPaused){orderedRouter?.setPaused(false);scheduler?.resume();}},
+  onLeave(){clearAtomicRetry();atomicClock.end();orderedRouter?.setPaused(frozen);if(!frozen&&!atomicHostPaused)scheduler?.resume();},
   onRetry(){atomicPreflight.release();uiRenderer.invalidateAssets();cursorHost.invalidateAssets();redraw();},onReload(){location.reload();}});
  atomicFrame=createAtomicFramePresenter({transaction:renderer.frameTransaction,transactionSnapshot:value=>value.display,
   prepare(value){
@@ -438,7 +438,7 @@ canvas.addEventListener('pointerdown',e=>{if(!orderedRouter)legacyPointer.route(
 canvas.addEventListener('pointermove',e=>{if(!orderedRouter)legacyPointer.route(e,'move');});canvas.addEventListener('pointerup',e=>{if(!orderedRouter)legacyPointer.route(e,'up');});canvas.addEventListener('pointercancel',e=>{if(!orderedRouter)legacyPointer.route(e,'cancel');});
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();});
-window.addEventListener('unone-host-pause',()=>{atomicHostPaused=true;atomicClock?.setEligible(false);textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{atomicHostPaused=false;atomicClock?.setEligible(!document.hidden&&!frozen);if(!frozen&&!atomicWait?.isActive())scheduler?.resume();audio?.setVisibility(true);});
+window.addEventListener('unone-host-pause',()=>{atomicHostPaused=true;atomicClock?.setEligible(false);textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{atomicHostPaused=false;atomicClock?.setEligible(!document.hidden&&!frozen);if(!frozen&&!atomicWait?.isActive()){orderedRouter?.setPaused(false);scheduler?.resume();}audio?.setVisibility(true);});
 window.addEventListener('resize',()=>viewportChanged());
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
 window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();errors.dispose();startupAbort.abort();disposeAtomic();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});

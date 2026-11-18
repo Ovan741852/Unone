@@ -76,12 +76,12 @@ function createKeySession({win,queue,common,active,listen,routeKey}){
 }
 export function createOrderedPhysicalRouter({canvas,window:win=window,document:doc=document,queue,nowUs=()=>Math.floor(performance.now()*1000),
  routePointer=()=> 'game',routeKey=()=> 'game',routeWheel=()=> 'game',routeCapture=()=>{},onError=error=>{throw error;}}){
- let ready=false,disposed=false,paused=false,focused=true,gameFocused=true;const listeners=[],previousTabIndex=canvas.tabIndex;canvas.tabIndex=0;
+ let ready=false,disposed=false,paused=false,hostPaused=false,focused=true,gameFocused=true;const listeners=[],previousTabIndex=canvas.tabIndex;canvas.tabIndex=0;
  // This opt-in canvas owns touch gestures; browser page pan/pinch would cancel
  // the Pointer Events before the Luau recognizer could finish them.
  const style=canvas.style,previousTouchAction=style?.getPropertyValue('touch-action')??'',previousTouchPriority=style?.getPropertyPriority('touch-action')??'';
  style?.setProperty('touch-action','none');
- const active=()=>ready&&!disposed&&!paused&&!doc.hidden&&focused&&gameFocused;
+ const active=()=>ready&&!disposed&&!paused&&!hostPaused&&!doc.hidden&&focused&&gameFocused;
  const common=(kind,route='control',origin='browser')=>({kind,route,origin,received_us:nowUs()});
  function listen(target,type,fn,options){
   const wrapped=e=>{if(disposed)return;try{fn(e);}catch(error){
@@ -96,7 +96,7 @@ export function createOrderedPhysicalRouter({canvas,window:win=window,document:d
  }
  function focus(value,scope,reason,origin='browser'){if(!ready)return;queue.append({...common('focus','control',origin),focused:value,scope});if(!value)reset(reason);}
  function beforeDown(){
-  if(!ready||disposed||paused||doc.hidden)return;canvas.focus?.({preventScroll:true});
+  if(!ready||disposed||paused||hostPaused||doc.hidden)return;canvas.focus?.({preventScroll:true});
   const current=doc.hasFocus?.()??focused;
   if(current!==focused){focused=current;focus(current,'window','blur','host_synthetic');}
   if(focused&&!gameFocused){gameFocused=true;focus(true,'game',undefined,'host_synthetic');}
@@ -113,7 +113,7 @@ export function createOrderedPhysicalRouter({canvas,window:win=window,document:d
  listen(canvas,'wheel',wheel,{passive:false});
  listen(win,'blur',()=>{focused=false;focus(false,'window','blur');});listen(win,'focus',()=>{focused=true;focus(true,'window');});
  listen(doc,'visibilitychange',()=>{if(ready&&doc.hidden)reset('hidden');});
- listen(win,'unone-host-pause',()=>{paused=true;if(ready)reset('host_pause');});listen(win,'unone-host-resume',()=>{paused=false;});
+ listen(win,'unone-host-pause',()=>{if(hostPaused)return;hostPaused=true;if(ready)reset('host_pause');});listen(win,'unone-host-resume',()=>{hostPaused=false;});
  listen(doc,'focusin',e=>{const next=!hostTarget(e);if(next===gameFocused)return;gameFocused=next;focus(next,'game','focus_left_game');});
  listen(win,'resize',()=>{if(active())geometry.viewport();});listen(win,'scroll',()=>{if(active())geometry.viewport();},true);
  return{
