@@ -179,3 +179,13 @@ test('authored raster dimensions are verified against sealed image bytes before 
  const result=await prepareWebImageAssets(f.args());const content=JSON.parse(fs.readFileSync(path.join(f.output,'content/image-assets.json')));assert.deepEqual(content.dimensions,f.plan.dimensions);assert.equal(result.image_assets.startup_preflight.required_entries,1);
  const stale=fixture(t);stale.plan.dimensions={'image://fixture/a':{format:'png',width:4,height:3}};write(stale.project,'player.image-assets.json',JSON.stringify(stale.plan));await rejectsBeforeOutput(stale,/AUTHORED_DIMENSIONS_MISMATCH/);
 });
+
+test('publisher preserves explicit scene deferral and rejects assets absent from the scene',async t=>{
+ const f=fixture(t),id='image://fixture/a';const scene={version:1,entities:[{id:'sprite',sprite:{asset:id,visible:false}}]};
+ write(f.project,'scenes/main.scene.json',JSON.stringify(scene));const payload=JSON.parse(f.logical.get('content/project.json').toString());payload.scene=scene;f.logical.set('content/project.json',Buffer.from(JSON.stringify(payload)));f.seal();
+ f.plan.defer_scene_assets=[id];write(f.project,'player.image-assets.json',JSON.stringify(f.plan));await prepareWebImageAssets(f.args());
+ const output=JSON.parse(fs.readFileSync(path.join(f.output,'content/image-assets.json'),'utf8'));assert.deepEqual(output.defer_scene_assets,[id]);
+});
+test('publisher rejects deferred asset which is declared but not used by a scene sprite',async t=>{
+ const f=fixture(t);f.plan.defer_scene_assets=['image://fixture/b'];write(f.project,'player.image-assets.json',JSON.stringify(f.plan));await rejectsBeforeOutput(f,/IMAGE_PRELOAD_DEFER_NOT_SCENE_SPRITE/);
+});

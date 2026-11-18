@@ -115,6 +115,20 @@ fails startup. Automatic scene-sprite preparation remains a separate, potentiall
 partial convenience. Budgets estimate decoded RGBA image storage; they do not
 raise the renderer's GPU texture-cache budget or represent total driver memory.
 
+### Defer explicit scene-sprite assets
+
+The optional `defer_scene_assets` array names declared texture2d assets used by
+sprite components in the main scene. The publisher and browser reject unknown,
+duplicate, non-image or non-scene IDs. Each named ID is excluded from the
+*automatic scene startup prefetch*; hiding a sprite alone never opts it out.
+Explicit `startup` groups remain required and override deferral. An asset is
+still available on demand via the ordinary scene, UI, image-group or sprite
+resource APIs, and a pending or failed on-demand load must be handled by the
+project. Deferral does not prove a future GPU submission is ready. Maximum
+4096 unique IDs; omit the field for the previous behavior. Use `game schema
+image-assets` for the authoring shape; publisher and broker apply additional
+cross-reference and encoding checks.
+
 ### Publish after host integration
 
 CLI 10 does not automatically apply this sidecar. Use Node.js 18 or newer and

@@ -2165,6 +2165,14 @@
       ],
       "type": "object"
     },
+    "SpriteHostSupport": {
+      "enum": [
+        "unknown",
+        "supported",
+        "unsupported"
+      ],
+      "type": "string"
+    },
     "SpriteSheet": {
       "additionalProperties": false,
       "description": "A grid of equally sized cells covering the whole texture.",
@@ -2502,6 +2510,11 @@
       },
       "description": "Modules the entry script may `require`, keyed by path relative to the\nentry script's directory (\"world/terrain.luau\"), as source text.",
       "type": "object"
+    },
+    "sprite_resource_host": {
+      "$ref": "#/$defs/SpriteHostSupport",
+      "default": "unknown",
+      "description": "Sprite resource feedback capability, declared independently from image groups."
     },
     "viewport_aspect": {
       "default": null,
