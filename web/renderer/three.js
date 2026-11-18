@@ -15,7 +15,7 @@ import {createEffects} from './effekseer.js';
 import { compareSpriteEntities, worldOf } from "../shared/webgpu-snapshot.js";
 import { syncSpriteCell } from "./sprite-cells.js";
 import {createSpriteResourcePool,parseSpriteResourceBudget} from './sprite-resources.js';
-import {createSpritePresentation} from './sprite-presentation.js';
+import {createSpritePresentation,retryableWorldImageError} from './sprite-presentation.js';
 import {heightfieldEntries,createHeightfieldRenderer} from '../shared/heightfields.js';
 import {configureTexture,createPerspectiveCamera} from './presentation3d.js';
 import {createProjectedRenderer,assertProjectedBackend} from './projected.js';
@@ -273,7 +273,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   spriteResources=backend==='webgl'&&options.getImageAssets&&options.getAssetCatalog?createSpriteResourcePool({THREE,renderer,textureCache,
     getCatalog:options.getAssetCatalog,getImages:options.getImageAssets,budget:options.spriteResourceBudget,backend,linkLoss,
     onReset:()=>spritePresentation?.reset(),withPreparationTargets:compile=>bloom?bloom.withWorldPreparationTargets(compile):compile()}):null;
-  if(spriteResources)spritePresentation=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:spriteResources,legacy:drawLegacySprite});
+  if(spriteResources)spritePresentation=createSpritePresentation({THREE,root,geometry,records,recordFor,resources:spriteResources,legacy:drawLegacySprite,retainFailures:transactional});
   const heightfields = createHeightfieldRenderer(THREE,world3d,textureFor,lighting);
   const curvature = createWorldCurvature(),rectSize = new THREE.Vector2();
   const dataTextures = createDataTextures(THREE,{memory:options.instanceMemory});
@@ -639,6 +639,21 @@ export async function createThreeRenderer(canvas, options = {}) {
     return DRAW_COMPLETED;
   }
 
+  function worldImageFailure(){
+    if(!screenFrame)return null;
+    const failure=spritePresentation?.worldImageFailure();if(failure)return failure;
+    for(const record of textureRecords.values())if(record.lastUsed===textureCache.frame&&record.state==='error'&&retryableWorldImageError(record.error))return String(record.error?.message??record.error);
+    return null;
+  }
+  function retryFailedWorldImages(){
+    if(!screenFrame)return 0;
+    let count=spritePresentation?.retryFailedImages()??0;
+    for(const [id,record]of textureRecords)if(record.state==='error'&&retryableWorldImageError(record.error)){
+      record.discarded=true;textureRecords.delete(id);textureCache.untrackOwner(id);
+      const lease=record.imageLease;record.imageLease=null;record.texture?.dispose();record.texture=null;lease?.release();count++;
+    }
+    return count;
+  }
   function clearTextures() {
     spriteResources?.public.reset();
     if(frameProfile)startupPresentation?.invalidate();
@@ -718,6 +733,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     spriteResources:spriteResources?.public??Object.freeze({prepare(){throw Error('SPRITE_RESOURCE_BACKEND_UNSUPPORTED');},reset(){},takeUpdates(){return {resources:[],appearances:[]};}}),
     async ready() { await Promise.all([...meshAssets.values(),...textureRecords.values()].map(r=>r.promise));await spriteResources?.ready(); for(const r of [...meshAssets.values(),...textureRecords.values()]) if(r.error) throw r.error; },
     clearTextures,
+    worldImageFailure,retryFailedWorldImages,
     attachPresentation,
     dispose,
     usesGpuSprites: true,
