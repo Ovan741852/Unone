@@ -8,20 +8,22 @@ test('developer mutation is fenced during wait; opt-in step and manual input rem
  const line=name=>{const match=source.match(new RegExp(`^(?:async )?function ${name}\\([^\\n]+$`,'m'));assert(match,`missing ${name}`);return match[0];};
  const calls=[],snapshot={world:{frame:7,entities:{},observations:{}}};let waiting=true;
  const context={atomicWait:{isActive:()=>waiting},atomicFrame:{},profiler:null,tickFlight:null,manualInput:null,
-  advance:async()=>{calls.push('tick');},backend:{request:async request=>{calls.push(request.kind==='developer'?request.request.method:request.kind);return {observation:snapshot};}},acceptSnapshot(){}};
+  advance:async()=>{calls.push('tick');},backend:{request:async request=>{calls.push(request.kind==='developer'?request.request.method:request.kind);return {observation:snapshot,tools:[{id:'inspect'}]};}},acceptSnapshot(){}};
  vm.createContext(context);vm.runInContext(['assertPresentationReady','developerStep','tickOnce','coreRequest','queueDeveloperInput','setTransport','restart'].map(line).join('\n'),context);
  const host={getSnapshot:()=>snapshot,getPaused:()=>true,tick:context.developerStep,coreRequest:context.coreRequest,queueInput:context.queueDeveloperInput,acceptSnapshot(){},draw(){}};
  const api=createDeveloperAPI(host,{console:()=>[],network:()=>[],heap:()=>null});
  for(const request of [{method:'step'},{method:'tools.invoke',id:'probe',revision:1},{method:'input',frame:{actions:{W:true}}}]){
   const result=await api.request(request);assert.equal(result.ok,false);assert.equal(result.diagnostics[0].code,'PRESENTATION_WAIT_ACTIVE');
  }
+ const inspectDuringWait=await api.request({method:'tools.list'});assert.equal(inspectDuringWait.ok,true);assert.equal(inspectDuringWait.value[0].id,'inspect');
  assert(!calls.includes('tick'));assert(!calls.includes('invoke'));assert.equal(context.manualInput,null);
  await assert.rejects(context.setTransport('memory'),error=>error.code==='PRESENTATION_WAIT_ACTIVE');
  await assert.rejects(context.restart(),error=>error.code==='PRESENTATION_WAIT_ACTIVE');assert(!calls.includes('transport'));
  waiting=false;const noStep=await api.request({method:'step'});assert.equal(noStep.ok,false);assert.equal(noStep.diagnostics[0].code,'PRESENTATION_STEP_UNSUPPORTED');assert(!calls.includes('tick'));
- assert.equal((await api.request({method:'tools.invoke',id:'probe',revision:1})).ok,true);
+ const noInvoke=await api.request({method:'tools.invoke',id:'probe',revision:1});assert.equal(noInvoke.ok,false);assert.equal(noInvoke.diagnostics[0].code,'PRESENTATION_INVOKE_UNSUPPORTED');assert(!calls.includes('invoke'));
+ const listed=await api.request({method:'tools.list'});assert.equal(listed.ok,true);assert.equal(listed.value[0].id,'inspect');
  const noInput=await api.request({method:'input',frame:{actions:{W:true}}});assert.equal(noInput.diagnostics[0].code,'PRESENTATION_INPUT_UNSUPPORTED');assert.equal(context.manualInput,null);
- context.atomicFrame=null;assert.equal((await api.request({method:'step'})).ok,true);
+ context.atomicFrame=null;assert.equal((await api.request({method:'tools.invoke',id:'probe',revision:1})).ok,true);assert.equal((await api.request({method:'step'})).ok,true);
  assert.equal((await api.request({method:'input',frame:{actions:{W:true}}})).ok,true);assert(calls.includes('tick'));assert(calls.includes('invoke'));assert.equal(context.manualInput.actions.W,true);
 });
 test('queued worker invoke rechecks admission at actual dispatch, including profiling',async()=>{
