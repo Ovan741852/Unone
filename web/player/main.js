@@ -5,7 +5,7 @@ import {createUiTextInputHost} from '../shared/ui-text-input.mjs';
 import {createUiCursorHost,loadCursorImage} from '../shared/ui-cursor.mjs';
 import {createUiScrollHost} from '../shared/ui-scroll.mjs';
 import {createHostInput,createRendererHostActions} from '../shared/host-input.js';
-import {createLegacyPointerRouting,routeBrowserKey,routeBrowserPointer,createGamepadPolling} from '../shared/player-input.js';
+import {createLegacyPointerRouting,routeBrowserKey,routeBrowserPointer,createGamepadPolling,createPresentationWaitInputGuard} from '../shared/player-input.js';
 import {createOrderedPhysicalQueue} from '../shared/ordered-physical-queue.mjs';
 import {createOrderedPhysicalRouter} from '../shared/ordered-physical-router.mjs';
 import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
@@ -59,7 +59,7 @@ const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fa
  return loadCursorImage(new URL(`content/${asset.source}`,document.baseURI).href);
 }});
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null,resourceHost=null,networkHost=null;
-let atomicFrame=null,atomicWait=null,atomicClock=null,atomicHeartbeat=null,atomicPreflight=null,atomicUiSnapshot=null,atomicPendingReady=null,atomicHostPaused=false;
+let atomicFrame=null,atomicWait=null,atomicClock=null,atomicHeartbeat=null,atomicPreflight=null,atomicUiSnapshot=null,atomicPendingReady=null,atomicHostPaused=false,atomicInputGuard=null;
 let atomicDrawing=false,atomicRedraw=false,atomicRetryReady=true,atomicRetryTimer=null,atomicLastOutcome=null,atomicUnsubscribe=null,atomicStartupRetry=null;
 const recoverableWorldAsset=error=>/^(?:MESH_ASSET_FETCH_FAILED:|IMAGE_ASSET_(?:LOAD|HEADER)_FAILED(?::|$))/.test(String(error?.message??error));
 function wakeAtomic(){atomicRetryReady=true;}
@@ -220,7 +220,7 @@ async function advance(presenting){
 async function advanceFrame(pu,presenting){
  const began=performance.now(),browserInput=manualInput==null;
  // Gamepads are polled once per tick (docs/input-gamepad.md).
- if(browserInput)input.setGamepads(gamepadInput.poll());
+ if(browserInput){const pads=gamepadInput.poll();input.setGamepads(atomicInputGuard?atomicInputGuard.filterGamepads(pads):pads);}
  let frame=manualInput??input.consumeFrame();manualInput=null;
  // The earliest browser input this tick consumes; later events wait for the next tick.
  const consumedInput=browserInput?playerCompletion.takeInput?.()??null:null;
@@ -338,11 +338,12 @@ function configureAtomicFrame(settings){
  if(settings.mode!=='pause_offline'||!settings.labels||!renderer.frameTransaction)throw Error('ATOMIC_FRAME_WAIT_UNSUPPORTED: official single-sample transactional renderer required');
  if(snapshot.world.network_commands?.length)throw Error('ATOMIC_FRAME_WAIT_NETWORK_UNSUPPORTED');
  atomicClock=createPresentationWaitClock({wallNow:()=>Date.now(),eligible:!document.hidden&&!atomicHostPaused});
+ atomicInputGuard=createPresentationWaitInputGuard();
  atomicHeartbeat=createPresentationWaitHeartbeat({clock:atomicClock,onError:fail});
  const redraw=()=>{wakeAtomic();if(snapshot&&renderer&&!startupAbort.signal.aborted)queueMicrotask(()=>{if(snapshot&&renderer&&!startupAbort.signal.aborted)try{draw();}catch(error){fail(error);}});};
  atomicPreflight=createUiAssetPreflight({acquire:id=>imageAssets.acquire(id),onChange:redraw});
  atomicWait=createUiFrameWait({document,window,labels:settings.labels,isComposing:()=>textInputs.report().composing,
-  onEnter(){orderedRouter?.setPaused(true);scheduler?.pause();atomicClock.begin();atomicHeartbeat.start();input.releaseNonText();uiRenderer.releaseAll();uiScroll.cancel();releaseLegacyPointer();},
+  onEnter(){orderedRouter?.setPaused(true);scheduler?.pause();atomicClock.begin();atomicHeartbeat.start();atomicInputGuard.begin();input.releaseNonText();uiRenderer.releaseAll();uiScroll.cancel();releaseLegacyPointer();},
   onLeave(){clearAtomicRetry();atomicHeartbeat.stop();atomicClock.end();orderedRouter?.setPaused(frozen);if(!frozen&&!atomicHostPaused)scheduler?.resume();},
   onRetry(){
    const retry=()=>{if(startupAbort.signal.aborted||!atomicWait?.isActive())return;
@@ -451,7 +452,7 @@ function releaseLegacyPointer(){if(!orderedRouter)legacyPointer.release();}
 canvas.addEventListener('pointerdown',e=>{if(!orderedRouter)legacyPointer.route(e,'down');});
 canvas.addEventListener('pointermove',e=>{if(!orderedRouter)legacyPointer.route(e,'move');});canvas.addEventListener('pointerup',e=>{if(!orderedRouter)legacyPointer.route(e,'up');});canvas.addEventListener('pointercancel',e=>{if(!orderedRouter)legacyPointer.route(e,'cancel');});
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
-window.addEventListener('keydown',e=>{if(!orderedRouter&&!atomicWait?.isActive()&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!atomicWait?.isActive()&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();});
+window.addEventListener('keydown',e=>{if(!orderedRouter&&!atomicWait?.isActive()&&!textInputs.routeKey(e,true)&&(!atomicInputGuard||atomicInputGuard.allowKey(e,true)))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!atomicWait?.isActive()&&!textInputs.routeKey(e,false)&&(!atomicInputGuard||atomicInputGuard.allowKey(e,false)))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();});
 window.addEventListener('unone-host-pause',()=>{atomicHostPaused=true;atomicClock?.setEligible(false);textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{atomicHostPaused=false;atomicClock?.setEligible(!document.hidden&&!frozen);if(!frozen&&!atomicWait?.isActive()){orderedRouter?.setPaused(false);scheduler?.resume();}audio?.setVisibility(true);});
 window.addEventListener('resize',()=>viewportChanged());
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});

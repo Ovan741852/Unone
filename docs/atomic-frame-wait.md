@@ -52,3 +52,11 @@ it running during a later frame wait. Read-only inspection, including
 `tools.list`, remains available. Legacy exports without the opt-in retain
 their existing operations. During an active wait, transport changes and
 restart are also rejected until recovery.
+
+After an offline wait, legacy keyboard repeats cannot resurrect a key held
+across the cover. Gamepad buttons and axes already active on the first resumed
+poll stay neutral until each button is released or each axis reaches the
+neutral threshold (0.08), independently per device and control. This guard is
+opt-in with offline frame waits; hosts without the option keep their existing
+keyboard and gamepad behavior. Devices newly connected after that poll are
+treated as new devices.

@@ -73,13 +73,48 @@ export function routeBrowserKey(input,event,down) {
   const target=event.target;
   if(down&&(target?.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(target?.tagName)))return;
   event.preventDefault?.();
-  // Repeats carry no new physical press. In particular, a key still held
-  // across a wait/blur reset must not silently restart gameplay movement.
-  if(down&&event.repeat)return;
   input.queuePhysicalAction(action,down);
   // Existing Web games may explicitly read KeyboardEvent.code. Retain aliases
   // while exposing the native neutral action as the canonical cross-host name.
   if(action!==event.code)input.queuePhysicalAction(event.code,down);
+}
+
+// Used only by hosts that explicitly opt into offline frame waits. Input held
+// during a cover cannot initiate a new action when the cover disappears.
+export function createPresentationWaitInputGuard({neutral=0.08}={}) {
+  if(!Number.isFinite(neutral)||neutral<0||neutral>=1)throw Error('WAIT_INPUT_NEUTRAL_INVALID');
+  const analog=['left_x','left_y','right_x','right_y','left_trigger','right_trigger'];
+  let keyboardBarrier=false,freshKeys=new Set(),samplePads=false,padBlocks=new Map();
+  return {
+    begin(){keyboardBarrier=true;freshKeys=new Set();samplePads=true;padBlocks=new Map();},
+    allowKey(event,down){
+      if(!keyboardBarrier)return true;
+      const code=event.code;
+      if(down){
+        if(event.repeat&&!freshKeys.has(code)){event.preventDefault?.();return false;}
+        if(!event.repeat)freshKeys.add(code);
+      }else freshKeys.delete(code);
+      return true;
+    },
+    filterGamepads(pads){
+      if(samplePads){
+        padBlocks=new Map(pads.map(pad=>[pad.slot,{buttons:new Set(pad.buttons),analog:new Set(analog)}]));
+        samplePads=false;
+      }
+      const present=new Set(pads.map(pad=>pad.slot));
+      for(const slot of padBlocks.keys())if(!present.has(slot))padBlocks.delete(slot);
+      return pads.map(pad=>{
+        const block=padBlocks.get(pad.slot);if(!block)return pad;
+        const pressed=new Set(pad.buttons),out={...pad,buttons:pad.buttons.filter(button=>!block.buttons.has(button))};
+        for(const button of block.buttons)if(!pressed.has(button))block.buttons.delete(button);
+        for(const axis of analog)if(block.analog.has(axis)){
+          const value=pad[axis];out[axis]=0;
+          if(Math.abs(value)<=neutral)block.analog.delete(axis);
+        }
+        return out;
+      });
+    },
+  };
 }
 
 export function routeBrowserPointer(event,kind,handlers) {

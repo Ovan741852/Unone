@@ -14,7 +14,7 @@ const mappings=[...native.slice(native.indexOf('fn key_action('),native.indexOf(
 
 function harness() {
   const canvasEvents=new Map(),windowEvents=new Map(),input=createHostInput(),uiCalls=[],captures=new Set(),released=[];
-  const context=vm.createContext({...helpers,input,snapshot:{},hasWorldPointer:false,audio:null,scheduler:null,frozen:false,orderedRouter:null,atomicWait:null,atomicClock:null,atomicHostPaused:false,document:{hidden:false},textInputs:{pointer:()=>false,routeKey:()=>false,suspend(){}},
+  const context=vm.createContext({...helpers,input,snapshot:{},hasWorldPointer:false,audio:null,scheduler:null,frozen:false,orderedRouter:null,atomicWait:null,atomicClock:null,atomicHostPaused:false,atomicInputGuard:null,document:{hidden:false},textInputs:{pointer:()=>false,routeKey:()=>false,suspend(){}},
     canvas:{getBoundingClientRect:()=>({left:0,top:0,width:200,height:100}),setPointerCapture:id=>captures.add(id),hasPointerCapture:id=>captures.has(id),
       releasePointerCapture:id=>{captures.delete(id);released.push(id);},addEventListener:(name,fn)=>canvasEvents.set(name,fn)},
     window:{addEventListener:(name,fn)=>windowEvents.set(name,fn)},
@@ -31,6 +31,15 @@ function harness() {
   const key=(kind,code)=>windowEvents.get(kind)({code,preventDefault(){}});
   return {input,context,uiCalls,pointer,key,canvasEvents,windowEvents,captures,released,visibility};
 }
+
+test('official legacy key listener preserves normal repeats and blocks only stale atomic-wait repeats',()=>{
+  const h=harness(),fire=(type,repeat=false)=>h.windowEvents.get(type)({code:'KeyW',repeat,preventDefault(){}});
+  fire('keydown');assert.equal(h.input.consumeFrame().actions.W,true);
+  h.input.releaseNonText();fire('keydown',true);assert.equal(h.input.consumeFrame().actions.W,true,'non-opt-in repeat unchanged');
+  h.context.atomicInputGuard=helpers.createPresentationWaitInputGuard();h.context.atomicInputGuard.begin();h.input.releaseNonText();
+  fire('keydown',true);assert.equal(h.input.consumeFrame().actions.W,undefined,'held key does not leak after wait');
+  fire('keyup');fire('keydown');assert.equal(h.input.consumeFrame().actions.W,true,'fresh press resumes');
+});
 
 test('actual official player physical keys match every current native action name',()=>{
   assert.equal(mappings.length,62);
