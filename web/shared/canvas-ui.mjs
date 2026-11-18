@@ -245,7 +245,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
     else if(node.style)paintUiText(target,node,{...bounds,fontFamily,textColor});
     else text(target,node,bounds.x,bounds.y,bounds.width,bounds.height,scale);
   }
-  let gpuTarget={width:0,height:0,scale:null},nodeKeys=[];
+  let gpuTarget={width:0,height:0,scale:null},nodeKeys=[],paintNodeKeys=null;
   function textInput(target,node,bounds){
     const empty=node.text.length===0,style={text_align:'start',vertical_align:'middle',wrap:'none',...(node.style??{})};
     const value={...node,text:empty?(node.placeholder??''):node.text,style};
@@ -312,8 +312,9 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
         if(disposed)throw Error('UI_DISPOSED');}
       if(gpu){
         // One serialization per node serves composition/paint dirty detection.
-        if(compositionChanged){nodeKeys=nodes.map(n=>JSON.stringify(n));const nextKey=nodeKeys.join(''),definitions=nodes.filter(n=>n.kind==='image_batch').map(n=>batches.get(n).definition);
-          if(nextKey!==paintKey||definitions.length!==paintDefinitions.length||definitions.some((d,i)=>d!==paintDefinitions[i]))dirty=true;paintKey=nextKey;paintDefinitions=definitions;}
+        if(compositionChanged){const nextNodeKeys=nodes.map(n=>JSON.stringify(n)),definitions=nodes.filter(n=>n.kind==='image_batch').map(n=>batches.get(n).definition);
+          if(!paintNodeKeys||nextNodeKeys.length!==paintNodeKeys.length||nextNodeKeys.some((key,i)=>key!==paintNodeKeys[i])||definitions.length!==paintDefinitions.length||definitions.some((d,i)=>d!==paintDefinitions[i]))dirty=true;
+          nodeKeys=nextNodeKeys;paintNodeKeys=nextNodeKeys.slice();paintDefinitions=definitions;}
         const changed=dirty;dirty=false;
         if(changed){for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);quadDiagnosticKeys.clear();}
         const result=gpu.draw({nodes,nodeKeys,batches,images:assets,scale,changed,identity:JSON.stringify([fontFamily,textColor]),paintText,hasText,imageError:imageFailure});
@@ -362,6 +363,6 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
     setFont(family){fontFamily=family;dirty=true;},
     invalidateAssets(){retireGpu();generation++;for(const [id,e]of assets)releaseAsset(e,id,'invalidate');assets.clear();loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
     report(){const gpu=canvas?null:getPresenter();return {backend:canvas?'canvas2d':'three.js',...(gpu?{gpu:gpu.metrics()}:{}),nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},
-    dispose(){if(disposed)return;try{retireGpu();router.dispose();disposed=true;generation++;for(const [id,e]of assets)releaseAsset(e,id,'dispose');assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();notifyReady();}finally{assetTrace=null;}},
+    dispose(){if(disposed)return;try{retireGpu();router.dispose();disposed=true;generation++;for(const [id,e]of assets)releaseAsset(e,id,'dispose');assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];paintNodeKeys=null;nodeKeys=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();notifyReady();}finally{assetTrace=null;}},
   };
 }
