@@ -452,9 +452,11 @@ export async function createThreeRenderer(canvas, options = {}) {
     const asset = specs.get(id);
     if (asset?.kind !== 'mesh3d' || !asset.source.endsWith('.mesh.json')) throw new Error(`MESH_DECODER_UNAVAILABLE: ${id}`);
     const record = {geometry:null, material:null, error:null};
-    record.promise = options.loadAssetUrl(asset).then(url => fetch(url)).then(response => {
+    record.promise = options.loadAssetUrl(asset).then(url => fetch(url)).catch(error=>{
+      throw new Error(`MESH_ASSET_FETCH_FAILED: ${id}: ${String(error?.message??error)}`);
+    }).then(response => {
       if(record.discarded||meshAssets.get(id)!==record)return null;
-      if (!response.ok) throw new Error(`MESH_LOAD_FAILED: ${id} (${response.status})`);
+      if (!response.ok) throw new Error(`MESH_ASSET_FETCH_FAILED: ${id} (${response.status})`);
       return response.json();
     }).then(async raw => {
       if(record.discarded||meshAssets.get(id)!==record)return;
@@ -663,6 +665,16 @@ export async function createThreeRenderer(canvas, options = {}) {
     }
   }
 
+  // Retry only network failures for mesh JSON. Live sprite handles, texture
+  // leases and successful mesh records retain their owners and epochs.
+  function retryFailedMeshAssets(){
+    let retired=0;
+    for(const [id,record]of meshAssets)if(String(record.error?.message??'').startsWith('MESH_ASSET_FETCH_FAILED:')){
+      record.discarded=true;meshAssets.delete(id);retired++;
+    }
+    return retired;
+  }
+
   function dispose() {
     screenFrame?.dispose();spriteResources?.dispose();linkLoss.dispose();presentationListeners.clear();
     canvas.removeEventListener('webglcontextlost',rasterLost);canvas.removeEventListener('webglcontextrestored',rasterRestored);
@@ -718,6 +730,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     spriteResources:spriteResources?.public??Object.freeze({prepare(){throw Error('SPRITE_RESOURCE_BACKEND_UNSUPPORTED');},reset(){},takeUpdates(){return {resources:[],appearances:[]};}}),
     async ready() { await Promise.all([...meshAssets.values(),...textureRecords.values()].map(r=>r.promise));await spriteResources?.ready(); for(const r of [...meshAssets.values(),...textureRecords.values()]) if(r.error) throw r.error; },
     clearTextures,
+    retryFailedMeshAssets,
     attachPresentation,
     dispose,
     usesGpuSprites: true,

@@ -60,7 +60,8 @@ const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fa
 }});
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null,resourceHost=null,networkHost=null;
 let atomicFrame=null,atomicWait=null,atomicClock=null,atomicPreflight=null,atomicUiSnapshot=null,atomicPendingReady=null,atomicHostPaused=false;
-let atomicDrawing=false,atomicRedraw=false,atomicRetryReady=true,atomicRetryTimer=null,atomicLastOutcome=null,atomicUnsubscribe=null;
+let atomicDrawing=false,atomicRedraw=false,atomicRetryReady=true,atomicRetryTimer=null,atomicLastOutcome=null,atomicUnsubscribe=null,atomicStartupRetry=null;
+const recoverableWorldAsset=error=>String(error?.message??error).startsWith('MESH_ASSET_FETCH_FAILED:');
 function wakeAtomic(){atomicRetryReady=true;}
 function armAtomicRetry(){atomicRetryReady=false;if(atomicRetryTimer===null)atomicRetryTimer=setTimeout(()=>{atomicRetryTimer=null;wakeAtomic();},250);}
 function clearAtomicRetry(){if(atomicRetryTimer!==null)clearTimeout(atomicRetryTimer);atomicRetryTimer=null;atomicRetryReady=true;}
@@ -110,7 +111,7 @@ function recordSchedulerWake(wake){
 const metrics={};
 const startupAbort=new AbortController();
 const disposeRenderer=createRendererDisposer();
-function disposeAtomic(){clearAtomicRetry();atomicUnsubscribe?.();atomicUnsubscribe=null;canvas.removeEventListener('webglcontextrestored',wakeAtomic);atomicFrame?.dispose();atomicFrame=null;atomicWait?.dispose();atomicWait=null;atomicPreflight?.dispose();atomicPreflight=null;atomicClock?.dispose();atomicClock=null;}
+function disposeAtomic(){clearAtomicRetry();atomicStartupRetry?.();atomicStartupRetry=null;atomicUnsubscribe?.();atomicUnsubscribe=null;canvas.removeEventListener('webglcontextrestored',wakeAtomic);atomicFrame?.dispose();atomicFrame=null;atomicWait?.dispose();atomicWait=null;atomicPreflight?.dispose();atomicPreflight=null;atomicClock?.dispose();atomicClock=null;}
 function fail(error){errors.fatal(error);profiler?.publish();disposePerformanceFeed();startupAbort.abort();disposeAtomic();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
 function publishPhysical(){if(!orderedRouter)return;metrics.physical_input=orderedRouter.report();document.body.dataset.playerPhysicalInput=JSON.stringify(metrics.physical_input);}
 function configurePhysical(){
@@ -293,7 +294,9 @@ async function finishStartup(presentation,kind){
  };
  canvas.addEventListener('webglcontextlost',lost);canvas.addEventListener('webglcontextrestored',restored);
  try{
-  await completeStartupPresentation({draw:()=>draw(null,null,false,'startup'),waitForAssets:()=>Promise.all([renderer.ready(),uiRenderer.ready(),cursorHost.ready(),atomicPreflight?.ready(),atomicPendingReady]),sample,subscribe,
+  await completeStartupPresentation({draw:()=>draw(null,null,false,'startup'),waitForAssets:()=>Promise.all([renderer.ready().catch(error=>{
+    if(!atomicFrame||!recoverableWorldAsset(error))throw error;
+    atomicWait.show('error',error.message);return new Promise(resolve=>{atomicStartupRetry=resolve;});}),uiRenderer.ready(),cursorHost.ready(),atomicPreflight?.ready(),atomicPendingReady]),sample,subscribe,
    commit,signal:startupAbort.signal,onState:state=>{metrics.startup_presentation=state;metrics.raster=renderer.metrics().raster;
     document.body.dataset.playerMetrics=JSON.stringify(metrics);document.body.dataset.playerStartupPresentation=JSON.stringify(state);}});
  }finally{canvas.removeEventListener('webglcontextlost',lost);canvas.removeEventListener('webglcontextrestored',restored);listeners.clear();}
@@ -337,7 +340,7 @@ function configureAtomicFrame(settings){
  atomicWait=createUiFrameWait({document,window,labels:settings.labels,isComposing:()=>textInputs.report().composing,
   onEnter(){orderedRouter?.setPaused(true);scheduler?.pause();atomicClock.begin();input.releaseNonText();uiRenderer.releaseAll();uiScroll.cancel();releaseLegacyPointer();},
   onLeave(){clearAtomicRetry();atomicClock.end();orderedRouter?.setPaused(frozen);if(!frozen&&!atomicHostPaused)scheduler?.resume();},
-  onRetry(){atomicPreflight.release();uiRenderer.invalidateAssets();cursorHost.invalidateAssets();redraw();},onReload(){location.reload();}});
+  onRetry(){atomicPreflight.release();renderer.retryFailedMeshAssets();uiRenderer.invalidateAssets();cursorHost.invalidateAssets();atomicStartupRetry?.();atomicStartupRetry=null;redraw();},onReload(){location.reload();}});
  atomicFrame=createAtomicFramePresenter({transaction:renderer.frameTransaction,transactionSnapshot:value=>value.display,
   prepare(value){
    atomicPendingReady=null;
@@ -346,12 +349,12 @@ function configureAtomicFrame(settings){
    const ui=atomicPreflight.update(atomicUiSnapshot);if(ui.outcome.status!=='completed')return ui.outcome;
    const cursor=cursorHost.prepare(value.snapshot.world.ui_cursor);if(cursor.outcome.status!=='completed'){atomicPendingReady=cursor.ready;cursor.ready?.then(redraw,redraw);return cursor.outcome;}return ui.outcome;
   },
-  drawWorld(value){try{return renderer.draw(value.display);}finally{resourceHost?.collect();}},
+  drawWorld(value){try{return renderer.draw(value.display);}catch(error){if(!recoverableWorldAsset(error))throw error;return {status:'skipped',reason:'world_asset_failed'};}finally{resourceHost?.collect();}},
   drawUi(){return uiRenderer.draw(atomicUiSnapshot,{deferRouting:true});},routeToken:()=>uiRenderer.stagedRoute(),
   commitRoute:token=>uiRenderer.commitRoute(token),abortRoute:token=>uiRenderer.abortRoute(token),
   commitHosts(value){const source=uiPassHidden(value.snapshot)?{...value.snapshot,world:{...value.snapshot.world,ui:null}}:value.snapshot;
    textInputs.draw(uiScroll.draw(source));const cursor=cursorHost.update(value.snapshot.world.ui_cursor);if(cursor.status!=='completed')throw Error('ATOMIC_FRAME_CURSOR_COMMIT_FAILED');},
-  enterWait:outcome=>{atomicWait.show(outcome?.reason?.includes('diagnostic')?'error':'pending',outcome?.reason);armAtomicRetry();},
+  enterWait:outcome=>{atomicWait.show(outcome?.reason?.includes('diagnostic')||outcome?.reason?.includes('failed')?'error':'pending',outcome?.reason);armAtomicRetry();},
   recover:outcome=>{atomicWait.show('error',outcome?.reason);armAtomicRetry();},leaveWait:()=>atomicWait.hide(),
  });
  atomicUnsubscribe=renderer.subscribePresentation?.(wakeAtomic)??null;canvas.addEventListener('webglcontextrestored',wakeAtomic);
