@@ -47,6 +47,11 @@ test('covered input does not submit while an existing IME composition can finish
  assert.equal(s.host.report().focused,'nickname');assert.equal(el.value,'小龍女');s.setBlocked(false);s.key('Enter');
  assert.equal(s.events.filter(e=>e.phase==='submit').length,1);s.host.dispose();
 });
+test('a recovery button keeps native keyboard activation while gameplay input is blocked',()=>{
+ const s=setup();s.draw();s.setBlocked(true);const target={closest:selector=>selector==='[data-unone-frame-wait]'?{}:null};
+ const event=s.win.emit('keydown',{target,code:'Enter',key:'Enter'});assert.equal(event.prevented,undefined);assert.equal(event.stopped,undefined);
+ assert.equal(s.events.filter(e=>e.phase==='submit').length,0);s.host.dispose();
+});
 
 test('text preview preserves native IME draft and focus, and matches a subsequent committed draw',()=>{
  const s=setup();s.draw({text:'原名'});const el=s.sink();el.value='中文';el.setSelectionRange(1,2);el.emit('compositionstart');el.emit('input',{isComposing:true});

@@ -52,6 +52,7 @@ test('presentation wait blocks earlier-registered legacy keyboard, wheel, native
  // The scroll listener is installed before the overlay listener on window.
  let overlayEvents=0;h.win.addEventListener('keydown',()=>overlayEvents++);blocked=true;
  h.win.dispatch('keydown',{code:'ArrowDown'});assert.equal(overlayEvents,1);assert.equal(h.host.report()[0].offset.y,before);
+ const retry={closest:selector=>selector==='[data-unone-frame-wait]'?{}:null};assert.equal(h.win.dispatch('keydown',{target:retry,code:'Enter'}).prevented,undefined);
  wheel(h.canvas,15,85,300);assert.equal(h.host.report()[0].offset.y,before);
  const rail=h.stage.children.find(e=>e.dataset.axis==='y'&&!e.hidden);assert(rail);rail.scrollTop=100;rail.dispatch('scroll');assert.equal(h.host.report()[0].offset.y,before);assert.equal(rail.scrollTop,0);
  const down={pointerId:8,pointerType:'touch',isPrimary:true,clientX:150,clientY:150};
