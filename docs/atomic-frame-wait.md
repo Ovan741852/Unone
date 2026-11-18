@@ -42,3 +42,4 @@ a terminal error. A failed image still retained by another broker owner may
 remain unavailable; repeated failure must not be reported as ready, and the
 player exposes reload as a recovery. The paused scheduler does not advance
 the game while awaiting a retry.
+

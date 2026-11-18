@@ -5,7 +5,7 @@ import {createGpuUi} from './ui-gpu.js';
 import {createAssetCatalog,createImageAssetBroker} from '../shared/asset-encoding.js';
 
 // Actual presenter/Three objects, with no GPU, DOM, raster-quality or GC claim.
-async function fixture({maxTextureSize=8,uiTextAtlasSize,bufferSize=64,atlasNow,getFrameTarget}={}){
+async function fixture({maxTextureSize=8,uiTextAtlasSize,uiTextAtlasIdleMs,bufferSize=64,atlasNow,getFrameTarget}={}){
  const images=new Map(),leases=[],closed=[],surfaces=[],targetCalls=[];let scene=null,renders=0,failPaint=false;
  const catalog=createAssetCatalog({assets:['a','b'].map(id=>({id,kind:'texture2d',source:id+'.png'}))});
  const broker=createImageAssetBroker(catalog,{resolveAssetUrl:a=>a.source,loadImage:async id=>({id,width:2,height:2,close(){closed.push(id);}}),unusedMaxBytes:0,unusedMaxEntries:0});
@@ -15,7 +15,7 @@ async function fixture({maxTextureSize=8,uiTextAtlasSize,bufferSize=64,atlasNow,
  const renderer={autoClear:true,capabilities:{maxTextureSize},getDrawingBufferSize:v=>v.set(bufferSize,bufferSize),getPixelRatio:()=>1,
   getContext:()=>gl,state:{bindTexture(){}},properties:{get:texture=>({__webglTexture:texture})},getScissorTest:()=>false,getRenderTarget:()=>null,getViewport:v=>v.set(0,0,64,64),
   setRenderTarget(value){targetCalls.push(value);},setScissorTest(){},setViewport(){},initTexture(){},render(value){scene=value;renders++;}};
- const ui=createGpuUi(THREE,renderer,{createSurface,uiTextAtlasSize,...(atlasNow?{atlasNow}:{}),...(getFrameTarget?{getFrameTarget}:{})});
+ const ui=createGpuUi(THREE,renderer,{createSurface,uiTextAtlasSize,uiTextAtlasIdleMs,...(atlasNow?{atlasNow}:{}),...(getFrameTarget?{getFrameTarget}:{})});
  const image=id=>({kind:'image',id,asset:id,fit:'stretch',rect:{x:0,y:0,width:10,height:10}});
  // 16px wide against an 8px atlas forces the real dedicated-text path.
  const text=(value='old')=>({kind:'text',id:'label',text:value,rect:{x:0,y:25,width:25,height:25}});
@@ -35,6 +35,25 @@ test('atlas policy defaults to 4096 and opt-in uses 2048 with accurately reporte
    assert.equal(m.dedicated_text_bytes_estimate,0);f.renderer.capabilities.maxTextureSize=1024;f.ui.contextLost();assert.equal(f.ui.metrics().atlas_reserved_bytes_estimate,0);f.draw([f.text()]);assert.equal(f.ui.metrics().atlas_page_size,1024);
   }finally{f.dispose();}
  }
+});
+
+test('short opt-in grace retires only idle pages and rerasterizes them when revisited',async()=>{
+ let clock=0;const f=await fixture({maxTextureSize:256,uiTextAtlasSize:256,uiTextAtlasIdleMs:5000,bufferSize:4096,atlasNow:()=>clock});try{
+  const node=id=>({kind:'text',id,text:id,rect:{x:0,y:0,width:4.8,height:4.8}}),a=node('a'),b=node('b');
+  f.draw([a,b]);const textures=f.meshes.map(sampler),retired=textures.map(watch);f.draw([a]);
+  clock=4999;f.draw([a],false);assert.equal(f.ui.metrics().atlas_pages,2);
+  clock=6000;f.draw([a],false);assert.equal(f.ui.metrics().atlas_pages,1);assert.deepEqual(retired.map(read=>read()),[0,1]);
+  const rasters=f.ui.metrics().text_rasters;f.draw([a,b]);assert.equal(f.ui.metrics().atlas_pages,2);assert(f.ui.metrics().text_rasters>rasters);
+  assert.equal(sampler(f.meshes[0]),textures[0]);assert.notEqual(sampler(f.meshes[1]),textures[1]);assert.equal(f.ui.metrics().atlas_idle_grace_ms,5000);
+ }finally{f.dispose();}
+});
+test('returning before the shorter grace reuses the original page without new text rasterization',async()=>{
+ let clock=0;const f=await fixture({maxTextureSize:256,uiTextAtlasSize:256,uiTextAtlasIdleMs:5000,bufferSize:4096,atlasNow:()=>clock});try{
+  const node=id=>({kind:'text',id,text:id,rect:{x:0,y:0,width:4.8,height:4.8}}),a=node('a'),b=node('b');
+  f.draw([a,b]);const old=f.meshes.map(sampler);f.draw([a]);const rasters=f.ui.metrics().text_rasters;
+  clock=4000;f.draw([a],false);f.draw([a,b]);assert.equal(f.ui.metrics().text_rasters,rasters);
+  assert.deepEqual(f.meshes.map(sampler),old);assert.equal(f.ui.metrics().atlas_retired_pages,0);
+ }finally{f.dispose();}
 });
 
 test('bounded pages repack and oversized 4K text falls back to dedicated storage',async()=>{

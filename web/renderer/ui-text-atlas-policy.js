@@ -5,3 +5,10 @@ export function parseUiTextAtlasSize(value) {
   throw Error('UI_TEXT_ATLAS_SIZE_INVALID: expected a power of two from 256 to 4096');
  return value;
 }
+// The existing ownership checks and one-page-per-sweep rule remain in force.
+export function parseUiTextAtlasIdleMs(value) {
+ if(value===undefined)return 30000;
+ if(!Number.isSafeInteger(value)||value<1000||value>120000)
+  throw Error('UI_TEXT_ATLAS_IDLE_INVALID: expected an integer from 1000 to 120000 milliseconds');
+ return value;
+}

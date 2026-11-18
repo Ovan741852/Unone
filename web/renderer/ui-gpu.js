@@ -11,7 +11,7 @@ import {textPaintBounds} from '../shared/ui-presentation.mjs';
 import {imageBatchSnappedRect} from '../shared/ui-image-batch.mjs';
 import {assetCatalogSpecs} from '../shared/asset-encoding.js';
 import {isSuspectedContextLoss} from './link-loss.js';
-import {parseUiTextAtlasSize} from './ui-text-atlas-policy.js';
+import {parseUiTextAtlasSize,parseUiTextAtlasIdleMs} from './ui-text-atlas-policy.js';
 
 const STRIDE=32,FILL=0,BORDER=1,IMAGE=2,FREE=3,MAX_PAGES=4,ATTRIBUTES=['uiOrigin','uiAxis','uiUv','uiColor','uiBorder','uiBox','uiParams','uiClip'];
 // Pixel space is the drawing buffer, y down. uiOrigin = origin.xy + x axis,
@@ -53,7 +53,7 @@ const textRasterContent=node=>JSON.stringify([node.kind,node.text,node.placehold
 // quantum is much smaller than a visible antialiasing phase change.
 const rasterPhaseKey=value=>Math.round(value*1e7)/1e7;
 
-export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null,dataTextures=null,uiTextAtlasSize,atlasNow=()=>performance.now(),getFrameTarget=()=>null}={}){
+export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null,dataTextures=null,uiTextAtlasSize,uiTextAtlasIdleMs,atlasNow=()=>performance.now(),getFrameTarget=()=>null}={}){
  const requestedAtlasSize=parseUiTextAtlasSize(uiTextAtlasSize);
  const scene=new THREE.Scene(),camera=new THREE.Camera(),size=new THREE.Vector2(),uiSize=new THREE.Vector2(1,1),viewport=new THREE.Vector4(),at=new THREE.Vector2();
  const quadPositions=new Float32Array([0,0,0,1,0,0,1,1,0,0,1,0]),quadIndex=new Uint16Array([0,1,2,0,2,3]);
@@ -61,7 +61,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
  const runs=[],pages=[],slots=new Map(),dedicated=new Map(),imageTextures=new Map(),textureRuns=new Map();
  let data=new Float32Array(256*STRIDE),count=0,drawRuns=0,width=0,height=0,disposed=false,scratch=null,scratchContext=null,scratchTexture=null,atlasSize=0;
  let rebuilds=0,rasters=0,uploads=0,compactions=0,draws=0,lastRegions=0,lastMs=null,wasted=0,stale=true;
- const atlasIdleMs=30000,atlasSweepMs=1000;let nextAtlasSweep=0,atlasRetired=0;
+ const atlasIdleMs=parseUiTextAtlasIdleMs(uiTextAtlasIdleMs),atlasSweepMs=1000;let nextAtlasSweep=0,atlasRetired=0;
  const sharedImages=!!(textureCache&&getImageAssets&&getAssetCatalog),imageOwners=new Map();
  let imageBroker=null,imageCatalog=null,imageSpecs=null,imageEpoch=0,retiring=false,drawing=false,imageActive=0,imageCached=0,imageBytes=0,imageBuilds=0,imageHits=0,imageIdleHits=0,imageRetired=0;
  function attemptAll(values,fn){let failure;for(const value of values)try{fn(value);}catch(error){failure??=error;}if(failure)throw failure;}

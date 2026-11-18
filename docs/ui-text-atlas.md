@@ -26,6 +26,10 @@ or repacked for this idle policy. A window reopened within the grace period
 can reuse its previous slots, while a later reopening may rasterize its text
 again. Text spread over multiple active pages still needs those pages; this
 policy does not promise a particular page count or immediate driver release.
+The optional `ui_text_atlas_idle_ms` setting changes that grace period: an
+integer from 1,000 through 120,000 milliseconds. Omission keeps 30,000 ms.
+Shorter values can free idle pages sooner, at the cost of rerasterizing text
+if the player returns after expiry; measure both memory and transition cost.
 Text larger than the device's maximum texture size remains subject to the
 renderer/device limit. The canvas and GPU implementation can retain additional
 copies and use padding; these figures are not process or driver measurements.

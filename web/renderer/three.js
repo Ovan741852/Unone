@@ -204,7 +204,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   const textureCache = createTextureCachePolicy(textureRecords,options.textureCache);
   // The render pipeline's ui stage: game UI drawn into this frame after the world.
   let worldSubmitted=false;
-  const ui=backend==='webgl'?createGpuUi(THREE,renderer,{available:()=>worldSubmitted&&rasterAvailable(),textureCache,uiTextAtlasSize:options.uiTextAtlasSize,getImageAssets:options.getImageAssets,getAssetCatalog:options.getAssetCatalog,dataTextures:{get:id=>dataTextures.get(id)},getFrameTarget:()=>screenFrame?.target()??null}):null;
+  const ui=backend==='webgl'?createGpuUi(THREE,renderer,{available:()=>worldSubmitted&&rasterAvailable(),textureCache,uiTextAtlasSize:options.uiTextAtlasSize,uiTextAtlasIdleMs:options.uiTextAtlasIdleMs,getImageAssets:options.getImageAssets,getAssetCatalog:options.getAssetCatalog,dataTextures:{get:id=>dataTextures.get(id)},getFrameTarget:()=>screenFrame?.target()??null}):null;
   let assetRequestPending=false;
   const rasterPass=checkedRaster?createProjectedRasterPass(THREE,renderer):null;
   // Retained across redraws: unchanged packed geometry is validated once, not on every frame.

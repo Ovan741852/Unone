@@ -53,6 +53,7 @@ const NATIVE_EXPORT_BLOCKED: &[&str] = &["spine", "effekseer"];
 const NATIVE_RUNTIME_BLOCKED: &[&str] = &["spine", "effekseer"];
 const WEB_PRESENTATION_KEYS: &[&str] = &[
     "ui_text_atlas_size",
+    "ui_text_atlas_idle_ms",
     "texture_cache",
     "render_extensions",
     "renderer_mode",
@@ -244,6 +245,8 @@ pub enum JobMode {
 pub struct PresentationSettings {
     #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="declared_ui_text_atlas_size")]
     pub ui_text_atlas_size: Option<u32>,
+    #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="declared_ui_text_atlas_size")]
+    pub ui_text_atlas_idle_ms: Option<u32>,
     #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="texture_cache::declared")]
     pub texture_cache: Option<texture_cache::TextureCachePolicy>,
     pub spatial_backend: SpatialBackend,
@@ -413,6 +416,10 @@ impl PresentationSettings {
         if let Some(size)=self.ui_text_atlas_size {
             ensure!(self.renderer_mode==RendererMode::Official,"UI_TEXT_ATLAS_OFFICIAL_ONLY");
             ensure!((256..=4096).contains(&size) && size.is_power_of_two(),"UI_TEXT_ATLAS_SIZE_INVALID: expected a power of two from 256 to 4096");
+        }
+        if let Some(ms)=self.ui_text_atlas_idle_ms {
+            ensure!(self.renderer_mode==RendererMode::Official,"UI_TEXT_ATLAS_OFFICIAL_ONLY");
+            ensure!((1000..=120000).contains(&ms),"UI_TEXT_ATLAS_IDLE_INVALID: expected 1000..120000 milliseconds");
         }
         if let Some(policy)=&self.texture_cache {
             ensure!(self.renderer_mode==RendererMode::Official,"TEXTURE_CACHE_OFFICIAL_ONLY");
@@ -679,6 +686,7 @@ pub fn native_wgpu_export_gate(
     if presentation.ui_text_atlas_size.is_some() {
         keys.push("ui_text_atlas_size");
     }
+    if presentation.ui_text_atlas_idle_ms.is_some() { keys.push("ui_text_atlas_idle_ms"); }
     if presentation.texture_cache.is_some() {
         keys.push("texture_cache");
     }
@@ -707,6 +715,25 @@ pub fn native_wgpu_export_gate(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn text_atlas_idle_grace_is_explicit_bounded_and_web_only() {
+        use super::*; use serde_json::json;
+        let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([("spine".into(),false),("effekseer".into(),false)])).unwrap();
+        let omitted:PresentationSettings=serde_json::from_value(json!({})).unwrap();
+        assert!(omitted.ui_text_atlas_idle_ms.is_none());
+        for value in [1000,5000,30000,120000] {
+            let settings:PresentationSettings=serde_json::from_value(json!({"ui_text_atlas_idle_ms":value})).unwrap();
+            settings.validate_renderer().unwrap();
+            assert!(native_wgpu_export_gate(&quiet,Some(&settings)).unwrap_err().to_string().contains("ui_text_atlas_idle_ms"));
+        }
+        for value in [json!(0),json!(999),json!(120001)] {
+            let settings:PresentationSettings=serde_json::from_value(json!({"ui_text_atlas_idle_ms":value})).unwrap();
+            assert!(settings.validate_renderer().is_err());
+        }
+        for value in [json!(null),json!(1.5),json!("5000")] {
+            assert!(serde_json::from_value::<PresentationSettings>(json!({"ui_text_atlas_idle_ms":value})).is_err());
+        }
+    }
     #[test]
     fn atomic_wait_is_explicit_localized_single_sample_web_only() {
         use super::*;

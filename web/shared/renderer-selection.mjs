@@ -4,7 +4,7 @@
 import {parseProjectedRaster} from '../renderer/projected-raster-policy.js';
 import {parseFrameProfile} from '../renderer/projected-frame-policy.js';
 import {parseTextureCache} from '../renderer/texture-cache-policy.js';
-import {parseUiTextAtlasSize} from '../renderer/ui-text-atlas-policy.js';
+import {parseUiTextAtlasSize,parseUiTextAtlasIdleMs} from '../renderer/ui-text-atlas-policy.js';
 import {normalizeWebglDefaultDepth} from '../renderer/webgl-default-depth.js';
 /** @returns {import('./host-input.js').RendererHostActions} */
 export function requireRendererHostActions(options) {
@@ -44,16 +44,19 @@ export async function createPlayerRenderer(canvas, options, presentation = {}, {
     parseTextureCache(textureCache);
     const uiTextAtlasSize=presentation.ui_text_atlas_size===undefined?options.uiTextAtlasSize:presentation.ui_text_atlas_size;
     parseUiTextAtlasSize(uiTextAtlasSize);
+    const uiTextAtlasIdleMs=presentation.ui_text_atlas_idle_ms===undefined?options.uiTextAtlasIdleMs:presentation.ui_text_atlas_idle_ms;
+    parseUiTextAtlasIdleMs(uiTextAtlasIdleMs);
     const webglDesynchronized=presentation.webgl_desynchronized===undefined?options.webglDesynchronized:presentation.webgl_desynchronized;
     normalizeWebglDesynchronized(webglDesynchronized);
     const webglDefaultDepth=presentation.webgl_default_depth===undefined?options.webglDefaultDepth:presentation.webgl_default_depth;
     normalizeWebglDefaultDepth(webglDefaultDepth);
-    return createOfficial(canvas, {...options, antialias,...(webglDesynchronized===undefined?{}:{webglDesynchronized}),...(webglDefaultDepth===undefined?{}:{webglDefaultDepth}),...(uiTextAtlasSize===undefined?{}:{uiTextAtlasSize}),...(textureCache===undefined?{}:{textureCache}),...(value===undefined?{}:{projectedRaster:value}),...(frame===undefined?{}:{projectedMaterialProfile:frame})});
+    return createOfficial(canvas, {...options, antialias,...(webglDesynchronized===undefined?{}:{webglDesynchronized}),...(webglDefaultDepth===undefined?{}:{webglDefaultDepth}),...(uiTextAtlasSize===undefined?{}:{uiTextAtlasSize}),...(uiTextAtlasIdleMs===undefined?{}:{uiTextAtlasIdleMs}),...(textureCache===undefined?{}:{textureCache}),...(value===undefined?{}:{projectedRaster:value}),...(frame===undefined?{}:{projectedMaterialProfile:frame})});
   }
   if (mode !== 'custom') throw Error(`RENDERER_MODE_INVALID: ${mode}`);
   if(presentation.webgl_desynchronized!==undefined||options.webglDesynchronized!==undefined)throw Error('WEBGL_DESYNCHRONIZED_OFFICIAL_ONLY');
   if(presentation.webgl_default_depth!==undefined||options.webglDefaultDepth!==undefined)throw Error('WEBGL_DEFAULT_DEPTH_OFFICIAL_WEBGL_ONLY');
   if(presentation.ui_text_atlas_size!==undefined||options.uiTextAtlasSize!==undefined)throw Error('UI_TEXT_ATLAS_OFFICIAL_ONLY');
+  if(presentation.ui_text_atlas_idle_ms!==undefined||options.uiTextAtlasIdleMs!==undefined)throw Error('UI_TEXT_ATLAS_OFFICIAL_ONLY');
   if(presentation.texture_cache!==undefined||options.textureCache!==undefined)throw Error('TEXTURE_CACHE_OFFICIAL_ONLY');
   if(presentation.projected_material_profile!==undefined||options.projectedMaterialProfile!==undefined)throw Error('PROJECTED_FRAME_OFFICIAL_WEBGL_ONLY');
   if(presentation.projected_raster!==undefined||options.projectedRaster!==undefined)throw Error('PROJECTED_RASTER_OFFICIAL_WEBGL_ONLY: omit projected_raster for a custom renderer');
