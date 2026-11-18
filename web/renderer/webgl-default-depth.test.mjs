@@ -1,5 +1,9 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {normalizeWebglDefaultDepth,resolveDefaultDepthOptions,defaultDepthFrameNeedsFallback,webglDefaultDepthMetrics,createPresentationHookGate} from './webgl-default-depth.js';
+import {normalizeWebglDefaultDepth,resolveDefaultDepthOptions,defaultDepthFrameNeedsFallback,webglDefaultDepthMetrics,createPresentationHookGate,hasUnrestrictedEffects} from './webgl-default-depth.js';
+
+test('declared raw GL effects are recognized before transaction selection',()=>{
+ assert.equal(hasUnrestrictedEffects(undefined),false);assert.equal(hasUnrestrictedEffects([{kind:'sprite'},null]),false);assert.equal(hasUnrestrictedEffects([{kind:'effekseer'}]),true);
+});
 import {prepareDesynchronizedWebGL} from './webgl-desynchronized.js';import {createPlayerRenderer} from '../shared/renderer-selection.mjs';
 test('depth declaration remains strict, opt-in and compatible by default',()=>{assert.equal(normalizeWebglDefaultDepth(),true);for(const x of [true,false])assert.equal(normalizeWebglDefaultDepth(x),x);for(const x of [null,0,'false',{},[]])assert.throws(()=>normalizeWebglDefaultDepth(x),/WEBGL_DEFAULT_DEPTH_INVALID/)});
 test('renderer passes depth request and custom renderer refuses the official-only option',async()=>{const hooks={createOfficial:(_c,o)=>o,contentRoot:new URL('https://fixture.invalid/content/')};assert.equal((await createPlayerRenderer(null,{}, {},hooks)).webglDefaultDepth,undefined);assert.equal((await createPlayerRenderer(null,{}, {webgl_default_depth:false},hooks)).webglDefaultDepth,false);await assert.rejects(createPlayerRenderer(null,{}, {webgl_default_depth:null},hooks),/WEBGL_DEFAULT_DEPTH_INVALID/);await assert.rejects(createPlayerRenderer(null,{}, {renderer_mode:'custom',webgl_default_depth:false},hooks),/WEBGL_DEFAULT_DEPTH_OFFICIAL_WEBGL_ONLY/)});

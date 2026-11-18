@@ -8,6 +8,12 @@ export function normalizeWebglDefaultDepth(value) {
 
 const hasItems=value=>Array.isArray(value)?value.length>0:value!==null&&typeof value==='object'&&Object.keys(value).length>0;
 
+// Effects using a separate raw-GL library are not covered by our Three target
+// contract; retain the normal renderer until that library supports staging.
+export function hasUnrestrictedEffects(assets) {
+  return Array.isArray(assets) && assets.some(asset=>asset?.kind==='effekseer');
+}
+
 // Decide conservatively whether the non-postprocessed frame needs an offscreen
 // depth attachment. This deliberately does not infer visibility from positions:
 // shader deformation and third-party effect bounds make that unsafe.

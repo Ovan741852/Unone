@@ -24,7 +24,7 @@ import {createGpuUi} from './ui-gpu.js';
 import {DRAW_COMPLETED,DRAW_SKIPPED} from '../shared/player-completion.mjs';
 import {normalizeAntialias,normalizeWebglDesynchronized} from '../shared/renderer-selection.mjs';
 import {prepareDesynchronizedWebGL,webglDesynchronizedMetrics} from './webgl-desynchronized.js';
-import {normalizeWebglDefaultDepth,resolveDefaultDepthOptions,defaultDepthFrameNeedsFallback,webglDefaultDepthMetrics,createPresentationHookGate} from './webgl-default-depth.js';
+import {normalizeWebglDefaultDepth,resolveDefaultDepthOptions,defaultDepthFrameNeedsFallback,webglDefaultDepthMetrics,createPresentationHookGate,hasUnrestrictedEffects} from './webgl-default-depth.js';
 import {createScreenFrameTarget} from './screen-frame-target.js';
 import {parseProjectedRaster,assertRasterBackend,assertRasterProfile,assertRasterSnapshot} from './projected-raster-policy.js';
 import {createRasterCapability} from './projected-raster-capability.js';
@@ -97,7 +97,10 @@ export async function createThreeRenderer(canvas, options = {}) {
   const useWebGpu = !forceWebGl && !postprocessing && (forceWebGpu || Boolean(navigator.gpu));
   const passKinds=options.renderPasses??{};
   if(typeof passKinds!=='object'||passKinds===null||Array.isArray(passKinds)||Object.values(passKinds).some(create=>typeof create!=='function'))throw Error('RENDER_PASSES_INVALID: expected {kind: createPass}');
-  const callbacks=typeof options.onReady==='function'||typeof options.beforeRender==='function';
+  // Effekseer owns a third-party raw GL context and may change framebuffer
+  // bindings without participating in the complete-frame target contract.
+  const rawEffects=hasUnrestrictedEffects(options.getAssetManifest?.()?.assets);
+  const callbacks=typeof options.onReady==='function'||typeof options.beforeRender==='function'||rawEffects;
   const transactional=options.frameTransaction===true&&!useWebGpu&&!antialias&&!desynchronized&&!checkedRaster&&!frameProfile&&!callbacks&&!Object.keys(passKinds).length;
   const depthPolicy=resolveDefaultDepthOptions({depth:requestedDefaultDepth,backend:useWebGpu?'webgpu':'webgl',checkedRaster,frameProfile,renderPasses:passKinds,presentationCallbacks:callbacks,antialias,desynchronized,atomicHost:transactional});
   const defaultDepth=depthPolicy.effective;
