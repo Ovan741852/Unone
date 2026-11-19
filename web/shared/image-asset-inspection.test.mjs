@@ -35,3 +35,16 @@ test('default PNG metadata keeps the24B fastpath while unsupported SVG performs 
  try{assert.equal((await broker.inspect('a')).bytes,24);await assert.rejects(broker.inspect('b'),/DIMENSIONS_UNAVAILABLE/);assert.equal(requests,1);}
  finally{broker.dispose();globalThis.fetch=original;}
 });
+
+const webp=(width,height)=>{const bits=(width-1)|((height-1)<<14),bytes=new Uint8Array(26),view=new DataView(bytes.buffer);bytes.set([82,73,70,70]);view.setUint32(4,18,true);bytes.set([87,69,66,80,86,80,56,76],8);view.setUint32(16,5,true);bytes[20]=0x2f;view.setUint32(21,bits,true);return bytes;};
+test('default scene preparation reads a WebP size from a 64-byte prefix and decodes it before READY',async()=>{
+ const original=globalThis.fetch,ranges=[];let loads=0;
+ globalThis.fetch=async(_url,options)=>{ranges.push(options.headers.Range);const chunks=[webp(5,4)];return {ok:true,body:{getReader(){let i=0;return {async read(){return i<chunks.length?{value:chunks[i++],done:false}:{done:true};},async cancel(){},releaseLock(){}};}}};};
+ let broker;
+ try{
+  broker=createImageAssetBroker(createAssetCatalog({assets:[{id:'w',kind:'texture2d',source:'w.webp'}]}),{resolveAssetUrl:a=>a.source,loadImage:async()=>{loads++;return {width:5,height:4};}});
+  const prepared=await broker.prepareScene({entities:[{sprite:{asset:'w'}}]});
+  assert.deepEqual(ranges,['bytes=0-63']);assert.deepEqual(prepared.unsupported,[]);assert.equal(prepared.ready_entries,1);assert.equal(prepared.reserved_bytes,80);assert.equal(loads,1);
+  assert.equal(broker.acquire('w').state,'ready');
+ }finally{broker?.dispose();globalThis.fetch=original;}
+});

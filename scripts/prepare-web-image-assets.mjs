@@ -163,6 +163,8 @@ function requiredBudgetPreflight(plan,assets,logical){
  requireThat(required.size<=plan.budget.max_entries,'IMAGE_PRELOAD_STARTUP_BUDGET','required unique entries exceed max_entries');
  let knownBytes=0;const unknown=[];
  for(const id of required){
+  const authored=plan.dimensions?.[id]; // already checked against the file's own header by validateAuthoredDimensions
+  if(authored){const bytes=authored.width*authored.height*4;requireThat(Number.isSafeInteger(bytes)&&Number.isSafeInteger(knownBytes+bytes),'IMAGE_PRELOAD_PNG_HEADER_INVALID',id);knownBytes+=bytes;continue;}
   const asset=byId.get(id),file=logical.get('content/'+asset.source);
   const header=Buffer.alloc(24),fd=fs.openSync(file.source,'r');let read=0;try{read=fs.readSync(fd,header,0,header.length,0);}finally{fs.closeSync(fd);}
   if(read===24&&header.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))&&header.readUInt32BE(8)===13&&header.toString('ascii',12,16)==='IHDR'){
@@ -170,9 +172,9 @@ function requiredBudgetPreflight(plan,assets,logical){
    requireThat(width>0&&height>0&&Number.isSafeInteger(bytes)&&Number.isSafeInteger(knownBytes+bytes),'IMAGE_PRELOAD_PNG_HEADER_INVALID',id);knownBytes+=bytes;
   }else unknown.push(id);
  }
- requireThat(knownBytes<=plan.budget.max_bytes,'IMAGE_PRELOAD_STARTUP_BUDGET','required PNG RGBA estimate exceeds max_bytes');
- requireThat(unknown.length===0,'IMAGE_PRELOAD_STARTUP_DIMENSIONS_UNSUPPORTED','required images need bounded PNG IHDR dimensions: '+unknown.join(', '));
- return{required_entries:required.size,known_rgba_bytes_estimate:knownBytes,unknown_dimension_assets:unknown,scope:'24-byte PNG IHDR estimate only; the official browser still validates decoding and admission before READY'};
+ requireThat(knownBytes<=plan.budget.max_bytes,'IMAGE_PRELOAD_STARTUP_BUDGET','required RGBA estimate exceeds max_bytes');
+ requireThat(unknown.length===0,'IMAGE_PRELOAD_STARTUP_DIMENSIONS_UNSUPPORTED','required images need authored dimensions or bounded PNG IHDR dimensions: '+unknown.join(', '));
+ return{required_entries:required.size,known_rgba_bytes_estimate:knownBytes,unknown_dimension_assets:unknown,scope:'authored dimensions (checked against each file header) or the 24-byte PNG IHDR; the official browser still validates decoding and admission before READY'};
 }
 
 function validateAuthoredDimensions(plan,assets,logical,validator){

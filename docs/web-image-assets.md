@@ -31,7 +31,7 @@ Tests or a different presentation host may supply `loadImage(url,{signal,asset})
 
 `prepareScene(scene)` collects unique `sprite.asset` dependencies from the scene's entity array or entity record, including hidden sprites. It does not scan or decode every image in the asset manifest. These are authored future dependencies, rather than an asset-name, folder or image-size heuristic.
 
-The default inspector checks the PNG signature and IHDR dimensions before reserving decoded RGBA bytes. It requests the first 24 bytes. If the server ignores Range and sends a full successful response, inspection drains that stream to EOF while retaining only the 24-byte header, then releases the reader lock. It does not accumulate the encoded body or decode an unadmitted image. Only an actual abort or failed read cancels the reader; errors remain observable. Unknown/non-PNG bounded dimensions, excess entries and excess bytes produce explicit partial preparation and preserve normal lazy acquisition. They do not invalidate a valid Core scene. The scene-entry limit also bounds the number of inspected candidates; later dependencies are reported as skipped. Admission follows declaration order, independent of request completion order.
+An image's size comes from the preload plan's authored `dimensions` when it has one (no request at all), otherwise from a bounded header read. The default inspector picks the read by the declared encoding, or by the file extension in a legacy manifest without one: a PNG's signature and IHDR from the first 24 bytes, a WebP's first chunk from the first 64 bytes, a JPEG's SOF within 64 KiB. PNG, JPEG and WebP sprites whose size is known are all admitted and decoded before READY; the decoder must still produce exactly that size. If the server ignores Range and sends a full successful response, inspection drains that stream to EOF while retaining only the 24-byte header, then releases the reader lock. It does not accumulate the encoded body or decode an unadmitted image. Only an actual abort or failed read cancels the reader; errors remain observable. Unknown bounded dimensions (an SVG, a header the prefix does not reach), excess entries and excess bytes produce explicit partial preparation and preserve normal lazy acquisition. They do not invalidate a valid Core scene. The scene-entry limit also bounds the number of inspected candidates; later dependencies are reported as skipped. Admission follows declaration order, independent of request completion order.
 
 The default loader retains the HTML image path already used by Canvas and Three. It waits for `Image.decode()` when available, clears event handlers after settlement, and cancels/clears the source only when an abort arrives before `onload`. After `onload`, cancellation fences pending decode work without resetting the completed source. This avoids changing ImageBitmap color conversion or alpha premultiplication. Decoded dimensions must match a prepared reservation. Failed speculative loads are reported, released and removed; later required use can retry normally instead of inheriting a permanently rejected speculative entry.
 
@@ -160,11 +160,11 @@ that mismatch; the new output is always resealed from its actual contents.
 Paths must be portable relative paths and source/output ancestry must contain
 no symlinks, junctions or Windows reparse points. No input is modified.
 
-Required unique entries and 24-byte PNG IHDR dimensions receive an early
-bounded budget check. Required startup images with unknown/non-PNG dimensions
-are rejected because the current official bounded preloader supports PNG.
-Non-startup groups may still declare other supported image encodings for
-ordinary on-demand use. This header check is not a decoder or an image-validity
+Required unique entries receive an early bounded budget check. A required
+startup image needs a known size: authored `dimensions` (PNG, JPEG or WebP,
+already checked against the file's own header) or a 24-byte PNG IHDR. A required
+image with neither is rejected (`IMAGE_PRELOAD_STARTUP_DIMENSIONS_UNSUPPORTED`).
+For WebP or JPEG startup images, author their dimensions. This header check is not a decoder or an image-validity
 guarantee; the browser still validates decoding, admission and completion.
 
 Preflight failures create no output. A copy/write failure preserves its

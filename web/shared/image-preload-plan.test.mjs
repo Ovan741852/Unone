@@ -90,3 +90,13 @@ test('required failures keep exact IDs and only actual ready required images cou
 test('no preload plan preserves scene-only behavior while malformed plans fail at construction',async()=>{
  const f=broker(null);const result=await f.result.prepareScene({entities:[{sprite:{asset:'a'}}]});assert.deepEqual(f.loaded,['a']);assert.equal(result.startup_entries,0);assert.equal(result.required_entries,0);assert.equal(result.required_ready_entries,0);assert.deepEqual(result.startup_groups,[]);assert.equal(f.result.report().preload_plan,null);f.result.dispose();assert.throws(()=>broker({version:1,groups:{bad:['missing']},startup:[]}),/declared texture2d/);
 });
+
+test('a WebP startup image with authored dimensions is decoded before READY like a PNG',async()=>{
+ const cat=createAssetCatalog({assets:[{id:'w',kind:'texture2d',source:'w.webp'},asset('a')]});const loaded=[],inspected=[];
+ const result=createImageAssetBroker(cat,{resolveAssetUrl:a=>a.source,inspectImage:async(url,{asset:a})=>{inspected.push(a.id);return{format:'png',width:2,height:2};},loadImage:async(url,{asset:a})=>{loaded.push(a.id);return a.id==='w'?{width:3,height:2,close(){}}:fake(a.id);},
+  preloadPlan:{version:1,groups:{boot:['w']},startup:['boot'],dimensions:{w:{format:'webp',width:3,height:2}}}});
+ const prepared=await result.prepareScene({entities:[{sprite:{asset:'w'}},{sprite:{asset:'a'}}]});
+ assert.deepEqual(prepared.unsupported,[]);assert.equal(prepared.required_entries,1);assert.equal(prepared.required_ready_entries,1);assert.equal(prepared.ready_entries,2);assert.equal(prepared.partial,false);
+ assert.deepEqual(inspected,['a'],'authored dimensions need no header request');assert.deepEqual(loaded.sort(),['a','w']);assert.equal(prepared.reserved_bytes,3*2*4+2*2*4);
+ assert.deepEqual(await result.inspect('w'),{format:'webp',width:3,height:2,bytes:24});result.dispose();
+});

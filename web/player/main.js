@@ -1,5 +1,5 @@
-import {createThreeRenderer} from '../renderer/three.js';
-import {createPlayerRenderer,createRendererDisposer} from '../shared/renderer-selection.mjs';
+import {createThreeRenderer,THREE_LIBRARY_URL} from '../renderer/three.js';
+import {createPlayerRenderer,createRendererDisposer,rendererModuleUrls} from '../shared/renderer-selection.mjs';
 import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';
 import {createUiTextInputHost} from '../shared/ui-text-input.mjs';
 import {createUiCursorHost,loadCursorImage} from '../shared/ui-cursor.mjs';
@@ -10,6 +10,7 @@ import {createOrderedPhysicalQueue} from '../shared/ordered-physical-queue.mjs';
 import {createOrderedPhysicalRouter} from '../shared/ordered-physical-router.mjs';
 import {createAsyncScheduler} from '../shared/async-scheduler.mjs';
 import {createRuntimeBackend} from '../shared/runtime-backend.mjs';
+import {prefetchRuntime} from '../shared/runtime-core.mjs';
 import {createSpriteResourceHost} from '../shared/sprite-resource-host.mjs';
 import {createImageGroupHost} from '../shared/image-group-host.mjs';
 import {payloadDataSources,playerSeed,textureCatalog} from '../shared/load-project.js';
@@ -304,6 +305,17 @@ async function readImagePreloadPlan(catalog){
  let plan;try{plan=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(0,size)));}catch(error){throw Error(`IMAGE_PRELOAD_PLAN_JSON_INVALID: ${String(error.message??error)}`);}
  return validateImagePreloadPlan(plan,catalog);
 }
+// Start fetching what later startup steps need but that does not depend on images or fonts: the runtime script and
+// its WebAssembly (downloaded and compiled, not instantiated), the renderer's modules and the WebGL library (fetched and
+// parsed by modulepreload, not evaluated). Over a slow link these used to wait for image preparation one after another.
+// Order and failure behaviour do not change: Core is still constructed only after images, and a failed fetch here is
+// reported by the step that needs it.
+function warmStartup(presentation){
+ const kind=new URLSearchParams(location.search).get('backend')??presentation.runtime_backend??'main';
+ if(kind==='main')prefetchRuntime(new URL(document.querySelector('meta[name="unone-runtime"]').content,document.baseURI).href);
+ const probe=document.createElement('link');if(!probe.relList?.supports?.('modulepreload'))return;
+ for(const href of new Set([THREE_LIBRARY_URL,...rendererModuleUrls(presentation)])){const link=document.createElement('link');link.rel='modulepreload';link.href=href;document.head.append(link);}
+}
 async function start(){
  startupScreen.start('content');
  const profileOptions=playerProfileOptions(location.search);
@@ -313,6 +325,7 @@ async function start(){
  const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);
  if(startupAbort.signal.aborted)throw startupCancelled();
  startupScreen.complete('content');withCatalog(project,assets);projectPayload=project;uiAssetManifest=assets;
+ warmStartup(presentation);
  // Data assets load beside image preparation, fonts and the runtime; Game.start waits for them.
  startupScreen.start('images');startupScreen.start('data');
  const dataLoad=dataAssets(project,(loaded,total)=>startupScreen.progress('data',loaded,total));dataLoad.then(()=>startupScreen.complete('data'),()=>{});

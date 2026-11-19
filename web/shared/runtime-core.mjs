@@ -127,12 +127,39 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
   }
  }};
 }
-let runtimePromise,runtimeURL;
+let runtimePromise,runtimeURL,runtimePrefetch=null;
+// The engine binary next to the runtime script; the SDK runtime manifest records it as "wasm".
+export const RUNTIME_WASM='unone_player.wasm';
+/**
+ * Starts downloading the runtime script and downloading + compiling its WebAssembly, so a host can overlap that work
+ * with steps that come before Core (image preparation, fonts). Nothing is evaluated, instantiated or constructed:
+ * loadRuntime still creates Core, and only when it is called. A failed prefetch only means loadRuntime fetches the
+ * binary itself, exactly as without a prefetch. Returns the compile promise, or null when this realm cannot prefetch.
+ */
+export function prefetchRuntime(url,{fetchImpl=globalThis.fetch,compileStreaming=globalThis.WebAssembly?.compileStreaming,doc=globalThis.document}={}){
+ if(runtimePromise)return null;
+ if(runtimePrefetch)return runtimePrefetch.url===url?runtimePrefetch.module:null;
+ if(typeof fetchImpl!=='function'||typeof compileStreaming!=='function')return null;
+ try{const link=doc?.createElement?.('link');if(link&&doc.head){link.rel='preload';link.as='script';link.href=url;doc.head.append(link);}}catch{/* only a hint */}
+ let module;try{module=Promise.resolve(compileStreaming.call(globalThis.WebAssembly,fetchImpl(new URL(RUNTIME_WASM,url).href,{credentials:'same-origin'})));}catch(error){module=Promise.reject(error);}
+ module.catch(()=>{});
+ runtimePrefetch={url,module};
+ return module;
+}
+// Emscripten's instantiateWasm hook: instantiate the prefetched module, or fetch the binary like the loader would.
+function prefetchedInstantiation(url,module){
+ return (imports,receive)=>{
+  const fallback=()=>WebAssembly.instantiateStreaming(fetch(new URL(RUNTIME_WASM,url).href,{credentials:'same-origin'}),imports).then(({instance,module:compiled})=>receive(instance,compiled));
+  module.then(compiled=>WebAssembly.instantiate(compiled,imports).then(instance=>receive(instance,compiled)),fallback).catch(error=>globalThis.Module?.onAbort?.(error));
+  return {};
+ };
+}
 export async function loadRuntime(url,loader){
  if(runtimePromise){if(runtimeURL!==url)throw Error('RUNTIME_URL_CHANGE_REQUIRES_NEW_REALM');return runtimePromise;}
  runtimeURL=url;
  return runtimePromise=new Promise((resolve,reject)=>{
-  globalThis.Module={noInitialRun:true,locateFile:path=>new URL(path,url).href,onRuntimeInitialized(){resolve(globalThis.Module)},onAbort:e=>reject(Error(String(e))),printErr:console.error};
+  const prefetched=runtimePrefetch?.url===url?runtimePrefetch.module:null;
+  globalThis.Module={noInitialRun:true,locateFile:path=>new URL(path,url).href,onRuntimeInitialized(){resolve(globalThis.Module)},onAbort:e=>reject(Error(String(e))),printErr:console.error,...(prefetched&&!loader?{instantiateWasm:prefetchedInstantiation(url,prefetched)}:{})};
   if(loader){globalThis.window=globalThis;globalThis.document={currentScript:{src:url}};try{loader(url);}catch(e){reject(e);}}
   else{const script=document.createElement('script');script.src=url;script.onerror=()=>reject(Error('RUNTIME_LOAD_FAILED'));document.head.append(script);}
  });

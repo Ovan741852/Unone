@@ -215,10 +215,15 @@ async function inspectPngImage(url, { signal } = {}) {
   const view = new DataView(header.buffer); if (view.getUint32(8) !== 13 || view.getUint32(12) !== 0x49484452) throw imageError('IMAGE_ASSET_PNG_HEADER');
   return { format: 'png', width: view.getUint32(16), height: view.getUint32(20) };
 }
+const WEBP_DIMENSIONS_PREFIX_BYTES=64; // RIFF header, first chunk header and its size fields
+// A declared encoding wins; a legacy manifest without one is read by the file's extension, which only picks how
+// many header bytes to request: the bytes themselves still decide the format.
+function rasterFormat(asset){const declared=asset?.encoding?.format;if(declared)return declared;const ext=/\.([a-z0-9]+)$/i.exec(String(asset?.source??''))?.[1]?.toLowerCase();return ext==='jpg'?'jpeg':ext;}
 async function inspectRasterImage(url,options={}) {
-  if(options.asset?.encoding?.format==='png')return inspectPngImage(url,options);
-  if(options.asset?.encoding?.format==='svg')return null;
-  const prefix=await readImageHeader(url,options.signal,IMAGE_DIMENSIONS_MAX_PREFIX_BYTES);
+  const format=rasterFormat(options.asset);
+  if(format==='png')return inspectPngImage(url,options);
+  if(format==='svg')return null;
+  const prefix=await readImageHeader(url,options.signal,format==='webp'?WEBP_DIMENSIONS_PREFIX_BYTES:IMAGE_DIMENSIONS_MAX_PREFIX_BYTES);
   return prefix?inspectImageDimensions(prefix):null;
 }
 
@@ -241,6 +246,8 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
   if (plan) { sceneMaxBytes = plan.budget.max_bytes; sceneMaxEntries = plan.budget.max_entries; }
   const planSummary = plan ? Object.freeze({ version: plan.version, groups: Object.keys(plan.groups).length, startup_groups: plan.startup, budget: plan.budget }) : null;
   const authoredDimensions=id=>plan?.dimensions&&Object.hasOwn(plan.dimensions,id)?plan.dimensions[id]:null;
+  // Scene preparation and groups read sizes the same way: authored plan dimensions first, then a bounded header prefix.
+  const rasterInspector=inspectImage===inspectPngImage?inspectRasterImage:inspectImage;
   const entries = new Map(), imageOwners = new Map(), queue = []; let running = 0, stamp = 0, disposed = false, planEpoch = 0, planController = null, sceneLeases = new Map(), preparation = null;
   let loads = 0, reuses = 0, evictions = 0, closedImages = 0, releasedBytes = 0;
   const loadTimings=[];let loadingTotalMs=0,completedLoads=0,failedLoads=0,cancelledLoads=0;
@@ -340,9 +347,10 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     for (const id of ids.slice(sceneMaxEntries)) result.budget_skipped.push({ id, reason: 'scene_entry_budget' });
     const worker = async work => { while (!controller.signal.aborted && position < candidates.length) { const index = position++; await work(candidates[index], index); } };
     const inspect = async (id, index) => {
-      try { const asset = specFor(id), known = entries.get(id); const metadata = known?.reservation ?? authoredDimensions(id) ?? await schedule(async () => inspectImage(await resolveAssetUrl(asset), { signal: controller.signal, asset }), controller.signal);
-        if (!metadata || metadata.format !== 'png') { inspected[index] = { id, unsupported: true }; return; }
-        const dimensions = imageDimensions(metadata); inspected[index] = { id, ...dimensions, format: 'png' };
+      try { const asset = specFor(id), known = entries.get(id); const metadata = known?.reservation ?? authoredDimensions(id) ?? await schedule(async () => rasterInspector(await resolveAssetUrl(asset), { signal: controller.signal, asset }), controller.signal);
+        // Any raster whose size is known is admitted before READY; the decoder still has to produce exactly that size.
+        if (!metadata || !['png','jpeg','webp'].includes(metadata.format)) { inspected[index] = { id, unsupported: true }; return; }
+        const dimensions = imageDimensions(metadata); inspected[index] = { id, ...dimensions, format: metadata.format };
       } catch (error) { inspected[index] = { id, error }; }
       inspectedCount++; progress();
     };
@@ -374,7 +382,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     if (!result.cancelled) preparation = freezePreparation(result); else freezePreparation(result);
     return result;
   }
-  const metadataInspector = createImageMetadataInspector({specFor, entries, dimensions:plan?.dimensions,resolveAssetUrl, inspectImage:inspectImage===inspectPngImage?inspectRasterImage:inspectImage, schedule,
+  const metadataInspector = createImageMetadataInspector({specFor, entries, dimensions:plan?.dimensions,resolveAssetUrl, inspectImage:rasterInspector, schedule,
     maxEntries: Math.max(1, sceneMaxEntries, unusedMaxEntries)});
   const groups=createImageAssetGroups({catalog,plan,inspect:metadataInspector.inspect,acquire:leaseFor,isReady:id=>entries.get(id)?.state==='ready',evict:ids=>{for(const id of ids){const entry=entries.get(id);if(entry&&!entry.external&&!entry.scene)forget(entry);}}});
   return Object.freeze({
@@ -467,7 +475,7 @@ function createImageMetadataInspector({specFor, entries, dimensions,resolveAsset
     if(dimensions&&Object.hasOwn(dimensions,id))return Promise.resolve(Object.freeze({...dimensions[id],...imageDimensions(dimensions[id])}));
     const image = entries.get(id);
     if (image?.state === 'ready') return Promise.resolve(Object.freeze({format: asset.encoding?.format ?? 'decoded', ...imageDimensions(image.image)}));
-    if (image?.reservation) return Promise.resolve(Object.freeze({format: 'png', ...imageDimensions(image.reservation)}));
+    if (image?.reservation) return Promise.resolve(Object.freeze({format: image.reservation.format ?? 'png', ...imageDimensions(image.reservation)}));
     const record = records.get(id) ?? start(id, asset); record.users++;
     return new Promise((resolve, reject) => {
       let live = true;

@@ -23,6 +23,17 @@ export function normalizeWebglDesynchronized(value) {
   if(typeof value!=='boolean')throw Error('WEBGL_DESYNCHRONIZED_INVALID: expected an optional boolean');
   return value;
 }
+/**
+ * Module URLs a declared custom renderer will import, for fetching early. Only well-formed paths that the project lists
+ * in renderer_files are returned; anything invalid is left for createPlayerRenderer to report. Official mode: none.
+ */
+export function rendererModuleUrls(presentation = {}, contentRoot = new URL('content/', document.baseURI)) {
+  if ((presentation.renderer_mode ?? 'official') !== 'custom' || !Array.isArray(presentation.renderer_files)) return [];
+  return presentation.renderer_files
+    .filter(path => typeof path === 'string' && /\.(mjs|js)$/.test(path) && !/[\\:%?#\u0000-\u001f\u007f]/.test(path) && !path.split('/').some(part => !part || part === '.' || part === '..'))
+    .map(path => new URL(path, contentRoot).href);
+}
+
 export async function createPlayerRenderer(canvas, options, presentation = {}, {
   createOfficial,
   loadModule = url => import(url),

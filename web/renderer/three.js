@@ -41,6 +41,8 @@ import {assetCatalogSpecs} from '../shared/asset-encoding.js';
 
 const LOCAL_THREE_URL = new URL("../vendor/three/three.module.js", import.meta.url).href;
 const LOCAL_THREE_WEBGPU_URL = new URL("../vendor/three/three.webgpu.js", import.meta.url).href;
+/** The library the WebGL renderer imports on creation (the player fetches it early, without evaluating it). */
+export const THREE_LIBRARY_URL = LOCAL_THREE_URL;
 
 function aspectOf(canvas) {
   return (canvas.clientWidth || canvas.width || 16) / (canvas.clientHeight || canvas.height || 9);

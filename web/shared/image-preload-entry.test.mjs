@@ -35,9 +35,10 @@ function host({metas=[meta('content/image-assets.json')],reply=response([encoder
     dataAssets:async()=>[],
     json:async url=>url==='content/project.json'?{config:{name:'preload-entry'},scene:{entities:[]}}:url==='content/assets.json'?{assets:[{id:ID,kind:'texture2d',source:'shared.png'}]}:{},
     createAssetCatalog:value=>{counts.catalogs++;return images.createAssetCatalog(value);},
-    createImageAssetBroker(){counts.brokers++;return {async prepareScene(){counts.preparations++;return preparation;}};},
+    createImageAssetBroker(){counts.brokers++;return {async prepareScene(){counts.preparations++;context.steps.push('prepare');return preparation;}};},
     async createRuntimeBackend(){counts.backends++;throw Error('Core must not be constructed for a rejected preload plan');},
     configurePhysical(){},loadPresentationFonts:async()=>{},async finishStartup(){counts.ready++;},
+    steps:[],warmStartup(presentation){context.steps.push('warm');},
   };
   vm.createContext(context);vm.runInContext(actualFunction('readImagePreloadPlan'),context);
   if(main().includes('function assertRequiredImagePreparation('))vm.runInContext(actualFunction('assertRequiredImagePreparation'),context);
@@ -133,4 +134,15 @@ test('scene-only partial preparation remains best effort and can reach Core crea
     await assert.rejects(h.start(),/expected-core-boundary/);
     assert.deepEqual(h.counts,{catalogs:1,brokers:1,preparations:1,backends:1,ready:0});
   }
+});
+
+test('actual start warms the runtime and renderer before image preparation, and Core still waits for images',async()=>{
+  const rejected=host({reply:response([encoder.encode('{')])});await assert.rejects(rejected.start());
+  assert.deepEqual(rejected.context.steps,['warm'],'warming starts once the manifests are known, before the plan is read');
+  assert.equal(rejected.counts.backends,0,'a rejected plan still constructs no Core, even though its binary may be compiling');
+  const empty={version:1,groups:{},startup:[]};
+  const h=host({reply:response([encoder.encode(JSON.stringify(empty))]),preparation:{cancelled:false,partial:false,required_entries:0,required_ready_entries:0,unsupported:[],budget_skipped:[],errors:[]}});
+  h.context.createRuntimeBackend=async()=>{h.context.steps.push('core');throw Error('expected-core-boundary');};
+  await assert.rejects(h.start(),/expected-core-boundary/);
+  assert.deepEqual(h.context.steps,['warm','prepare','core'],'download and compile overlap image preparation; construction follows it');
 });

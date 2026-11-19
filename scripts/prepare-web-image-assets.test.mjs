@@ -63,7 +63,7 @@ test('fresh publication preserves every source byte and uses the exact engine ha
  assert.equal(report.release_root,'releases/'+hash(Buffer.from(JSON.stringify([unbased,inventory])))+'/');
  for(const file of report.files){const bytes=fs.readFileSync(path.join(f.output,file.path));assert.equal(bytes.length,file.bytes);assert.equal(hash(bytes),file.sha256);}
  for(const [name,bytes]of f.logical){assert.deepEqual(fs.readFileSync(path.join(f.output,name)),bytes);assert.deepEqual(fs.readFileSync(path.join(f.output,report.release_root,name)),bytes);}
- assert.deepEqual(report.image_assets.startup_preflight,{required_entries:1,known_rgba_bytes_estimate:24,unknown_dimension_assets:[],scope:'24-byte PNG IHDR estimate only; the official browser still validates decoding and admission before READY'});
+ assert.deepEqual(report.image_assets.startup_preflight,{required_entries:1,known_rgba_bytes_estimate:24,unknown_dimension_assets:[],scope:'authored dimensions (checked against each file header) or the 24-byte PNG IHDR; the official browser still validates decoding and admission before READY'});
  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(f.output,'content/image-assets.json'))),{...f.plan,budget:{max_bytes:67108864,max_entries:128}});
  assert.deepEqual(report.image_assets.validator_dependencies,[{path:'web/shared/image-dimensions.mjs',bytes:dimensions.length,sha256:hash(dimensions)}]);
 });
@@ -178,4 +178,13 @@ test('authored raster dimensions are verified against sealed image bytes before 
  const f=fixture(t);f.plan.dimensions={'image://fixture/a':{format:'png',width:2,height:3}};write(f.project,'player.image-assets.json',JSON.stringify(f.plan));
  const result=await prepareWebImageAssets(f.args());const content=JSON.parse(fs.readFileSync(path.join(f.output,'content/image-assets.json')));assert.deepEqual(content.dimensions,f.plan.dimensions);assert.equal(result.image_assets.startup_preflight.required_entries,1);
  const stale=fixture(t);stale.plan.dimensions={'image://fixture/a':{format:'png',width:4,height:3}};write(stale.project,'player.image-assets.json',JSON.stringify(stale.plan));await rejectsBeforeOutput(stale,/AUTHORED_DIMENSIONS_MISMATCH/);
+});
+
+const webp=(width,height)=>{const bits=(width-1)|((height-1)<<14),bytes=Buffer.alloc(26),view=new DataView(bytes.buffer);bytes.set([82,73,70,70]);view.setUint32(4,18,true);bytes.set([87,69,66,80,86,80,56,76],8);view.setUint32(16,5,true);bytes[20]=0x2f;view.setUint32(21,bits,true);return bytes;};
+test('a WebP startup image is accepted when its authored dimensions match the file header',async t=>{
+ const f=fixture(t),image=webp(3,2);f.logical.set('content/assets/b.webp',image);write(f.project,'assets/b.webp',image);
+ write(f.project,'player.image-assets.json',JSON.stringify({...f.plan,startup:['ui'],dimensions:{'image://fixture/b':{format:'webp',width:3,height:2}}}));f.seal();
+ const report=await prepareWebImageAssets(f.args());assert.equal(report.image_assets.startup_preflight.required_entries,2);assert.equal(report.image_assets.startup_preflight.known_rgba_bytes_estimate,24+24);assert.deepEqual(report.image_assets.startup_preflight.unknown_dimension_assets,[]);
+ const g=fixture(t);g.logical.set('content/assets/b.webp',image);write(g.project,'assets/b.webp',image);
+ write(g.project,'player.image-assets.json',JSON.stringify({...g.plan,startup:['ui'],dimensions:{'image://fixture/b':{format:'webp',width:4,height:2}}}));g.seal();await rejectsBeforeOutput(g,/AUTHORED_DIMENSIONS_MISMATCH/);
 });
