@@ -61,6 +61,23 @@ test('invalid declaration is atomic and resize uses current pixel geometry',asyn
  assert.equal(f.layer.width,2560);assert.equal(f.layer.height,1440);
  assert.equal(host.report().mode,'image');assert.equal(host.report().rect.x,253);host.dispose();
 });
+test('the overlay holds a full drawing buffer only while an image cursor is drawn on it',async()=>{
+ const f=surface();f.layer.width=300;f.layer.height=150; // a fresh canvas element
+ const host=createUiCursorHost({...f,loadImage:async()=>({}),onError:error=>{throw error;}});
+ assert.deepEqual([f.layer.width,f.layer.height],[1,1],'nothing drawn yet: no buffer');
+ f.emit(74,60);host.render();
+ assert.deepEqual([f.layer.width,f.layer.height],[1,1],'the default cursor never mirrors the 1280x720 target');
+ host.update({kind:'hidden'});f.emit(74,60);assert.deepEqual([f.layer.width,f.layer.height],[1,1],'nor does a hidden cursor');
+ host.update(image);f.emit(74,60,'touch');await Promise.resolve();host.render();
+ assert.deepEqual([f.layer.width,f.layer.height],[1,1],'nor a touch pointer (no cursor on a phone)');
+ f.emit(74,60);await Promise.resolve();host.render();
+ assert.deepEqual([f.layer.width,f.layer.height],[1280,720],'an image cursor drawn: the target buffer size, in its pixels');
+ assert.equal(host.report().rect.x,125);
+ f.target.getBoundingClientRect=()=>({left:10,top:20,width:0,height:0});f.target.width=4800;f.target.height=1200;host.render();
+ assert.deepEqual([f.layer.width,f.layer.height],[1,1],'a target with no layout (hidden) releases it, however large its buffer');
+ host.update({kind:'default'});assert.deepEqual([f.layer.width,f.layer.height],[1,1]);host.dispose();
+});
+
 test('completion waits only for a visible requested custom cursor and reports failed artwork',async()=>{
  const f=surface();let resolve;const pending=new Promise(yes=>{resolve=yes;});
  const errors=[],host=createUiCursorHost({...f,loadImage:()=>pending,onError:error=>errors.push(error)});

@@ -53,3 +53,27 @@ test('a new CSS size, pixel ratio or buffer resizes again',()=>{
   f.resize(world());f.resize(world());
   assert.equal(f.calls.setSize,4,'and then stays');
 });
+
+// A canvas with no layout size (display:none, e.g. a game field hidden behind a menu) used to take its backing width
+// for a CSS width and multiply it by the pixel ratio again every frame: 300 → 600 → 1200… at ratio 2 until an iPhone
+// closed the tab (a real iOS 18 report: #game 600×150 → 4800×1200 in 66 ms, then the tab died).
+for(const ratio of [2,3,1.25]){
+  test(`a hidden canvas at pixel ratio ${ratio} stays small and is sized once`,()=>{
+    const f=fixture({clientWidth:0,clientHeight:0,ratio});
+    for(let i=0;i<600;i++)f.resize(world(i));
+    assert.deepEqual([f.canvas.width,f.canvas.height],[Math.floor(16*ratio),Math.floor(9*ratio)],'a small 16:9 fallback, not the backing size fed back');
+    assert.equal(f.calls.setSize,1,'no growth, no resize every frame');
+    assert.ok(Math.abs(f.camera.right-f.camera.left-10*16/9)<1e-9,'the camera uses the same fallback aspect');
+  });
+}
+
+test('a canvas hidden after it was shown keeps its last CSS size, and follows its layout again when shown',()=>{
+  const f=fixture({ratio:2});
+  f.resize(world());assert.deepEqual([f.canvas.width,f.canvas.height],[1852,856]);
+  f.canvas.clientWidth=0;f.canvas.clientHeight=0;
+  for(let i=0;i<120;i++)f.resize(world());
+  assert.deepEqual([f.canvas.width,f.canvas.height],[1852,856],'hidden: neither grown nor reallocated');
+  assert.equal(f.calls.setSize,1);
+  f.canvas.clientWidth=640;f.canvas.clientHeight=360;f.resize(world());
+  assert.deepEqual([f.canvas.width,f.canvas.height],[1280,720]);assert.equal(f.calls.setSize,2);
+});

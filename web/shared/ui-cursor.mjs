@@ -28,6 +28,7 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
  const context=layer.getContext('2d');if(!context)throw Error('UI_CURSOR_CANVAS_UNAVAILABLE');
  const previous=target.style.cursor,images=new Map(),readyWaiters=new Set();let spec={kind:'default'},pointer=null,disposed=false,visible=false,rect=null;
  Object.assign(layer.style,{position:'fixed',pointerEvents:'none',zIndex:'2147483000'});
+ if(layer.width>1||layer.height>1){layer.width=1;layer.height=1;} // a new canvas is 300×150; nothing is drawn until an image cursor is
  function restore(){if(target.style.cursor==='none')target.style.cursor=previous;}
  // Nothing else draws on the layer: a layer with no cursor on it needs no clearing every frame.
  function clear(){if(visible)context.clearRect(0,0,layer.width,layer.height);visible=false;rect=null;restore();}
@@ -56,20 +57,25 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
   }).catch(failed);
   return entry;
  }
+ // The layer works in the target's drawing-buffer pixels, so it matches the target's buffer size, but only while an
+ // image cursor is drawn on it. A default or hidden cursor, a touch pointer or a target with no layout needs no buffer:
+ // mirroring it always doubled the game's canvas memory, and followed a runaway target to the size that closed the tab.
+ function release(){if(layer.width!==1||layer.height!==1){layer.width=1;layer.height=1;}visible=false;rect=null;}
  function render(){
   if(disposed)return DRAW_SKIPPED.cursor_diagnostics;const width=target.width,height=target.height;
   if(!layout||layout.width!==width||layout.height!==height){
    const box=target.getBoundingClientRect();layout={css:box,width,height};
-   if(layer.width!==width)layer.width=width;if(layer.height!==height)layer.height=height;
    Object.assign(layer.style,{left:box.left+'px',top:box.top+'px',width:box.width+'px',height:box.height+'px'});
   }
   const css=layout.css;
   clear();
+  if(spec.kind!=='image'||css.width<=0||css.height<=0)release();
   if(!pointer||css.width<=0||css.height<=0||width<=0||height<=0||spec.kind==='default')return DRAW_COMPLETED;
   const x=(pointer.x-css.left)*width/css.width,y=(pointer.y-css.top)*height/css.height;
   if(x<0||y<0||x>=width||y>=height)return DRAW_COMPLETED;
   if(spec.kind==='hidden'){target.style.cursor='none';return DRAW_COMPLETED;}
   const entry=resource(spec.asset),image=entry.image;if(!image)return entry.error?DRAW_SKIPPED.cursor_diagnostics:DRAW_SKIPPED.cursor_assets_pending;
+  if(layer.width!==width)layer.width=width;if(layer.height!==height)layer.height=height; // a size write also resets the 2D state set below
   rect=cursorRect(spec,{x,y});context.imageSmoothingEnabled=spec.filter==='linear';
   context.drawImage(image,rect.x,rect.y,rect.width,rect.height);target.style.cursor='none';visible=true;return DRAW_COMPLETED;
  }

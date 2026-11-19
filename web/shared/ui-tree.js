@@ -25,7 +25,7 @@ export function createUiTree(layer, { resolveAsset = null } = {}) {
     const opacityPainter=createUiOpacityPainter(()=>document.createElement('canvas'));
     const draw=()=>{
       if(generation!==renderGeneration||!element.isConnected)return;
-      const height=layer.clientHeight,width=layer.clientWidth,w=node.rect.width*width/100,h=node.rect.height*height/100,dpr=globalThis.devicePixelRatio??1;
+      const height=layer.clientHeight,width=layer.clientWidth,w=node.rect.width*width/100,h=node.rect.height*height/100,dpr=Math.min(globalThis.devicePixelRatio??1,2);
       if(w<=0||h<=0)return;canvas.width=Math.min(8192,Math.max(1,Math.round(w*dpr)));canvas.height=Math.min(8192,Math.max(1,Math.round(h*dpr)));
       const ctx=canvas.getContext('2d');
       opacityPainter.paint(ctx,node.style.opacity??1,{x:0,y:0,width:canvas.width,height:canvas.height},target=>{
@@ -95,7 +95,7 @@ export function createUiTree(layer, { resolveAsset = null } = {}) {
             const img=new Image(),opacityPainter=createUiOpacityPainter(()=>document.createElement('canvas'));let observer;
             const draw=()=>{
               if(generation!==renderGeneration||!element.isConnected||!img.complete||!img.naturalWidth)return;
-              const viewportHeight=layer.clientHeight,viewportWidth=layer.clientWidth,dpr=globalThis.devicePixelRatio??1;
+              const viewportHeight=layer.clientHeight,viewportWidth=layer.clientWidth,dpr=Math.min(globalThis.devicePixelRatio??1,2);
               const w=node.rect.width*viewportWidth/100,h=node.rect.height*viewportHeight/100;
               if(w<=0||h<=0)return;
               element.width=Math.min(8192,Math.max(1,Math.round(w*dpr)));element.height=Math.min(8192,Math.max(1,Math.round(h*dpr)));

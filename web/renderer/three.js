@@ -303,8 +303,12 @@ export async function createThreeRenderer(canvas, options = {}) {
   // also made stays every frame, for passes that move the viewport and rely on it.
   let resizedTo = null;
   function resize(world) {
-    const width = Math.max(1, canvas.clientWidth || canvas.width || 16);
-    const height = Math.max(1, canvas.clientHeight || canvas.height || 9);
+    // A canvas with no layout size (hidden, or not attached yet) keeps the CSS size it was last given. Its backing size
+    // is not a CSS size: taking canvas.width here and multiplying it by the pixel ratio again every frame grew a hidden
+    // canvas without limit (an iPhone at ratio 2 doubled it each frame until iOS closed the tab).
+    const laidOut = canvas.clientWidth > 0 && canvas.clientHeight > 0;
+    const width = laidOut ? canvas.clientWidth : (resizedTo?.width ?? 16);
+    const height = laidOut ? canvas.clientHeight : (resizedTo?.height ?? 9);
     const ratio = renderer.getPixelRatio();
     if (resizedTo?.width !== width || resizedTo.height !== height || resizedTo.ratio !== ratio
       || canvas.width !== Math.floor(width * ratio) || canvas.height !== Math.floor(height * ratio)) {
