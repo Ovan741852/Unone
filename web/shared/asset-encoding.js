@@ -222,13 +222,21 @@ async function inspectRasterImage(url,options={}) {
   return prefix?inspectImageDimensions(prefix):null;
 }
 
+// How many header preflights and image loads may be in flight at once. Each one is mostly a network wait, so two made a
+// scene of many small images pay one round trip after another: over a real connection that queueing, not the bytes,
+// dominated start-up. Six matches what browsers allow per host on HTTP/1.1. Decoded memory is still bounded by the
+// scene and unused budgets, which reserve bytes before a decode starts; this only bounds how much work overlaps.
+export const IMAGE_TASK_CONCURRENCY = 6, IMAGE_TASK_CONCURRENCY_MAX = 16;
+
 // Presentation-owned decoded pixels. GPU textures/samplers remain owned by
 // their renderer. Only exact immutable catalog membership authorizes id reuse.
 export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = loadDecodedImage, inspectImage = inspectPngImage,
-  sceneMaxBytes = 64 * 1024 * 1024, sceneMaxEntries = 128, unusedMaxBytes = 16 * 1024 * 1024, unusedMaxEntries = 128, preloadPlan = null } = {}) {
+  sceneMaxBytes = 64 * 1024 * 1024, sceneMaxEntries = 128, unusedMaxBytes = 16 * 1024 * 1024, unusedMaxEntries = 128, preloadPlan = null,
+  maxConcurrentTasks = IMAGE_TASK_CONCURRENCY } = {}) {
   const specs = assetCatalogSpecs(catalog);
   if (typeof resolveAssetUrl !== 'function' || typeof loadImage !== 'function' || typeof inspectImage !== 'function') throw imageError('IMAGE_ASSET_BROKER_OPTIONS');
   for (const [key, value] of Object.entries({ sceneMaxBytes, sceneMaxEntries, unusedMaxBytes, unusedMaxEntries })) if (!Number.isSafeInteger(value) || value < 0) throw imageError('IMAGE_ASSET_BUDGET', key);
+  if (!Number.isSafeInteger(maxConcurrentTasks) || maxConcurrentTasks < 1 || maxConcurrentTasks > IMAGE_TASK_CONCURRENCY_MAX) throw imageError('IMAGE_ASSET_BUDGET', 'maxConcurrentTasks');
   const plan = preloadPlan === null ? null : validateImagePreloadPlan(preloadPlan, catalog);
   if (plan) { sceneMaxBytes = plan.budget.max_bytes; sceneMaxEntries = plan.budget.max_entries; }
   const planSummary = plan ? Object.freeze({ version: plan.version, groups: Object.keys(plan.groups).length, startup_groups: plan.startup, budget: plan.budget }) : null;
@@ -242,11 +250,11 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     loadTimings.push(Object.freeze(row));if(loadTimings.length>128)loadTimings.shift();
     if(state==='ready'){completedLoads++;loadingTotalMs+=row.elapsed_ms;}else if(state==='cancelled')cancelledLoads++;else failedLoads++;
   }
-  const limits = Object.freeze({ sceneMaxBytes, sceneMaxEntries, unusedMaxBytes, unusedMaxEntries });
+  const limits = Object.freeze({ sceneMaxBytes, sceneMaxEntries, unusedMaxBytes, unusedMaxEntries, maxConcurrentTasks });
   const ownImage = image => imageOwners.set(image, (imageOwners.get(image) ?? 0) + 1);
   const dropImage = image => { const remaining = (imageOwners.get(image) ?? 1) - 1; if (remaining) imageOwners.set(image, remaining); else { imageOwners.delete(image); closeDecodedImage(image); closedImages++; } };
   function pump() {
-    while (running < 2 && queue.length) {
+    while (running < maxConcurrentTasks && queue.length) {
       const task = queue.shift(); if (task.signal.aborted) { task.cleanup(); continue; } running++;
       Promise.resolve().then(task.work).then(task.resolve, task.reject).finally(() => { running--; task.cleanup(); pump(); });
     }
@@ -338,7 +346,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
       } catch (error) { inspected[index] = { id, error }; }
       inspectedCount++; progress();
     };
-    await Promise.all([worker(inspect), worker(inspect)]);
+    await Promise.all(Array.from({ length: maxConcurrentTasks }, () => worker(inspect)));
     if (controller.signal.aborted || epoch !== planEpoch || disposed) { result.cancelled = result.partial = true; return freezePreparation(result); }
     const selected = [];
     for (const item of inspected) {
@@ -359,7 +367,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
       }
       settledCount++; progress();
     } };
-    await Promise.all([decode(), decode()]);
+    await Promise.all(Array.from({ length: maxConcurrentTasks }, () => decode()));
     result.cancelled = controller.signal.aborted || epoch !== planEpoch || disposed;
     if (!result.cancelled) { result.admitted_entries = next.size; result.reserved_bytes = selected.reduce((bytes, item) => bytes + (next.has(item.id) ? item.bytes : 0), 0); }
     result.partial = result.cancelled || result.ready_entries !== result.declared_entries;

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createAssetCatalog,createImageAssetBroker} from './asset-encoding.js';
+import {createAssetCatalog,createImageAssetBroker,IMAGE_TASK_CONCURRENCY} from './asset-encoding.js';
 
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return{promise,resolve,reject};};
@@ -60,13 +60,20 @@ test('decoded dimensions must match the reserved scene header, including an alre
  const h=fixture(['a'],{inspectImage:async()=>({format:'png',width:3,height:3})});const active=h.broker.acquire('a');await active.promise;const mismatch=await h.broker.prepareScene(scene(['a']));assert.equal(mismatch.partial,true);assert.match(mismatch.errors[0].message,/DIMENSIONS_CHANGED/);assert.equal(active.state,'ready');assert.equal(active.image.closed,0);active.release();h.broker.dispose();
 });
 
-test('global preflight and decode work never exceeds two concurrent tasks',async()=>{
- let active=0,maximum=0;const pending=[];
- const enter=async value=>{active++;maximum=Math.max(maximum,active);const wait=deferred();pending.push(wait);await wait.promise;active--;return value;};
- const f=fixture(['a','b','c','d'],{inspectImage:()=>enter({format:'png',width:2,height:2}),loadImage:(url,{asset})=>enter(image(asset.id))});
- const plan=f.broker.prepareScene(scene(['a','b','c','d']));let finished=false;plan.finally(()=>{finished=true;});
- for(let i=0;i<20&&!finished;i++){await tick();for(const p of pending.splice(0))p.resolve();}
- assert.equal((await plan).ready_entries,4);assert.equal(maximum,2);f.broker.dispose();
+test('global preflight and decode work never exceeds the configured concurrent tasks',async()=>{
+ const ids=['a','b','c','d','e','f','g','h','i','j'];
+ const run=async options=>{
+  let active=0,maximum=0;const pending=[];
+  const enter=async value=>{active++;maximum=Math.max(maximum,active);const wait=deferred();pending.push(wait);await wait.promise;active--;return value;};
+  const f=fixture(ids,{inspectImage:()=>enter({format:'png',width:2,height:2}),loadImage:(url,{asset})=>enter(image(asset.id)),...options});
+  const plan=f.broker.prepareScene(scene(ids));let finished=false;plan.finally(()=>{finished=true;});
+  for(let i=0;i<60&&!finished;i++){await tick();for(const p of pending.splice(0))p.resolve();}
+  assert.equal((await plan).ready_entries,ids.length);const limit=f.broker.report().limits.maxConcurrentTasks;f.broker.dispose();return {maximum,limit};
+ };
+ assert.deepEqual(await run({}),{maximum:IMAGE_TASK_CONCURRENCY,limit:IMAGE_TASK_CONCURRENCY});assert.equal(IMAGE_TASK_CONCURRENCY,6);
+ assert.deepEqual(await run({maxConcurrentTasks:2}),{maximum:2,limit:2});
+ assert.deepEqual(await run({maxConcurrentTasks:1}),{maximum:1,limit:1});
+ for(const bad of [0,-1,1.5,17,'4',null])assert.throws(()=>fixture(['a'],{maxConcurrentTasks:bad}),/IMAGE_ASSET_BUDGET/,String(bad));
 });
 
 test('a released pending load is cancelled and late pixels cannot repopulate or close a new generation',async()=>{
@@ -81,7 +88,7 @@ test('dispose cancels loading work, fences late results and keeps existing activ
 });
 
 test('queued cancellation immediately drops its task while unrelated active work is still pending',async()=>{
- const pending=new Map([['a',deferred()],['b',deferred()]]);const f=fixture(['a','b','c'],{loadImage:(url,{asset})=>pending.get(asset.id).promise,unusedMaxBytes:0,unusedMaxEntries:0});
+ const pending=new Map([['a',deferred()],['b',deferred()]]);const f=fixture(['a','b','c'],{loadImage:(url,{asset})=>pending.get(asset.id).promise,unusedMaxBytes:0,unusedMaxEntries:0,maxConcurrentTasks:2});
  const a=f.broker.acquire('a'),b=f.broker.acquire('b'),c=f.broker.acquire('c');await tick();assert.equal(f.broker.report().active_tasks,2);assert.equal(f.broker.report().queued_tasks,1);
  c.release();await assert.rejects(c.promise,/CANCELLED/);assert.equal(f.broker.report().queued_tasks,0);assert.equal(f.broker.report().resident_entries,2);
  a.release();b.release();await Promise.all([assert.rejects(a.promise,/CANCELLED/),assert.rejects(b.promise,/CANCELLED/)]);f.broker.dispose();pending.get('a').resolve(image('a'));pending.get('b').resolve(image('b'));await tick();assert.equal(f.broker.report().active_tasks,0);assert.equal(f.broker.report().queued_tasks,0);
