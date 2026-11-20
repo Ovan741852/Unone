@@ -27,9 +27,22 @@ api.particle.finish(handle)              -- taper the trail; existing particles 
 api.particle.stop(handle)                -- cancel the instance immediately
 ```
 
-Definitions support per-emitter start delays for staged effects; point, box, sphere, and ring birth shapes; vector, cone, and radial velocity; gravity; eased size and RGBA interpolation; start/end rotation plus angular velocity; and soft-circle, diamond, ring, or streak sprites. This covers the reusable visual building blocks for cast cues, projectile fans, impacts, fire/poison clouds, trails, persistent auras, and death bursts. A game composes cast/channel/release timing, buff rules, collisions, elemental reactions, damage, and target selection in Luau.
+Definitions support per-emitter start delays for staged effects; point, box, sphere, and ring birth shapes; vector, cone, and radial velocity; gravity; eased size and RGBA interpolation; start/end rotation plus angular velocity; and soft-circle, diamond, ring, or streak sprites, or a painted image per emitter (`texture`). This covers the reusable visual building blocks for cast cues, projectile fans, impacts, fire/poison clouds, trails, persistent auras, and death bursts. A game composes cast/channel/release timing, buff rules, collisions, elemental reactions, damage, and target selection in Luau.
 
 The native WGPU renderer batches particles into two blend passes, uses a compact 40-byte instance record, depth-sorts alpha particles, and keeps emission deterministic and seekable. The web Three renderer pools instanced quads by sprite/blend/alpha and never creates an individual Sprite or material per particle. Both renderers support the same four procedural sprite silhouettes and particle rotation. Bloom remains a presentation-layer post-process option; AO is still part of the renderer configuration rather than particle data.
+
+## Image particles
+
+Set an emitter's `texture` to a `texture2d` asset id from the project's asset manifest to draw that image for every particle: hearts, confetti, sweat drops, leaves, coins, painted smoke. The particle colour multiplies the image, so `[1,1,1,a]` keeps the painted colours and the alpha fades it; `size` is the image height and the width follows its aspect ratio; rotation and every motion field work as for shapes. Use non-additive blending for painted images (additive washes light colours toward white) and keep additive for glows.
+
+```json
+{"id": "hearts", "count": 6, "interval_frames": 1, "lifetime_frames": 50, "emission_shape": "point",
+ "velocity_mode": "cone", "direction": {"x": 0, "y": 1, "z": 0}, "cone_angle_degrees": 40, "speed_min": 50, "speed_max": 90,
+ "size_start": 20, "size_end": 30, "size_easing": "ease_out", "color_start": [1, 1, 1, 1], "color_end": [1, 1, 1, 0],
+ "sprite_shape": "diamond", "texture": "asset://game/fx-heart"}
+```
+
+Image particles are scene asset references: `game assets inspect` reports a missing id as `ASSET_REFERENCE_MISSING`, packaging keeps the image, and the official web player admits it before READY like scene sprites. The official web Three renderer draws them; until an image is ready, and in renderers without image particles (the native wgpu player for now), the particles draw `sprite_shape` instead, so choose a fitting silhouette there.
 
 Each definition is limited to 1,024 births per play; the world allows 64 active handles and 4,096 reserved births. Coordinates, colors, speed and size are validated. `finish` releases reservations after already-born particles reach their authored lifetime. `stop` releases immediately. `play_batch` remains intended for many static origins under one handle.
 

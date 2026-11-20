@@ -857,6 +857,13 @@
           "minimum": 0,
           "type": "integer"
         },
+        "texture": {
+          "description": "Optional painted image for every particle of this emitter: an asset id from the project's\nasset manifest (a `texture2d`). The particle colour tints it (white keeps the painted colours),\nits alpha fades it, and size (the image height) and rotation apply as for shapes. A renderer\nwithout image particles draws `sprite_shape` instead, so keep a fitting silhouette there.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "velocity_max": {
           "$ref": "#/$defs/Vec3",
           "default": {

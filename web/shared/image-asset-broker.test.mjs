@@ -138,3 +138,8 @@ test('default loader abort clears image handlers/source and unknown headers do n
  try{broker=createImageAssetBroker(createAssetCatalog({assets:[spec('a')]}),{resolveAssetUrl:asset=>asset.source});assert.equal((await broker.prepareScene(scene(['a']))).unsupported.length,1);assert.equal(instances.length,0);const lease=broker.acquire('a');await tick();broker.dispose();await assert.rejects(lease.promise,/CANCELLED/);assert.equal(instances[0].onload,null);assert.equal(instances[0].onerror,null);assert.equal(instances[0].removed,1);lease.release();}
  finally{broker?.dispose();globalThis.Image=priorImage;globalThis.fetch=priorFetch;}
 });
+test('image particle textures in the scene are admitted before READY with its sprites',async()=>{
+ const f=fixture(['a','heart','spark']);
+ const result=await f.broker.prepareScene({entities:{id:{sprite:{asset:'a'}}},particle_effects:{heal:{emitters:[{id:'hearts',texture:'heart'},{id:'ring'}]},gift:{emitters:[{id:'s',texture:'spark'},{id:'h',texture:'heart'}]}}});
+ assert.equal(result.partial,false);assert.equal(result.declared_entries,3);assert.equal(result.ready_entries,3);assert.deepEqual(f.loads.sort(),['a','heart','spark']);f.broker.dispose();
+});

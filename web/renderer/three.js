@@ -1,7 +1,7 @@
 import {createShaderMaterials} from './shader-materials.js';
 import {createLinkLossGuard,isSuspectedContextLoss} from './link-loss.js';
 import {createTextureCachePolicy,parseTextureCache} from './texture-cache-policy.js';
-import { createParticleRenderer } from "./particles.js?build=particle-texture-colorbins-v1";
+import { createParticleRenderer } from "./particles.js?build=particle-image-v1";
 import { meshGeometry, validateMesh } from "./mesh.js";
 import {createInstanceRenderer} from './instances3d.js';
 import {createGeometry3DRenderer} from './geometry3d.js';
@@ -188,7 +188,8 @@ export async function createThreeRenderer(canvas, options = {}) {
   let environment = null;
   const instances = createInstanceRenderer(THREE,world3d,meshAssetFor,options.instanceMemory,lighting);
   const meshEntities = createMeshEntityRenderer(THREE,world3d,meshAssetFor,lighting);
-  const particles = createParticleRenderer(THREE,world3d);
+  // Image particles share the sprite texture cache: a texture is drawn once it is ready.
+  const particles = createParticleRenderer(THREE,world3d,{imageTexture:id=>{const record=textureFor(specsOf().get(id),'sprite');return record?.state==='ready'?record.texture:null;}});
   const projected = createProjectedRenderer(THREE,textureFor,{raster:rasterPolicy.requested});
   const uiImageBatchPrefix=createUiImageBatchPrefix(THREE,renderer,{enabled:backend==='webgl'&&!checkedRaster&&!frameProfile});
   const textureRecords = new Map();

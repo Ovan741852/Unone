@@ -337,7 +337,9 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
   async function prepareScene(scene, { onProgress = null } = {}) {
     if (disposed) throw imageError('IMAGE_ASSET_BROKER_DISPOSED');
     planController?.abort(); const controller = new AbortController(); planController = controller; const epoch = ++planEpoch;
-    const entities = scene?.entities ?? [], sceneIds = (Array.isArray(entities) ? entities : Object.values(entities)).flatMap(entity => typeof entity?.sprite?.asset === 'string' ? [entity.sprite.asset] : []);
+    // Scene sprites and image particles (emitter texture) are admitted before READY.
+    const entities = scene?.entities ?? [], particleIds = Object.values(scene?.particle_effects ?? {}).flatMap(effect => (effect?.emitters ?? []).flatMap(emitter => typeof emitter?.texture === 'string' && emitter.texture ? [emitter.texture] : []));
+    const sceneIds = [...(Array.isArray(entities) ? entities : Object.values(entities)).flatMap(entity => typeof entity?.sprite?.asset === 'string' ? [entity.sprite.asset] : []), ...particleIds];
     const startupIds = plan ? plan.startup.flatMap(name => plan.groups[name]) : [], requiredIds = new Set(startupIds), ids = [...new Set([...startupIds, ...sceneIds])];
     const previous = sceneLeases, next = new Map(); sceneLeases = next;
     for (const [id, lease] of previous) { if (ids.includes(id)) next.set(id, lease); else lease.release(); }

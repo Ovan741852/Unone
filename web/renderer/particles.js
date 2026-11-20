@@ -1,5 +1,7 @@
 // Batched camera-facing particle quads. Geometry, textures and alpha groups are
-// pooled by authored shape/blend; particles never allocate individual Sprites.
+// pooled by authored shape or image/blend; particles never allocate individual Sprites.
+// Image particles (emitter `texture`) borrow the sprite texture cache through
+// options.imageTexture(id); until an image is ready its particles draw sprite_shape.
 const SHAPES = ['soft_circle', 'diamond', 'ring', 'streak'];
 const ALPHA_BINS = 8;
 const COLOR_BINS = 8;
@@ -33,9 +35,23 @@ function smoothstep(edge0, edge1, value) {
 function capacityFor(count) { return 2 ** Math.ceil(Math.log2(Math.max(1, count))); }
 function colorBin(value) { return Math.max(0, Math.min(COLOR_BINS - 1, Math.round(Math.max(0, Math.min(1, value)) * (COLOR_BINS - 1)))); }
 
-export function createParticleRenderer(THREE, scene) {
+export function createParticleRenderer(THREE, scene, { imageTexture = null } = {}) {
   const geometry = new THREE.PlaneGeometry(1, 1);
   const textures = new Map(SHAPES.map(shape => [shape, makeTexture(THREE, shape)]));
+  // Sources are the four shapes, then each image id in the order first drawn; a group's key holds its source index.
+  const sources = [...SHAPES], sourceIndex = new Map(SHAPES.map((shape, i) => [shape, i])), frameImages = new Map();
+  const isImage = source => source.startsWith('image:');
+  function sourceFor(particle) {
+    const id = typeof particle.texture === 'string' && particle.texture ? particle.texture : null;
+    if (id && imageTexture) {
+      let ready = frameImages.get(id);
+      if (ready === undefined) { ready = !!imageTexture(id); frameImages.set(id, ready); }
+      if (ready) { const source = 'image:' + id; let index = sourceIndex.get(source); if (index === undefined) { index = sources.length; sources.push(source); sourceIndex.set(source, index); } return index; }
+    }
+    return Math.max(0, SHAPES.indexOf(particle.sprite_shape));
+  }
+  function mapFor(source) { return isImage(source) ? imageTexture(source.slice(6)) : textures.get(source); }
+  function aspectOf(map) { const image = map?.image; const w = Number(image?.naturalWidth ?? image?.width), h = Number(image?.naturalHeight ?? image?.height); return w > 0 && h > 0 ? w / h : 1; }
   const groups = new Map(), pending = new Map();
   const object = new THREE.Object3D(), identity = new THREE.Quaternion();
   let count = 0, retainedCapacity = 0, compactions = 0, disposed = false;
@@ -44,8 +60,9 @@ export function createParticleRenderer(THREE, scene) {
     scene.remove(group.mesh); group.mesh.dispose(); group.material.dispose();retainedCapacity-=group.capacity;
   }
   function createGroup(key, shape, additive, alphaBin, tint, capacity) {
+    const map = mapFor(shape);
     const material = new THREE.MeshBasicMaterial({
-      map: textures.get(shape), color: tint, vertexColors: false, transparent: true,
+      map, color: tint, vertexColors: false, transparent: true,
       opacity: alphaBin / (ALPHA_BINS - 1), alphaTest: 0.01, depthTest: true, depthWrite: false,
       side: THREE.DoubleSide, toneMapped: false,
       blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
@@ -56,7 +73,7 @@ export function createParticleRenderer(THREE, scene) {
     mesh.renderOrder = (additive ? 100 : 0) + alphaBin;
     mesh.count = 0;
     scene.add(mesh);
-    const group = {mesh, material, capacity, shape, additive, alphaBin, idleFrames:0,
+    const group = {mesh, material, capacity, shape, additive, alphaBin, idleFrames:0, aspect:isImage(shape)?aspectOf(map):1,
       debugKey:`${shape}|${additive?1:0}|${alphaBin}|${Math.round(tint.r*(COLOR_BINS-1))}|${Math.round(tint.g*(COLOR_BINS-1))}|${Math.round(tint.b*(COLOR_BINS-1))}`};
     groups.set(key, group);
     retainedCapacity+=capacity;
@@ -87,11 +104,11 @@ export function createParticleRenderer(THREE, scene) {
   function draw(samples = [], camera = null) {
     if (disposed) return;
     for(const list of pending.values())list.length=0;
-    count = 0;
+    count = 0; frameImages.clear();
     for (const particle of samples) {
       const alpha = Math.max(0, Math.min(1, Number(particle.color?.[3] ?? 1)));
       if (alpha <= 0 || !(particle.size > 0)) continue;
-      const shapeIndex=Math.max(0,SHAPES.indexOf(particle.sprite_shape));
+      const shapeIndex=sourceFor(particle);
       const alphaBin = Math.max(1, Math.min(ALPHA_BINS - 1, Math.round(alpha * (ALPHA_BINS - 1))));
       const additive = particle.additive === true;
       const rBin = colorBin(particle.color?.[0] ?? 1), gBin = colorBin(particle.color?.[1] ?? 1), bBin = colorBin(particle.color?.[2] ?? 1);
@@ -118,7 +135,7 @@ export function createParticleRenderer(THREE, scene) {
         const bBin=packed%COLOR_BINS;packed=Math.floor(packed/COLOR_BINS);
         const gBin=packed%COLOR_BINS;packed=Math.floor(packed/COLOR_BINS);
         const rBin=packed%COLOR_BINS;packed=Math.floor(packed/COLOR_BINS);
-        const alphaBin=packed%ALPHA_BINS,shape=SHAPES[Math.floor(packed/ALPHA_BINS/2)];
+        const alphaBin=packed%ALPHA_BINS,shape=sources[Math.floor(packed/ALPHA_BINS/2)];
         const tint = new THREE.Color(rBin / (COLOR_BINS - 1), gBin / (COLOR_BINS - 1), bBin / (COLOR_BINS - 1));
         if (group) disposeGroup(group);
         group = createGroup(key, shape, additive, alphaBin, tint, capacityFor(particles.length));
@@ -129,7 +146,7 @@ export function createParticleRenderer(THREE, scene) {
         object.position.set(p.position.x, p.position.y, p.position.z);
         object.quaternion.copy(cameraQuaternion ?? identity);
         object.rotateZ(p.rotation ?? 0);
-        object.scale.set(p.size, p.size, 1);
+        object.scale.set(p.size * group.aspect, p.size, 1);
         object.updateMatrix(); group.mesh.setMatrixAt(i, object.matrix);
       }
       group.mesh.count = particles.length;

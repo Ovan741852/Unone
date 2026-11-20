@@ -1254,6 +1254,18 @@ pub(crate) fn read_scene_references(
             });
         }
     }
+    // Image particles name their texture in the scene's particle_effects, so they are static references too.
+    for (effect, definition) in &scene.particle_effects {
+        for emitter in &definition.emitters {
+            if let Some(texture) = &emitter.texture {
+                references.push(AssetReference {
+                    id: texture.clone(),
+                    entity: format!("particle:{effect}/{}", emitter.id),
+                    component: "particle_texture".to_string(),
+                });
+            }
+        }
+    }
     Ok(references)
 }
 
@@ -1354,6 +1366,7 @@ fn static_reference_scope(paths: &ProjectPaths) -> StaticReferenceScope {
             "sprite".to_string(),
             "mesh3d".to_string(),
             "animation".to_string(),
+            "particle_texture".to_string(),
         ],
         dynamic_luau_assets_included: false,
         limitations: vec![
@@ -1561,6 +1574,29 @@ mod tests {
             result.diagnostics[0].severity,
             crate::diagnostics::DiagnosticSeverity::Error
         ));
+    }
+
+    #[test]
+    fn particle_textures_are_scene_asset_references() {
+        let dir = tempdir().unwrap();
+        fs::create_dir_all(dir.path().join("assets")).unwrap();
+        write_project(
+            dir.path(),
+            r#"{"name":"asset-test","main_scene":"scenes/main.scene.json","asset_manifest":"assets/manifest.json"}"#,
+            r#"{"entities":[],"particle_effects":{"heal":{"version":1,"duration_frames":1,"emitters":[{"id":"hearts","count":1,"interval_frames":1,"lifetime_frames":10,"size_start":1,"size_end":1,"color_start":[1,1,1,1],"color_end":[1,1,1,0],"texture":"asset://missing-heart"}]}}}"#,
+        );
+        fs::write(
+            dir.path().join("assets/manifest.json"),
+            r#"{"version":1,"assets":[]}"#,
+        )
+        .unwrap();
+        let result = inspect_strict(dir.path());
+        assert!(!result.ok);
+        assert_eq!(result.diagnostics[0].code, "ASSET_REFERENCE_MISSING");
+        assert_eq!(
+            result.diagnostics[0].facts["missing_asset_ids"][0],
+            "asset://missing-heart"
+        );
     }
 
     #[test]

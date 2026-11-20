@@ -114,6 +114,12 @@ pub struct ParticleEmitter {
     pub angular_velocity: f64,
     #[serde(default)]
     pub sprite_shape: ParticleSpriteShape,
+    /// Optional painted image for every particle of this emitter: an asset id from the project's
+    /// asset manifest (a `texture2d`). The particle colour tints it (white keeps the painted colours),
+    /// its alpha fades it, and size (the image height) and rotation apply as for shapes. A renderer
+    /// without image particles draws `sprite_shape` instead, so keep a fitting silhouette there.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub texture: Option<String>,
     #[serde(default)]
     pub additive: bool,
 }
@@ -130,6 +136,8 @@ pub struct ParticleSnapshot {
     pub rotation: f64,
     #[serde(default, skip_serializing_if = "is_soft_circle")]
     pub sprite_shape: ParticleSpriteShape,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub texture: Option<String>,
     pub additive: bool,
 }
 
@@ -260,6 +268,13 @@ impl ParticleDefinition {
                     .all(|n| n.is_finite() && (0.0..=1.0).contains(n))
             {
                 return Err("PARTICLE_DEFINITION_INVALID: invalid shape, direction, velocity, curve endpoints or RGBA".into());
+            }
+            if let Some(texture) = &e.texture
+                && (texture.trim().is_empty()
+                    || texture.len() > 512
+                    || texture.chars().any(char::is_control))
+            {
+                return Err("PARTICLE_TEXTURE_INVALID: texture must be a non-empty asset id of at most 512 characters".into());
             }
         }
         if self.capacity() > 1024 {
@@ -664,6 +679,7 @@ where
                         + (e.rotation_end - e.rotation_start) * size_t
                         + e.angular_velocity * t),
                     sprite_shape: e.sprite_shape,
+                    texture: e.texture.clone(),
                     additive: e.additive,
                 });
             }
@@ -786,6 +802,27 @@ mod tests {
             assert!((v.rotation - (0.2 + 0.8 * 0.51 + 0.5 * 0.5)).abs() < 0.00001);
             assert_eq!(v.sprite_shape, ParticleSpriteShape::Diamond);
         }
+    }
+    #[test]
+    fn image_particles_carry_their_texture_and_reject_a_blank_id() {
+        let mut d = definition();
+        let plain = d.sample(7, 15, Vec3::default()).unwrap();
+        assert!(serde_json::to_value(&plain[0]).unwrap().get("texture").is_none());
+        assert!(serde_json::to_value(&d).unwrap()["emitters"][0].get("texture").is_none());
+        d.emitters[0].texture = Some("asset://fx/heart".into());
+        let painted = d.sample(7, 15, Vec3::default()).unwrap();
+        assert_eq!(painted.len(), plain.len(), "an image changes what is drawn, not the emission");
+        assert!(painted.iter().all(|v| v.texture.as_deref() == Some("asset://fx/heart")));
+        assert_eq!(serde_json::to_value(&painted[0]).unwrap()["texture"], "asset://fx/heart");
+        let round: ParticleDefinition =
+            serde_json::from_value(serde_json::to_value(&d).unwrap()).unwrap();
+        assert_eq!(round.emitters[0].texture.as_deref(), Some("asset://fx/heart"));
+        for bad in ["", "   ", "asset://a\nb"] {
+            d.emitters[0].texture = Some(bad.into());
+            assert!(d.validate().unwrap_err().starts_with("PARTICLE_TEXTURE_INVALID"));
+        }
+        d.emitters[0].texture = Some("x".repeat(513));
+        assert!(d.validate().is_err());
     }
     #[test]
     fn sphere_and_ring_emitters_stay_inside_authored_shapes() {

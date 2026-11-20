@@ -61,3 +61,21 @@ test('active historical peaks obey the aggregate capacity budget and stable smal
  assert.deepEqual({built,disposed,compactions:renderer.metrics().compactions},steady,'fixed live bins perform no repeated rebuild or compaction');
  renderer.dispose();assert.equal(disposed,built);assert.equal(renderer.metrics().capacity,0);assert.equal(meshes.size,0);
 });
+test('image particles borrow the sprite texture, keep its aspect and draw sprite_shape until it is ready',()=>{
+  const meshes=new Set(),scene={add(m){meshes.add(m);},remove(m){meshes.delete(m);}};
+  const heart=new THREE.Texture({width:64,height:32});let ready=false,asked=0,heartDisposed=false;heart.addEventListener('dispose',()=>{heartDisposed=true;});
+  const renderer=createParticleRenderer(THREE,scene,{imageTexture:id=>{asked++;return id==='asset://fx/heart'&&ready?heart:null;}});
+  const p=x=>({position:{x,y:0,z:0},size:2,color:[1,1,1,1],sprite_shape:'diamond',texture:'asset://fx/heart',additive:false});
+  renderer.draw([p(0),p(1)]);
+  assert.deepEqual(renderer.debugBatches.filter(b=>b.count>0).map(b=>b.key),['diamond|0|7|7|7|7'],'the silhouette stands in until the image is ready');
+  assert.equal(asked,1,'one lookup per image per frame');
+  ready=true;renderer.draw([p(0),p(1),{position:{x:0,y:0,z:0},size:1,color:[1,1,1,1],sprite_shape:'ring',additive:true}]);
+  assert.deepEqual(renderer.debugBatches.filter(b=>b.count>0).map(b=>b.key).sort(),['image:asset://fx/heart|0|7|7|7|7','ring|1|7|7|7|7']);
+  const imageMesh=[...meshes].find(m=>m.material.map===heart);
+  assert.ok(imageMesh,'the image is the material map');assert.equal(imageMesh.count,2);
+  const m=imageMesh.instanceMatrix.array;
+  assert.ok(Math.abs(Math.hypot(m[0],m[1],m[2])-4)<1e-6,'the width follows the 2:1 image');
+  assert.ok(Math.abs(Math.hypot(m[4],m[5],m[6])-2)<1e-6,'size is the image height');
+  renderer.dispose();
+  assert.equal(heartDisposed,false,'a borrowed texture stays owned by the sprite cache');assert.equal(meshes.size,0);
+});
