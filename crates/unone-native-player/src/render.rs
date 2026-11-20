@@ -806,6 +806,10 @@ pub struct Renderer {
     texture_catalog: crate::sprite_resources::TextureCatalog,
     texture_bytes: BTreeMap<String,u64>,
     texture_estimates: BTreeMap<String,u64>,
+    /// Width and height of resident textures (image particles size by the image's aspect ratio).
+    texture_dims: BTreeMap<String,(u32,u32)>,
+    /// Images particles have used; they stay resident like scene-declared art.
+    particle_textures: std::collections::BTreeSet<String>,
     persistent_textures: std::collections::BTreeSet<String>,
     sprite_resources: crate::sprite_resources::Resources,
     sprite_plan_revision:Option<u64>,
@@ -1040,10 +1044,10 @@ fn load_texture(
     layout: &wgpu::BindGroupLayout,
     bytes: &[u8],
     max_bytes:u64,
-) -> R<(Option<Arc<wgpu::BindGroup>>,u64)> {
+) -> R<(Option<Arc<wgpu::BindGroup>>,u64,(u32,u32))> {
     let (width,height,rgba)=decode_texture_bounded(bytes,max_bytes,device.limits().max_texture_dimension_2d)?;
     let byte_length=u64::from(width)*u64::from(height)*4;
-    let Some(rgba)=rgba else {return Ok((None,byte_length));};
+    let Some(rgba)=rgba else {return Ok((None,byte_length,(width,height)));};
     let size = wgpu::Extent3d { width, height, depth_or_array_layers: 1 };
     let tex = device.create_texture(&wgpu::TextureDescriptor {
         label: Some("native-texture"), size, mip_level_count: 1, sample_count: 1,
@@ -1063,19 +1067,19 @@ fn load_texture(
             wgpu::BindGroupEntry { binding: 0, resource: wgpu::BindingResource::TextureView(&view) },
             wgpu::BindGroupEntry { binding: 1, resource: wgpu::BindingResource::Sampler(&sampler) },
         ],
-    }))),byte_length))
+    }))),byte_length,(width,height)))
 }
 
 fn ensure_texture(device:&wgpu::Device,queue:&wgpu::Queue,layout:&wgpu::BindGroupLayout,
     catalog:&crate::sprite_resources::TextureCatalog,package:&Package,
     textures:&mut BTreeMap<String,Arc<wgpu::BindGroup>>,sizes:&mut BTreeMap<String,u64>,
-    estimates:&mut BTreeMap<String,u64>,id:&str,max_bytes:u64)->R<Option<u64>> {
+    estimates:&mut BTreeMap<String,u64>,dims:&mut BTreeMap<String,(u32,u32)>,id:&str,max_bytes:u64)->R<Option<u64>> {
     // Always validate kind/id, including an asset already owned by a mesh.
     let source=catalog.texture_source(id)?;
     if estimates.get(id).is_some_and(|bytes|*bytes>max_bytes) {return Ok(None);}
     if textures.contains_key(id) {return Ok(sizes.get(id).copied().filter(|bytes|*bytes<=max_bytes));}
-    let (texture,bytes)=load_texture(device,queue,layout,package.get(&format!("content/{source}"))?,max_bytes)?;
-    estimates.insert(id.into(),bytes);
+    let (texture,bytes,size)=load_texture(device,queue,layout,package.get(&format!("content/{source}"))?,max_bytes)?;
+    estimates.insert(id.into(),bytes);dims.insert(id.into(),size);
     let Some(texture)=texture else {return Ok(None);};
     textures.insert(id.into(),texture);sizes.insert(id.into(),bytes);
     Ok(Some(bytes))
@@ -1567,6 +1571,7 @@ impl Renderer {
         let mut meshes = BTreeMap::new();
         let mut textures: BTreeMap<String, Arc<wgpu::BindGroup>> = BTreeMap::new();
         let mut texture_bytes = BTreeMap::new();
+        let mut texture_dims: BTreeMap<String,(u32,u32)> = BTreeMap::new();
         let mut lods = BTreeMap::new();
         for asset in assets {
             let kind = asset["kind"].as_str().unwrap_or("");
@@ -1665,6 +1670,7 @@ impl Renderer {
             }));
             textures.insert(texture_id.to_owned(), texture.clone());
             texture_bytes.insert(texture_id.to_owned(),u64::from(texture_width)*u64::from(texture_height)*4);
+            texture_dims.insert(texture_id.to_owned(),(texture_width,texture_height));
             texture
             };
             meshes.insert(
@@ -1742,7 +1748,7 @@ impl Renderer {
         let bloom = bloom_enabled.then(|| {
             Bloom::new(&device, format, config.width, config.height, &depth)
         });
-        let particles = crate::particles::Particles::new(&device, format, &camera_layout, samples);
+        let particles = crate::particles::Particles::new(&device, format, &camera_layout, &texture_layout, white_texture.clone(), samples);
         let projected=crate::projected::Projected::new(&device,format,&texture_layout);
         let sprite_budget=crate::sprite_resources::Budget::from_plan(package.files.get("content/image-assets.json").map(Vec::as_slice))?;
         let texture_estimates=texture_bytes.clone();
@@ -1797,6 +1803,8 @@ impl Renderer {
             texture_catalog,
             texture_bytes,
             texture_estimates,
+            texture_dims,
+            particle_textures: Default::default(),
             persistent_textures,
             sprite_resources:crate::sprite_resources::Resources::new(crate::sprite_resources::next_epoch(),sprite_budget),
             sprite_plan_revision:None,
@@ -1836,16 +1844,18 @@ impl Renderer {
     pub fn sync_sprite_resources(&mut self,s:&WorldSnapshot,update:unone_engine::SpriteResourcePlanUpdate,package:&Package)->R<()> {
         if let Some(plan)=update.resources {self.sprite_plan=plan;}
         self.sprite_plan_revision=Some(update.revision);
+        self.particle_textures.extend(s.particles.iter().filter_map(|p|p.texture.clone()));
         let (device,queue,layout,catalog)=(&self.device,&self.queue,&self.texture_layout,&self.texture_catalog);
-        let (textures,sizes,estimates)=(&mut self.textures,&mut self.texture_bytes,&mut self.texture_estimates);
-        self.sprite_resources.reconcile(&self.sprite_plan,|id,limit|ensure_texture(device,queue,layout,catalog,package,textures,sizes,estimates,id,limit));
+        let (textures,sizes,estimates,dims)=(&mut self.textures,&mut self.texture_bytes,&mut self.texture_estimates,&mut self.texture_dims);
+        self.sprite_resources.reconcile(&self.sprite_plan,|id,limit|ensure_texture(device,queue,layout,catalog,package,textures,sizes,estimates,dims,id,limit));
         let mut needed=self.sprite_resources.ready_assets();
         needed.extend(self.persistent_textures.iter().cloned());
         for entity in s.entities.values().filter(|e|self.sprite_resources.drawable(e)) {
             if let Some(sprite)=&entity.sprite && sprite.visible {needed.insert(sprite.asset.clone());}
         }
         needed.extend(s.projected_geometry.values().map(|batch|batch.texture.clone()));
-        for id in &needed {ensure_texture(device,queue,layout,catalog,package,textures,sizes,estimates,id,u64::MAX)?;}
+        needed.extend(self.particle_textures.iter().cloned());
+        for id in &needed {ensure_texture(device,queue,layout,catalog,package,textures,sizes,estimates,dims,id,u64::MAX)?;}
         textures.retain(|id,_|needed.contains(id));
         sizes.retain(|id,_|needed.contains(id));
         Ok(())
@@ -2076,7 +2086,7 @@ impl Renderer {
         let c = s.camera3d.as_ref().ok_or("NATIVE_CAMERA3D_REQUIRED")?;
         if self.last_particle != Some((s.frame, view)) {
             self.particles
-                .prepare(&self.device, &self.queue, &s.particles, c);
+                .prepare(&self.device, &self.queue, &s.particles, c, &self.textures, &self.texture_dims);
             self.uploaded += self.particles.uploaded as u64;
             self.last_particle = Some((s.frame, view));
         }

@@ -2,6 +2,8 @@
 // pooled by authored shape or image/blend; particles never allocate individual Sprites.
 // Image particles (emitter `texture`) borrow the sprite texture cache through
 // options.imageTexture(id); until an image is ready its particles draw sprite_shape.
+// A flipbook particle's `uv` cell is its own source: a Texture clone with offset/repeat
+// that shares the image's GPU source, disposed here (the image itself is not ours).
 const SHAPES = ['soft_circle', 'diamond', 'ring', 'streak'];
 const ALPHA_BINS = 8;
 const COLOR_BINS = 8;
@@ -39,18 +41,29 @@ export function createParticleRenderer(THREE, scene, { imageTexture = null } = {
   const geometry = new THREE.PlaneGeometry(1, 1);
   const textures = new Map(SHAPES.map(shape => [shape, makeTexture(THREE, shape)]));
   // Sources are the four shapes, then each image id in the order first drawn; a group's key holds its source index.
-  const sources = [...SHAPES], sourceIndex = new Map(SHAPES.map((shape, i) => [shape, i])), frameImages = new Map();
+  const sources = [...SHAPES], sourceIndex = new Map(SHAPES.map((shape, i) => [shape, i])), frameImages = new Map(), cellTextures = new Map();
   const isImage = source => source.startsWith('image:');
   function sourceFor(particle) {
     const id = typeof particle.texture === 'string' && particle.texture ? particle.texture : null;
     if (id && imageTexture) {
       let ready = frameImages.get(id);
       if (ready === undefined) { ready = !!imageTexture(id); frameImages.set(id, ready); }
-      if (ready) { const source = 'image:' + id; let index = sourceIndex.get(source); if (index === undefined) { index = sources.length; sources.push(source); sourceIndex.set(source, index); } return index; }
+      if (ready) { const uv = Array.isArray(particle.uv) && particle.uv.length === 4 ? particle.uv : null; const source = 'image:' + id + (uv ? '#' + uv.join(',') : ''); let index = sourceIndex.get(source); if (index === undefined) { index = sources.length; sources.push(source); sourceIndex.set(source, index); } return index; }
     }
     return Math.max(0, SHAPES.indexOf(particle.sprite_shape));
   }
-  function mapFor(source) { return isImage(source) ? imageTexture(source.slice(6)) : textures.get(source); }
+  function mapFor(source) {
+    if (!isImage(source)) return textures.get(source);
+    const hash = source.indexOf('#'), image = imageTexture(hash < 0 ? source.slice(6) : source.slice(6, hash));
+    if (hash < 0 || !image) return image;
+    let cell = cellTextures.get(source);
+    if (!cell || cell.source !== image.source) {
+      cell?.dispose(); const [u, v, w, h] = source.slice(hash + 1).split(',').map(Number);
+      cell = image.clone(); cell.offset.set(u, image.flipY ? 1 - v - h : v); cell.repeat.set(w, h); cellTextures.set(source, cell);
+    }
+    return cell;
+  }
+  function cellAspect(source) { const hash = source.indexOf('#'); if (hash < 0) return 1; const [, , w, h] = source.slice(hash + 1).split(',').map(Number); return w > 0 && h > 0 ? w / h : 1; }
   function aspectOf(map) { const image = map?.image; const w = Number(image?.naturalWidth ?? image?.width), h = Number(image?.naturalHeight ?? image?.height); return w > 0 && h > 0 ? w / h : 1; }
   const groups = new Map(), pending = new Map();
   const object = new THREE.Object3D(), identity = new THREE.Quaternion();
@@ -73,7 +86,7 @@ export function createParticleRenderer(THREE, scene, { imageTexture = null } = {
     mesh.renderOrder = (additive ? 100 : 0) + alphaBin;
     mesh.count = 0;
     scene.add(mesh);
-    const group = {mesh, material, capacity, shape, additive, alphaBin, idleFrames:0, aspect:isImage(shape)?aspectOf(map):1,
+    const group = {mesh, material, capacity, shape, additive, alphaBin, idleFrames:0, aspect:isImage(shape)?aspectOf(map)*cellAspect(shape):1,
       debugKey:`${shape}|${additive?1:0}|${alphaBin}|${Math.round(tint.r*(COLOR_BINS-1))}|${Math.round(tint.g*(COLOR_BINS-1))}|${Math.round(tint.b*(COLOR_BINS-1))}`};
     groups.set(key, group);
     retainedCapacity+=capacity;
@@ -174,7 +187,8 @@ export function createParticleRenderer(THREE, scene, { imageTexture = null } = {
     dispose() {
       if (disposed) return; disposed = true;
       for (const group of groups.values()) disposeGroup(group);
-      groups.clear();pending.clear(); geometry.dispose(); for (const texture of textures.values()) texture.dispose(); textures.clear(); count = 0;
+      groups.clear();pending.clear(); geometry.dispose(); for (const texture of textures.values()) texture.dispose(); textures.clear();
+      for (const cell of cellTextures.values()) cell.dispose(); cellTextures.clear(); count = 0;
     },
   };
 }

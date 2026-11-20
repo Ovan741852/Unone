@@ -745,6 +745,30 @@
       ],
       "type": "object"
     },
+    "ParticleColorKey": {
+      "additionalProperties": false,
+      "description": "One point of an RGBA curve over a particle's life (`t` 0 at birth, 1 at death).",
+      "properties": {
+        "color": {
+          "items": {
+            "format": "double",
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "t": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "t",
+        "color"
+      ],
+      "type": "object"
+    },
     "ParticleDefinition": {
       "additionalProperties": false,
       "properties": {
@@ -797,8 +821,17 @@
           "default": false,
           "type": "boolean"
         },
+        "align_to_velocity": {
+          "description": "Rotation follows the direction of travel in the XY plane; rotation fields add to it.",
+          "type": "boolean"
+        },
         "angular_velocity": {
           "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "angular_velocity_random": {
+          "description": "Each particle's angular velocity is offset by +/- up to this many radians per second.",
           "format": "double",
           "type": "number"
         },
@@ -813,6 +846,13 @@
           },
           "maxItems": 4,
           "minItems": 4,
+          "type": "array"
+        },
+        "color_keys": {
+          "description": "RGBA over life as 2-8 keys (for example fade in, hold, fade out); replaces color_start/color_end/color_easing.",
+          "items": {
+            "$ref": "#/$defs/ParticleColorKey"
+          },
           "type": "array"
         },
         "color_start": {
@@ -841,6 +881,11 @@
             "y": 0.0,
             "z": 0.0
           }
+        },
+        "drag": {
+          "description": "Linear drag per second: velocity decays by e^(-drag*t), so fast launches settle (confetti, dust, sparks).",
+          "format": "double",
+          "type": "number"
         },
         "emission_radius": {
           "default": 0.0,
@@ -872,8 +917,28 @@
           "minimum": 0,
           "type": "integer"
         },
+        "lifetime_random_frames": {
+          "description": "Each particle lives up to this many frames less than lifetime_frames.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "orbit_axis": {
+          "$ref": "#/$defs/Vec3",
+          "description": "Axis of `orbit_velocity`; zero means +Z (the screen plane of a 2D scene)."
+        },
+        "orbit_velocity": {
+          "description": "Angular speed (radians per second) at which each particle's path turns around the emitter origin.",
+          "format": "double",
+          "type": "number"
+        },
         "rotation_end": {
           "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "rotation_random": {
+          "description": "Each particle's rotation is offset by +/- up to this many radians.",
           "format": "double",
           "type": "number"
         },
@@ -887,6 +952,18 @@
           "default": "linear"
         },
         "size_end": {
+          "format": "double",
+          "type": "number"
+        },
+        "size_keys": {
+          "description": "Size over life as 2-8 keys; replaces size_start/size_end/size_easing when present.",
+          "items": {
+            "$ref": "#/$defs/ParticleSizeKey"
+          },
+          "type": "array"
+        },
+        "size_random": {
+          "description": "Each particle's size is multiplied by 1 +/- up to this fraction (0..1).",
           "format": "double",
           "type": "number"
         },
@@ -929,6 +1006,17 @@
             "null"
           ]
         },
+        "texture_frames": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ParticleTextureFrames"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Flipbook cells of `texture`."
+        },
         "velocity_max": {
           "$ref": "#/$defs/Vec3",
           "default": {
@@ -962,6 +1050,25 @@
       ],
       "type": "object"
     },
+    "ParticleSizeKey": {
+      "additionalProperties": false,
+      "description": "One point of a size curve over a particle's life (`t` 0 at birth, 1 at death).",
+      "properties": {
+        "size": {
+          "format": "double",
+          "type": "number"
+        },
+        "t": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "t",
+        "size"
+      ],
+      "type": "object"
+    },
     "ParticleSpriteShape": {
       "enum": [
         "soft_circle",
@@ -970,6 +1077,46 @@
         "streak"
       ],
       "type": "string"
+    },
+    "ParticleTextureFrames": {
+      "additionalProperties": false,
+      "description": "A sprite sheet for image particles: `columns` x `rows` equal cells read left to right, top to bottom.\n`fps` 0 plays the frames once over each particle's life; otherwise they loop at that rate.",
+      "properties": {
+        "columns": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "count": {
+          "description": "Frames used, from the first cell; defaults to every cell.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "fps": {
+          "default": 0.0,
+          "format": "double",
+          "type": "number"
+        },
+        "random_start": {
+          "default": false,
+          "description": "Each particle starts on a random frame.",
+          "type": "boolean"
+        },
+        "rows": {
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "columns",
+        "rows"
+      ],
+      "type": "object"
     },
     "ParticleVelocityMode": {
       "enum": [

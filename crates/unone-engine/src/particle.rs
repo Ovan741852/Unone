@@ -57,6 +57,42 @@ pub enum ParticleEasing {
     SmoothStep,
 }
 
+/// One point of a size curve over a particle's life (`t` 0 at birth, 1 at death).
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct ParticleSizeKey {
+    pub t: f64,
+    pub size: f64,
+}
+
+/// One point of an RGBA curve over a particle's life (`t` 0 at birth, 1 at death).
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct ParticleColorKey {
+    pub t: f64,
+    pub color: [f64; 4],
+}
+
+/// A sprite sheet for image particles: `columns` x `rows` equal cells read left to right, top to bottom.
+/// `fps` 0 plays the frames once over each particle's life; otherwise they loop at that rate.
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(deny_unknown_fields)]
+pub struct ParticleTextureFrames {
+    pub columns: u32,
+    pub rows: u32,
+    /// Frames used, from the first cell; defaults to every cell.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub count: Option<u32>,
+    #[serde(default)]
+    pub fps: f64,
+    /// Each particle starts on a random frame.
+    #[serde(default)]
+    pub random_start: bool,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
@@ -120,8 +156,41 @@ pub struct ParticleEmitter {
     /// without image particles draws `sprite_shape` instead, so keep a fitting silhouette there.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub texture: Option<String>,
+    /// Flipbook cells of `texture`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub texture_frames: Option<ParticleTextureFrames>,
     #[serde(default)]
     pub additive: bool,
+    /// Linear drag per second: velocity decays by e^(-drag*t), so fast launches settle (confetti, dust, sparks).
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub drag: f64,
+    /// Angular speed (radians per second) at which each particle's path turns around the emitter origin.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub orbit_velocity: f64,
+    /// Axis of `orbit_velocity`; zero means +Z (the screen plane of a 2D scene).
+    #[serde(default, skip_serializing_if = "is_zero_vector")]
+    pub orbit_axis: Vec3,
+    /// Size over life as 2-8 keys; replaces size_start/size_end/size_easing when present.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub size_keys: Vec<ParticleSizeKey>,
+    /// RGBA over life as 2-8 keys (for example fade in, hold, fade out); replaces color_start/color_end/color_easing.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub color_keys: Vec<ParticleColorKey>,
+    /// Each particle's size is multiplied by 1 +/- up to this fraction (0..1).
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub size_random: f64,
+    /// Each particle's rotation is offset by +/- up to this many radians.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub rotation_random: f64,
+    /// Each particle's angular velocity is offset by +/- up to this many radians per second.
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub angular_velocity_random: f64,
+    /// Each particle lives up to this many frames less than lifetime_frames.
+    #[serde(default, skip_serializing_if = "is_zero_u32")]
+    pub lifetime_random_frames: u32,
+    /// Rotation follows the direction of travel in the XY plane; rotation fields add to it.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub align_to_velocity: bool,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -138,11 +207,23 @@ pub struct ParticleSnapshot {
     pub sprite_shape: ParticleSpriteShape,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub texture: Option<String>,
+    /// The flipbook cell to draw, as u, v, width, height in texture space (origin top left).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub uv: Option<[f64; 4]>,
     pub additive: bool,
 }
 
 fn is_zero(value: &f64) -> bool {
     *value == 0.0
+}
+fn is_zero_u32(value: &u32) -> bool {
+    *value == 0
+}
+fn is_false(value: &bool) -> bool {
+    !*value
+}
+fn is_zero_vector(value: &Vec3) -> bool {
+    value.x == 0.0 && value.y == 0.0 && value.z == 0.0
 }
 
 fn is_soft_circle(value: &ParticleSpriteShape) -> bool {
@@ -276,6 +357,7 @@ impl ParticleDefinition {
             {
                 return Err("PARTICLE_TEXTURE_INVALID: texture must be a non-empty asset id of at most 512 characters".into());
             }
+            validate_emitter_extensions(e)?;
         }
         if self.capacity() > 1024 {
             return Err(
@@ -485,6 +567,92 @@ impl ParticleWorld {
     }
 }
 
+fn validate_emitter_extensions(e: &ParticleEmitter) -> Result<(), String> {
+    let finite = |v: f64, max: f64| v.is_finite() && v.abs() <= max;
+    if !finite(e.drag, 1000.0) || e.drag < 0.0 {
+        return Err("PARTICLE_DRAG_INVALID: drag must be finite and 0..1000 per second".into());
+    }
+    if !finite(e.orbit_velocity, 1.0e4) {
+        return Err("PARTICLE_ORBIT_INVALID: orbit_velocity must be finite within +/- 10000 rad/s".into());
+    }
+    validate_particle_vector(e.orbit_axis)?;
+    if !finite(e.size_random, 1.0)
+        || e.size_random < 0.0
+        || !finite(e.rotation_random, 1.0e9)
+        || e.rotation_random < 0.0
+        || !finite(e.angular_velocity_random, 1.0e9)
+        || e.angular_velocity_random < 0.0
+        || e.lifetime_random_frames >= e.lifetime_frames
+    {
+        return Err("PARTICLE_RANDOM_INVALID: size_random 0..1, non-negative rotation/angular randomness and lifetime_random_frames below lifetime_frames required".into());
+    }
+    let keys = |ts: &mut dyn Iterator<Item = f64>, n: usize| {
+        let ts: Vec<f64> = ts.collect();
+        n == 0
+            || ((2..=8).contains(&n)
+                && ts.iter().all(|t| t.is_finite() && (0.0..=1.0).contains(t))
+                && ts.windows(2).all(|w| w[0] < w[1]))
+    };
+    if !keys(&mut e.size_keys.iter().map(|k| k.t), e.size_keys.len())
+        || e.size_keys.iter().any(|k| !k.size.is_finite() || !(0.0..=1000.0).contains(&k.size))
+    {
+        return Err("PARTICLE_CURVE_INVALID: size_keys need 2-8 keys with increasing t in 0..1 and sizes 0..1000".into());
+    }
+    if !keys(&mut e.color_keys.iter().map(|k| k.t), e.color_keys.len())
+        || e.color_keys.iter().any(|k| !k.color.iter().all(|n| n.is_finite() && (0.0..=1.0).contains(n)))
+    {
+        return Err("PARTICLE_CURVE_INVALID: color_keys need 2-8 keys with increasing t in 0..1 and RGBA in 0..1".into());
+    }
+    if let Some(frames) = &e.texture_frames {
+        let cells = frames.columns.saturating_mul(frames.rows);
+        if e.texture.is_none()
+            || !(1..=64).contains(&frames.columns)
+            || !(1..=64).contains(&frames.rows)
+            || frames.count.is_some_and(|n| n == 0 || n > cells)
+            || !finite(frames.fps, 240.0)
+            || frames.fps < 0.0
+        {
+            return Err("PARTICLE_FRAMES_INVALID: texture_frames needs a texture, 1-64 columns and rows, a count within the cells and fps 0..240".into());
+        }
+    }
+    Ok(())
+}
+/// Value of a key curve at t (linear between keys, held beyond the ends).
+fn curve<const N: usize>(keys: &[(f64, [f64; N])], t: f64) -> [f64; N] {
+    let first = keys[0];
+    if t <= first.0 {
+        return first.1;
+    }
+    for pair in keys.windows(2) {
+        let (a, b) = (pair[0], pair[1]);
+        if t <= b.0 {
+            let f = (t - a.0) / (b.0 - a.0);
+            return std::array::from_fn(|i| a.1[i] + (b.1[i] - a.1[i]) * f);
+        }
+    }
+    keys[keys.len() - 1].1
+}
+/// Displacement and velocity after t seconds from v0 under constant gravity g and linear drag k (closed form).
+fn motion(v0: f64, g: f64, k: f64, t: f64) -> (f64, f64) {
+    if k <= 1.0e-9 {
+        return (v0 * t + 0.5 * g * t * t, v0 + g * t);
+    }
+    let decay = (-k * t).exp();
+    let terminal = g / k;
+    ((v0 - terminal) * (1.0 - decay) / k + terminal * t, (v0 - terminal) * decay + terminal)
+}
+/// Rotate v around the unit axis by angle (Rodrigues).
+fn rotate_around(v: Vec3, axis: Vec3, angle: f64) -> Vec3 {
+    let (s, c) = angle.sin_cos();
+    let k = axis;
+    let kxv = cross(k, v);
+    let kdv = k.x * v.x + k.y * v.y + k.z * v.z;
+    Vec3 {
+        x: v.x * c + kxv.x * s + k.x * kdv * (1.0 - c),
+        y: v.y * c + kxv.y * s + k.y * kdv * (1.0 - c),
+        z: v.z * c + kxv.z * s + k.z * kdv * (1.0 - c),
+    }
+}
 fn unit(seed: u64, emitter: &str, index: u64, channel: u64) -> f64 {
     let mut n =
         seed ^ index.wrapping_mul(0x9e3779b97f4a7c15) ^ channel.wrapping_mul(0xd6e8feb86659fd93);
@@ -644,6 +812,9 @@ where
     let mut emitters = d.emitters.iter().collect::<Vec<_>>();
     emitters.sort_by(|a, b| a.id.cmp(&b.id));
     for e in emitters {
+        let size_keys: Vec<(f64, [f64; 1])> = e.size_keys.iter().map(|k| (k.t, [k.size])).collect();
+        let color_keys: Vec<(f64, [f64; 4])> = e.color_keys.iter().map(|k| (k.t, k.color)).collect();
+        let axis = if is_zero_vector(&e.orbit_axis) { Vec3 { x: 0.0, y: 0.0, z: 1.0 } } else { normalize(e.orbit_axis) };
         for born in (u64::from(e.start_delay_frames)..u64::from(emission_frames))
             .step_by(e.interval_frames as usize)
         {
@@ -651,35 +822,73 @@ where
                 continue;
             }
             let t = (age - born) as f64 / 60.0;
-            let normalized = (age - born) as f64 / f64::from(e.lifetime_frames);
-            let size_t = eased(e.size_easing, normalized);
-            let color_t = eased(e.color_easing, normalized);
             let origin = origin_at(born);
             for j in 0..u64::from(e.count) {
                 let index = born * u64::from(e.count) + j;
+                let signed = |channel| unit(seed, &e.id, index, channel) * 2.0 - 1.0;
+                // per-particle lifetime (randomness only shortens it, so the instance's maximum stays authored)
+                let lifetime = if e.lifetime_random_frames > 0 {
+                    e.lifetime_frames - (unit(seed, &e.id, index, 15) * f64::from(e.lifetime_random_frames + 1)).floor().min(f64::from(e.lifetime_random_frames)) as u32
+                } else {
+                    e.lifetime_frames
+                };
+                if age - born >= u64::from(lifetime) {
+                    continue;
+                }
+                let normalized = (age - born) as f64 / f64::from(lifetime);
+                let size_t = eased(e.size_easing, normalized);
+                let color_t = eased(e.color_easing, normalized);
                 let initial = offset(e, seed, index);
                 let v = velocity(e, seed, index, initial);
-                let at = |p: f64, speed: f64, gravity: f64, base: f64| {
-                    q(base + p + speed * t + 0.5 * gravity * t * t)
+                let (dx, vx) = motion(v.x, e.gravity.x, e.drag, t);
+                let (dy, vy) = motion(v.y, e.gravity.y, e.drag, t);
+                let (dz, vz) = motion(v.z, e.gravity.z, e.drag, t);
+                let mut relative = Vec3 { x: initial.x + dx, y: initial.y + dy, z: initial.z + dz };
+                let mut travel = Vec3 { x: vx, y: vy, z: vz };
+                if e.orbit_velocity != 0.0 {
+                    // the whole path turns around the origin: velocity gains the tangential term w x r
+                    let angle = e.orbit_velocity * t;
+                    let turned = rotate_around(relative, axis, angle);
+                    let spin = cross(axis, turned);
+                    let moved = rotate_around(travel, axis, angle);
+                    travel = Vec3 { x: moved.x + spin.x * e.orbit_velocity, y: moved.y + spin.y * e.orbit_velocity, z: moved.z + spin.z * e.orbit_velocity };
+                    relative = turned;
+                }
+                let base_size = if size_keys.is_empty() { e.size_start + (e.size_end - e.size_start) * size_t } else { curve(&size_keys, normalized)[0] };
+                let size = (base_size * (1.0 + signed(12) * e.size_random)).max(0.0);
+                let color = if color_keys.is_empty() {
+                    std::array::from_fn(|i| e.color_start[i] + (e.color_end[i] - e.color_start[i]) * color_t)
+                } else {
+                    curve(&color_keys, normalized)
                 };
+                let spin_rate = e.angular_velocity + signed(14) * e.angular_velocity_random;
+                let mut rotation = e.rotation_start + (e.rotation_end - e.rotation_start) * size_t + spin_rate * t + signed(13) * e.rotation_random;
+                if e.align_to_velocity && (travel.x != 0.0 || travel.y != 0.0) {
+                    rotation += travel.y.atan2(travel.x);
+                }
+                let uv = e.texture_frames.as_ref().filter(|_| e.texture.is_some()).map(|frames| {
+                    let count = frames.count.unwrap_or(frames.columns * frames.rows).max(1);
+                    let start = if frames.random_start { (unit(seed, &e.id, index, 16) * f64::from(count)).floor() as u32 } else { 0 };
+                    let step = if frames.fps > 0.0 { (t * frames.fps).floor() as u32 } else { (normalized * f64::from(count)).floor() as u32 };
+                    let frame = (start + step) % count;
+                    let (w, h) = (1.0 / f64::from(frames.columns), 1.0 / f64::from(frames.rows));
+                    [q(f64::from(frame % frames.columns) * w), q(f64::from(frame / frames.columns) * h), q(w), q(h)]
+                });
                 result.push(ParticleSnapshot {
                     id: format!("{handle}/{}/{index}", e.id),
                     instance: handle.into(),
                     emitter: e.id.clone(),
                     position: Vec3 {
-                        x: at(initial.x, v.x, e.gravity.x, origin.x),
-                        y: at(initial.y, v.y, e.gravity.y, origin.y),
-                        z: at(initial.z, v.z, e.gravity.z, origin.z),
+                        x: q(origin.x + relative.x),
+                        y: q(origin.y + relative.y),
+                        z: q(origin.z + relative.z),
                     },
-                    size: q(e.size_start + (e.size_end - e.size_start) * size_t),
-                    color: std::array::from_fn(|i| {
-                        q(e.color_start[i] + (e.color_end[i] - e.color_start[i]) * color_t)
-                    }),
-                    rotation: q(e.rotation_start
-                        + (e.rotation_end - e.rotation_start) * size_t
-                        + e.angular_velocity * t),
+                    size: q(size),
+                    color: color.map(|c| q(c.clamp(0.0, 1.0))),
+                    rotation: q(rotation),
                     sprite_shape: e.sprite_shape,
                     texture: e.texture.clone(),
+                    uv,
                     additive: e.additive,
                 });
             }
@@ -823,6 +1032,141 @@ mod tests {
         }
         d.emitters[0].texture = Some("x".repeat(513));
         assert!(d.validate().is_err());
+    }
+    fn one(e: impl FnOnce(&mut ParticleEmitter)) -> ParticleDefinition {
+        let mut d = definition();
+        d.duration_frames = 1;
+        let x = &mut d.emitters[0];
+        x.count = 1;
+        x.interval_frames = 1;
+        x.lifetime_frames = 600;
+        x.emission_shape = ParticleEmissionShape::Point;
+        x.velocity_mode = ParticleVelocityMode::Vector;
+        x.velocity_min = Vec3 { x: 100.0, y: 0.0, z: 0.0 };
+        x.velocity_max = x.velocity_min;
+        x.gravity = Vec3::default();
+        x.rotation_start = 0.0;
+        x.rotation_end = 0.0;
+        x.angular_velocity = 0.0;
+        x.size_easing = ParticleEasing::Linear;
+        x.color_easing = ParticleEasing::Linear;
+        e(x);
+        d.validate().unwrap();
+        d
+    }
+    #[test]
+    fn drag_is_the_closed_form_of_a_damped_launch() {
+        let d = one(|e| {
+            e.drag = 2.0;
+            e.gravity = Vec3 { x: 0.0, y: -50.0, z: 0.0 };
+        });
+        // integrate the same motion in tiny steps
+        let (mut x, mut y, mut vx, mut vy, dt) = (0.0f64, 0.0f64, 100.0f64, 0.0f64, 1.0 / 60000.0);
+        for _ in 0..60000 {
+            vx += (-2.0 * vx) * dt;
+            vy += (-50.0 - 2.0 * vy) * dt;
+            x += vx * dt;
+            y += vy * dt;
+        }
+        let p = &d.sample(1, 60, Vec3::default()).unwrap()[0];
+        assert!((p.position.x - x).abs() < 0.05, "{} vs {x}", p.position.x);
+        assert!((p.position.y - y).abs() < 0.05, "{} vs {y}", p.position.y);
+        let plain = one(|_| {});
+        assert!(d.sample(1, 60, Vec3::default()).unwrap()[0].position.x < plain.sample(1, 60, Vec3::default()).unwrap()[0].position.x, "drag slows the launch");
+    }
+    #[test]
+    fn orbit_turns_the_path_around_the_origin_and_keeps_its_radius() {
+        let d = one(|e| {
+            e.velocity_min = Vec3::default();
+            e.velocity_max = Vec3::default();
+            e.emission_shape = ParticleEmissionShape::Box;
+            e.spread = Vec3 { x: 30.0, y: 30.0, z: 0.0 };
+            e.orbit_velocity = std::f64::consts::PI; // half a turn per second
+        });
+        let start = &d.sample(5, 0, Vec3::default()).unwrap()[0];
+        let half = &d.sample(5, 60, Vec3::default()).unwrap()[0];
+        let r0 = (start.position.x.powi(2) + start.position.y.powi(2)).sqrt();
+        let r1 = (half.position.x.powi(2) + half.position.y.powi(2)).sqrt();
+        assert!((r0 - r1).abs() < 1e-4, "orbit keeps the distance from the origin");
+        assert!((start.position.x + half.position.x).abs() < 1e-4 && (start.position.y + half.position.y).abs() < 1e-4, "half a turn mirrors the point");
+    }
+    #[test]
+    fn keys_shape_size_and_colour_over_life() {
+        let d = one(|e| {
+            e.lifetime_frames = 100;
+            e.size_keys = vec![ParticleSizeKey { t: 0.0, size: 0.0 }, ParticleSizeKey { t: 0.2, size: 20.0 }, ParticleSizeKey { t: 1.0, size: 10.0 }];
+            e.color_keys = vec![ParticleColorKey { t: 0.0, color: [1.0, 1.0, 1.0, 0.0] }, ParticleColorKey { t: 0.1, color: [1.0, 1.0, 1.0, 1.0] }, ParticleColorKey { t: 1.0, color: [1.0, 0.0, 0.0, 0.0] }];
+        });
+        let at = |frame| d.sample(1, frame, Vec3::default()).unwrap()[0].clone();
+        assert_eq!(at(0).size, 0.0);
+        assert!((at(10).size - 10.0).abs() < 1e-6 && (at(20).size - 20.0).abs() < 1e-6 && (at(60).size - 15.0).abs() < 1e-6);
+        assert_eq!(at(0).color[3], 0.0, "fade in from transparent");
+        assert!((at(10).color[3] - 1.0).abs() < 1e-6, "opaque at the peak key");
+        assert!((at(55).color[1] - 0.5).abs() < 1e-6 && (at(55).color[3] - 0.5).abs() < 1e-6, "then fade to red and away");
+    }
+    #[test]
+    fn per_particle_randomness_stays_in_range_and_is_seeded() {
+        let mut d = one(|e| {
+            e.count = 64;
+            e.lifetime_frames = 60;
+            e.size_start = 10.0;
+            e.size_end = 10.0;
+            e.size_random = 0.5;
+            e.rotation_random = 1.0;
+            e.angular_velocity_random = 2.0;
+            e.lifetime_random_frames = 30;
+        });
+        let a = d.sample(9, 0, Vec3::default()).unwrap();
+        assert!(a.iter().all(|p| (5.0..=15.0).contains(&p.size) && p.rotation.abs() <= 1.0));
+        assert!(a.iter().any(|p| p.size < 9.0) && a.iter().any(|p| p.size > 11.0), "sizes vary");
+        assert_eq!(serde_json::to_value(&a).unwrap(), serde_json::to_value(d.sample(9, 0, Vec3::default()).unwrap()).unwrap());
+        let alive = |frame| d.sample(9, frame, Vec3::default()).unwrap().len();
+        assert!(alive(40) < 64 && alive(40) > 0 && alive(59) < alive(40), "random lifetimes thin the burst out");
+        assert_eq!(alive(60), 0);
+        d.emitters[0].lifetime_random_frames = 60;
+        assert!(d.validate().unwrap_err().starts_with("PARTICLE_RANDOM_INVALID"));
+    }
+    #[test]
+    fn aligned_particles_point_along_their_travel() {
+        let d = one(|e| {
+            e.velocity_min = Vec3 { x: 0.0, y: 100.0, z: 0.0 };
+            e.velocity_max = e.velocity_min;
+            e.align_to_velocity = true;
+        });
+        assert!((d.sample(1, 10, Vec3::default()).unwrap()[0].rotation - std::f64::consts::FRAC_PI_2).abs() < 1e-5);
+        let falling = one(|e| {
+            e.align_to_velocity = true;
+            e.gravity = Vec3 { x: 0.0, y: -100.0, z: 0.0 };
+        });
+        let r = falling.sample(1, 60, Vec3::default()).unwrap()[0].rotation;
+        assert!((r - (-std::f64::consts::FRAC_PI_4)).abs() < 1e-5, "after a second the fall equals the launch: -45 degrees");
+    }
+    #[test]
+    fn flipbook_frames_play_over_life_or_at_a_rate() {
+        let mut d = one(|e| {
+            e.lifetime_frames = 40;
+            e.texture = Some("asset://fx/sheet".into());
+            e.texture_frames = Some(ParticleTextureFrames { columns: 2, rows: 2, count: None, fps: 0.0, random_start: false });
+        });
+        let uv = |d: &ParticleDefinition, frame| d.sample(1, frame, Vec3::default()).unwrap()[0].uv.unwrap();
+        assert_eq!(uv(&d, 0), [0.0, 0.0, 0.5, 0.5]);
+        assert_eq!(uv(&d, 10), [0.5, 0.0, 0.5, 0.5]);
+        assert_eq!(uv(&d, 20), [0.0, 0.5, 0.5, 0.5]);
+        assert_eq!(uv(&d, 39), [0.5, 0.5, 0.5, 0.5]);
+        d.emitters[0].texture_frames = Some(ParticleTextureFrames { columns: 4, rows: 1, count: Some(3), fps: 6.0, random_start: false });
+        assert_eq!(uv(&d, 25), [0.5, 0.0, 0.25, 1.0], "6 fps after 25 frames is the third cell");
+        assert_eq!(uv(&d, 35), [0.0, 0.0, 0.25, 1.0], "three frames loop back to the first");
+        d.emitters[0].texture = None;
+        assert!(d.validate().unwrap_err().starts_with("PARTICLE_FRAMES_INVALID"));
+    }
+    #[test]
+    fn extensions_are_absent_from_json_until_used() {
+        let d = definition();
+        let json = serde_json::to_value(&d).unwrap();
+        for key in ["drag", "orbit_velocity", "orbit_axis", "size_keys", "color_keys", "size_random", "rotation_random", "angular_velocity_random", "lifetime_random_frames", "align_to_velocity", "texture_frames"] {
+            assert!(json["emitters"][0].get(key).is_none(), "{key} is not serialized when off");
+        }
+        assert!(serde_json::to_value(&d.sample(7, 15, Vec3::default()).unwrap()[0]).unwrap().get("uv").is_none());
     }
     #[test]
     fn sphere_and_ring_emitters_stay_inside_authored_shapes() {

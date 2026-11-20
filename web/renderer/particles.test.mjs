@@ -79,3 +79,22 @@ test('image particles borrow the sprite texture, keep its aspect and draw sprite
   renderer.dispose();
   assert.equal(heartDisposed,false,'a borrowed texture stays owned by the sprite cache');assert.equal(meshes.size,0);
 });
+
+test('flipbook cells draw their part of the image with the cell aspect and their clones are released',()=>{
+  const meshes=new Set(),scene={add(m){meshes.add(m);},remove(m){meshes.delete(m);}};
+  const sheet=new THREE.Texture({width:128,height:64});sheet.flipY=true;let disposedClones=0,sheetDisposed=false;
+  sheet.addEventListener('dispose',()=>{sheetDisposed=true;});
+  const renderer=createParticleRenderer(THREE,scene,{imageTexture:()=>sheet});
+  const p=(x,uv)=>({position:{x,y:0,z:0},size:3,color:[1,1,1,1],sprite_shape:'soft_circle',texture:'asset://fx/sheet',uv,additive:false});
+  renderer.draw([p(0,[0,0,.5,.5]),p(1,[.5,.5,.5,.5]),p(2,[0,0,.5,.5])]);
+  const live=[...meshes].filter(m=>m.count>0);
+  assert.equal(live.length,2,'one batch per cell');
+  const first=live.find(m=>m.material.map.offset.x===0),last=live.find(m=>m.material.map.offset.x===.5);
+  assert.equal(first.count,2);assert.deepEqual([first.material.map.repeat.x,first.material.map.repeat.y],[.5,.5]);
+  assert.equal(first.material.map.offset.y,.5,'the top-left cell sits in the upper half of a flipped image');
+  assert.equal(last.material.map.offset.y,0);
+  assert.equal(first.material.map.source,sheet.source,'cells share the image source');
+  const m=first.instanceMatrix.array;assert.ok(Math.abs(Math.hypot(m[0],m[1],m[2])-6)<1e-6,'a 64x32 cell is twice as wide as tall');
+  for(const mesh of live)mesh.material.map.addEventListener('dispose',()=>disposedClones++);
+  renderer.dispose();assert.equal(disposedClones,2);assert.equal(sheetDisposed,false);
+});
