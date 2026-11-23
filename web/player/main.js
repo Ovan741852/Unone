@@ -4,6 +4,8 @@ import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';
 import {createUiTextInputHost} from '../shared/ui-text-input.mjs';
 import {createUiCursorHost,loadCursorImage} from '../shared/ui-cursor.mjs';
 import {createUiScrollHost} from '../shared/ui-scroll.mjs';
+import {createUiAssetPreflight} from '../shared/ui-asset-preflight.mjs';
+import {createUiFrameWait} from '../shared/ui-frame-wait.mjs';
 import {createHostInput,createRendererHostActions} from '../shared/host-input.js';
 import {createLegacyPointerRouting,routeBrowserKey,routeBrowserPointer,createGamepadPolling} from '../shared/player-input.js';
 import {createOrderedPhysicalQueue} from '../shared/ordered-physical-queue.mjs';
@@ -20,7 +22,7 @@ import {worldFromPointer,projectScreenPointer} from '../shared/webgpu-snapshot.j
 import {createNetworkHost} from '../shared/network-host.mjs';
 import {publishRasterState,assertRasterReady,createPlayerProfiler,playerProfileOptions} from '../shared/raster-diagnostics.mjs';
 import {adoptStartupRenderer,completeStartupPresentation,startupCancelled} from '../shared/startup-presentation.mjs';
-import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor} from '../shared/player-completion.mjs';
+import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor,DRAW_COMPLETED} from '../shared/player-completion.mjs';
 import {createPlayerPerformanceFeed} from '../shared/player-performance-feed.mjs';
 import {playerMemorySnapshot} from '../shared/player-memory.mjs';
 import {serializedSavePayload} from '../shared/save-publication.mjs';
@@ -32,6 +34,17 @@ const canvas=document.querySelector('#game');
 // index.html's startup screen: the real startup steps up to the first presented frame, then any fatal error.
 const startupScreen=createStartupScreen({root:document.querySelector('#unone-startup'),body:document.body,boot:window.playerBoot});
 let uiAssetManifest=null,imageAssets=null,imagePreloadPlan=null,imageGroupHost=null;
+let hostPauseRequested=false;
+let waitingTextEvents=[];
+const frameWait=createUiFrameWait({document,window,
+ onEnter(){orderedRouter?.setPaused(true);uiScroll.cancel();uiRenderer.releaseAll();input.releaseNonText();input.setGamepads([]);releaseLegacyPointer();},
+ onLeave(){if(!hostPauseRequested)orderedRouter?.setPaused(frozen);const queued=waitingTextEvents;waitingTextEvents=[];for(const event of queued)input.queueTextInputInteraction(event);},
+ onRetry(){frameAssets.release();if(snapshot&&renderer)draw();},onReload(){location.reload();}});
+let frameRetryScheduled=false;
+const frameAssets=createUiAssetPreflight({acquire:id=>imageAssets.acquire(id),onChange(){
+ if(!scheduler||document.hidden||!frameWait.isActive()||frameRetryScheduled)return;
+ frameRetryScheduled=true;requestAnimationFrame(()=>{frameRetryScheduled=false;if(!document.hidden&&frameWait.isActive()&&!scheduler?.busy&&snapshot&&renderer)draw();});
+}});
 const removeAssetGroupsAccessor=installPlayerAssetGroups(window,()=>imageAssets);
 const gamepadInput=createGamepadPolling();
 // Game UI is drawn by the renderer's ui pass inside the WebGL frame; #ui-layer
@@ -45,7 +58,11 @@ const input=createHostInput(),uiRenderer=createCanvasUi(null,{getPresenter:()=>r
 }});
 const uiScroll=createUiScrollHost({canvas,stage:document.querySelector('#ui-layer'),onAction:action=>input.queueAction(action),
  requestWindow:async request=>{acceptSnapshot(await backend.request({kind:'ui',request}));draw();},requestRender:()=>{if(snapshot&&renderer)draw();},onDiagnostic:fail});
-const textInputs=createUiTextInputHost({canvas,onInteraction:event=>input.queueTextInputInteraction(event),
+const textInputs=createUiTextInputHost({canvas,onInteraction:event=>{
+ if(frameWait.isActive()){
+  const last=waitingTextEvents.at(-1);if(event.phase==='change'&&last?.phase==='change'&&last.id===event.id&&last.composing===event.composing)waitingTextEvents[waitingTextEvents.length-1]=event;
+  else waitingTextEvents.push(event);
+ }else input.queueTextInputInteraction(event);},
  releaseKeyboard:()=>input.releaseKeyboard(),requestRender:()=>{if(snapshot&&renderer)draw();},onDiagnostic:fail});
 const renderUi=snapshot=>uiRenderer.draw(textInputs.draw(uiScroll.draw(uiPassHidden(snapshot)?{...snapshot,world:{...snapshot.world,ui:null}}:snapshot)));
 const cursorCanvas=document.createElement('canvas');document.querySelector('#ui-layer').append(cursorCanvas);
@@ -100,7 +117,7 @@ function recordSchedulerWake(wake){
 const metrics={};
 const startupAbort=new AbortController();
 const disposeRenderer=createRendererDisposer();
-function fail(error){errors.fatal(error);profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
+function fail(error){waitingTextEvents=[];frameWait.hide();frameAssets.dispose();errors.fatal(error);profiler?.publish();disposePerformanceFeed();startupAbort.abort();cursorHost.dispose();textInputs.dispose();uiScroll.dispose();uiRenderer.dispose?.();if(orderedQueue&&!orderedQueue.report().fault)try{orderedQueue.terminate('PLAYER_FAILED: '+String(error?.message??error));}catch{}orderedRouter?.dispose();publishPhysical();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(cleanupError){console.error(cleanupError);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();/* PROFILE_ERROR */const message=String(error?.message??error);document.body.dataset.playerError=message;startupScreen.fail(message);console.error(error);}
 function publishPhysical(){if(!orderedRouter)return;metrics.physical_input=orderedRouter.report();document.body.dataset.playerPhysicalInput=JSON.stringify(metrics.physical_input);}
 function configurePhysical(){
  textInputs.setExternalInput(Boolean(physicalProfile));
@@ -173,6 +190,13 @@ function drawFrame(pd,rafTime,rafStart,inFlight,drawSource,budgetMs){
  try{return submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs);}catch(error){playerCompletion.error(drawSource,rafTime,startedAt,inFlight,performance.now(),snapshot?.world?.frame,budgetMs);throw error;}
 }
 function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
+ // Preview without changing scroll, native text/IME, hit routing or GL. The
+ // previous compositor image remains untouched while incoming UI loads.
+ const admission=frameAssets.update(uiScroll.preview(uiPassHidden(snapshot)?{...snapshot,world:{...snapshot.world,ui:null}}:snapshot));
+ if(admission.outcome.status==='skipped'){
+  frameWait.show(admission.outcome.reason==='ui_diagnostics'?'error':'pending',admission.error?.message??'');
+  return playerCompletion.finish(DRAW_COMPLETED,admission.outcome,DRAW_COMPLETED,snapshot?.world?.frame,performance.now(),drawSource,rafTime,startedAt,inFlight,budgetMs);
+ }
  const began=performance.now(),display=interpolator?.sample({snap:frozen})??{snapshot};presentationMemory=display.memory;
  if(pd)profiler.mark(pd,'interpolation_sample');
  const outcome=pd?profiler.within(pd,'renderer_draw',()=>renderer.draw(display.snapshot)):renderer.draw(display.snapshot);
@@ -180,6 +204,8 @@ function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
   const uiOutcome=renderUi(snapshot);if(pd){profiler.set(pd,uiRenderer.assetDiagnostics());profiler.mark(pd,'ui_draw');}const submittedAt=performance.now();renderMs=submittedAt-began;
  const cursorOutcome=cursorHost.update(snapshot.world.ui_cursor);const cursorReport=JSON.stringify(cursorHost.report());if(document.body.dataset.playerCursor!==cursorReport)document.body.dataset.playerCursor=cursorReport;
  const combined=playerCompletion.finish(outcome,uiOutcome,cursorOutcome,display.snapshot?.world?.frame,performance.now(),drawSource,rafTime,startedAt,inFlight,budgetMs);
+ if(combined.status==='completed')frameWait.hide();
+ else if(combined.status==='skipped')frameWait.show(combined.reason==='ui_diagnostics'?'error':'pending',combined.reason==='ui_diagnostics'?'UI asset or presentation error':'');
  if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),decoded_images:imageAssets?.report()??null,drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
  // Diagnostics attributes are rewritten only when they change: a write is a DOM mutation.
  const frameText=String(snapshot.world.frame);if(document.body.dataset.playerFrame!==frameText)document.body.dataset.playerFrame=frameText;
@@ -195,9 +221,10 @@ async function advance(presenting){
  profiler.end(pu,'ok');
 }
 async function advanceFrame(pu,presenting){
- const began=performance.now(),browserInput=manualInput==null;
+ const began=performance.now(),browserInput=frameWait.isActive()||manualInput==null;
+ if(frameWait.isActive())manualInput=null;
  // Gamepads are polled once per tick (docs/input-gamepad.md).
- if(browserInput)input.setGamepads(gamepadInput.poll());
+ if(browserInput)input.setGamepads(frameWait.isActive()?[]:gamepadInput.poll());
  let frame=manualInput??input.consumeFrame();manualInput=null;
  // The earliest browser input this tick consumes; later events wait for the next tick.
  const consumedInput=browserInput?playerCompletion.takeInput?.()??null:null;
@@ -270,7 +297,7 @@ async function finishStartup(presentation,kind){
  };
  canvas.addEventListener('webglcontextlost',lost);canvas.addEventListener('webglcontextrestored',restored);
  try{
-  await completeStartupPresentation({draw:()=>draw(null,null,false,'startup'),waitForAssets:()=>Promise.all([renderer.ready(),uiRenderer.ready(),cursorHost.ready()]),sample,subscribe,
+  await completeStartupPresentation({draw:()=>draw(null,null,false,'startup'),waitForAssets:()=>Promise.all([renderer.ready(),uiRenderer.ready(),cursorHost.ready(),frameAssets.ready()]),sample,subscribe,
    commit,signal:startupAbort.signal,onState:state=>{metrics.startup_presentation=state;metrics.raster=renderer.metrics().raster;
     document.body.dataset.playerMetrics=JSON.stringify(metrics);document.body.dataset.playerStartupPresentation=JSON.stringify(state);}});
  }finally{canvas.removeEventListener('webglcontextlost',lost);canvas.removeEventListener('webglcontextrestored',restored);listeners.clear();}
@@ -375,7 +402,7 @@ function pointer(event,down,kind){const sample=pointerSample(event,down);if(!sam
 function pointerSample(event,down){if(!snapshot)return null;const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height;return {position:worldFromPointer(canvas,event,snapshot),screen_position:{x:x*100,y:(1-y)*100},down};}
 function secondaryPointer(event,down){const sample=pointerSample(event,input.pointer.down);if(!sample)return;input.queueScreenAction('MouseRight',down,sample);hasWorldPointer=true;}
 function middlePointer(event,down){const sample=pointerSample(event,input.pointer.down);if(!sample)return;input.queueScreenAction('MouseMiddle',down,sample);input.updatePointer(sample,'move');hasWorldPointer=true;}
-function routeUi(e,kind){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=100-(e.clientY-r.top)/r.height*100,hit=uiRenderer.hitTest(x,y);return textInputs.pointer(e,kind,hit)||uiScroll.pointer(e,kind,hit)||uiRenderer.pointer({kind,pointerId:e.pointerId,x,y});}
+function routeUi(e,kind){if(frameWait.isActive())return true;const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=100-(e.clientY-r.top)/r.height*100,hit=uiRenderer.hitTest(x,y);return textInputs.pointer(e,kind,hit)||uiScroll.pointer(e,kind,hit)||uiRenderer.pointer({kind,pointerId:e.pointerId,x,y});}
 const browserPointer={capture:id=>canvas.setPointerCapture(id),unlock:()=>audio?.unlock(),ui:routeUi,primary:pointer,secondary:secondaryPointer,middle:middlePointer,cancel(){input.releasePointer();input.releaseScreenActions();}};
 // Without the ordered router a primary button held across input.releaseAll() needs a fresh pointerdown.
 const legacyPointer=createLegacyPointerRouting(canvas,browserPointer);
@@ -384,9 +411,9 @@ canvas.addEventListener('pointerdown',e=>{if(!orderedRouter)legacyPointer.route(
 canvas.addEventListener('pointermove',e=>{if(!orderedRouter)legacyPointer.route(e,'move');});canvas.addEventListener('pointerup',e=>{if(!orderedRouter)legacyPointer.route(e,'up');});canvas.addEventListener('pointercancel',e=>{if(!orderedRouter)legacyPointer.route(e,'cancel');});
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();});
-window.addEventListener('unone-host-pause',()=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
+window.addEventListener('unone-host-pause',()=>{hostPauseRequested=true;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{hostPauseRequested=false;if(!frozen)scheduler?.resume();if(frameWait.isActive())orderedRouter?.setPaused(true);audio?.setVisibility(true);});
 window.addEventListener('resize',()=>viewportChanged());
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
-window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();errors.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
+window.addEventListener('pagehide',()=>{frameWait.dispose();frameAssets.dispose();removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();errors.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>{legacyPointer.lostCapture(e.pointerId);if(!orderedRouter)routeUi(e,'cancel');});
 start().catch(error=>{if(error?.name!=='AbortError')fail(error);});

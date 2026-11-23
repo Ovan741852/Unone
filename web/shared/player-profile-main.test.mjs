@@ -7,7 +7,7 @@ import vm from 'node:vm';
 import {createRuntimeBackend} from './runtime-backend.mjs';
 import {createPresentationInterpolator} from './presentation-interpolation.mjs';
 import {createPlayerProfiler} from './raster-diagnostics.mjs';
-import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor} from './player-completion.mjs';
+import {createPlayerCompletionMetrics,installPlayerPerformanceAccessor,DRAW_COMPLETED} from './player-completion.mjs';
 import {createAsyncScheduler} from './async-scheduler.mjs';
 import {serializedSavePayload} from './save-publication.mjs';
 import {createRecoveryReporter} from './player-errors.mjs';
@@ -28,7 +28,7 @@ async function fixture(profiler,{throwDraw=false,drawOutcome,uiOutcome={status:'
  const log=[],storage=new Map(),body={dataset:{}};
  const renderer={draw(s){log.push(['render',s.world.frame]);profiler?.renderer.mark('frame_decode_validate');if(throwDraw)throw Error('RENDER_FAILED');profiler?.renderer.outcome('completed');return drawOutcome;},
   metrics:()=>({}),};
- const context={recovery:createRecoveryReporter({target:body,log:null,doc:null}),resourceHost:null,imageGroupHost:null,profiler,profileFlight:null,profileLastSource:null,backend,renderer,imageAssets:null,serializedSavePayload,playerCompletion:createPlayerCompletionMetrics(),snapshot:{world:{frame:0,entities:{}}},interpolator:createPresentationInterpolator(),presentationMemory:null,tickFlight:null,
+ const context={DRAW_COMPLETED,frameAssets:{update:()=>({outcome:DRAW_COMPLETED})},frameWait:{show(){},hide(){},isActive:()=>false},uiScroll:{preview:s=>s},uiPassHidden:()=>false,recovery:createRecoveryReporter({target:body,log:null,doc:null}),resourceHost:null,imageGroupHost:null,profiler,profileFlight:null,profileLastSource:null,backend,renderer,imageAssets:null,serializedSavePayload,playerCompletion:createPlayerCompletionMetrics(),snapshot:{world:{frame:0,entities:{}}},interpolator:createPresentationInterpolator(),presentationMemory:null,tickFlight:null,
   bridgeMs:0,renderMs:0,renderCount:0,frozen:false,manualInput:null,lastStats:null,hasWorldPointer:false,saved:'null',key:'k',orderedQueue:null,orderedRouter:null,networkHost:null,scheduler:null,audio:null,
   gamepadInput:createGamepadPolling({navigator:null,document:null}),input:{setGamepads(){},consumeFrame:()=>({actions:[]})},renderUi:()=>{log.push(['ui']);return uiOutcome;},uiRenderer:{report:()=>({}),assetDiagnostics:()=>null},cursorHost:{update:()=>cursorOutcome,report:()=>({})},canvas:{width:1,height:1},
   document:{body},localStorage:{setItem:(k,v)=>{storage.set(k,v);log.push(['save']);}},publishPhysical(){},performance,JSON,Error,String};
@@ -39,6 +39,15 @@ async function journey(f){
  await f.context.tickOnce();f.context.draw();f.context.draw();
  const a=f.context.tickOnce(),b=f.context.tickOnce();assert.equal(a,b,'in-flight tick is shared');await a;f.context.draw();
 }
+test('pending UI assets block world/UI submission before scroll or input state changes',async()=>{
+ const f=await fixture(null,{drawOutcome:{status:'completed'}});let shown='';
+ f.context.frameAssets.update=()=>({outcome:{status:'skipped',reason:'ui_assets_pending'}});
+ f.context.frameWait.show=mode=>shown=mode;
+ const result=f.context.draw();assert.equal(result.reason,'ui_assets_pending');assert.equal(shown,'pending');
+ assert.deepEqual(f.log.filter(row=>row[0]==='render'||row[0]==='ui'),[]);
+ f.context.frameAssets.update=()=>({outcome:DRAW_COMPLETED});f.context.draw();
+ assert.deepEqual(f.log.filter(row=>row[0]==='render'||row[0]==='ui').map(row=>row[0]),['render','ui']);f.backend.close();
+});
 test('disabled profiling leaves draw/update/save behavior and published datasets unchanged',async()=>{
  const off=await fixture(null),on=await fixture(createPlayerProfiler({limit:64}));
  await journey(off);await journey(on);

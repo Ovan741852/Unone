@@ -139,6 +139,24 @@ export function createUiScrollHost({canvas,stage,onAction=()=>{},requestWindow=a
  canvas.addEventListener('wheel',legacyWheel,{passive:false});canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerleave',leave);window.addEventListener('keydown',legacyKey,true);window.addEventListener('blur',cancel);
  return {
   setExternalInput(value){externalInput=!!value;},routeWheel:wheel,routeKey:keydown,
+  // Preview the same projection without creating rails, changing focus,
+  // releasing captures, or requesting virtual windows. Used only for asset
+  // admission before the host commits a new frame.
+  preview(snapshot){
+   if(disposed)throw Error('UI_SCROLL_DISPOSED');
+   const world=snapshot.world??snapshot,tree=world.ui,copies=new Map();
+   for(const [id,s]of states)copies.set(id,{x:s.x,y:s.y,reset:s.reset,keys:s.keys,pitch:s.pitch,columns:s.columns});
+   const initial=projectScrollTree(tree,copies);let changed=false;
+   for(const v of initial.views){let s=copies.get(v.id);if(!s){s={x:0,y:0,reset:null,keys:null,pitch:0,columns:undefined};copies.set(v.id,s);}
+    const reset=v.node.scroll.reset_key;if(s.reset!==reset){s.x=0;s.y=0;s.reset=reset;s.keys=null;}
+    const data=v.node.scroll.virtual_items,keys=data?.keys,pitch=data?data.row_height+data.gap_y:0;
+    if(keys&&s.keys&&s.pitch===pitch&&s.columns===data.columns){const oldIndex=Math.floor(s.y/pitch)*data.columns,key=s.keys[oldIndex],index=keys.indexOf(key);if(index>=0)s.y+=(Math.floor(index/data.columns)-Math.floor(oldIndex/data.columns))*pitch;}
+    s.keys=keys;s.pitch=pitch;s.columns=data?.columns;s.x=clamp(s.x,v.maxX);s.y=clamp(s.y,v.maxY);
+    if(s.x!==v.offset.x||s.y!==v.offset.y)changed=true;
+   }
+   const result=changed?projectScrollTree(tree,copies):initial;
+   const next={...world,ui:result.tree};return snapshot.world?{...snapshot,world:next}:next;
+  },
   draw(snapshot){
    if(disposed)throw Error('UI_SCROLL_DISPOSED');const tree=(snapshot.world??snapshot).ui,initial=projectScrollTree(tree,states),live=new Set(initial.views.map(v=>v.id));let offsetsChanged=false;
    for(const [id,s]of states)if(!live.has(id)){retireState(s);states.delete(id);if(gesture?.id===id)abandonGesture();}

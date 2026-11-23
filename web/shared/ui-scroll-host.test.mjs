@@ -35,6 +35,15 @@ function harness(t,snapshot,options={}){
  t.after(()=>{host.dispose();globalThis.document=previousDocument;globalThis.window=previousWindow;});
  return {host,stage,canvas,win,state,draw};
 }
+test('preflight scroll preview matches commit without changing rails or offsets',t=>{
+ const inner=view('inner',[button('deep',80)]);inner.rect={x:2,y:20,width:20,height:30};
+ const outer=view('outer',[inner,button('tail',110)]),s=screen([outer]),{host,canvas,draw,stage}=harness(t,s);
+ wheel(canvas,15,85,200);const before=JSON.stringify(host.report()),children=stage.children.length;
+ outer.scroll.reset_key='new';const preview=host.preview(s);
+ assert.equal(JSON.stringify(host.report()),before);assert.equal(stage.children.length,children);
+ const actual=draw(s);assert.deepEqual(preview.ui,actual.ui);
+ outer.children=[button('tail',10)];const next=host.preview(s);assert.deepEqual(next.ui,draw(s).ui);
+});
 const wheel=(canvas,x,y,deltaY)=>canvas.dispatch('wheel',{clientX:x*10,clientY:(100-y)*10,deltaX:0,deltaY,deltaMode:0});
 
 test('in-place reset, nested offsets and content shrink project current geometry on the same draw',t=>{
@@ -55,6 +64,13 @@ test('virtual-list prepend preserves the visible key in returned geometry immedi
  assert(host.scrollToKey('rows','k5'));const before=draw(snapshot).ui.children.find(n=>n.id==='item_k5').rect;
  const next=screen([virtualNode(['new',...keys],1,11,2)]),after=draw(next).ui.children.find(n=>n.id==='item_k5').rect;
  assert.deepEqual(after,before);assert.equal(host.report()[0].offset.y,50);
+});
+test('preflight preview tracks virtual-list prepend without mutating live state',t=>{
+ const keys=Array.from({length:10},(_,i)=>'k'+i),s=screen([virtualNode(keys,1,10)]),{host,draw,stage}=harness(t,s);
+ assert(host.scrollToKey('rows','k5'));draw(s);const before=JSON.stringify(host.report()),count=stage.children.length;
+ const next=screen([virtualNode(['new',...keys],1,11,2)]),preview=host.preview(next);
+ assert.equal(JSON.stringify(host.report()),before);assert.equal(stage.children.length,count);
+ assert.deepEqual(preview.ui,draw(next).ui);
 });
 
 test('private immutable projections reuse unchanged geometry and follow wheel, reset and virtual anchoring',t=>{

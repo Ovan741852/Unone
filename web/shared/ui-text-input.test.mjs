@@ -223,6 +223,15 @@ test('text input queue keeps change, submit and lifecycle barriers in per-field 
     {id:'x',phase:'submit',text:'',composing:true},{id:'x',phase:'change',text:'a'.repeat(65537),composing:false}])assert.throws(()=>i.queueTextInputInteraction(event),/UI_TEXT_INPUT_INVALID/);
 });
 
+test('presentation loading barrier releases gameplay controls without cancelling an active IME draft',()=>{
+ const i=createHostInput();i.queuePhysicalAction('W',true);i.queueTextInputInteraction({id:'name',phase:'focus',text:'',composing:false});
+ i.queueTextInputInteraction({id:'name',phase:'change',text:'中文',composing:true});i.releaseNonText();
+ const first=i.consumeFrame();assert.equal(first.actions.W,undefined);assert.equal(first.ui_text_inputs.name.phase,'focus');
+ const second=i.consumeFrame();assert.equal(second.ui_text_inputs.name.text,'中文');assert.equal(second.ui_text_inputs.name.composing,true);
+ assert.equal(i.consumeFrame().ui_text_inputs,undefined,'no synthetic cancellation is inserted');
+ i.queueTextInputInteraction({id:'name',phase:'change',text:'中文',composing:false});assert.equal(i.consumeFrame().ui_text_inputs.name.composing,false);
+});
+
 test('official canvas draws placeholder, draft, selection and caret without mutating model tree',()=>{
   const calls=[],ctx={save(){},restore(){},beginPath(){},rect(){},clip(){},setTransform(){},clearRect(){},
     fillText(text){calls.push(text);},fillRect(...r){calls.push(r);},measureText:text=>({width:text.length*10}),globalAlpha:1};
