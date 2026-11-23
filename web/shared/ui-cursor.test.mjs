@@ -110,3 +110,30 @@ test('an unchanged cursor reads layout once per change and clears nothing it did
  host.update({kind:'default'});assert.equal(reads,4);
  host.dispose();assert.equal(f.focusHandlers.has('resize'),false);assert.equal(f.focusHandlers.has('scroll'),false);
 });
+
+test('default and hidden cursors never allocate a full-screen overlay, including resize and pointer movement',()=>{
+ const f=surface(),host=createUiCursorHost({...f,loadImage:()=>new Promise(()=>{})});
+ for(let i=0;i<10;i++){f.emit(74,60);assert.equal(host.update({kind:'default'}).status,'completed');}
+ assert.deepEqual([f.layer.width,f.layer.height,f.layer.style.display],[1,1,'none']);
+ f.target.width=3840;f.target.height=2160;f.focusHandlers.get('resize')();host.update({kind:'default'});
+ assert.deepEqual([f.layer.width,f.layer.height,f.layer.style.display],[1,1,'none']);
+ assert.equal(host.update({kind:'hidden'}).status,'completed');assert.equal(f.target.style.cursor,'none');
+ assert.deepEqual([f.layer.width,f.layer.height,f.layer.style.display],[1,1,'none']);host.dispose();
+});
+
+test('custom cursor allocates only when ready and visible; exit, default and dispose release overlay',async()=>{
+ const f=surface();let resolve;const host=createUiCursorHost({...f,loadImage:()=>new Promise(done=>{resolve=done;})});
+ f.emit(74,60);assert.equal(host.update(image).reason,'cursor_assets_pending');
+ assert.deepEqual([f.layer.width,f.layer.height,f.layer.style.display],[1,1,'none']);
+ const bitmap={width:17,height:19};resolve(bitmap);await Promise.resolve();host.render();
+ assert.deepEqual([f.layer.width,f.layer.height,f.layer.style.display],[1280,720,'block']);
+ assert.deepEqual(f.calls.filter(c=>c[0]==='draw').at(-1),['draw',bitmap,125,75,17,19]);
+ f.handlers.get('pointerleave')();assert.deepEqual([f.layer.width,f.layer.height,f.layer.style.display],[1,1,'none']);
+ assert.equal(host.report().visible,false);assert.equal(f.target.style.cursor,'crosshair');
+ f.target.width=2560;f.target.height=1440;f.emit(74,60);host.render();
+ assert.deepEqual([f.layer.width,f.layer.height,f.layer.style.display],[2560,1440,'block']);
+ assert.equal(host.report().rect.x,253);host.update({kind:'default'});
+ assert.deepEqual([f.layer.width,f.layer.height,f.layer.style.display],[1,1,'none']);
+ host.update(image);assert.equal(f.layer.width,2560);host.dispose();
+ assert.deepEqual([f.layer.width,f.layer.height,f.layer.style.display],[1,1,'none']);
+});

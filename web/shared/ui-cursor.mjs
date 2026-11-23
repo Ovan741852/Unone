@@ -31,6 +31,9 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
  function restore(){if(target.style.cursor==='none')target.style.cursor=previous;}
  // Nothing else draws on the layer: a layer with no cursor on it needs no clearing every frame.
  function clear(){if(visible)context.clearRect(0,0,layer.width,layer.height);visible=false;rect=null;restore();}
+ // Keep the full drawing-buffer-sized overlay only while it actually displays
+ // custom cursor artwork. Default/hidden/pending cursors use no image layer.
+ function releaseLayer(){layer.style.display='none';if(layer.width!==1)layer.width=1;if(layer.height!==1)layer.height=1;}
  // The target's CSS rectangle is read again only after a resize, scroll, pointer entry or a new
  // drawing-buffer size, not on every frame (each read can force a synchronous layout).
  let layout=null;const invalidate=()=>{layout=null;};
@@ -42,7 +45,7 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
   let entry=images.get(asset);if(entry&&entry.broker===broker)return entry;if(entry)retire(asset,entry);
   entry={image:null,error:false,broker,retired:false,lease:null};images.set(asset,entry);
   const current=()=>!disposed&&!entry.retired&&images.get(asset)===entry;
-  const failed=error=>{if(!current()||entry.error)return;entry.error=true;try{if(spec.kind==='image'&&spec.asset===asset){clear();onError(error);}}finally{notifyReady();}};
+  const failed=error=>{if(!current()||entry.error)return;entry.error=true;try{if(spec.kind==='image'&&spec.asset===asset){clear();releaseLayer();onError(error);}}finally{notifyReady();}};
   if(broker){
    const adopt=()=>{if(!current())return;const lease=entry.lease;if(lease.state==='error')throw lease.error??Error('UI_CURSOR_ASSET_FAILED: '+asset);if(lease.state!=='ready'||!lease.image)throw Error('UI_CURSOR_ASSET_NOT_READY: '+asset);entry.image=lease.image;if(spec.kind==='image'&&spec.asset===asset)renderAndNotify();};
    try{entry.lease=broker.acquire(asset);if(entry.lease.state==='ready'){if(!entry.lease.image)throw Error('UI_CURSOR_ASSET_NOT_READY: '+asset);entry.image=entry.lease.image;}
@@ -50,7 +53,7 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
     else entry.lease.promise.then(adopt).catch(failed);
    }catch(error){failed(error);}return entry;
   }
-  let loading;try{loading=loadImage(asset);}catch(error){entry.error=true;clear();onError(error);return entry;}
+  let loading;try{loading=loadImage(asset);}catch(error){entry.error=true;clear();releaseLayer();onError(error);return entry;}
   Promise.resolve(loading).then(image=>{
    if(!current())return;entry.image=image;if(spec.kind==='image'&&spec.asset===asset)renderAndNotify();
   }).catch(failed);
@@ -60,16 +63,16 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
   if(disposed)return DRAW_SKIPPED.cursor_diagnostics;const width=target.width,height=target.height;
   if(!layout||layout.width!==width||layout.height!==height){
    const box=target.getBoundingClientRect();layout={css:box,width,height};
-   if(layer.width!==width)layer.width=width;if(layer.height!==height)layer.height=height;
    Object.assign(layer.style,{left:box.left+'px',top:box.top+'px',width:box.width+'px',height:box.height+'px'});
   }
   const css=layout.css;
   clear();
-  if(!pointer||css.width<=0||css.height<=0||width<=0||height<=0||spec.kind==='default')return DRAW_COMPLETED;
+  if(!pointer||css.width<=0||css.height<=0||width<=0||height<=0||spec.kind==='default'){releaseLayer();return DRAW_COMPLETED;}
   const x=(pointer.x-css.left)*width/css.width,y=(pointer.y-css.top)*height/css.height;
-  if(x<0||y<0||x>=width||y>=height)return DRAW_COMPLETED;
-  if(spec.kind==='hidden'){target.style.cursor='none';return DRAW_COMPLETED;}
-  const entry=resource(spec.asset),image=entry.image;if(!image)return entry.error?DRAW_SKIPPED.cursor_diagnostics:DRAW_SKIPPED.cursor_assets_pending;
+  if(x<0||y<0||x>=width||y>=height){releaseLayer();return DRAW_COMPLETED;}
+  if(spec.kind==='hidden'){releaseLayer();target.style.cursor='none';return DRAW_COMPLETED;}
+  const entry=resource(spec.asset),image=entry.image;if(!image){releaseLayer();return entry.error?DRAW_SKIPPED.cursor_diagnostics:DRAW_SKIPPED.cursor_assets_pending;}
+  if(layer.width!==width)layer.width=width;if(layer.height!==height)layer.height=height;layer.style.display='block';
   rect=cursorRect(spec,{x,y});context.imageSmoothingEnabled=spec.filter==='linear';
   context.drawImage(image,rect.x,rect.y,rect.width,rect.height);target.style.cursor='none';visible=true;return DRAW_COMPLETED;
  }
@@ -83,7 +86,7 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
   for(const waiter of readyWaiters)value===DRAW_COMPLETED?waiter.resolve():waiter.reject(Error(disposed?'UI_CURSOR_DISPOSED':'UI_CURSOR_ASSET_FAILED'));readyWaiters.clear();}
  function renderAndNotify(){const value=render();notifyReady();return value;}
  function move(event){if(event.type==='pointerenter')layout=null;pointer=event.pointerType==='touch'?null:{x:event.clientX,y:event.clientY};renderAndNotify();}
- function leave(){pointer=null;clear();notifyReady();}
+ function leave(){pointer=null;clear();releaseLayer();notifyReady();}
  target.addEventListener('pointermove',move,{passive:true});target.addEventListener('pointerenter',move,{passive:true});
  target.addEventListener('pointerleave',leave,{passive:true});focus?.addEventListener('blur',leave);
  return {
@@ -96,7 +99,7 @@ export function createUiCursorHost({target,layer,focus=globalThis.window,loadIma
   ready(){const value=readiness();if(value===DRAW_COMPLETED)return Promise.resolve();if(value!==DRAW_SKIPPED.cursor_assets_pending)return Promise.reject(Error(disposed?'UI_CURSOR_DISPOSED':'UI_CURSOR_ASSET_FAILED'));return new Promise((resolve,reject)=>readyWaiters.add({resolve,reject}));},
   report(){let leases=0;for(const entry of images.values())if(entry.lease)leases++;return {mode:spec.kind,asset:spec.asset??null,visible,rect:rect?{...rect}:null,shared_image_leases:leases,units:'drawing_buffer_pixels',input:'passive real pointer; no event injection'};},
   invalidateAssets(){for(const [asset,entry]of images)retire(asset,entry);if(!disposed&&spec.kind==='image')resource(spec.asset);return renderAndNotify();},
-  dispose(){if(disposed)return;disposed=true;clear();for(const [asset,entry]of images)retire(asset,entry);notifyReady();target.removeEventListener('pointermove',move);
+  dispose(){if(disposed)return;disposed=true;clear();releaseLayer();for(const [asset,entry]of images)retire(asset,entry);notifyReady();target.removeEventListener('pointermove',move);
    target.removeEventListener('pointerenter',move);target.removeEventListener('pointerleave',leave);focus?.removeEventListener('blur',leave);
    focus?.removeEventListener('resize',invalidate);focus?.removeEventListener('scroll',invalidate,{capture:true});observer?.disconnect();},
  };
