@@ -98,3 +98,12 @@ test('a disabled scene pass clears instead of drawing the world', () => {
   assert.equal(f.clears(), 1);
   assert.ok(!f.passes.some(pass => pass.material === 'world'));
 });
+
+test('experimental destination receives the final world pass with or without bloom, fxaa and extensions',()=>{
+ const target=new THREE.WebGLRenderTarget(8,8);
+ for(const overrides of [{},{bloom:{on:true,threshold:.55,strength:.75}},{fxaa:true},
+  {extensions:[{id:'copy',params:{},runner:{draw:ctx=>ctx.fullscreen(new THREE.ShaderMaterial(),ctx.output)}}]}]){
+  const f=fixture();f.bloom.draw({},camera,null,frame(overrides),target);assert.equal(f.passes.at(-1).target,target);f.bloom.dispose();
+ }
+ target.dispose();
+});

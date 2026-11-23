@@ -52,7 +52,7 @@ const textRasterContent=node=>JSON.stringify([node.kind,node.text,node.placehold
 // quantum is much smaller than a visible antialiasing phase change.
 const rasterPhaseKey=value=>Math.round(value*1e7)/1e7;
 
-export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null,dataTextures=null,uiTextAtlasSize}={}){
+export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=>document.createElement('canvas'),textureCache=null,getImageAssets=null,getAssetCatalog=null,dataTextures=null,uiTextAtlasSize,getPresentationTarget=()=>null}={}){
  const requestedAtlasSize=parseUiTextAtlasSize(uiTextAtlasSize);
  const scene=new THREE.Scene(),camera=new THREE.Camera(),size=new THREE.Vector2(),uiSize=new THREE.Vector2(1,1),viewport=new THREE.Vector4(),at=new THREE.Vector2();
  const quadPositions=new Float32Array([0,0,0,1,0,0,1,1,0,0,1,0]),quadIndex=new Uint16Array([0,1,2,0,2,3]);
@@ -317,7 +317,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    if(context.changed||stale||size.x!==width||size.y!==height){width=size.x;height=size.y;uiSize.set(width,height);rebuild(context);}
    if(count){
     const autoClear=renderer.autoClear,test=renderer.getScissorTest(),target=renderer.getRenderTarget();renderer.getViewport(viewport);
-    try{renderer.autoClear=false;renderer.setRenderTarget(null);renderer.setScissorTest(false);renderer.setViewport(0,0,width/renderer.getPixelRatio(),height/renderer.getPixelRatio());renderer.render(scene,camera);draws++;}
+    try{renderer.autoClear=false;renderer.setRenderTarget(getPresentationTarget());renderer.setScissorTest(false);renderer.setViewport(0,0,width/renderer.getPixelRatio(),height/renderer.getPixelRatio());renderer.render(scene,camera);draws++;}
     finally{renderer.setRenderTarget(target);renderer.setViewport(viewport);renderer.setScissorTest(test);renderer.autoClear=autoClear;}
    }
    return disposed||epoch!==imageEpoch?{skipped:true,regions:0}:{skipped:false,regions:lastRegions,cpu_ms:lastMs};

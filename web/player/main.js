@@ -172,11 +172,14 @@ function drawFrame(pd,rafTime,rafStart,inFlight,drawSource,budgetMs){
 }
 function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
  const began=performance.now(),display=interpolator?.sample({snap:frozen})??{snapshot};presentationMemory=display.memory;
+ if(renderer.beginAtomicFrame&&!renderer.beginAtomicFrame(display.snapshot))throw Error('ATOMIC_PROTOTYPE_CONTEXT_LOST');
+ try{
  if(pd)profiler.mark(pd,'interpolation_sample');
  const outcome=pd?profiler.within(pd,'renderer_draw',()=>renderer.draw(display.snapshot)):renderer.draw(display.snapshot);
  resourceHost?.collect();
   const uiOutcome=renderUi(snapshot);if(pd){profiler.set(pd,uiRenderer.assetDiagnostics());profiler.mark(pd,'ui_draw');}const submittedAt=performance.now();renderMs=submittedAt-began;
  const cursorOutcome=cursorHost.update(snapshot.world.ui_cursor);const cursorReport=JSON.stringify(cursorHost.report());if(document.body.dataset.playerCursor!==cursorReport)document.body.dataset.playerCursor=cursorReport;
+ renderer.finishAtomicFrame?.([outcome,uiOutcome,cursorOutcome].every(value=>value?.status==='completed'));
  const combined=playerCompletion.finish(outcome,uiOutcome,cursorOutcome,display.snapshot?.world?.frame,performance.now(),drawSource,rafTime,startedAt,inFlight,budgetMs);
  if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),decoded_images:imageAssets?.report()??null,drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
  // Diagnostics attributes are rewritten only when they change: a write is a DOM mutation.
@@ -185,6 +188,7 @@ function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
  if(pd)profiler.mark(pd,'host_publish');
  /* PROFILE_FRAME */
  return combined;
+ }catch(error){renderer.finishAtomicFrame?.(false);throw error;}
 }
 async function advance(presenting){
  if(!profiler)return advanceFrame(null,presenting);
@@ -358,7 +362,7 @@ async function start(){
  await resizeStageViewport();
  startupScreen.complete('game');startupScreen.start('renderer');
  const renderPasses=await renderExtensions(presentation.render_extensions);
- renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',bloom:presentation.bloom,renderPasses,spriteResourceBudget:imagePreloadPlan?.budget,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadDataAssetUrl:asset=>new URL("content/"+asset.source,document.baseURI).href,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
+ renderer=await adoptStartupRenderer(()=>createPlayerRenderer(canvas,{kind:'three-webgl',atomicFramePrototype:new URLSearchParams(location.search).get('unone_atomic_prototype')==='1',bloom:presentation.bloom,renderPasses,spriteResourceBudget:imagePreloadPlan?.budget,...(profiler?{profiler}:{}),onRasterState:raster=>publishRasterState(metrics,document.body,raster,message=>console.info(message)),instanceMemory:batch=>presentationMemory?.(batch)??backend.memory(batch),getAssetManifest:()=>assets,getAssetCatalog:()=>assetCatalog,getImageAssets:()=>imageAssets,loadDataAssetUrl:asset=>new URL("content/"+asset.source,document.baseURI).href,loadAssetUrl:async asset=>{requireAssetEncoding(asset,asset.kind==='mesh3d'?'mesh':asset.kind==='effekseer'?'effekseer':'image');return new URL('content/'+asset.source,document.baseURI).href;}},presentation,{createOfficial:createThreeRenderer}),{signal:startupAbort.signal,dispose:disposeRenderer});
  appliedPixelRatio=renderer.pixelRatio?.()??null;
  resourceHost=createSpriteResourceHost(renderer);resourceHost.acceptSnapshot(snapshot);
  metrics.renderer_mode=presentation.renderer_mode??'official';metrics.renderer=metrics.renderer_mode==='official'?'three-webgl':'custom-module';metrics.renderer_module=presentation.renderer_module??null;document.body.dataset.playerRenderer=metrics.renderer_mode;

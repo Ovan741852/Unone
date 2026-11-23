@@ -37,6 +37,7 @@ import {RASTER_PROFILE,validateRasterTarget} from './projected-raster-validator.
 import {installContextClearRecovery} from './renderer-clear-lifecycle.js';
 import {createStartupPresentationState} from './startup-presentation-state.js';
 import {assetCatalogSpecs} from '../shared/asset-encoding.js';
+import {createAtomicFramePrototype} from './atomic-frame-prototype.js';
 
 const LOCAL_THREE_URL = new URL("../vendor/three/three.module.js", import.meta.url).href;
 const LOCAL_THREE_WEBGPU_URL = new URL("../vendor/three/three.webgpu.js", import.meta.url).href;
@@ -83,9 +84,11 @@ export async function createThreeRenderer(canvas, options = {}) {
   if(options.getImageAssets!==undefined&&typeof options.getImageAssets!=='function')throw Error('IMAGE_ASSET_PROVIDER_INVALID: getImageAssets must be a function');
   const antialias=normalizeAntialias(options.antialias);
   const desynchronized=normalizeWebglDesynchronized(options.webglDesynchronized);
+  const atomicRequested=options.atomicFramePrototype===true;
   let desynchronizedPreparation={requested:desynchronized,attempted:false,precreated:false};
   const rasterPolicy=parseProjectedRaster(options.projectedRaster),checkedRaster=rasterPolicy.requested==='upper_left_checked';
   const frameProfile=parseFrameProfile(options.projectedMaterialProfile);let framePublication=null,framePublicationIdentity=null;
+  if(atomicRequested&&(!desynchronized||checkedRaster||frameProfile))throw Error('ATOMIC_PROTOTYPE_UNSUPPORTED_PROFILE');
   const postprocessing=normalizePostProcessing(options.postprocessing);
   const forceWebGpu = options.kind === "three-webgpu";
   const forceWebGl = options.kind === "three-webgl";
@@ -109,9 +112,13 @@ export async function createThreeRenderer(canvas, options = {}) {
     }
   }
   if (!renderer) {
-    desynchronizedPreparation=prepareDesynchronizedWebGL(canvas,antialias,desynchronized);
+    desynchronizedPreparation=prepareDesynchronizedWebGL(canvas,antialias,desynchronized,atomicRequested);
     renderer = new THREE.WebGLRenderer({ canvas, antialias, alpha: false });
   }
+
+  if(atomicRequested&&backend!=='webgl')throw Error('ATOMIC_PROTOTYPE_REQUIRES_WEBGL2');
+  const atomic=atomicRequested?createAtomicFramePrototype(THREE,renderer):null;
+  const presentationTarget=()=>atomic?.target()??null;
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -183,12 +190,12 @@ export async function createThreeRenderer(canvas, options = {}) {
   const meshEntities = createMeshEntityRenderer(THREE,world3d,meshAssetFor,lighting);
   const particles = createParticleRenderer(THREE,world3d);
   const projected = createProjectedRenderer(THREE,textureFor,{raster:rasterPolicy.requested});
-  const uiImageBatchPrefix=createUiImageBatchPrefix(THREE,renderer,{enabled:backend==='webgl'&&!checkedRaster&&!frameProfile});
+  const uiImageBatchPrefix=createUiImageBatchPrefix(THREE,renderer,{enabled:backend==='webgl'&&!checkedRaster&&!frameProfile,getPresentationTarget:presentationTarget});
   const textureRecords = new Map();
   const textureCache = createTextureCachePolicy(textureRecords,options.textureCache);
   // The render pipeline's ui stage: game UI drawn into this frame after the world.
   let worldSubmitted=false;
-  const ui=backend==='webgl'?createGpuUi(THREE,renderer,{available:()=>worldSubmitted&&rasterAvailable(),textureCache,uiTextAtlasSize:options.uiTextAtlasSize,getImageAssets:options.getImageAssets,getAssetCatalog:options.getAssetCatalog,dataTextures:{get:id=>dataTextures.get(id)}}):null;
+  const ui=backend==='webgl'?createGpuUi(THREE,renderer,{available:()=>worldSubmitted&&rasterAvailable(),textureCache,uiTextAtlasSize:options.uiTextAtlasSize,getImageAssets:options.getImageAssets,getAssetCatalog:options.getAssetCatalog,dataTextures:{get:id=>dataTextures.get(id)},getPresentationTarget:presentationTarget}):null;
   let assetRequestPending=false;
   const rasterPass=checkedRaster?createProjectedRasterPass(THREE,renderer):null;
   // Retained across redraws: unchanged packed geometry is validated once, not on every frame.
@@ -564,7 +571,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       if(bloom?.active(pipeline)||pipeline&&!pipeline.scene)throw Error('CAMERA_RECT_UNSUPPORTED: a camera rect cannot combine with bloom, tone mapping or render pipeline passes yet');
       drawInRect(rect,()=>{renderer.render(scene,activeCamera);overlay?.();});
     }
-    else if(bloom) bloom.draw(scene,activeCamera,overlay,pipeline);
+    else if(bloom) bloom.draw(scene,activeCamera,overlay,pipeline,presentationTarget());
     else {renderer.render(scene,activeCamera);overlay?.();}
     worldSubmitted=true;
     if(frameProfile)assertFrameGpuError(renderer.getContext(),'official.ordinary-render');
@@ -607,7 +614,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   function dispose() {
     spriteResources?.dispose();
     canvas.removeEventListener('webglcontextlost',rasterLost);canvas.removeEventListener('webglcontextrestored',rasterRestored);
-    rasterCapability.dispose();startupPresentation?.dispose();rasterPass?.dispose();framePass?.dispose();clearRecovery?.dispose();uiImageBatchPrefix.dispose();ui?.dispose();
+    atomic?.dispose();rasterCapability.dispose();startupPresentation?.dispose();rasterPass?.dispose();framePass?.dispose();clearRecovery?.dispose();uiImageBatchPrefix.dispose();ui?.dispose();
     for (const hook of [...disposeHooks].reverse()) {
       try { hook(); } catch { /* disposal must not break host teardown */ }
     }
@@ -636,6 +643,7 @@ export async function createThreeRenderer(canvas, options = {}) {
 
   return {
     draw,
+    ...(atomic?{beginAtomicFrame(snapshot){if(renderer.getPixelRatio()!==1)throw Error('ATOMIC_PROTOTYPE_DPR_UNSUPPORTED');if(worldOf(snapshot).camera3d?.rect)throw Error('ATOMIC_PROTOTYPE_RECT_UNSUPPORTED');resize(worldOf(snapshot));return atomic.begin();},finishAtomicFrame:publish=>atomic.finish(publish)}:{}),
     uiImageBatchPrefix,
     ui,
     isPresentationAvailable:()=>rasterAvailable(),
@@ -655,7 +663,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     // at 2) when the device pixel ratio changes; one a presentation hook set is left alone.
     pixelRatio: () => renderer.getPixelRatio(),
     setPixelRatio: ratio => renderer.setPixelRatio(ratio),
-      metrics: () => ({webgl_desynchronized:webglDesynchronizedMetrics(renderer,desynchronizedPreparation,backend),sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),...dataTextures.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, geometries:renderer.info.memory.geometries, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
+      metrics: () => ({...(atomic?{atomic_prototype:atomic.metrics()}:{}),webgl_desynchronized:webglDesynchronizedMetrics(renderer,desynchronizedPreparation,backend),sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),...dataTextures.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, geometries:renderer.info.memory.geometries, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

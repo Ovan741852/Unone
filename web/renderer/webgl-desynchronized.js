@@ -1,7 +1,7 @@
 // Opt in before Three constructs its renderer, then let Three reacquire the
 // same context. Passing the context to Three changes Three's internal alpha
 // handling even when its renderer option is alpha:false.
-export function prepareDesynchronizedWebGL(canvas, antialias, requested) {
+export function prepareDesynchronizedWebGL(canvas, antialias, requested, prototypePreserve=false) {
   if (!requested) return {requested:false, attempted:false, precreated:false};
   try {
     // These are Three's WebGLRenderer defaults with its internal alpha:true
@@ -9,7 +9,7 @@ export function prepareDesynchronizedWebGL(canvas, antialias, requested) {
     // preservation or GPU preference when adding the low-latency hint.
     const gl=canvas.getContext('webgl2',{
       alpha:true,depth:true,stencil:false,antialias,premultipliedAlpha:true,
-      preserveDrawingBuffer:false,powerPreference:'default',
+      preserveDrawingBuffer:prototypePreserve,powerPreference:'default',
       failIfMajorPerformanceCaveat:false,desynchronized:true,
     });
     if (!gl || typeof gl.getContextAttributes!=='function' || !gl.getContextAttributes())

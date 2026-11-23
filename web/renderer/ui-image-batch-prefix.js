@@ -25,7 +25,7 @@ function eligible(instance,width,height){
  if(!Number.isFinite(Math.fround(bounds.width))||!Number.isFinite(Math.fround(bounds.height))||error(bounds.width,t.a*width/100,tx*width/100)>.01||error(bounds.height,t.d*height/100,ty*height/100)>.01)return false;
  return true;
 }
-export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
+export function createUiImageBatchPrefix(THREE,renderer,{enabled=true,getPresentationTarget=()=>null}={}){
  const scene=new THREE.Scene(),camera=new THREE.Camera(),resources=new Map(),images=new Map();
  let instances=new Map(),disposed=false,targetUnavailable=false,material=null,textureWrites=0,uploadedTextureWrites=0;
  const size=new THREE.Vector2(),viewport=new THREE.Vector4(),scissor=new THREE.Vector4();
@@ -130,7 +130,7 @@ export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
   if(!enabled||!renderer.getContext){lastReason='backend_unavailable';clear();return 0;}
   if(renderer.getContext().isContextLost()){targetUnavailable=true;lastReason='context_lost';clear();return 0;}
   renderer.getDrawingBufferSize(size);const {width,height}=context;
-  if(size.x!==width||size.y!==height||renderer.getRenderTarget()!==null||renderer.outputColorSpace!==THREE.SRGBColorSpace){lastReason='target_pipeline';clear();return 0;}
+  if(size.x!==width||size.y!==height||renderer.getRenderTarget()!==getPresentationTarget()||renderer.outputColorSpace!==THREE.SRGBColorSpace){lastReason='target_pipeline';clear();return 0;}
   let count=0;const boxes=[];
   for(const p of prefix){const box=clipBox(p,width,height);if(!box||!eligible(p,width,height)){lastReason='canvas_coverage';break;}if(!sourceReady(p,context.images)){lastReason='images_pending_or_bounds';break;}boxes.push(box);count++;}
   if(!count){clear();return 0;}
