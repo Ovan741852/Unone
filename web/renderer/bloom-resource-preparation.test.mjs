@@ -70,3 +70,7 @@ test('other active passes retain the target even when bloom is off',()=>{
   assert.equal(base.width,1);assert.equal(f.bloom.metrics().postprocess_target_releases,1);
  }finally{f.dispose();}
 });
+
+test('inactive Bloom renders into an explicitly supplied depth target',()=>{
+ const f=fixture();try{const world=new THREE.Scene(),camera=new THREE.PerspectiveCamera(),target=new THREE.WebGLRenderTarget(2,2);f.bloom.setEnabled(false);f.bloom.draw(world,camera,null,null,target);assert.equal(f.rendered.find(row=>row.scene===world).target,target);target.dispose();}finally{f.dispose();}
+});

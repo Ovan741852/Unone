@@ -20946,6 +20946,8 @@ function getUnlitUniformColorSpace( renderer ) {
 
 	}
 
+	if ( currentRenderTarget.texture?.userData?.unoneScreenEncoded === true ) return renderer.outputColorSpace;
+
 	// https://github.com/mrdoob/three.js/issues/27868
 	if ( currentRenderTarget.isXRRenderTarget === true ) {
 

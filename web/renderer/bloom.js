@@ -180,7 +180,7 @@ export function createBloom(THREE,renderer,settings) {
     // Without it the creation settings and setEnabled/setAO apply as before.
     // Whether a draw would run any post-processing pass at all.
     active(pipeline){return active(pipeline);},
-    draw(worldScene,worldCamera,overlay,pipeline) {
+    draw(worldScene,worldCamera,overlay,pipeline,inactiveTarget=null) {
       if(disposed)throw Error('POSTPROCESSING_DISPOSED');
       const bloomOn=pipeline?pipeline.bloom.on:enabled,aoOn=pipeline?pipeline.ao.on:aoEnabled;
       const tone=pipeline?pipeline.tone:configuredTone,post=pipeline?.extensions??[];
@@ -211,7 +211,7 @@ export function createBloom(THREE,renderer,settings) {
           pass(fxaa,post.length?chain[1]:null);
         }
         if(post.length)extensions(post,antialias?1:0);
-      } else {releaseInactiveTargets();renderer.setRenderTarget(null);world();}
+      } else {releaseInactiveTargets();renderer.setRenderTarget(inactiveTarget);world();}
       }finally{timer.end(query);}
     },
     metrics(){

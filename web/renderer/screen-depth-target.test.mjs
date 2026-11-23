@@ -1,0 +1,12 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {createScreenDepthTarget} from './screen-depth-target.js';
+function fixture(){let current=null,lost=false,complete=true;const log=[];
+ const gl={FRAMEBUFFER:1,READ_FRAMEBUFFER:2,DRAW_FRAMEBUFFER:3,READ_FRAMEBUFFER_BINDING:4,COLOR_CLEAR_VALUE:5,DEPTH_CLEAR_VALUE:6,FRAMEBUFFER_COMPLETE:7,SCISSOR_TEST:8,COLOR_ATTACHMENT0:9,COLOR_BUFFER_BIT:10,NEAREST:11,NO_ERROR:0,isContextLost:()=>lost,checkFramebufferStatus:()=>complete?7:99,getParameter:p=>p===4?'fbo':p===5?[.1,.2,.3,.4]:1,disable(){},bindFramebuffer:(...x)=>log.push(['bind',...x]),readBuffer(){},blitFramebuffer:(...x)=>log.push(['blit',...x]),getError:()=>0,clearColor:(...x)=>log.push(['clearColor',...x]),clearDepth(){}};
+ const renderer={getContext:()=>gl,getRenderTarget:()=>current,setRenderTarget:v=>{current=v;},resetState:()=>log.push(['reset'])};
+ class Target{constructor(width,height){this.width=width;this.height=height;this.texture={userData:{}};}dispose(){log.push(['dispose']);}}
+ const THREE={WebGLRenderTarget:Target,RGBAFormat:1,UnsignedByteType:1,NoColorSpace:''};
+ return {api:createScreenDepthTarget(THREE,renderer),log,lose:()=>{lost=true;},restore:()=>{lost=false;},incomplete:()=>{complete=false;}};
+}
+test('target stays absent in idle; begin/commit reuse and resize/dispose release',()=>{const f=fixture();assert.equal(f.api.metrics().allocated,false);assert(f.api.begin(1920,1080));assert(f.api.commit());assert(f.api.begin(1920,1080));assert(f.api.commit());assert.equal(f.api.metrics().created,1);assert(f.api.begin(100,80));assert(f.api.commit());f.api.dispose();assert.equal(f.api.metrics().released,2);assert.equal(f.log.filter(x=>x[0]==='blit').length,3);assert.deepEqual(f.log.find(x=>x[0]==='clearColor'),['clearColor',.1,.2,.3,.4]);});
+test('incomplete allocation and lost context cannot commit',()=>{const f=fixture();f.incomplete();assert.equal(f.api.begin(100,100),false);assert.equal(f.api.metrics().allocated,false);assert.equal(f.api.commit(),false);assert.equal(f.log.filter(x=>x[0]==='blit').length,0);});
+test('loss invalidates and next epoch creates a fresh target',()=>{const f=fixture();assert(f.api.begin(100,100));f.lose();f.api.contextLost();assert.equal(f.api.rebind(),false);assert.equal(f.api.commit(),false);f.restore();assert(f.api.begin(100,100));assert(f.api.commit());assert.equal(f.api.metrics().created,2);});
