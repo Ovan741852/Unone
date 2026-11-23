@@ -18,6 +18,7 @@ mod sprites;
 mod sprite_resources;
 mod startup;
 mod ui;
+mod memory_diagnostic;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -701,6 +702,7 @@ impl App {
         Ok(())
     }
     fn finish(&mut self) {
+        memory_diagnostic::checkpoint("app.before_finish", self.renderer.as_ref().map(render::Renderer::diagnostic_device));
         if let Some(dir) = self
             .settings
             .capture_dir
@@ -1005,6 +1007,18 @@ impl ApplicationHandler for App {
                             self.ready_emitted = true;
                         }
                         self.drawn += 1;
+                        if matches!(self.drawn, 1 | 60 | 300 | 600 | 1200 | 1800 | 3600) {
+                            let stage = match self.drawn {
+                                1 => "app.present_1",
+                                60 => "app.present_60",
+                                300 => "app.present_300",
+                                600 => "app.present_600",
+                                1200 => "app.present_1200",
+                                1800 => "app.present_1800",
+                                _ => "app.present_3600",
+                            };
+                            memory_diagnostic::checkpoint(stage, self.renderer.as_ref().map(render::Renderer::diagnostic_device));
+                        }
                         if let Err(e) = self.capture_frame() {
                             self.fail(e, event_loop);
                             return;
@@ -1079,6 +1093,7 @@ pub fn desktop() -> R<()> {
         println!("{descriptor}");
         return Ok(());
     }
+    memory_diagnostic::initialize()?;
     let boot = Instant::now();
     let mut root = std::env::current_exe()
         .map_err(|e| e.to_string())?
@@ -1159,7 +1174,9 @@ pub fn desktop() -> R<()> {
         return launcher.error().map_or(Ok(()), Err);
     }
     let package = Package::load(read)?;
+    memory_diagnostic::checkpoint("desktop.package_loaded", None);
     let mut app = App::new(package, settings, report, boot, save::Store::desktop())?;
+    memory_diagnostic::checkpoint("desktop.app_created", None);
     if app.settings.headless {
         app.boot_ms = boot.elapsed().as_secs_f64() * 1000.;
         for i in 0..app.settings.frames + app.settings.warmup {

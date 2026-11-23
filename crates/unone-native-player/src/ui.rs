@@ -464,7 +464,9 @@ impl Rasterizer {
             }
         }
         // Project faces take precedence over installed fonts with the same name.
+        crate::memory_diagnostic::checkpoint("renderer.ui.before_system_fonts", None);
         options.fontdb_mut().load_system_fonts();
+        crate::memory_diagnostic::checkpoint("renderer.ui.after_system_fonts", None);
         let family = presentation["ui"]["font_family"]
             .as_str()
             .or_else(|| presentation["ui"]["fonts"][0]["family"].as_str())

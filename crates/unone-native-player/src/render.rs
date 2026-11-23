@@ -697,10 +697,14 @@ pub struct Gpu {
 }
 impl Gpu {
     pub async fn new(window: Arc<Window>) -> R<Self> {
-        let instance = wgpu::Instance::default();
+        use crate::memory_diagnostic::{checkpoint, instance, memory_hints};
+        checkpoint("gpu.before_instance", None);
+        let instance = instance();
+        checkpoint("gpu.after_instance", None);
         let surface = instance
             .create_surface(window.clone())
             .map_err(|e| e.to_string())?;
+        checkpoint("gpu.after_surface", None);
         let adapter = instance
             .request_adapter(&wgpu::RequestAdapterOptions {
                 power_preference: wgpu::PowerPreference::HighPerformance,
@@ -710,6 +714,7 @@ impl Gpu {
             })
             .await
             .map_err(|e| e.to_string())?;
+        checkpoint("gpu.after_adapter", None);
         let name = format!("{:?}", adapter.get_info());
         let (device, queue) = adapter
             .request_device(&wgpu::DeviceDescriptor {
@@ -718,11 +723,12 @@ impl Gpu {
                 required_limits: wgpu::Limits::downlevel_defaults()
                     .using_resolution(adapter.limits()),
                 experimental_features: wgpu::ExperimentalFeatures::disabled(),
-                memory_hints: wgpu::MemoryHints::Performance,
+                memory_hints: memory_hints(),
                 trace: wgpu::Trace::Off,
             })
             .await
             .map_err(|e| e.to_string())?;
+        checkpoint("gpu.after_device", Some(&device));
         let size = window.inner_size();
         let caps = surface.get_capabilities(&adapter);
         let format = caps
@@ -743,6 +749,7 @@ impl Gpu {
             desired_maximum_frame_latency: 2,
         };
         surface.configure(&device, &config);
+        checkpoint("gpu.after_surface_configure", Some(&device));
         Ok(Self { surface, adapter, device, queue, config, format, name })
     }
     pub fn target(&self) -> Target<'_> {
@@ -1353,6 +1360,9 @@ impl Renderer {
     pub fn resolution(&self) -> [u32; 2] {
         [self.config.width, self.config.height]
     }
+    pub(crate) fn diagnostic_device(&self) -> &wgpu::Device {
+        &self.device
+    }
     /// The window surface and device, for the startup screen's last frame and
     /// for the error screen of a game that stopped.
     pub fn target(&self) -> Target<'_> {
@@ -1364,7 +1374,9 @@ impl Renderer {
     /// Builds the pipelines and package resources on a GPU context that may
     /// already have drawn the startup screen.
     pub fn with_gpu(gpu: Gpu, package: &Package) -> R<Self> {
+        use crate::memory_diagnostic::checkpoint;
         let Gpu { surface, adapter, device, queue, config, format, name } = gpu;
+        checkpoint("renderer.before_create", Some(&device));
         // Explicit "antialias": true selects 4x MSAA for the world and sprite
         // passes, fixed until relaunch like the Web context option. An adapter
         // without 4x support for these formats keeps single sampling.
@@ -1432,6 +1444,7 @@ impl Renderer {
         });
         let lighting = crate::lighting::LightingGpu::new(&device, &queue, &texture_layout);
         let materials = crate::lighting::MaterialsGpu::new(&device);
+        checkpoint("renderer.after_lighting_material", Some(&device));
         // Vertices are position, uv and normal (lighting::mesh_vertices).
         let pipeline=device.create_render_pipeline(&wgpu::RenderPipelineDescriptor{label:None,layout:Some(&device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor{label:None,bind_group_layouts:&[Some(&camera_layout),Some(&texture_layout),Some(&lighting.layout),Some(&materials.layout)],immediate_size:0})),vertex:wgpu::VertexState{module:&shader,entry_point:Some("vs"),buffers:&[Some(wgpu::VertexBufferLayout{array_stride:32,step_mode:wgpu::VertexStepMode::Vertex,attributes:&wgpu::vertex_attr_array![0=>Float32x3,1=>Float32x2,5=>Float32x3]}),Some(wgpu::VertexBufferLayout{array_stride:40,step_mode:wgpu::VertexStepMode::Instance,attributes:&wgpu::vertex_attr_array![2=>Float32x3,3=>Float32x4,4=>Float32x3]})],compilation_options:Default::default()},fragment:Some(wgpu::FragmentState{module:&shader,entry_point:Some("fs"),targets:&[Some(wgpu::ColorTargetState{format,blend:None,write_mask:wgpu::ColorWrites::ALL})],compilation_options:Default::default()}),primitive:wgpu::PrimitiveState{cull_mode:None,..Default::default()},depth_stencil:Some(wgpu::DepthStencilState{format:wgpu::TextureFormat::Depth32Float,depth_write_enabled:Some(true),depth_compare:Some(wgpu::CompareFunction::Less),stencil:Default::default(),bias:Default::default()}),multisample:wgpu::MultisampleState{count:samples,..Default::default()},multiview_mask:None,cache:None});
         let sky_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
@@ -1719,6 +1732,7 @@ impl Renderer {
             builtin_sphere(&device, builtin_texture),
         );
         let depth = depth(&device, &config);
+        checkpoint("renderer.after_pipelines_assets_primitives_depth", Some(&device));
         let bloom_enabled = package
             .get("content/presentation.json")
             .ok()
@@ -1730,13 +1744,16 @@ impl Renderer {
         });
         let particles = crate::particles::Particles::new(&device, format, &camera_layout, samples);
         let projected=crate::projected::Projected::new(&device,format,&texture_layout);
+        checkpoint("renderer.after_bloom_particles_projected", Some(&device));
         let sprite_budget=crate::sprite_resources::Budget::from_plan(package.files.get("content/image-assets.json").map(Vec::as_slice))?;
         let texture_estimates=texture_bytes.clone();
+        let ui = crate::ui::Surface::new(&device, format, package)?;
+        checkpoint("renderer.after_ui", Some(&device));
         Ok(Self {
             projected,
             world_visible:true,
             render_pipeline: None,
-            ui:crate::ui::Surface::new(&device,format,package)?,
+            ui,
             particles,
             lighting,
             msaa,

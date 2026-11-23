@@ -175,8 +175,10 @@ pub(crate) enum Fonts {
 impl Fonts {
     pub(crate) fn load() -> Self {
         Self::Loading(std::thread::spawn(|| {
+            crate::memory_diagnostic::checkpoint("startup.fonts.before_system_scan", None);
             let mut fonts = usvg::fontdb::Database::new();
             fonts.load_system_fonts();
+            crate::memory_diagnostic::checkpoint("startup.fonts.after_system_scan", None);
             fonts
         }))
     }
@@ -321,6 +323,11 @@ impl Painter {
     /// Forget GPU objects of a device that is gone (Android suspend).
     pub(crate) fn reset(&mut self) { self.gpu = None; }
     pub(crate) fn draw(&mut self, target: Target<'_>, scale: f64, screen: &Screen, look: &Look, fonts: &mut Fonts) -> R<()> {
+        use crate::memory_diagnostic::checkpoint;
+        let first = self.gpu.is_none();
+        if first {
+            checkpoint("startup.painter.before_create", Some(target.device));
+        }
         let [width, height] = [target.config.width.max(1), target.config.height.max(1)];
         let options = fonts.get(screen.failed()).map(|fonts| {
             let mut options = usvg::Options::default();
@@ -333,6 +340,9 @@ impl Painter {
         let tree = usvg::Tree::from_str(&svg, &options).map_err(|e| format!("NATIVE_STARTUP_SCREEN_FAILED: {e}"))?;
         let mut pixmap = resvg::tiny_skia::Pixmap::new(width, height).ok_or("NATIVE_STARTUP_SCREEN_FAILED: window size")?;
         resvg::render(&tree, resvg::tiny_skia::Transform::identity(), &mut pixmap.as_mut());
+        if first {
+            checkpoint("startup.painter.after_cpu_raster", Some(target.device));
+        }
         let gpu = self.gpu.get_or_insert_with(|| PainterGpu::new(target.device, target.config.format));
         if gpu.texture.as_ref().is_none_or(|texture| texture.2 != [width, height]) {
             let texture = target.device.create_texture(&wgpu::TextureDescriptor {
@@ -364,6 +374,9 @@ impl Painter {
             wgpu::TexelCopyBufferLayout { offset: 0, bytes_per_row: Some(width * 4), rows_per_image: Some(height) },
             wgpu::Extent3d { width, height, depth_or_array_layers: 1 },
         );
+        if first {
+            checkpoint("startup.painter.after_texture_upload", Some(target.device));
+        }
         let output = match target.surface.get_current_texture() {
             wgpu::CurrentSurfaceTexture::Success(texture) | wgpu::CurrentSurfaceTexture::Suboptimal(texture) => texture,
             wgpu::CurrentSurfaceTexture::Timeout | wgpu::CurrentSurfaceTexture::Occluded => return Ok(()),
@@ -387,6 +400,9 @@ impl Painter {
         }
         target.queue.submit([encoder.finish()]);
         target.queue.present(output);
+        if first {
+            checkpoint("startup.painter.after_present", Some(target.device));
+        }
         Ok(())
     }
 }
@@ -499,6 +515,7 @@ impl Launcher {
                 self.screen.progress("content", bytes as f64 / total_bytes.max(1) as f64, Some(format!("{files}/{total_files}")));
                 if done {
                     self.package = Some(self.loader.take().unwrap().finish()?);
+                    crate::memory_diagnostic::checkpoint("startup.package_loaded", self.gpu.as_ref().map(|gpu| gpu.target().device));
                     self.screen.complete("content");
                     self.screen.start("game");
                     self.stage = Stage::Game;
@@ -507,6 +524,7 @@ impl Launcher {
             Stage::Game => {
                 let (settings, report, boot, store) = self.launch.take().ok_or("NATIVE_STARTUP_STATE")?;
                 self.app = Some(App::new(self.package.take().ok_or("NATIVE_STARTUP_STATE")?, settings, report, boot, store)?);
+                crate::memory_diagnostic::checkpoint("startup.app_created", self.gpu.as_ref().map(|gpu| gpu.target().device));
                 self.screen.complete("game");
                 self.screen.start("renderer");
                 self.stage = Stage::Renderer;
