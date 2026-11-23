@@ -736,6 +736,8 @@ pub enum UiNode {
         id: String,
         rect: UiRect,
         component: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        render_role: Option<UiRenderLayerRole>,
         children: Vec<UiNode>,
     },
     #[serde(rename = "scroll_view")]
@@ -867,6 +869,22 @@ impl UiNode {
     }
 }
 
+/// Explicit presentation intent. It never changes authored paint order.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all="snake_case")]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+pub enum UiRenderLayerRole { Scene, SceneLabels, Overlay }
+fn present_render_role<'de,D:serde::Deserializer<'de>>(deserializer:D)->Result<Option<UiRenderLayerRole>,D::Error> {
+    UiRenderLayerRole::deserialize(deserializer).map(Some)
+}
+
+/// Claimed by a host only when it consumes the layer declaration and draws
+/// every layer in authored order. Omission and old hosts are conservative.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all="snake_case")]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+pub enum UiRenderLayerHostSupport { #[default] Unknown, Unsupported, FullResolution }
+
 #[derive(Debug, Clone, Serialize)]
 pub struct UiTree {
     #[serde(skip)]
@@ -958,6 +976,9 @@ struct RawUiNode {
     alt: Option<String>,
     #[serde(default)]
     component: Option<String>,
+    #[serde(default,deserialize_with="present_render_role")]
+    #[cfg_attr(feature = "dev-tools", schemars(with = "UiRenderLayerRole"))]
+    render_role: Option<UiRenderLayerRole>,
     #[serde(default)]
     children: Option<Vec<RawUiNode>>,
     #[serde(default)]
@@ -1212,6 +1233,7 @@ impl UiTree {
         let mut indices = Vec::new();
         let mut count: usize = 0;
         let mut bytes: usize = 0;
+        let mut has_layer_role = false;
         while let Some((n, index, depth)) = stack.pop() {
             // Retain only index coordinates on the successful hot path. Full
             // diagnostic paths are formatted lazily when validation fails.
@@ -1252,7 +1274,8 @@ impl UiTree {
                 }.into());
             }
             if let Some(obj) = n.as_object() {
-                for v in obj.values() {
+                for (key,v) in obj {
+                    if key=="render_role" {has_layer_role=true;}
                     if let Some(s) = v.as_str() {
                         bytes += s.len();
                     }
@@ -1309,6 +1332,7 @@ impl UiTree {
             children.push(parse_node(raw_node, aspect, &mut ids, &mut node_count, 1, false, resources)?);
         }
         validate_background_scopes(&children, &mut Vec::new(), false)?;
+        if has_layer_role {validate_render_layers(&children)?;}
 
         let tree=Self {
             viewport_aspect: aspect,
@@ -1322,6 +1346,50 @@ impl UiTree {
         };
         tree.validate_image_batch_resources(resources)?;
         Ok(tree)
+    }
+}
+
+fn validate_render_layers(children: &[UiNode]) -> Result<(), String> {
+    fn contains_role(nodes:&[UiNode])->bool {
+        nodes.iter().any(|node| match node {
+            UiNode::Component{render_role,children,..}=>render_role.is_some() || contains_role(children),
+            UiNode::ScrollView{children,..}=>contains_role(children),
+            _=>false,
+        })
+    }
+    let declared=children.iter().any(|node|matches!(node,UiNode::Component{render_role:Some(_),..}));
+    if !declared {
+        if contains_role(children) {return Err("UI_RENDER_LAYERS_NESTED: roles are only allowed on root components".into());}
+        return Ok(());
+    }
+    if children.len()>3 {return Err("UI_RENDER_LAYERS_STRUCTURE: root children must be the declared layers".into());}
+    let mut previous=None;
+    for node in children {
+        let UiNode::Component{render_role:Some(role),children,..}=node else {return Err("UI_RENDER_LAYERS_STRUCTURE: every root child must declare one layer role".into());};
+        let order=match role {UiRenderLayerRole::Scene=>0,UiRenderLayerRole::SceneLabels=>1,UiRenderLayerRole::Overlay=>2};
+        if previous.is_none() && order!=0 || previous.is_some_and(|p|order<=p) {
+            return Err("UI_RENDER_LAYERS_ORDER: scene must be first; roles must be unique and ordered".into());
+        }
+        previous=Some(order);
+        if contains_role(children) {return Err("UI_RENDER_LAYERS_NESTED: roles are only allowed on root components".into());}
+        fn visual_only(nodes:&[UiNode],labels:bool)->bool {
+            nodes.iter().all(|node|match node {
+                UiNode::Component{children,..}=>visual_only(children,labels),
+                UiNode::Image{..}|UiNode::ImageBatch{..}|UiNode::Panel{..}=>true,
+                UiNode::Text{..}=>labels,
+                _=>false,
+            })
+        }
+        if order<2 && !visual_only(children,order==1) {
+            return Err("UI_RENDER_LAYERS_INTERACTIVE: scene and scene_labels contain only supported visual nodes".into());
+        }
+    }
+    Ok(())
+}
+
+impl UiTree {
+    pub fn has_render_layers(&self)->bool {
+        self.children.iter().any(|node|matches!(node,UiNode::Component{render_role:Some(_),..}))
     }
 }
 
@@ -1364,6 +1432,9 @@ fn parse_node(
     if raw_node.kind == "image_batch" && (raw_node.anchor.is_some() || raw_node.pivot.is_some()
         || raw_node.offset.is_some() || raw_node.size.is_some()) {
         return Err(format!("UI_IMAGE_BATCH_PLACEMENT: '{}' requires an explicit stage rect matching its absolute quad coordinates; anchors are not supported", raw_node.id));
+    }
+    if raw_node.render_role.is_some() && raw_node.kind != "component" {
+        return Err(format!("UI_RENDER_LAYERS_KIND: '{}' requires a component", raw_node.id));
     }
     if raw_node.expanded.is_some() && raw_node.kind != "combobox" {
         return Err(format!("ui.setRoot node '{}' only supports expanded on combobox", raw_node.id));
@@ -1615,6 +1686,7 @@ fn parse_node(
                 id,
                 rect,
                 component,
+                render_role: raw_node.render_role,
                 children: parsed_children,
             })
         }
@@ -1810,6 +1882,38 @@ mod image_batch_tests;
 #[cfg(test)]
 mod tests {
     use super::{UI_REFERENCE_ASPECT, UiBackgroundScope, UiNode, UiRect, UiTree};
+
+    #[test]
+    fn explicit_render_layers_validate_order_ownership_and_visual_nodes() {
+        use serde_json::json;
+        let rect=json!({"x":0,"y":0,"width":100,"height":100});
+        let component=|id:&str,role:&str,children:serde_json::Value|json!({"kind":"component","id":id,"component":"custom","render_role":role,"rect":rect,"children":children});
+        let scene=component("world","scene",json!([{"kind":"panel","id":"ground","rect":rect}]));
+        let labels=component("names","scene_labels",json!([{"kind":"text","id":"name","rect":rect,"text":"Name"}]));
+        let overlay=component("hud","overlay",json!([{"kind":"button","id":"go","rect":rect,"text":"Go","action":"Go"}]));
+        let base=json!({"kind":"screen","id":"screen","node":"town","children":[scene,labels,overlay]});
+        let parsed=UiTree::from_json(base.clone()).unwrap();
+        assert!(parsed.has_render_layers());
+        assert_eq!(serde_json::to_value(&parsed).unwrap()["children"][0]["render_role"],"scene");
+        let mut legacy=base.clone();for node in legacy["children"].as_array_mut().unwrap() {node.as_object_mut().unwrap().remove("render_role");}
+        let old=UiTree::from_json(legacy).unwrap();assert!(!old.has_render_layers());
+        assert!(serde_json::to_value(old).unwrap()["children"][0].get("render_role").is_none());
+        for (field,value,diagnostic) in [
+            ("/children/0/render_role",json!("overlay"),"UI_RENDER_LAYERS_ORDER"),
+            ("/children/1/render_role",json!("scene"),"UI_RENDER_LAYERS_ORDER"),
+        ] {
+            let mut input=base.clone();*input.pointer_mut(field).unwrap()=value;
+            assert!(UiTree::from_json(input).unwrap_err().contains(diagnostic));
+        }
+        let mut interactive=base.clone();interactive["children"][0]["children"][0]=json!({"kind":"button","id":"button","rect":rect,"text":"Go","action":"Go"});
+        assert!(UiTree::from_json(interactive).unwrap_err().contains("UI_RENDER_LAYERS_INTERACTIVE"));
+        let mut uncovered=base.clone();uncovered["children"][1].as_object_mut().unwrap().remove("render_role");
+        assert!(UiTree::from_json(uncovered).unwrap_err().contains("UI_RENDER_LAYERS_STRUCTURE"));
+        let mut nested=base.clone();nested["children"][0]["children"][0]=json!({"kind":"component","id":"inner","component":"inner","render_role":"scene","rect":rect,"children":[]});
+        assert!(UiTree::from_json(nested).unwrap_err().contains("UI_RENDER_LAYERS_NESTED"));
+        let mut unknown=base.clone();unknown["children"][0]["render_role"]=json!("mystery");assert!(UiTree::from_json(unknown).is_err());
+        let mut null=base;null["children"][0]["render_role"]=json!(null);assert!(UiTree::from_json(null).is_err());
+    }
 
     #[test]
     fn slider_drag_geometry_defaults_and_raw_boundary_validation() {

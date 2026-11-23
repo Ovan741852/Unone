@@ -22,6 +22,44 @@ fn load_script(source: &str, declared: bool) -> Result<EngineRuntime, Box<Diagno
 }
 
 #[test]
+fn screen_constructor_publishes_explicit_ordered_render_layers() {
+    let body=r#"
+local k=api.ui.components.create()
+local capability=api.ui.renderLayerCapabilities()
+assert(capability.declaration=='supported' and capability.host_layer_composition=='supported' and capability.independent_resolution=='unsupported')
+local rect={x=0,y=0,width=100,height=100}
+local world=k.component({id='world',component='world-art',render_role='scene',rect=rect,children={k.panel({id='ground',rect=rect})}})
+local hud=k.component({id='hud',component='hud',render_role='overlay',rect=rect,children={k.text({id='label',rect=rect,text='hello'})}})
+local screen=k.screen({id='screen',node='town',children={world,hud}})
+assert(table.isfrozen(screen) and table.isfrozen(world) and world.render_role=='scene')
+api.ui.setRoot(screen)
+"#;
+    let config:ProjectConfig=serde_json::from_value(json!({"name":"layers","entry_script":"main.luau","systems":{"ui":true},"runtime_packages":{"@unone/ui":"0.6.0"}})).unwrap();
+    let runtime=EngineRuntime::load_source_project(SourceProject{config,source:format!("return {{start=function(api)\n{body}\nend,update=function()end}}"),ui_render_layer_host:unone_engine::UiRenderLayerHostSupport::FullResolution,..SourceProject::default()}).unwrap();
+    let snapshot=serde_json::to_value(runtime.observe()).unwrap();
+    assert_eq!(snapshot["ui"]["children"][0]["render_role"],"scene");
+    assert_eq!(snapshot["ui"]["children"][1]["render_role"],"overlay");
+}
+
+#[test]
+fn old_host_reports_unsupported_and_rejects_layers_before_publishing() {
+    let runtime=load(r#"
+local k=api.ui.components.create()
+local cap=api.ui.renderLayerCapabilities()
+assert(cap.declaration=='supported' and cap.host_layer_composition=='unsupported' and cap.independent_resolution=='unsupported')
+local rect={x=0,y=0,width=100,height=100}
+api.ui.setRoot(k.screen({id='old',node='old',children={k.panel({id='old-panel',rect=rect})}}))
+local group=k.component({id='world',component='world-art',render_role='scene',rect=rect,children={k.panel({id='ground',rect=rect})}})
+local screen=k.screen({id='new',node='new',children={group}})
+local ok,err=pcall(function() api.ui.setRoot(screen) end)
+assert(not ok and string.find(tostring(err),'UI_RENDER_LAYERS_HOST_UNSUPPORTED',1,true))
+"#,true).unwrap();
+    let snapshot=serde_json::to_value(runtime.observe()).unwrap();
+    assert_eq!(snapshot["ui"]["id"],"old");
+    assert!(snapshot["ui"]["children"][0].get("render_role").is_none());
+}
+
+#[test]
 fn image_batch_constructor_preserves_explicit_decorative_overlay() {
     let runtime=load(r#"
 local k=api.ui.components.create()

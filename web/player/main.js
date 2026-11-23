@@ -30,6 +30,7 @@ import {createAtomicFramePresenter} from '../shared/atomic-frame-presenter.mjs';
 import {createPresentationWaitClock,createPresentationWaitHeartbeat} from '../shared/presentation-wait-clock.mjs';
 import {createUiAssetPreflight} from '../shared/ui-asset-preflight.mjs';
 import {createUiFrameWait} from '../shared/ui-frame-wait.mjs';
+import {declareUiRenderLayerHost} from '../shared/ui-render-layer-host.mjs';
 /* PROFILE_IMPORT */
 /* DEVELOPER_IMPORT */
 const canvas=document.querySelector('#game');
@@ -59,6 +60,7 @@ const cursorHost=createUiCursorHost({target:canvas,layer:cursorCanvas,onError:fa
  return loadCursorImage(new URL(`content/${asset.source}`,document.baseURI).href);
 }});
 let snapshot,renderer,scheduler,audio,backend,interpolator,presentationMemory=null,tickFlight=null,resourceHost=null,networkHost=null;
+let layerHostSupported=false;
 let atomicFrame=null,atomicWait=null,atomicClock=null,atomicHeartbeat=null,atomicPreflight=null,atomicUiSnapshot=null,atomicPendingReady=null,atomicHostPaused=false;
 let atomicDrawing=false,atomicRedraw=false,atomicRetryReady=true,atomicRetryTimer=null,atomicLastOutcome=null,atomicUnsubscribe=null,atomicStartupRetry=null;
 const recoverableWorldAsset=error=>/^(?:MESH_ASSET_FETCH_FAILED:|IMAGE_ASSET_(?:LOAD|HEADER)_FAILED(?::|$))/.test(String(error?.message??error));
@@ -255,7 +257,7 @@ function tickOnce(presenting){if(tickFlight){if(profiler)profiler.record('update
 async function setPaused(value){frozen=value;atomicClock?.setEligible(!value&&!document.hidden&&!atomicHostPaused);orderedRouter?.setPaused(value||!!atomicWait?.isActive());publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else if(!atomicWait?.isActive()&&!atomicHostPaused)scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){errors.reset();const wasPaused=frozen;await setPaused(true);if(atomicWait?.isActive())atomicWait.hide();if(atomicClock)atomicClock.reset(atomicClock.report().epoch+1);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();sentViewport=projectPayload.viewport_size;projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;projectPayload.sprite_resource_host="supported";const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});await resizeStageViewport();configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused||!!atomicWait?.isActive());audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
+async function restart(){errors.reset();const wasPaused=frozen;await setPaused(true);if(atomicWait?.isActive())atomicWait.hide();if(atomicClock)atomicClock.reset(atomicClock.report().epoch+1);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);declareUiRenderLayerHost(projectPayload,layerHostSupported);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();sentViewport=projectPayload.viewport_size;projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;projectPayload.sprite_resource_host="supported";const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});await resizeStageViewport();configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused||!!atomicWait?.isActive());audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  startupScreen.start('present');
@@ -374,6 +376,7 @@ async function start(){
   uiRenderer.setAssetObserver(attrs=>profiler.record('ui_asset','ok',attrs));
   window.unonePlayerProfile=Object.freeze({report:()=>profiler.report(),clear:()=>profiler.clear(),publish:()=>profiler.publish()});}
  const [project,assets,presentation]=await Promise.all([json('content/project.json'),json('content/assets.json'),json('content/presentation.json')]);
+ layerHostSupported=(presentation.renderer_mode??'official')==='official';declareUiRenderLayerHost(project,layerHostSupported);
  if(startupAbort.signal.aborted)throw startupCancelled();
  startupScreen.complete('content');withCatalog(project,assets);projectPayload=project;uiAssetManifest=assets;
  // Data assets load beside image preparation, fonts and the runtime; Game.start waits for them.

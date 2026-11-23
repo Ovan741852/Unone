@@ -707,3 +707,22 @@ separate rerun of the audit with a recorded browser report:
 ```powershell
 python scripts/audit-ui-fonts.py --export 'D:/Exports/my-game-web' --report 'D:/Evidence/my-game-ui/browser-report.json' --output 'D:/Evidence/my-game-ui/font-coverage.json'
 ```
+
+### Explicit render-layer declarations
+
+A screen may optionally declare `render_role` on its root component children.
+The existing children order is authoritative: `scene` must come first,
+followed by optional `scene_labels` and `overlay`; roles are unique and cannot
+be nested. Once a role is declared every root child must declare one. Scene accepts nested components and visual
+panel/image/image_batch nodes; scene_labels also accepts text. Interactive
+controls belong in overlay. All normal budgets, IDs, clips, background scopes
+and painter order continue to apply across the full screen.
+
+Before publishing, query `api.ui.renderLayerCapabilities()`. `declaration`
+reports Core support; `host_layer_composition` requires an explicit supporting
+host; `independent_resolution` is unsupported in this version. Unknown/older
+hosts report unsupported and reject a layered screen before replacing the old
+screen. Publish your existing unlayered tree for those hosts. The official Web
+host explicitly supports full-resolution ordered layer presentation; no scene
+scaling is implied. Omission of `render_role` keeps the old behavior and wire
+shape. Do not derive layers from component names or image IDs.

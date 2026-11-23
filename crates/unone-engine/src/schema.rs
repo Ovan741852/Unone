@@ -111,6 +111,8 @@ pub fn contract_schema(name: &str) -> Option<Value> {
         value["$defs"]["RawUiNode"]["properties"]["quads"]["maxItems"] = serde_json::json!(contract.host_max_nodes - 1);
         value["$defs"]["RawUiNode"]["properties"]["pixel_snap"]["default"] = serde_json::json!(false);
         value["$defs"]["RawUiNode"]["properties"]["decorative_overlay"]["default"] = serde_json::json!(false);
+        // Omission is permitted, explicit null is rejected by the parser.
+        value["$defs"]["RawUiNode"]["properties"]["render_role"].as_object_mut().unwrap().remove("default");
         value["$defs"]["UiImageQuad"]["properties"]["asset"]["minLength"] = serde_json::json!(1);
         value["$defs"]["UiImageQuad"]["properties"]["opacity"]["minimum"] = serde_json::json!(0);
         value["$defs"]["UiImageQuad"]["properties"]["opacity"]["maximum"] = serde_json::json!(1);

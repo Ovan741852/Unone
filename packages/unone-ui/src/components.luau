@@ -32,7 +32,7 @@ local leafFields: {[string]: Fields} = {
     image={id=true,asset=true,fit=true,slice=true,alt=true,style=true,background_for=true},
     image_batch={id=true,quads=true,content=true,transform=true,pixel_snap=true,background_for=true,decorative_overlay=true},
 }
-local componentFields: Fields = {id=true,component=true,children=true,surface=true}
+local componentFields: Fields = {id=true,component=true,children=true,surface=true,render_role=true}
 local screenFields: Fields = {id=true,node=true,children=true,budget=true}
 local sliderOptions: Fields = {id=true,value=true,min=true,max=true,step=true,axis=true,reverse=true}
 local sliderViewFields: Fields = {rect=true,text=true,style=true,trackRect=true,hitPadding=true,enabled=true,action=true}

@@ -112,6 +112,7 @@ pub struct SourceProject {
     /// The host applies api.assets.imageGroups requests and reports their state.
     pub image_group_host: bool,
     pub sprite_resource_host: crate::SpriteHostSupport,
+    pub ui_render_layer_host: crate::UiRenderLayerHostSupport,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -282,6 +283,7 @@ struct PointerState {
 
 #[derive(Clone)]
 struct ApiState {
+    ui_render_layer_host: crate::UiRenderLayerHostSupport,
     sprite_resources: Rc<RefCell<sprite_resources::Registry>>,
     image_groups: Rc<RefCell<crate::image_groups::Registry>>,
     host_time: Rc<RefCell<crate::host_time::HostTime>>,
@@ -374,6 +376,7 @@ struct ReloadRollbackState {
 }
 
 pub struct EngineRuntime {
+    ui_render_layer_host: crate::UiRenderLayerHostSupport,
     sprite_resources: Rc<RefCell<sprite_resources::Registry>>,
     image_groups: Rc<RefCell<crate::image_groups::Registry>>,
     host_time: Rc<RefCell<crate::host_time::HostTime>>,
@@ -626,7 +629,7 @@ impl EngineRuntime {
             Ok::<_, Box<Diagnostic>>((config, paths, world, data_assets, catalog, image_groups))
         })?;
         // Tools validate requests against the plan, but no host holds the images.
-        let mut runtime = Self::with_world(config, paths, world, None, None, None, seed, restored_save, None, None, data_assets, catalog, crate::ErrorPolicy::strict(), (image_groups, false, crate::SpriteHostSupport::Unsupported))?;
+        let mut runtime = Self::with_world(config, paths, world, None, None, None, seed, restored_save, None, None, data_assets, catalog, crate::ErrorPolicy::strict(), (image_groups, false, crate::SpriteHostSupport::Unsupported, crate::UiRenderLayerHostSupport::Unknown))?;
         (runtime.startup.imports_ms, runtime.startup.project_ms) = (startup.imports_ms, startup.project_ms);
         Ok(runtime)
     }
@@ -738,6 +741,7 @@ impl EngineRuntime {
             image_groups,
             image_group_host,
             sprite_resource_host,
+            ui_render_layer_host,
         } = project;
         let module_count = script_modules.len().max(script_module_bytecode.len());
         if module_count > MAX_SCRIPT_MODULES {
@@ -788,7 +792,7 @@ impl EngineRuntime {
             data_assets,
             asset_catalog,
             error_policy,
-            (image_groups, image_group_host, sprite_resource_host),
+            (image_groups, image_group_host, sprite_resource_host, ui_render_layer_host),
         )
     }
 
@@ -807,7 +811,7 @@ impl EngineRuntime {
         data_assets: crate::data_assets::DataAssets,
         asset_catalog: Vec<crate::AssetCatalogEntry>,
         error_policy: crate::ErrorPolicy,
-        (image_groups, image_group_host, sprite_resource_host): (Vec<String>, bool, crate::SpriteHostSupport),
+        (image_groups, image_group_host, sprite_resource_host, ui_render_layer_host): (Vec<String>, bool, crate::SpriteHostSupport, crate::UiRenderLayerHostSupport),
     ) -> Result<Self, Box<Diagnostic>> {
         let errors = Rc::new(RefCell::new(crate::error_policy::ErrorState::new(error_policy)));
         let image_groups = Rc::new(RefCell::new(crate::image_groups::Registry::new(image_groups, image_group_host)
@@ -834,6 +838,7 @@ impl EngineRuntime {
         let debug_tools = Rc::new(RefCell::new(preview::DebugTools::default()));
         let script_profile = Rc::new(RefCell::new(crate::performance::ScriptProfile::default()));
         let api_state = ApiState {
+            ui_render_layer_host,
             sprite_resources: Rc::clone(&sprite_resources),
             image_groups: Rc::clone(&image_groups),
             host_time: Rc::clone(&host_time),
@@ -902,6 +907,7 @@ impl EngineRuntime {
             ))
         })?;
         let mut runtime = Self {
+            ui_render_layer_host,
             sprite_resources,
             image_groups,
             host_time,
@@ -1901,6 +1907,7 @@ impl EngineRuntime {
             Rc::clone(&self.world)
         };
         let candidate_api_state = ApiState {
+            ui_render_layer_host: self.ui_render_layer_host,
             sprite_resources: Rc::new(RefCell::new(self.sprite_resources.borrow().clone())),
             image_groups: Rc::new(RefCell::new(self.image_groups.borrow().clone())),
             host_time: Rc::new(RefCell::new(self.host_time.borrow().clone())),

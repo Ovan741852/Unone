@@ -387,6 +387,9 @@ export type UiApi = {
     -- Current host width/height ratio, also used by anchored placement.
     -- Read-only environment data; pass to components.createResponsiveLayout().resolve.
     getViewport: () -> {aspect: number},
+    -- This Core supports layer declarations; independent-resolution rendering
+    -- is unsupported until a host explicitly advertises it.
+    renderLayerCapabilities: () -> {declaration:"supported" | "unsupported", host_layer_composition:"supported" | "unsupported", independent_resolution:"supported" | "unsupported"},
     -- Helpers return a real scroll_view node. Content is local top-left/y-down;
     -- viewport uses explicit left/top; never pass a stage x/y rect here.
     scrollView: (options: UiScrollOptions) -> UiScrollNode,
@@ -530,7 +533,7 @@ export type UiPanelNode = UiPlacement & {
 export type UiComponentNode = UiPlacement & {
     -- Grouping does not transform read children: their coordinates remain in the
     -- current stage/scroll space, with no relative-placement or style inheritance.
-    read kind: "component", read id: string, read component: string, read children: UiReadArray<UiNode>?,
+    read kind: "component", read id: string, read component: string, read render_role:("scene" | "scene_labels" | "overlay")?, read children: UiReadArray<UiNode>?,
 }
 -- Engine-managed virtual handles are a readonly public view of helper-owned live state.
 -- They are not immutable reusable-subtree grants.
@@ -607,7 +610,7 @@ export type UiComponentSurface = {
     read alt: string?, read slice: UiSlice?, read style: UiStyle?,
 }
 export type UiComponentProps = UiPlacement & {
-    read id: string, read component: string, read children: UiReadArray<UiNode>?, read surface: UiComponentSurface?,
+    read id: string, read component: string, read render_role:("scene" | "scene_labels" | "overlay")?, read children: UiReadArray<UiNode>?, read surface: UiComponentSurface?,
 }
 export type UiComponentScreenProps = {
     read id: string, read node: string, read children: UiReadArray<UiNode>, read budget: UiBudget?,

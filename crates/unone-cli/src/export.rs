@@ -39,6 +39,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/startup-presentation.mjs",
         "shared/startup-screen.mjs",
         "shared/atomic-frame-presenter.mjs",
+        "shared/ui-render-layer-host.mjs",
         "shared/presentation-wait-clock.mjs",
         "shared/ui-asset-preflight.mjs",
         "shared/ui-frame-wait.mjs",

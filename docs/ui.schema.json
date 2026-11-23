@@ -224,6 +224,10 @@
           "default": null,
           "description": "Absolute placement in the design space. Use it when the layout is not\nedge relative, such as a ring laid out with trigonometry."
         },
+        "render_role": {
+          "$ref": "#/$defs/UiRenderLayerRole",
+          "default": null
+        },
         "scroll": {
           "anyOf": [
             {
@@ -509,6 +513,15 @@
         "height"
       ],
       "type": "object"
+    },
+    "UiRenderLayerRole": {
+      "description": "Explicit presentation intent. It never changes authored paint order.",
+      "enum": [
+        "scene",
+        "scene_labels",
+        "overlay"
+      ],
+      "type": "string"
     },
     "UiScroll": {
       "additionalProperties": false,

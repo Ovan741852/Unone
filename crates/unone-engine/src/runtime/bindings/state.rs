@@ -92,6 +92,12 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     ui_api.set("getViewport", lua.create_function(move |lua, ()| {
         json_to_lua(lua, serde_json::json!({"aspect": *viewport_state.borrow()}))
     })?)?;
+    // This version accepts semantic declarations but does not yet implement
+    // a separate-resolution host pass. Never infer host scaling from Core.
+    let layer_host_supported=state.ui_render_layer_host==crate::UiRenderLayerHostSupport::FullResolution;
+    ui_api.set("renderLayerCapabilities", lua.create_function(move |lua, ()| {
+        json_to_lua(lua, serde_json::json!({"declaration":"supported","host_layer_composition":if layer_host_supported {"supported"} else {"unsupported"},"independent_resolution":"unsupported"}))
+    })?)?;
     let ui_state = Rc::clone(&ui);
     let inspect_state = Rc::clone(&ui);
     let inspect_errors = Rc::clone(&state.errors);
@@ -156,6 +162,9 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
                     "{error} — this engine build accepts node placement as                          rect{{x,y,width,height}} or anchor+size (anchors: top_left, top,                          top_right, left, center, right, bottom_left, bottom, bottom_right);                          the design space is 0..100 on both axes with y pointing up"
                 ))),
             };
+            if tree.has_render_layers() && !layer_host_supported {
+                return Err(mlua::Error::RuntimeError("UI_RENDER_LAYERS_HOST_UNSUPPORTED: host must explicitly support ordered full-resolution layers".into()));
+            }
             stamps.set(stamps.get() + 1);
             tree.publication = stamps.get();
             *published.borrow_mut() = root.map(|root| (root, stamps.get()));

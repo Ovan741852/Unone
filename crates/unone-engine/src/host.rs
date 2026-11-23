@@ -64,6 +64,9 @@ pub struct HostProject {
     /// Sprite resource feedback capability, declared independently from image groups.
     #[serde(default)]
     pub sprite_resource_host: crate::SpriteHostSupport,
+    /// Explicit support for full-resolution ordered layer presentation.
+    #[serde(default)]
+    pub ui_render_layer_host: crate::UiRenderLayerHostSupport,
 }
 
 impl HostProject {
@@ -155,6 +158,7 @@ impl HostProject {
             image_groups: self.image_groups,
             image_group_host: self.image_group_host,
             sprite_resource_host: self.sprite_resource_host,
+            ui_render_layer_host: self.ui_render_layer_host,
         })
     }
 }

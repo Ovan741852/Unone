@@ -10,6 +10,7 @@ import {createPlayerCompletionMetrics,DRAW_COMPLETED,DRAW_SKIPPED} from './playe
 import {createCanvasUi} from './canvas-ui.mjs';
 import {serializedSavePayload,createSavePublication,attachSavePublication} from './save-publication.mjs';
 import {createStartupScreen} from './startup-screen.mjs';
+import {declareUiRenderLayerHost} from './ui-render-layer-host.mjs';
 const flush=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
 function fixture({checked=true,uiRenderer,uiSnapshot,worldOutcome=DRAW_COMPLETED,cursorOutcome=()=>DRAW_COMPLETED,cursorReady=async()=>{},restoredSave='{}',savePayload={},storageError=null}={}){
  let lost=false,id=0,draws=0,validations=0,starts=0,made=0,disposed=0;
@@ -23,7 +24,7 @@ function fixture({checked=true,uiRenderer,uiSnapshot,worldOutcome=DRAW_COMPLETED
  const raf=f=>{frames.set(++id,f);return id;};
  const playerCompletion=createPlayerCompletionMetrics({now:()=>0}),ui=uiRenderer??{draw:()=>DRAW_COMPLETED,ready:async()=>{},releaseAll(){}},events=new Map();
  const canvas={addEventListener(name,fn){const list=events.get(name)??new Set();list.add(fn);events.set(name,list);},removeEventListener(name,fn){events.get(name)?.delete(fn);}};
- const context={renderer,canvas,playerCompletion,profiler:null,performanceFeed:null,metrics,serializedSavePayload,startupAbort:abort,startupCancelled,assertRasterReady,renderCount:0,orderedRouter:null,publishPhysical(){},
+ const context={renderer,canvas,playerCompletion,profiler:null,performanceFeed:null,metrics,serializedSavePayload,startupAbort:abort,startupCancelled,assertRasterReady,renderCount:0,orderedRouter:null,atomicPreflight:null,atomicPendingReady:null,atomicFrame:null,publishPhysical(){},
   draw(at=null,start=null,inFlight=false,source='manual',budget=1000/60){draws++;context.renderCount++;const world=available()?worldOutcome:DRAW_SKIPPED.raster_unavailable;if(available()){cap.ensure(view);state.drawn();}playerCompletion.attempt();return playerCompletion.finish(world,ui.draw(context.snapshot,{width:100,height:100,dpr:1}),cursorOutcome(),0,0,source,at,start,inFlight,budget);},
   requestAnimationFrame:raf,completeStartupPresentation:opts=>completeStartupPresentation({...opts,nextFrame:raf,cancelFrame:n=>frames.delete(n)}),
   performance:{now:()=>0,getEntriesByType:()=>[]},window:{playerBoot:0,addEventListener(){}},URL,
@@ -57,7 +58,7 @@ test('actual production startup entry pagehide cancellation prevents late READY 
 test('actual production factory assignment disposes a late resolved renderer after pagehide',async()=>{
  const source=fs.readFileSync(process.env.UNONE_STARTUP_MAIN_SOURCE??new URL('../player/main.js',import.meta.url),'utf8');
  const assignment=source.split('\n').find(line=>line.trimStart().startsWith('renderer=await '));let release,disposed=0;
- const context={imagePreloadPlan:null,adoptStartupRenderer,renderPasses:{},createPlayerRenderer:()=>new Promise(r=>release=r),canvas:{},presentation:{},createThreeRenderer(){},
+ const context={imagePreloadPlan:null,adoptStartupRenderer,renderPasses:{},createPlayerRenderer:()=>new Promise(r=>release=r),canvas:{},presentation:{},createThreeRenderer(){},createRendererHostActions:()=>({}),input:{},atomicWait:null,
   startupAbort:new AbortController(),resizeStageViewport:async()=>{},disposeRenderer:()=>disposed++,profiler:null};vm.createContext(context);
  vm.runInContext('async function construct(){'+assignment+'}',context);const promise=context.construct();
  context.startupAbort.abort();release({});await assert.rejects(promise,{name:'AbortError'});assert.equal(disposed,1);assert.equal(context.renderer,undefined);
@@ -123,10 +124,10 @@ test('a startup storage failure preserves the persisted marker and prevents READ
 
 test('restarting while paused persists new Game.start contents without waiting for a tick',async()=>{
  const source=fs.readFileSync(new URL('../player/main.js',import.meta.url),'utf8'),writes=[],prepared=[];
- const context={serializedSavePayload,errorPolicy:null,saved:'{"coins":1}',key:'restart-save',frozen:true,snapshot:{world:{frame:0},save_payload:{coins:1}},
+ const context={serializedSavePayload,declareUiRenderLayerHost,layerHostSupported:true,errors:{reset(){}},atomicWait:null,atomicClock:null,errorPolicy:null,saved:'{"coins":1}',key:'restart-save',frozen:true,snapshot:{world:{frame:0},save_payload:{coins:1}},
   localStorage:{setItem:(key,text)=>writes.push({key,text})},canvas:{clientWidth:100,clientHeight:100},physicalViewport:()=>[100,100],stageDisplay:null,fitStage(){},json:async()=>({config:{}}),withCatalog:project=>project,uiAssetManifest:null,dataAssets:async()=>[],
   startupAbort:new AbortController(),resizeStageViewport:async()=>{},imagePreloadPlan:null,imageGroupHost:null,imageAssets:{prepareScene:async scene=>prepared.push(scene)},
-  setPaused:async value=>{context.frozen=value;},sessionSeed:()=>'7',backend:{request:async command=>{assert.equal(prepared.length,1,'scene image preparation completes before the restarted Core load');assert.equal(command.kind,'load');assert.equal(command.seed,'7','restart starts a new session seed');assert.equal(command.payload.restored_save.coins,1);return{world:{frame:0},save_payload:{coins:2}};}},
+  setPaused:async value=>{context.frozen=value;},sessionSeed:()=>'7',backend:{request:async command=>{assert.equal(prepared.length,1,'scene image preparation completes before the restarted Core load');assert.equal(command.kind,'load');assert.equal(command.seed,'7','restart starts a new session seed');assert.equal(command.payload.ui_render_layer_host,'full_resolution');assert.equal(command.payload.restored_save.coins,1);return{world:{frame:0},save_payload:{coins:2}};}},
   acceptSnapshot:value=>context.snapshot=value,configurePhysical(){},orderedRouter:null,audio:null,scheduler:{resetClock(){}},draw(){}};
  const requiredSource=source.slice(source.indexOf('function assertRequiredImagePreparation('),source.indexOf('async function readImagePreloadPlan('));
  vm.createContext(context);vm.runInContext(requiredSource+source.slice(source.indexOf('function persistSave('),source.indexOf('function draw('))+source.slice(source.indexOf('async function restart(){'),source.indexOf('async function finishStartup(')),context);
