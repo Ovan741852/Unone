@@ -228,13 +228,14 @@ impl HostInputState {
         // Held state is released, but an accepted physical batch is a sequenced
         // transaction: dropping it here would leave the producer's cursor ahead
         // of the receipt and fail every later batch with INPUT_PHYSICAL_CURSOR.
-        // Semantic UI edits (text submit, slider end) are likewise one-shot.
+        // Semantic UI edits (text submit, slider end) are likewise one-shot. Host data is not
+        // user input: releasing held keys keeps the latest state a renderer sent.
         if let Some(frame) = &mut self.queued {
             frame.actions.clear();
             if let Some(pointer) = &mut frame.pointer {
                 pointer.down = false;
             }
-            if frame.physical.is_none() && frame.ui_sliders.is_empty() && frame.ui_text_inputs.is_empty() {
+            if frame.physical.is_none() && frame.ui_sliders.is_empty() && frame.ui_text_inputs.is_empty() && frame.host_data.is_empty() {
                 self.queued = None;
             }
         }

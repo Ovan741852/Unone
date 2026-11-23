@@ -34,6 +34,16 @@ pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             None=>Ok(mlua::Value::Nil),
         }
     })?)?;
+    // Host data (docs/host-data.md): the JSON value a custom renderer sent on this channel, as a
+    // table, in the tick that consumed it; nil on other ticks. Numbers keep binary64 like observations.
+    let host_input=Rc::clone(&input);
+    input_api.set("getHostData",lua.create_function(move |lua,channel:String| {
+        let value=host_input.borrow().host_data.get(&channel).cloned();
+        match value {
+            Some(value)=>super::value::observation_json_to_lua(lua,(*value).clone()),
+            None=>Ok(mlua::Value::Nil),
+        }
+    })?)?;
     let slider_input = Rc::clone(&input);
     input_api.set("getSliderInteraction", lua.create_function(move |lua, id: String| {
         let state = slider_input.borrow();

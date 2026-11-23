@@ -814,6 +814,17 @@ pub fn describe(name: &str) -> Option<ApiDescriptor> {
 fn descriptors() -> Vec<ApiDescriptor> {
     let mut result = vec![
         descriptor(
+            "input.getHostData", "input",
+            "Read the JSON value a trusted custom renderer sent on a channel (hostActions.sendData), as a table, in the tick that consumed it (host data, 宿主資料, 自訂渲染器傳狀態).",
+            "When a custom Web renderer owns rules or networking and Luau draws: hand Luau the whole display state at once instead of encoding it as held actions; see docs/host-data.md.",
+            "Not user input and not a queue: a later send before the tick replaces the channel, and other ticks return nil, so keep your own copy. Not for untrusted pages or cross-origin messages.",
+            vec![parameter("channel","string","Channel name the renderer sends on (1-128 bytes, no control characters)")],
+            "any?",vec!["Read-only tick snapshot"],
+            "Admission parses each channel once; a failed tick preserves it for the retry and a successful tick consumes it. At most 16 channels, 262144 JSON bytes each. Recorded in input frames, so tests and replays can supply it.",
+            vec!["Official Web player custom renderers send it; native and headless hosts receive it only from input frames (tests, replays)."],
+            "local state=api.input.getHostData(\"game.state\")\nif state then view=state end",vec!["input.getTextInputInteraction"],
+        ),
+        descriptor(
             "input.getTextInputInteraction", "input",
             "Read the current non-consuming text input and IME event for an official text_input control.",
             "Editable single-line plain text with Chinese IME, paste and keyboard isolation; see docs/ui-text-input.md.",

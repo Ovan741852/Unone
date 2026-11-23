@@ -27,3 +27,30 @@ test('invalid bridge input fails explicitly rather than silently dropping comman
  const actions=createRendererHostActions(createHostInput());for(const name of ['',null,'x'.repeat(129),'a\nb'])assert.throws(()=>actions.setHeld(name,true),/HOST_ACTION_INVALID/);
  assert.throws(()=>actions.setHeld('Shoot',1),/HOST_ACTION_INVALID/);
 });
+test('sendData hands Luau one whole state per tick, copied when sent, and the latest send wins',()=>{
+ let active=true;const input=createHostInput(),actions=createRendererHostActions(input,{isActive:()=>active});
+ assert.equal(typeof actions.sendData,'function');assert.equal(requireRendererHostActions({hostActions:actions}),actions);
+ const state={players:[{x:1}]};assert.equal(actions.sendData('game.state',state),true);
+ state.players[0].x=2;assert.equal(actions.sendData('game.state',state),true);state.players[0].x=3;
+ assert.deepEqual(input.consumeFrame().host_data,{'game.state':'{"players":[{"x":2}]}'},'the latest send, as it was when sent');
+ assert.equal(input.consumeFrame().host_data,undefined,'delivered once, not repeated on the next tick');
+ actions.sendData('a',1);actions.sendData('b','text');input.releaseAll();
+ assert.deepEqual(input.consumeFrame().host_data,{a:'1',b:'"text"'},'releasing keys and pointers keeps host data');
+ assert.equal(actions.sendData('game.state',{s:'x'.repeat(200000)}),true);assert.equal(input.consumeFrame().host_data['game.state'].length,200008);
+ for(const [channel,value] of [['',1],[' ',1],['x'.repeat(129),1],['中'.repeat(43),1],['a\nb',1],['game.state',undefined],['game.state',()=>1],['game.state',{s:'中'.repeat(87382)}]])
+  assert.throws(()=>actions.sendData(channel,value),/HOST_DATA_INVALID/,JSON.stringify(channel));
+ for(let i=0;i<16;i++)actions.sendData('c'+i,i);assert.throws(()=>actions.sendData('c16',16),/HOST_DATA_CHANNELS_FULL/);actions.sendData('c3',33);
+ assert.equal(Object.keys(input.consumeFrame().host_data).length,16);
+ active=false;assert.equal(actions.sendData('game.state',{late:true}),false);assert.equal(input.consumeFrame().host_data,undefined);
+});
+test('held names are sorted once per change and still track every hold',()=>{
+ const input=createHostInput(),actions=createRendererHostActions(input);
+ for(const name of ['B','A','C'])actions.setHeld(name,true);
+ assert.deepEqual(Object.keys(input.consumeFrame().actions),['A','B','C']);
+ assert.deepEqual(Object.keys(input.consumeFrame().actions),['A','B','C'],'unchanged holds reuse the sorted list');
+ actions.setHeld('B',false);actions.setHeld('AA',true);actions.pulse('Z');
+ assert.deepEqual(Object.keys(input.consumeFrame().actions),['A','AA','C','Z']);
+ assert.deepEqual(Object.keys(input.consumeFrame().actions),['A','AA','C']);
+ input.releaseKeyboard();assert.deepEqual(input.consumeFrame().actions,{});
+ actions.setHeld('D',true);assert.deepEqual(Object.keys(input.consumeFrame().actions),['D']);
+});

@@ -190,6 +190,9 @@ struct InputState {
     pending_ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
     ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
     pending_ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
+    /// Host data parsed at admission (shared, so a tick and its retry do not copy it).
+    host_data: BTreeMap<String, Rc<serde_json::Value>>,
+    pending_host_data: BTreeMap<String, Rc<serde_json::Value>>,
     pending_presentation: crate::PresentationResourceInput,
     /// Every name scripts have asked about, for INPUT_ACTION_UNKNOWN. Shared, not
     /// copied, when a reload snapshots this state.
@@ -217,6 +220,7 @@ struct InputTick {
     previous_released: BTreeSet<String>,
     previous_ui_sliders: BTreeMap<String, crate::project::SliderInteraction>,
     previous_ui_text_inputs: BTreeMap<String, crate::project::TextInputInteraction>,
+    previous_host_data: BTreeMap<String, Rc<serde_json::Value>>,
     committed: bool,
 }
 
@@ -228,6 +232,7 @@ impl InputTick {
         let released = state.previous_down.iter().filter(|(action, down)| **down && !state.down.get(*action).copied().unwrap_or(false)).map(|(action, _)| action.clone()).collect();
         let sliders = state.pending_ui_sliders.clone();
         let text_inputs=state.pending_ui_text_inputs.clone();
+        let host_data=state.pending_host_data.clone();
         Self {
             input: Rc::clone(input),
             down: state.down.clone(),
@@ -235,6 +240,7 @@ impl InputTick {
             previous_released: std::mem::replace(&mut state.released, released),
             previous_ui_sliders: std::mem::replace(&mut state.ui_sliders, sliders),
             previous_ui_text_inputs: std::mem::replace(&mut state.ui_text_inputs,text_inputs),
+            previous_host_data: std::mem::replace(&mut state.host_data,host_data),
             committed: false,
         }
     }
@@ -244,6 +250,7 @@ impl InputTick {
         input.previous_down = std::mem::take(&mut self.down);
         input.pending_ui_sliders.clear();
         input.pending_ui_text_inputs.clear();
+        input.pending_host_data.clear();
         input.pending_presentation = Default::default();
         input.physical.commit();
         self.committed = true;
@@ -259,6 +266,7 @@ impl Drop for InputTick {
             input.released = std::mem::take(&mut self.previous_released);
             input.ui_sliders = std::mem::take(&mut self.previous_ui_sliders);
             input.ui_text_inputs = std::mem::take(&mut self.previous_ui_text_inputs);
+            input.host_data = std::mem::take(&mut self.previous_host_data);
         }
     }
 }
@@ -1168,6 +1176,17 @@ impl EngineRuntime {
         frame: &InputFrame,
     ) -> Result<WorldSnapshot, Box<Diagnostic>> {
         frame.validate()?;
+        // Host data is parsed once, here, before any part of the frame is admitted: a channel
+        // that is not JSON rejects the whole frame. Admitted values replace pending ones per
+        // channel (latest state wins); they never conflict like one-shot UI edits.
+        let mut host_data = Vec::with_capacity(frame.host_data.len());
+        for (channel, text) in &frame.host_data {
+            let value = serde_json::from_str::<serde_json::Value>(text).map_err(|error| Box::new(Diagnostic::error(
+                "INPUT_HOST_DATA_INVALID", "Host data is not JSON",
+                format!("host_data channel {channel:?} is not one JSON value ({error}); no part of this frame was admitted."),
+            )))?;
+            host_data.push((channel.clone(), Rc::new(value)));
+        }
         {
             let mut input = self.input.borrow_mut();
             // Retryable host barriers must not discard an unconsumed semantic
@@ -1184,7 +1203,10 @@ impl EngineRuntime {
                 .filter(|id| !input.pending_ui_sliders.contains_key(*id)).count();
             let text_count = input.pending_ui_text_inputs.len() + frame.ui_text_inputs.keys()
                 .filter(|id| !input.pending_ui_text_inputs.contains_key(*id)).count();
-            if conflicts || presentation_conflict || slider_count > 256 || text_count > 64 {
+            let host_count = input.pending_host_data.len() + frame.host_data.keys()
+                .filter(|channel| !input.pending_host_data.contains_key(*channel)).count();
+            if conflicts || presentation_conflict || slider_count > 256 || text_count > 64
+                || host_count > crate::project::HOST_DATA_MAX_CHANNELS {
                 return Err(Box::new(Diagnostic::error(
                     "INPUT_UI_PENDING", "Semantic input is still pending",
                     "Complete the pending tick with tick() or an unchanged input frame before submitting replacement UI events; no part of this frame was admitted.",
@@ -1195,6 +1217,7 @@ impl EngineRuntime {
             input.gamepads = frame.gamepads.clone();
             input.pending_ui_sliders.extend(frame.ui_sliders.clone());
             input.pending_ui_text_inputs.extend(frame.ui_text_inputs.clone());
+            input.pending_host_data.extend(host_data);
             if !frame.presentation_resources.is_empty() { input.pending_presentation = frame.presentation_resources.clone(); }
         }
         if let Some(pointer) = &frame.pointer {

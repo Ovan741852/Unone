@@ -238,6 +238,9 @@ export type InputApi = {
     getGamepads: () -> {GamepadState},
     -- Current successful-tick text editing event; nil when no event for this ID.
     getTextInputInteraction: (id: string) -> UiTextInputInteraction?,
+    -- Host data (docs/host-data.md): the JSON value a trusted custom renderer sent on this
+    -- channel (hostActions.sendData), as a table, in the tick that consumed it; nil on other ticks.
+    getHostData: (channel: string) -> any?,
     -- Tick-scope detached ordered ingress; nil outside update or for legacy input.
     getPhysicalBatch: () -> PhysicalInputBatch?,
     -- Current-tick host-projected UI event. Prefer createSlider().update(input).

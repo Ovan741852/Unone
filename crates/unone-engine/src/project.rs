@@ -305,6 +305,11 @@ pub struct InputFrame {
     /// Host-owned UTF-8 editing snapshots, one event per ID per successful tick.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub ui_text_inputs: BTreeMap<String, TextInputInteraction>,
+    /// Data a trusted custom renderer hands the game script (docs/host-data.md): one JSON text per
+    /// channel, read with api.input.getHostData in the successful tick that consumes it. A later
+    /// frame before that tick replaces a channel's value: it is the latest state, not a queue.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub host_data: BTreeMap<String, String>,
     /// Recorded presentation feedback, accepted only with a successful tick.
     #[serde(default, skip_serializing_if = "crate::PresentationResourceInput::is_empty")]
     pub presentation_resources: crate::PresentationResourceInput,
@@ -319,6 +324,14 @@ pub struct InputFrame {
 pub const GAMEPAD_BUTTONS: [&str; 17] =
     ["A", "B", "X", "Y", "LB", "RB", "LT", "RT", "Back", "Start", "LS", "RS", "Up", "Down", "Left", "Right", "Home"];
 pub const GAMEPAD_SLOTS: u8 = 4;
+
+/// Host data limits (docs/host-data.md): channels per frame and JSON bytes per channel.
+pub const HOST_DATA_MAX_CHANNELS: usize = 16;
+pub const HOST_DATA_MAX_BYTES: usize = 262_144;
+/// A channel name: 1-128 bytes, not blank, no control characters.
+pub fn valid_host_data_channel(channel: &str) -> bool {
+    !channel.trim().is_empty() && channel.len() <= 128 && !channel.chars().any(char::is_control)
+}
 
 /// One connected gamepad on this tick. Sticks are in [-1, 1] with y positive
 /// up; triggers in [0, 1]. Values are raw: api.input applies the deadzone.
@@ -417,6 +430,9 @@ impl InputFrame {
                 || event.composing && matches!(event.phase,TextInputPhase::Submit)
         }) {return Err(Box::new(crate::Diagnostic::error("INPUT_FRAME_INVALID","Invalid semantic text input",
             "ui_text_inputs accepts at most 64 stable IDs, single-line UTF-8 text <=65536 bytes, no submit during composition")));}
+        if self.host_data.len()>HOST_DATA_MAX_CHANNELS || self.host_data.iter().any(|(channel,text)| !valid_host_data_channel(channel)
+            || text.len()>HOST_DATA_MAX_BYTES) {return Err(Box::new(crate::Diagnostic::error("INPUT_FRAME_INVALID","Invalid host data",
+            "host_data accepts at most 16 channels (1-128 bytes, no control characters), each one JSON text of at most 262144 bytes")));}
         GamepadInput::validate(&self.gamepads).map_err(|e| Box::new(crate::Diagnostic::error(
             "INPUT_GAMEPAD_INVALID", "Invalid gamepad input", e)))?;
         if self.actions.keys().any(|action| action.trim().is_empty()) {

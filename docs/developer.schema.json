@@ -612,6 +612,13 @@
           },
           "type": "array"
         },
+        "host_data": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Data a trusted custom renderer hands the game script (docs/host-data.md): one JSON text per\nchannel, read with api.input.getHostData in the successful tick that consumes it. A later\nframe before that tick replaces a channel's value: it is the latest state, not a queue.",
+          "type": "object"
+        },
         "physical": {
           "$ref": "#/$defs/PhysicalBatch"
         },

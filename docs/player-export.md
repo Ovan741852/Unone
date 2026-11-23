@@ -486,7 +486,10 @@ boolean; a retired/aborted renderer returns false and cannot inject stale input.
 Use `setHeld(action, boolean)` for persistent state and atomic bit packets,
 `pulse(action)` for one fixed-tick presses, or `transition(action, boolean)` for
 ordered semantic button transitions. Names must be 1–128 characters without
-control characters. This trusted capability feeds the ordinary host input and
+control characters. To hand Luau a whole state (a renderer that owns rules or
+networking), use `sendData(channel, value)` instead of held packet bits: Luau
+reads it with `api.input.getHostData(channel)`; see [host data](host-data.md).
+`sendData` is optional in version 1, so feature-detect it. This trusted capability feeds the ordinary host input and
 works with main/worker backends; pause/blur/restart still release host input.
 It is not exposed as an untrusted global or cross-origin message interface.
 Do not dispatch made-up `KeyboardEvent.code` values: the physical keyboard path

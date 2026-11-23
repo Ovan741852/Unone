@@ -21,6 +21,13 @@ function validAction(action) {
   return typeof action === "string" && action.length > 0;
 }
 
+// Host data channel names match the engine: 1-128 UTF-8 bytes, not blank, no control characters.
+const utf8 = new TextEncoder();
+function validHostDataChannel(channel) {
+  return typeof channel === 'string' && channel.trim() !== '' && channel.length <= 128 && utf8.encode(channel).length <= 128
+    && !/[\u0000-\u001f\u007f-\u009f]/.test(channel);
+}
+
 /**
  * Normalize browser input into fixed-step frames.
  *
@@ -39,6 +46,9 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
   const sliderEvents = [], sliderActive = new Map(), sliderConsumedActive = new Map();
   const textEvents = [], textActive = new Map();
   const textPhases = new Set(['change', 'submit', 'cancel', 'focus', 'blur']);
+  // Host data (docs/host-data.md): the latest JSON text per channel, handed to the next tick
+  // only. Not user input, so releasing keys and pointers leaves it alone.
+  const hostData = new Map();
   const physicalActions=createActionQueue(),screenButtons=new Map();
   // Polled gamepads (player-input.js readGamepads): held buttons and raw axes.
   let gamepads=[];
@@ -91,18 +101,28 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
     if (phase === 'blur' || phase === 'cancel') textActive.delete(id);
     else textActive.set(id, text);
   }
+  function queueHostData(channel, json) {
+    if (!validHostDataChannel(channel) || typeof json !== 'string' || (json.length > 87381 && utf8.encode(json).length > 262144)) {
+      throw new TypeError('HOST_DATA_INVALID: expected a channel of 1-128 UTF-8 bytes and JSON text of at most 262144 UTF-8 bytes');
+    }
+    if (!hostData.has(channel) && hostData.size >= 16) throw new Error('HOST_DATA_CHANNELS_FULL: at most 16 channels per tick');
+    hostData.set(channel, json);
+  }
   function releaseKeyboard() {
-    held.clear();pressed.clear();physicalActions.reset();
+    held.clear();heldSorted=null;pressed.clear();physicalActions.reset();
   }
 
   function queueAction(action) {
     if (validAction(action)) pressed.add(action);
   }
 
+  // Held names sorted once per change, not once per tick: a custom renderer can hold hundreds of packet bits, and
+  // rebuilding and sorting them every fixed tick cost more than the game's own frame work on phones.
+  let heldSorted = null;
   function setHeld(action, isDown) {
     if (!validAction(action)) return;
-    if (isDown) held.add(action);
-    else held.delete(action);
+    if (isDown) { if (!held.has(action)) { held.add(action); heldSorted = null; } }
+    else if (held.delete(action)) heldSorted = null;
   }
 
   function queuePhysicalAction(action,down) {
@@ -140,9 +160,12 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
       if(secondary.pointer){framePointer={...secondary.pointer,down:framePointer.down};advanceSecondary=false;}
     }
     const padActions=gamepads.flatMap(pad=>pad.buttons.flatMap(button=>[`Gamepad_${button}`,`Gamepad${pad.slot}_${button}`]));
-    const actions = Object.fromEntries(
-      [...new Set([...held, ...pressed, ...semanticHeld,...physical,...padActions])].sort().map((action) => [action, true])
-    );
+    heldSorted ??= [...held].sort();
+    const names = pressed.size || semanticHeld.size || physical.length || padActions.length
+      ? [...new Set([...heldSorted, ...pressed, ...semanticHeld, ...physical, ...padActions])].sort()
+      : heldSorted;
+    const actions = {};
+    for (const action of names) actions[action] = true;
     pressed.clear();
     // A quick tap must reach the model as start, then end on separate ticks.
     // Other slider ids can advance in the same tick, without reordering an id.
@@ -162,9 +185,12 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
       texts.push([event.id, {phase:event.phase, text:event.text, composing:event.composing}]);
     }
     textEvents.splice(0, textEvents.length, ...textRemaining);
+    const host = hostData.size ? Object.fromEntries(hostData) : null;
+    hostData.clear();
     return { actions, pointer: framePointer, ...(consumed.size ? {ui_sliders:Object.fromEntries(sliders)} : {}),
       ...(gamepads.length ? {gamepads:gamepads.map(({buttons,...axes})=>axes)} : {}),
-      ...(textConsumed.size ? {ui_text_inputs:Object.fromEntries(texts)} : {}) };
+      ...(textConsumed.size ? {ui_text_inputs:Object.fromEntries(texts)} : {}),
+      ...(host ? {host_data:host} : {}) };
   }
 
   function releasePointer() {
@@ -188,6 +214,7 @@ export function createHostInput({ initialPointer = DEFAULT_POINTER } = {}) {
     queueActionTransition,
     queueSliderInteraction,
     queueTextInputInteraction,
+    queueHostData,
     setHeld,
     queuePhysicalAction,
     queueScreenAction,
@@ -221,10 +248,14 @@ export { DEFAULT_POINTER };
 // Trusted custom renderers send named game actions through this capability.
 // KeyboardEvent.code is reserved for physical keys and intentionally rejects
 // arbitrary names. Held packet bits are committed together before the tick;
-// button press edges use pulse rather than a DOM key event.
+// button press edges use pulse rather than a DOM key event. sendData hands Luau
+// a whole state at once (docs/host-data.md): the value is copied as JSON when
+// sent, the next tick reads it with api.input.getHostData(channel), and a later
+// send before that tick replaces it. Optional in version 1: feature-detect it.
 /**
  * @typedef {Readonly<{version:1, setHeld:(action:string,down:boolean)=>boolean,
- * pulse:(action:string)=>boolean, transition:(action:string,down:boolean)=>boolean}>} RendererHostActions
+ * pulse:(action:string)=>boolean, transition:(action:string,down:boolean)=>boolean,
+ * sendData:(channel:string,value:unknown)=>boolean}>} RendererHostActions
  */
 export function createRendererHostActions(input, {isActive = () => true} = {}) {
   function validate(action) {
@@ -237,6 +268,14 @@ export function createRendererHostActions(input, {isActive = () => true} = {}) {
     setHeld(action, down) { validate(action); if (typeof down !== 'boolean') throw new TypeError('HOST_ACTION_INVALID: down must be boolean'); if(!isActive())return false;input.setHeld(action, down);return true; },
     pulse(action) { validate(action);if(!isActive())return false;input.queueAction(action);return true; },
     transition(action, down) { validate(action);if(typeof down!=='boolean')throw new TypeError('HOST_ACTION_INVALID: down must be boolean');if(!isActive())return false;input.queueActionTransition(action, down);return true; },
+    sendData(channel, value) {
+      if (!validHostDataChannel(channel)) throw new TypeError('HOST_DATA_INVALID: expected a channel of 1-128 UTF-8 bytes without control characters');
+      const json = JSON.stringify(value);
+      if (typeof json !== 'string') throw new TypeError('HOST_DATA_INVALID: the value must be JSON (an object, array, string, number or boolean)');
+      if (!isActive()) return false;
+      input.queueHostData(channel, json);
+      return true;
+    },
   });
 }
 import {createActionQueue,createScreenButtonQueue} from './physical-input.js';
