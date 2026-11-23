@@ -23,6 +23,7 @@ import {createGpuUi} from './ui-gpu.js';
 import {DRAW_COMPLETED,DRAW_SKIPPED} from '../shared/player-completion.mjs';
 import {normalizeAntialias,normalizeWebglDesynchronized} from '../shared/renderer-selection.mjs';
 import {prepareDesynchronizedWebGL,webglDesynchronizedMetrics} from './webgl-desynchronized.js';
+import {normalizeWebglDefaultDepth,assertDefaultDepthOptions,assertDefaultDepthFrame,webglDefaultDepthMetrics} from './webgl-default-depth.js';
 import {parseProjectedRaster,assertRasterBackend,assertRasterProfile,assertRasterSnapshot} from './projected-raster-policy.js';
 import {createRasterCapability} from './projected-raster-capability.js';
 import {createProjectedRasterPass} from './projected-raster.js';
@@ -83,6 +84,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   if(options.getImageAssets!==undefined&&typeof options.getImageAssets!=='function')throw Error('IMAGE_ASSET_PROVIDER_INVALID: getImageAssets must be a function');
   const antialias=normalizeAntialias(options.antialias);
   const desynchronized=normalizeWebglDesynchronized(options.webglDesynchronized);
+  const defaultDepth=normalizeWebglDefaultDepth(options.webglDefaultDepth);
   let desynchronizedPreparation={requested:desynchronized,attempted:false,precreated:false};
   const rasterPolicy=parseProjectedRaster(options.projectedRaster),checkedRaster=rasterPolicy.requested==='upper_left_checked';
   const frameProfile=parseFrameProfile(options.projectedMaterialProfile);let framePublication=null,framePublicationIdentity=null;
@@ -91,6 +93,9 @@ export async function createThreeRenderer(canvas, options = {}) {
   const forceWebGl = options.kind === "three-webgl";
   if(forceWebGpu&&postprocessing)throw Error('POSTPROCESSING_BACKEND_UNSUPPORTED: select the official WebGL player');
   const useWebGpu = !forceWebGl && !postprocessing && (forceWebGpu || Boolean(navigator.gpu));
+  const passKinds=options.renderPasses??{};
+  if(typeof passKinds!=='object'||passKinds===null||Array.isArray(passKinds)||Object.values(passKinds).some(create=>typeof create!=='function'))throw Error('RENDER_PASSES_INVALID: expected {kind: createPass}');
+  assertDefaultDepthOptions({depth:defaultDepth,declared:options.webglDefaultDepth!==undefined,backend:useWebGpu?'webgpu':'webgl',checkedRaster,frameProfile,renderPasses:passKinds});
   assertRasterBackend(rasterPolicy,useWebGpu?'webgpu':'webgl');
   assertFrameOptions(frameProfile,{backend:useWebGpu?'webgpu':'webgl',raster:rasterPolicy.requested,antialias,bloom:options.bloom??false,ao:options.ao??false});
   let THREE = await loadThree(options.threeModuleUrl ?? (useWebGpu ? LOCAL_THREE_WEBGPU_URL : LOCAL_THREE_URL));
@@ -109,8 +114,8 @@ export async function createThreeRenderer(canvas, options = {}) {
     }
   }
   if (!renderer) {
-    desynchronizedPreparation=prepareDesynchronizedWebGL(canvas,antialias,desynchronized);
-    renderer = new THREE.WebGLRenderer({ canvas, antialias, alpha: false });
+    desynchronizedPreparation=prepareDesynchronizedWebGL(canvas,antialias,desynchronized,defaultDepth);
+    renderer = new THREE.WebGLRenderer({ canvas, antialias, alpha: false,...(options.webglDefaultDepth===undefined?{}:{depth:defaultDepth}) });
   }
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -127,8 +132,6 @@ export async function createThreeRenderer(canvas, options = {}) {
   let bloomEnabled=options.bloom??false,aoEnabled=options.ao??false;
   // Extension pass kinds a host registered (render_extensions), and one
   // instance per declared pass id, created on first use.
-  const passKinds=options.renderPasses??{};
-  if(typeof passKinds!=='object'||Array.isArray(passKinds)||Object.values(passKinds).some(create=>typeof create!=='function'))throw Error('RENDER_PASSES_INVALID: expected {kind: createPass}');
   const passInstances=new Map();
   function extensionRunner(pass){
     let instance=passInstances.get(pass.id);
@@ -275,6 +278,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   let lastDrawTime = null;
 
   function attachPresentation(value) {
+    if(!defaultDepth)throw Error('WEBGL_DEFAULT_DEPTH_EXTENSIONS_UNSUPPORTED: presentation hooks require a depth-enabled default buffer');
     const hook = typeof value === "function" ? { beforeRender: value } : value;
     if (typeof hook?.beforeRender !== "function") throw new Error("presentation hook requires beforeRender(context)");
     presentationHooks.add(hook);
@@ -555,6 +559,9 @@ export async function createThreeRenderer(canvas, options = {}) {
     // active post-processing pass; plain world rendering is fine.
     if(projectedBatches.length&&worldVisible&&bloom?.active(pipeline))throw Error('PROJECTED_POSTPROCESSING_UNSUPPORTED: disable Bloom or hide normal world3D');
     if(pipeline&&!bloom)throw Error('RENDER_PIPELINE_BACKEND_UNSUPPORTED: render_pipeline needs the official WebGL renderer');
+    // Legacy sprites do not consume worldVisible; be conservative for hosts
+    // without the sprite-presentation owner instead of hiding unsafe content.
+    if(!defaultDepth)assertDefaultDepthFrame({depth:defaultDepth,world,worldVisible:worldVisible||!spritePresentation,terrain,projected:projectedBatches,offscreenDepth:!!bloom?.active(pipeline),sceneEnabled:!pipeline||pipeline.scene});
     curvature.prepare(scene,world.camera3d);
     const rect=world.camera3d?.rect;
     if(renderer.getDrawingBufferSize){renderer.getDrawingBufferSize(bufferSize);
@@ -655,7 +662,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     // at 2) when the device pixel ratio changes; one a presentation hook set is left alone.
     pixelRatio: () => renderer.getPixelRatio(),
     setPixelRatio: ratio => renderer.setPixelRatio(ratio),
-      metrics: () => ({webgl_desynchronized:webglDesynchronizedMetrics(renderer,desynchronizedPreparation,backend),sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),...dataTextures.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, geometries:renderer.info.memory.geometries, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
+      metrics: () => ({webgl_desynchronized:webglDesynchronizedMetrics(renderer,desynchronizedPreparation,backend),webgl_default_depth:webglDefaultDepthMetrics(renderer,defaultDepth,backend),sprite_resources:spriteResources?{...spriteResources.metrics(),legacy_fallback_sprites:spritePresentation.legacyEntities().size}:{supported:false},texture_cache:textureCache.metrics(),world_image_leases:{enabled:!!options.getImageAssets?.(),active:[...textureRecords.values()].filter(r=>r.imageLease).length},raster:rasterMetrics(),ui_image_batches:uiImageBatchPrefix.metrics(),shader_materials:shaderMaterials.count,instances:instances.count,...instances.metrics(),mesh_entities:meshEntities.count,mesh_entity_batches:meshEntities.batches,...heightfields.metrics(),...geometry3d.metrics(),...dataTextures.metrics(),curvature:curvature.curvature,...projected.metrics(),...(frameDraws?frameDraws.metrics():{}),draw_calls:renderer.info.render.calls, triangles:renderer.info.render.triangles, textures:renderer.info.memory.textures, geometries:renderer.info.memory.geometries, particles:particles.count,particle_pool:particles.metrics(),particle_batches:particles.debugBatches,effects:effects?.count??0,...bloom?.metrics()}),
   };
 }
 

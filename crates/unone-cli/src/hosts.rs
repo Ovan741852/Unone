@@ -63,6 +63,7 @@ const WEB_PRESENTATION_KEYS: &[&str] = &[
     "show_performance",
     "antialias",
     "webgl_desynchronized",
+    "webgl_default_depth",
     "projected_raster",
     "projected_material_profile",
     "physical_input",
@@ -256,6 +257,10 @@ pub struct PresentationSettings {
     pub antialias: Option<bool>,
     #[serde(default, skip_serializing_if="Option::is_none", deserialize_with="declared_antialias")]
     pub webgl_desynchronized: Option<bool>,
+    /// The official WebGL default drawing buffer depth attachment. Omission
+    /// retains Three's existing depth-enabled behavior.
+    #[serde(default, skip_serializing_if="Option::is_none", deserialize_with="declared_antialias")]
+    pub webgl_default_depth: Option<bool>,
     #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="projected_raster::declared")]
     pub projected_raster: Option<projected_raster::ProjectedRasterPolicy>,
     #[serde(default,skip_serializing_if="Option::is_none",deserialize_with="projected_frame::declared")]
@@ -382,6 +387,14 @@ impl PresentationSettings {
         if let Some(policy)=&self.texture_cache {
             ensure!(self.renderer_mode==RendererMode::Official,"TEXTURE_CACHE_OFFICIAL_ONLY");
             policy.validate()?;
+        }
+        if self.webgl_default_depth.is_some() {
+            ensure!(self.renderer_mode==RendererMode::Official,"WEBGL_DEFAULT_DEPTH_OFFICIAL_WEBGL_ONLY");
+        }
+        if self.webgl_default_depth==Some(false) {
+            ensure!(self.projected_raster!=Some(projected_raster::ProjectedRasterPolicy::UpperLeftChecked) && self.projected_material_profile.is_none(),
+                "WEBGL_DEFAULT_DEPTH_PROJECTED_UNSUPPORTED: checked/projected profiles require default depth");
+            ensure!(self.render_extensions.is_empty(),"WEBGL_DEFAULT_DEPTH_EXTENSIONS_UNSUPPORTED: render extensions require default depth");
         }
         physical_input::validate(self.physical_input,self.renderer_mode==RendererMode::Official)?;
         if let Some(policy)=self.error_policy { policy.validate().map_err(anyhow::Error::msg)?; }
@@ -626,6 +639,9 @@ pub fn native_wgpu_export_gate(
     if presentation.webgl_desynchronized.is_some() {
         keys.push("webgl_desynchronized");
     }
+    if presentation.webgl_default_depth.is_some() {
+        keys.push("webgl_default_depth");
+    }
     if presentation.ui_text_atlas_size.is_some() {
         keys.push("ui_text_atlas_size");
     }
@@ -800,6 +816,31 @@ mod tests {
         let custom:PresentationSettings=serde_json::from_value(json!({"webgl_desynchronized":true,"renderer_mode":"custom",
             "renderer_module":"r.mjs","renderer_files":["r.mjs"]})).unwrap();
         assert!(custom.validate_renderer().unwrap_err().to_string().contains("WEBGL_DESYNCHRONIZED_OFFICIAL_ONLY"));
+    }
+
+    #[test]
+    fn webgl_default_depth_is_strict_optional_and_web_only() {
+        let quiet=unone_engine::SystemSettings::resolve(&std::collections::BTreeMap::from([
+            ("spine".into(),false),("effekseer".into(),false)])).unwrap();
+        let omitted=PresentationSettings::default();
+        assert!(omitted.webgl_default_depth.is_none());
+        assert!(serde_json::to_value(&omitted).unwrap().get("webgl_default_depth").is_none());
+        native_wgpu_export_gate(&quiet,Some(&omitted)).unwrap();
+        for value in [false,true] {
+            let settings:PresentationSettings=serde_json::from_value(json!({"webgl_default_depth":value})).unwrap();
+            assert_eq!(settings.webgl_default_depth,Some(value));
+            assert_eq!(serde_json::to_value(&settings).unwrap()["webgl_default_depth"],value);
+            settings.validate_renderer().unwrap();
+            assert!(native_wgpu_export_gate(&quiet,Some(&settings)).unwrap_err().to_string().contains("webgl_default_depth"));
+        }
+        for value in [json!(null),json!(0),json!("false"),json!({}),json!([])] {
+            assert!(serde_json::from_value::<PresentationSettings>(json!({"webgl_default_depth":value})).is_err());
+        }
+        let custom:PresentationSettings=serde_json::from_value(json!({"webgl_default_depth":false,"renderer_mode":"custom",
+            "renderer_module":"r.mjs","renderer_files":["r.mjs"]})).unwrap();
+        assert!(custom.validate_renderer().unwrap_err().to_string().contains("WEBGL_DEFAULT_DEPTH_OFFICIAL_WEBGL_ONLY"));
+        let checked:PresentationSettings=serde_json::from_value(json!({"webgl_default_depth":false,"projected_raster":"upper_left_checked","antialias":false})).unwrap();
+        assert!(checked.validate_renderer().unwrap_err().to_string().contains("WEBGL_DEFAULT_DEPTH"));
     }
 
     #[test]

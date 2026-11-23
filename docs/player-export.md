@@ -434,6 +434,20 @@ export. Low-latency presentation may permit tearing, and memory gains depend on
 the browser, graphics driver and compositor. Validate motion on the target
 display before using it. Null and non-booleans are invalid.
 
+The experimental official WebGL option `"webgl_default_depth": false` asks
+for a default drawing buffer without a depth attachment. Omission preserves
+the existing depth-enabled request. This is fixed at canvas creation and needs
+a relaunch; inspect `webgl_default_depth` renderer metrics for the requested
+and actual context attributes, which can differ. Null and non-booleans are
+invalid. Native, WebGPU and custom renderers reject explicit declarations.
+Checked/projected profiles and render extensions cannot be combined with
+`false`. A depth-enabled offscreen post-processing target keeps its own depth
+attachment. Without that target, visible depth-sensitive world draws are
+rejected with `WEBGL_DEFAULT_DEPTH_REQUIRED` rather than silently producing
+incorrect pixels; projected draws are likewise rejected. This is not a
+general-purpose 2D optimization: verify startup, transitions, every scene,
+effects and particles on the intended player before opting in.
+
 The existing visible `UNONE_PLAYER_READY` console info includes `raster` with
 `antialias_requested` and `context_antialias` (null when unavailable). This is
 default framebuffer/context evidence, not a claim that every pass has MSAA;
