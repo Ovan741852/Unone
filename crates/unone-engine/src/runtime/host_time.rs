@@ -42,6 +42,9 @@ impl EngineRuntime {
     /// Recorder override is applied before Game.start, including file-backed scenes/jobs.
     #[cfg(feature = "dev-tools")]
     pub fn load_with_host_time(project_root: impl AsRef<Path>, seed: u64, policy: crate::HostTimeConfig) -> Result<Self, Box<Diagnostic>> {
+        // Imported assets' files are brought up to date before anything reads them, as every other load does: a
+        // recording or its replay of a project that declares a new import must not read a file not imported yet.
+        crate::import::prepare_imports(project_root.as_ref())?;
         let (mut config, paths) = ProjectPaths::discover(project_root)?;
         config.host_time = Some(policy);
         let world = Rc::new(RefCell::new(World::default()));

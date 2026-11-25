@@ -156,3 +156,26 @@ fn hosts_produce_imported_assets_from_local_roots_with_cache_and_provenance() {
     assert_eq!(unone_engine::prepare_imports(&dir).unwrap_err().code, "IMPORT_DECLARATION_INVALID");
     let _ = std::fs::remove_dir_all(&root);
 }
+
+// A recording loads the project with the host clock it records (load_with_host_time): that load imports too, so a
+// project that has just declared a copied file reads it on its first recorded run.
+#[test]
+fn recorded_runs_import_before_they_read() {
+    let root = std::env::temp_dir().join(format!("unone-import-recorded-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&root);
+    let (dir, original) = (root.join("game"), root.join("Populous 3"));
+    write(&original.join("DATA/pal.dat"), [1u8, 2, 3, 4]);
+    write(&dir.join("project.unone.json"), json!({"name": "recorded-imports", "entry_script": "main.luau", "asset_manifest": "assets.json",
+        "host_time": {"mode": "live"},
+        "import": {"roots": {"original": {"description": "an installation", "candidates": ["${UNONE_TEST_NO_SUCH_VARIABLE}/x"]}}}}).to_string());
+    write(&dir.join(".unone/import-roots.json"), json!({"original": original}).to_string());
+    write(&dir.join("main.luau"), "return {start = function(api) api.observation.set('bytes', buffer.len(api.assets.load('data://palette'))) end, \
+        update = function() end}");
+    write(&dir.join("assets.json"), json!({"version": 1, "assets": [{"id": "data://palette", "kind": "data", "source": "imported/pal.dat",
+        "encoding": {"format": "binary", "mime": "application/octet-stream", "decoder": "bytes"}, "import": {"from": "original:DATA/pal.dat"}}]}).to_string());
+    let recorded = unone_engine::record_run(&dir, 1, 7, &[]);
+    let recording = recorded.value.as_ref().unwrap_or_else(|| panic!("recorded: {:?}", recorded.diagnostics));
+    assert_eq!(recording.recorded[0].observation["observations"]["bytes"], json!(4), "the recorded run reads the file it imported");
+    assert_eq!(std::fs::read(dir.join("imported/pal.dat")).unwrap(), [1u8, 2, 3, 4]);
+    let _ = std::fs::remove_dir_all(&root);
+}
