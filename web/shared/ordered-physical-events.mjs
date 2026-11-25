@@ -14,6 +14,8 @@ function viewport(v){
  if(!safe(v.revision)||v.revision<1||![v.width,v.height].every(n=>Number.isInteger(n)&&n>0&&n<=32768)||
  ![v.rect_left,v.rect_top,v.css_width,v.css_height].every(finite)||v.css_width<=0||v.css_height<=0||!finite(v.device_pixel_ratio)||v.device_pixel_ratio<=0||v.device_pixel_ratio>16)fail('viewport');
 }
+/** Whether a viewport mapping passes the validator (a router reports none until its canvas can be described). */
+export function validViewport(v){try{viewport(v);return true;}catch{return false;}}
 function point(v){object(v,['x','y','inside','viewport']);if(!finite(v.x)||!finite(v.y)||typeof v.inside!=='boolean')fail('point');viewport(v.viewport);}
 function modifiers(v){object(v,['shift','control','alt','meta'],['alt_graph','caps_lock','num_lock']);if(Object.values(v).some(x=>typeof x!=='boolean'))fail('modifiers');}
 export function validatePhysicalEvent(e){

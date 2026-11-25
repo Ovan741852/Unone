@@ -184,7 +184,7 @@ function submitDrawFrame(pd,rafTime,startedAt,inFlight,drawSource,budgetMs){
  if(++renderCount%30===0){lastStats={bridge_ms:bridgeMs,render_ms:renderMs,...renderer.metrics(),ui:uiRenderer.report(),decoded_images:imageAssets?.report()??null,drawing_buffer:[canvas.width,canvas.height],frozen,dropped_steps:scheduler?.totalDroppedSteps??0,backend:backend.report(),interpolation:interpolator.report(),completion:playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend.kind})};document.body.dataset.playerPerformance=JSON.stringify(lastStats);}
  // Diagnostics attributes are rewritten only when they change: a write is a DOM mutation.
  const frameText=String(snapshot.world.frame);if(document.body.dataset.playerFrame!==frameText)document.body.dataset.playerFrame=frameText;
- publishPhysical();
+ orderedRouter?.syncViewport();publishPhysical();
  if(pd)profiler.mark(pd,'host_publish');
  /* PROFILE_FRAME */
  return combined;
@@ -384,11 +384,14 @@ async function start(){
  startupScreen.complete('audio');
  await finishStartup(presentation,kind);
 }
+// A canvas whose box has no size (collapsed mid-gesture, a pane still opening) maps pointers through the last box it
+// had, kept on the canvas (these functions also run on their own), so a release still lands as a release where the
+// gesture was; before any box there is no position to give.
 function pointer(event,down,kind){const sample=pointerSample(event,down);if(!sample)return;input.updatePointer(sample,kind);hasWorldPointer=true;}
-function pointerSample(event,down){if(!snapshot)return null;const rect=canvas.getBoundingClientRect(),x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height;return {position:worldFromPointer(canvas,event,snapshot),screen_position:{x:x*100,y:(1-y)*100},down};}
+function pointerSample(event,down){if(!snapshot)return null;const now=canvas.getBoundingClientRect(),sized=now.width>0&&now.height>0,rect=sized?(canvas.unoneSizedBox=now):canvas.unoneSizedBox;if(!rect)return null;const x=(event.clientX-rect.left)/rect.width,y=(event.clientY-rect.top)/rect.height,screen={x:x*100,y:(1-y)*100};return {position:sized?worldFromPointer(canvas,event,snapshot):projectScreenPointer(canvas,screen,snapshot),screen_position:screen,down};}
 function secondaryPointer(event,down){const sample=pointerSample(event,input.pointer.down);if(!sample)return;input.queueScreenAction('MouseRight',down,sample);hasWorldPointer=true;}
 function middlePointer(event,down){const sample=pointerSample(event,input.pointer.down);if(!sample)return;input.queueScreenAction('MouseMiddle',down,sample);input.updatePointer(sample,'move');hasWorldPointer=true;}
-function routeUi(e,kind){const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*100,y=100-(e.clientY-r.top)/r.height*100,hit=uiRenderer.hitTest(x,y);return textInputs.pointer(e,kind,hit)||uiScroll.pointer(e,kind,hit)||uiRenderer.pointer({kind,pointerId:e.pointerId,x,y});}
+function routeUi(e,kind){const now=canvas.getBoundingClientRect(),r=now.width>0&&now.height>0?(canvas.unoneSizedBox=now):canvas.unoneSizedBox;if(!r)return false;const x=(e.clientX-r.left)/r.width*100,y=100-(e.clientY-r.top)/r.height*100,hit=uiRenderer.hitTest(x,y);return textInputs.pointer(e,kind,hit)||uiScroll.pointer(e,kind,hit)||uiRenderer.pointer({kind,pointerId:e.pointerId,x,y});}
 const browserPointer={capture:id=>canvas.setPointerCapture(id),unlock:()=>audio?.unlock(),ui:routeUi,primary:pointer,secondary:secondaryPointer,middle:middlePointer,cancel(){input.releasePointer();input.releaseScreenActions();}};
 // Without the ordered router a primary button held across input.releaseAll() needs a fresh pointerdown.
 const legacyPointer=createLegacyPointerRouting(canvas,browserPointer);

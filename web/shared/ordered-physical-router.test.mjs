@@ -37,6 +37,38 @@ test('actual router preserves reservation before nested capture, edge modifiers 
  assert.equal(events[3].point.x,100);assert.equal(events[3].point.y,40);assert.equal(events[5].point.x,100.5);
  assert.equal(events[3].modifiers.shift,true);assert.equal(events[5].modifiers.control,true);assert.equal(events[5].button,2);assert.equal(events[5].buttons,3);assert.deepEqual(s.calls,['down','move']);
 });
+test('a canvas with no size yet starts without a viewport row, and the first sized input or resize reports it',()=>{
+ // A pane still opening: no drawing buffer and an empty box when the player activates.
+ const s=setup();s.canvas.width=0;s.canvas.height=0;s.setRect({left:0,top:0,width:0,height:0});
+ s.router.activate();
+ s.canvas.emit('pointerdown',pointer);s.canvas.emit('wheel',{deltaX:0,deltaY:3,deltaZ:0,deltaMode:0,clientX:35,clientY:30});
+ let events=s.rows();assert.deepEqual(events.map(e=>e.kind),['reset','focus'],'no viewport, and no pointer or wheel without a point');
+ s.q.commit({profile:'ordered_physical_v1',epoch:3,through_sequence:events.at(-1).sequence});
+ // Laid out: the resize reports the viewport, and input maps through it.
+ s.canvas.width=400;s.canvas.height=200;s.setRect({left:10,top:20,width:100,height:50});s.win.emit('resize');
+ s.canvas.emit('pointerdown',{...pointer,pointerId:9});
+ events=s.rows();assert.deepEqual(events.map(e=>e.kind),['viewport','pointer']);assert.equal(events[0].viewport.revision,1);assert.equal(events[1].point.x,100);
+ // Hidden again (a box of no size): the last mapping stands, nothing is reported.
+ s.q.commit({profile:'ordered_physical_v1',epoch:3,through_sequence:events.at(-1).sequence});
+ s.setRect({left:10,top:20,width:0,height:0});s.win.emit('resize');assert.equal(s.q.report().pending,0);
+ // A box out of the viewport row's range (|x| over 1e9) is not described either, and does not end admission.
+ s.setRect({left:2e9,top:20,width:100,height:50});s.win.emit('resize');assert.equal(s.q.report().pending,0);
+ // A kept mapping of a tiny box maps a far release outside the row's range: it is held to the range, still outside.
+ const t=setup();t.canvas.width=2048;t.canvas.height=200;t.setRect({left:0,top:0,width:0.001,height:50});t.router.activate();
+ t.canvas.emit('pointerdown',{...pointer,clientX:0.0005,clientY:10});t.setRect({left:0,top:0,width:0,height:0});
+ t.canvas.emit('pointerup',{...pointer,buttons:0,clientX:500,clientY:10});
+ const up=t.rows().at(-1);assert.deepEqual([up.kind,up.phase,up.point.x,up.point.inside],['pointer','up',1e9,false]);
+});
+test('a canvas that gets its size with no resize or input is reported after the next drawn frame',()=>{
+ const s=setup();s.canvas.width=0;s.canvas.height=0;s.setRect({left:0,top:0,width:0,height:0});
+ s.router.syncViewport();assert.equal(s.q.report().pending,0,'nothing before READY');
+ s.router.activate();s.router.syncViewport();
+ // The renderer sizes its buffer and the pane lays out, with no window resize and only the keyboard in use.
+ s.canvas.width=400;s.canvas.height=200;s.setRect({left:10,top:20,width:100,height:50});s.router.syncViewport();
+ const events=s.rows();assert.deepEqual(events.map(e=>e.kind),['reset','focus','viewport']);assert.equal(s.router.report().viewport_revision,1);
+ // Once a mapping exists the frame sync does nothing (resize and input keep it current).
+ s.setRect({left:12,top:20,width:100,height:50});s.router.syncViewport();assert.equal(s.router.report().viewport_revision,1);
+});
 test('rect position alone changes mapping identity, raw wheel units and key rows retain source order',()=>{
  const s=setup({key:()=> 'engine_ui',wheel:()=> 'engine_ui'});s.router.activate();s.setRect({left:11,top:20,width:100,height:50});
  s.canvas.emit('wheel',{deltaX:2,deltaY:-3,deltaZ:4,deltaMode:1,clientX:35,clientY:30,altKey:true});

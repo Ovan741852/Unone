@@ -22,10 +22,10 @@ const canvas={clientWidth:1440,clientHeight:900,getBoundingClientRect:()=>({left
 const sample=(screenX,down)=>({position:{x:999,y:999},screen_position:{x:screenX,y:50},down});
 const plain=value=>JSON.parse(JSON.stringify(value));
 
-function harness({world=snapshot(),hasWorldPointer=true}={}){
+function harness({world=snapshot(),hasWorldPointer=true,box=canvas}={}){
  const frames=[];
  const context=vm.createContext({
-  resourceHost:null,canvas,snapshot:world,hasWorldPointer,input:createHostInput(),manualInput:null,profiler:null,orderedQueue:null,serializedSavePayload,
+  resourceHost:null,canvas:box,snapshot:world,hasWorldPointer,input:createHostInput(),manualInput:null,profiler:null,orderedQueue:null,serializedSavePayload,
   performance:{now:()=>0},projectScreenPointer,worldFromPointer,
   backend:{request:async request=>{frames.push(plain(request.input));return context.snapshot;}},
   acceptSnapshot:value=>{context.snapshot=value;},audio:null,saved:'null',key:'pointer-test',
@@ -60,6 +60,24 @@ test('stationary mouse stays ahead of a following camera on consecutive fixed ti
  await tick();
  assert.equal(frames[1].pointer.position.x,237);
  assert.equal(frames[1].pointer.down,true);
+});
+
+test('a canvas box that collapses mid-gesture maps the release through its last box: press and release both reach the game',async()=>{
+ let rect={left:100,top:50,width:1440,height:900};
+ const box={clientWidth:1440,clientHeight:900,getBoundingClientRect:()=>rect};
+ // Before the canvas ever had a box there is no position: nothing is sampled.
+ rect={left:0,top:0,width:0,height:0};
+ const {context,frames,tick}=harness({box});
+ assert.equal(context.pointerSample({clientX:820,clientY:500},true),null);
+ rect={left:100,top:50,width:1440,height:900};
+ context.pointer({clientX:820,clientY:500},true,'edge');
+ rect={left:100,top:50,width:0,height:0};
+ context.pointer({clientX:820,clientY:500},false,'edge');
+ context.secondaryPointer({clientX:820,clientY:500},true);context.secondaryPointer({clientX:820,clientY:500},false);
+ await tick();await tick();
+ assert.deepEqual(frames.map(frame=>frame.pointer.down),[true,false]);
+ assert.deepEqual(frames.map(frame=>frame.pointer.screen_position),[{x:50,y:50},{x:50,y:50}]);
+ assert.equal(frames.every(frame=>[frame.pointer.position.x,frame.pointer.position.y].every(Number.isFinite)),true);
 });
 
 test('camera reprojection preserves consumed pointer edge order and each edge screen location',async()=>{

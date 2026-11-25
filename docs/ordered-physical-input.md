@@ -82,7 +82,12 @@ an admitted start, pointer up/cancel/held move and keyup stay `host_ui`; normal
 zero-button hover may still route to the game. Ready, visibility, pause and
 disposal barriers also apply before an attempt to acquire focus.
 
-Admission starts at READY with load reset, viewport and focus facts. Blur,
+Admission starts at READY with load reset, viewport and focus facts. A canvas
+the viewport row cannot describe yet (no drawing buffer or an empty box: a page
+or pane still laying out) gets no viewport row then: the first resize, input or
+drawn frame that finds it sized reports it, and until that first mapping pointer
+and wheel events, which need a point, are not admitted. Later the last mapping
+stands while the canvas cannot be described. Blur,
 hidden, pause and leaving game focus insert reset barriers while retaining
 earlier rows; no fake hardware keyup is generated. Suspended admission resumes
 without re-pressing held devices. Capture rows describe actual got/lost events.

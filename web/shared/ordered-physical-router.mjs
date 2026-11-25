@@ -1,4 +1,5 @@
 // Ordered physical facts only. Device scan codes and command policies are game-owned.
+import {validViewport} from './ordered-physical-events.mjs';
 function modifiers(e){
  const m={shift:!!e.shiftKey,control:!!e.ctrlKey,alt:!!e.altKey,meta:!!e.metaKey};
  if(typeof e.getModifierState==='function')for(const [key,name]of [['alt_graph','AltGraph'],['caps_lock','CapsLock'],['num_lock','NumLock']])m[key]=!!e.getModifierState(name);
@@ -6,13 +7,19 @@ function modifiers(e){
 }
 function createGeometry(canvas,win,queue,common){
  let revision=0,mapping=null,signature='';
+ // A canvas the validator cannot describe (no size yet: a page or pane still laying out, a hidden frame; or a box out
+ // of its range) has no viewport to report: the last mapping stands (none before the first) until a resize, an input
+ // or the player's per-frame sync finds it describable.
  function viewport(){
   const r=canvas.getBoundingClientRect(),v={width:canvas.width,height:canvas.height,rect_left:r.left,rect_top:r.top,
    css_width:r.width,css_height:r.height,device_pixel_ratio:win.devicePixelRatio||1},next=JSON.stringify(v);
-  if(next!==signature){mapping={revision:++revision,...v};queue.append({...common('viewport','control','host_synthetic'),viewport:mapping});signature=next;}
+  if(next!==signature&&validViewport({revision:revision+1,...v})){mapping={revision:++revision,...v};queue.append({...common('viewport','control','host_synthetic'),viewport:mapping});signature=next;}
   return mapping;
  }
- function point(e){const v=viewport(),x=(e.clientX-v.rect_left)*v.width/v.css_width,y=(e.clientY-v.rect_top)*v.height/v.css_height;
+ // Null before the canvas first had a size: such pointer and wheel input is not admitted. A point far outside (a
+ // kept mapping of a box that was tiny) is held to the row's range (|x| up to 1e9), still outside.
+ const range=n=>Math.max(-1e9,Math.min(1e9,n));
+ function point(e){const v=viewport();if(!v)return null;const x=range((e.clientX-v.rect_left)*v.width/v.css_width),y=range((e.clientY-v.rect_top)*v.height/v.css_height);
   return{x,y,inside:x>=0&&y>=0&&x<v.width&&y<v.height,viewport:{...v}};
  }
  return{viewport,point,revision:()=>revision};
@@ -33,7 +40,11 @@ function createPointerSession({canvas,queue,common,point,active,isReady,beforeDo
  }
  function pointer(e,phase){
   if(phase==='down')beforeDown();
-  if(!active())return;const state=identity(e.pointerId,phase==='down'),p=phase==='cancel'?undefined:point(e),buttons=e.buttons??0;
+  if(!active())return;
+  // Before the canvas first had a size there is no point to give: the event is not admitted (a later up of a press
+  // never admitted goes to the host, as for any gesture that began elsewhere).
+  const p=phase==='cancel'?undefined:point(e);if(p===null)return;
+  const state=identity(e.pointerId,phase==='down'),buttons=e.buttons??0;
   if(phase==='down')state.started=true;else if(!state.started&&(buttons||phase==='up'||phase==='cancel'))state.owner??='host_ui';
   state.buttons=buttons;
   queue.admit({...common('pointer','game'),pointer_id:state.id,pointer_type:e.pointerType,phase,button:e.button??-1,buttons,
@@ -104,7 +115,8 @@ export function createOrderedPhysicalRouter({canvas,window:win=window,document:d
  const pointers=createPointerSession({canvas,queue,common,point:geometry.point,active,isReady:()=>ready,beforeDown,listen,reset,routePointer,routeCapture});
  const keys=createKeySession({win,queue,common,active,listen,routeKey});
  function wheel(e){
-  if(!active())return;const p=geometry.point(e),unit=['pixel','line','page'][e.deltaMode];
+  // A wheel event needs a point: none before the canvas first had a size.
+  if(!active())return;const p=geometry.point(e),unit=['pixel','line','page'][e.deltaMode];if(!p)return;
   queue.admit({...common('wheel','game'),delta_x:e.deltaX,delta_y:e.deltaY,delta_z:e.deltaZ,unit,point:p,modifiers:modifiers(e)},()=>routeWheel(e));
  }
  // The official IME sink is still game UI. Its focus must not suspend canvas
@@ -119,6 +131,9 @@ export function createOrderedPhysicalRouter({canvas,window:win=window,document:d
  return{
   network(state,peer,data){if(disposed)return;queue.append({...common('network','control','host_synthetic'),state,peer,...(data===undefined?{}:{data})});},
   activate(){if(disposed||ready)return;ready=true;focused=doc.hasFocus?.()??true;reset('load');geometry.viewport();focus(focused,'window','blur');},
+  // For the player after each frame it draws: a canvas that had no size at activation and got one without a resize
+  // or an input (the renderer sizing its buffer, a pane laid out) is reported then. Nothing once a mapping exists.
+  syncViewport(){if(!disposed&&ready&&!doc.hidden&&geometry.revision()===0)geometry.viewport();},
   setPaused(value){if(paused===value)return;paused=value;if(value&&ready)reset('host_pause');},
   report:()=>({...queue.report(),admission:disposed?'disposed':active()?'active':ready?'suspended':'waiting_ready',viewport_revision:geometry.revision()}),
   dispose(){if(disposed)return;disposed=true;for(const remove of listeners)remove();pointers.dispose();keys.dispose();canvas.tabIndex=previousTabIndex;
