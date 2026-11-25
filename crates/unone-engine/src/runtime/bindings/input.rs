@@ -19,11 +19,17 @@ pub(super) fn input(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         .call((super::value::json_to_lua(lua, package_info)?, declared, guard))?;
     input_api.set("gestures", gestures)?;
     let physical_input=Rc::clone(&input);
+    let physical_world=Rc::clone(&state.world);
     input_api.set("getPhysicalBatch",lua.create_function(move |lua,():()| {
         match &physical_input.borrow().physical.active {
             // Physical v1 validates metadata as safe binary64 integers, including
             // monotonic microseconds past i32::MAX. Keep saves on their own boundary.
-            Some(batch)=>super::value::observation_json_to_lua(lua,serde_json::to_value(batch).map_err(mlua::Error::external)?),
+            // A game in design pixels (display.pixels) gets its points and viewports in them.
+            Some(batch)=>{
+                let mut value=serde_json::to_value(batch).map_err(mlua::Error::external)?;
+                if let Some(design)=physical_world.borrow().projected_design {crate::projected::design_physical_batch(&mut value,design);}
+                super::value::observation_json_to_lua(lua,value)
+            }
             None=>Ok(mlua::Value::Nil),
         }
     })?)?;

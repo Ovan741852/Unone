@@ -35,7 +35,8 @@ Nonuniform backdrops require every predecessor draw. Arbitrary existing RGB or
 depth import is unsupported; source depth-only clear markers do not imply RGB.
 
 Each draw requires unique `id`, `texture`, `vertices`, `indices`, `clip_policy`,
-`material`; physical top-left `scissor` is optional. The 40B f32LE clip4/uv2/RGBA4
+`material`; a top-left `scissor` (physical pixels, or design pixels under
+`display.pixels: "design"`, see projected-geometry.md) is optional. The 40B f32LE clip4/uv2/RGBA4
 and u32 indices are unchanged. Indexed W must be exactly1, z and all RGBA must
 be0..1, and each indexed triangle's RGBA bits must match. `clip` permits XY
 outside; `inside` requires XY within[-1,1]. The game converts source TL depth

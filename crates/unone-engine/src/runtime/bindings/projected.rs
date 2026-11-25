@@ -7,7 +7,8 @@ fn text(v:Value)->mlua::Result<String> {
 fn boolean(t:&Table,k:&str)->mlua::Result<bool> {
     match t.get::<Value>(k)? {Value::Nil=>Ok(true),Value::Boolean(b)=>Ok(b),_=>Err(error("boolean required"))}
 }
-fn decode(t:Table)->mlua::Result<crate::ProjectedBatch> {
+// view: what the game's pixels are (display.pixels): its scissor is in those pixels and becomes physical here.
+fn decode(t:Table,view:crate::projected::DesignView)->mlua::Result<crate::ProjectedBatch> {
     for pair in t.clone().pairs::<Value,Value>() {
         let (key,_)=pair?;let key=text(key)?;
         if !["texture","vertices","indices","order","depth_test","depth_write","scissor","color_mode","filter","sampling_space","address_mode","alpha_cutoff","alpha_compare","blend"].contains(&key.as_str()) {return Err(error("unknown field"));}
@@ -22,7 +23,9 @@ fn decode(t:Table)->mlua::Result<crate::ProjectedBatch> {
     if vertices.len()>40*crate::projected::MAX_PROJECTED_VERTICES || indices.len()>4*crate::projected::MAX_PROJECTED_INDICES {return Err(error("packed geometry budget exceeded"));}
     let scissor=match t.get::<Value>("scissor")? {Value::Nil=>None,value=>{
         let value=super::value::lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
-        Some(serde_json::from_value::<crate::ProjectedScissor>(value).map_err(|_|error("exact scissor{x,y,width,height} integers required"))?)
+        let scissor=serde_json::from_value::<crate::ProjectedScissor>(value).map_err(|_|error("exact scissor{x,y,width,height} integers required"))?;
+        scissor.validate().map_err(mlua::Error::RuntimeError)?;
+        Some(view.physical_scissor(scissor))
     }};
     let color_mode=match t.get::<Value>("color_mode")? {Value::Nil=>crate::ProjectedColorMode::Linear,v=>match text(v)?.as_str(){"linear"=>crate::ProjectedColorMode::Linear,"encoded"=>crate::ProjectedColorMode::Encoded,_=>return Err(error("color_mode linear or encoded required"))}};
     let filter=match t.get::<Value>("filter")? {Value::Nil=>crate::ProjectedFilter::Nearest,v=>match text(v)?.as_str(){"nearest"=>crate::ProjectedFilter::Nearest,"linear"=>crate::ProjectedFilter::Linear,_=>return Err(error("filter nearest or linear required"))}};
@@ -40,14 +43,17 @@ pub(super) fn bind(lua:&Lua,state:&ApiState)->mlua::Result<Table> {
     let api=lua.create_table()?;let world=Rc::clone(&state.world);
     super::projected_frame::install(lua,state,&api)?;
     api.set("set",lua.create_function(move |_,(id,t):(Value,Table)| {
-        let batch=decode(t)?;world.borrow_mut().set_projected(text(id)?,batch).map_err(mlua::Error::RuntimeError)
+        let view=world.borrow().projected_design_view();
+        let batch=decode(t,view)?;world.borrow_mut().set_projected(text(id)?,batch).map_err(mlua::Error::RuntimeError)
     })?)?;
     let world=Rc::clone(&state.world);
     api.set("remove",lua.create_function(move |_,id:Value|world.borrow_mut().remove_projected(&text(id)?).map_err(mlua::Error::RuntimeError))?)?;
     let world=Rc::clone(&state.world);
     api.set("getViewport",lua.create_function(move |lua,()| {
-        let world=world.borrow();let v=&world.projected_viewport;let t=lua.create_table()?;
-        t.set("width",v.width)?;t.set("height",v.height)?;t.set("aspect",v.aspect)?;t.set("revision",v.revision)?;Ok(t)
+        // In design pixels (display.pixels "design") the design size scaled to fit; scale: physical pixels per pixel.
+        let world=world.borrow();let v=world.projected_design_view();let t=lua.create_table()?;
+        t.set("width",v.width)?;t.set("height",v.height)?;t.set("aspect",f64::from(v.width)/f64::from(v.height))?;
+        t.set("scale",v.scale)?;t.set("revision",world.projected_viewport.revision)?;Ok(t)
     })?)?;
     let world=Rc::clone(&state.world);
     api.set("setWorldVisible",lua.create_function(move |_,value:Value| {

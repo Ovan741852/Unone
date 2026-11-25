@@ -108,6 +108,12 @@ pub struct DisplayConfig {
     /// undeclared means `expand`.
     #[serde(default)]
     pub aspect: AspectMode,
+    /// What one pixel is to a game that draws its own screen pixels
+    /// (`api.projected`'s viewport and scissors, the points of
+    /// `api.input.getPhysicalBatch`); undeclared means `device`, which is left out when written back so a
+    /// runtime from before the field still loads the project.
+    #[serde(default, skip_serializing_if = "PixelUnit::is_device")]
+    pub pixels: PixelUnit,
 }
 
 impl DisplayConfig {
@@ -115,6 +121,31 @@ impl DisplayConfig {
     pub fn aspect_ratio(&self) -> f64 {
         f64::from(self.width.get()) / f64::from(self.height.get())
     }
+    /// The design size when the game works in design pixels.
+    pub fn design_pixels(&self) -> Option<[u32; 2]> {
+        (self.pixels == PixelUnit::Design).then(|| [self.width.get(), self.height.get()])
+    }
+}
+
+/// What one pixel is to a game that draws its own screen pixels.
+#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq)]
+#[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum PixelUnit {
+    /// A pixel of the drawing buffer: a larger window shows more of a world
+    /// the game draws at a fixed pixel scale.
+    #[default]
+    Device,
+    /// A pixel of the design size scaled to fit the drawing buffer: the
+    /// design size always fits whole and the window's longer side extends
+    /// the viewport, so the game looks the same at any size. The engine
+    /// converts what it hands the game and the scissors it gets back; the
+    /// host still draws at its full resolution.
+    Design,
+}
+
+impl PixelUnit {
+    fn is_device(&self) -> bool { *self == PixelUnit::Device }
 }
 
 /// What a host does when the device's shape differs from the design.

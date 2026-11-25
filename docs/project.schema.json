@@ -79,6 +79,10 @@
           "minimum": 1,
           "type": "integer"
         },
+        "pixels": {
+          "$ref": "#/$defs/PixelUnit",
+          "description": "What one pixel is to a game that draws its own screen pixels\n(`api.projected`'s viewport and scissors, the points of\n`api.input.getPhysicalBatch`); undeclared means `device`, which is left out when written back so a\nruntime from before the field still loads the project."
+        },
         "width": {
           "description": "Design width in pixels.",
           "format": "uint32",
@@ -340,6 +344,21 @@
         }
       },
       "type": "object"
+    },
+    "PixelUnit": {
+      "description": "What one pixel is to a game that draws its own screen pixels.",
+      "oneOf": [
+        {
+          "const": "device",
+          "description": "A pixel of the drawing buffer: a larger window shows more of a world\nthe game draws at a fixed pixel scale.",
+          "type": "string"
+        },
+        {
+          "const": "design",
+          "description": "A pixel of the design size scaled to fit the drawing buffer: the\ndesign size always fits whole and the window's longer side extends\nthe viewport, so the game looks the same at any size. The engine\nconverts what it hands the game and the scissors it gets back; the\nhost still draws at its full resolution.",
+          "type": "string"
+        }
+      ]
     },
     "RenderParam": {
       "anyOf": [

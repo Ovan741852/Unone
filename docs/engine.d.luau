@@ -159,7 +159,7 @@ export type ProjectedApi = {
     set: (id: string, geometry: ProjectedGeometry) -> (),
     remove: (id: string) -> (),
     setWorldVisible: (visible: boolean) -> (),
-    getViewport: () -> {width: number, height: number, aspect: number, revision: number},
+    getViewport: () -> {width: number, height: number, aspect: number, scale: number, revision: number},
 }
 
 export type EscapeBehavior = "action" | "quit"
@@ -195,7 +195,8 @@ export type GestureViewport = {
 }
 export type GesturePoint = {read x:number, read y:number, read inside:boolean, read viewport:GestureViewport}
 export type GestureOptions = {
-    -- Distances use physical canvas pixels, not normalized UI or CSS pixels.
+    -- Distances use the pixels of the batch points: physical canvas pixels, or design pixels with
+    -- display.pixels "design"; not normalized UI or CSS pixels.
     panThreshold: number?, -- default 6, finite >= 0
     minPinchDistance: number?, -- default 2, finite > 0
     enabled: boolean?, -- default true; changes cancel held contacts

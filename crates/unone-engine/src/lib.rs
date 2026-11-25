@@ -187,7 +187,7 @@ pub use performance_targets::{
     review as review_performance,
 };
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
-pub use project::{AspectMode, DisplayConfig};
+pub use project::{AspectMode, DisplayConfig, PixelUnit};
 pub use project::{
     AnimationAssertion, AudioAssertion, EffectsAssertion, GAMEPAD_BUTTONS, GAMEPAD_SLOTS, GamepadInput, InputFrame, ObservationAssertion,
     PointerInput, SliderInteraction, SliderPhase, TextInputInteraction, TextInputPhase, ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile,

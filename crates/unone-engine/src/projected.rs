@@ -41,6 +41,52 @@ impl ProjectedScissor {
     }
 }
 
+/// The viewport as a game in design pixels (display.pixels "design") sees it: the design size scaled to fit the
+/// drawing buffer at the larger factor (`scale`, physical pixels per design pixel) at which the whole design size still
+/// fits, so the window's longer side extends the viewport past the design size. The two sides are whole pixels, so the
+/// buffer maps onto them exactly per axis (physical / width, physical / height), as clip space does; the conversions use
+/// that exact mapping, within half a pixel of `scale`. Without a design size, the physical viewport at scale 1.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct DesignView {
+    pub width: u32,
+    pub height: u32,
+    pub scale: f64,
+    physical: [u32; 2],
+}
+/// n * num / den rounded to the nearest integer (halves up), exactly.
+fn ratio_round(n: u32, num: u32, den: u32) -> u64 { (2 * u64::from(n) * u64::from(num) + u64::from(den)) / (2 * u64::from(den)) }
+pub fn design_view(width: u32, height: u32, design: Option<[u32; 2]>) -> DesignView {
+    let Some([dw, dh]) = design else { return DesignView { width, height, scale: 1.0, physical: [width, height] } };
+    // Width-limited when width/dw <= height/dh: the width is the design's and the height extends (and the reverse).
+    let (w, h, scale) = if u64::from(width) * u64::from(dh) <= u64::from(height) * u64::from(dw) {
+        (u64::from(dw), ratio_round(height, dw, width), f64::from(width) / f64::from(dw))
+    } else {
+        (ratio_round(width, dh, height), u64::from(dh), f64::from(height) / f64::from(dh))
+    };
+    let side = |n: u64| n.clamp(1, 32768) as u32;
+    DesignView { width: side(w), height: side(h), scale, physical: [width, height] }
+}
+impl DesignView {
+    /// A scissor in design pixels as the physical pixels it covers (outward to whole pixels), by the exact per-axis
+    /// mapping. A scissor wholly past the viewport stays past the buffer (the host drops it), except at the 32768 limit.
+    pub fn physical_scissor(&self, s: ProjectedScissor) -> ProjectedScissor {
+        if self.physical == [self.width, self.height] { return s; }
+        let edge = |n: u32, physical: u32, logical: u32, up: bool| {
+            let (num, den) = (u64::from(n) * u64::from(physical), u64::from(logical));
+            (if up { num.div_ceil(den) } else { num / den }).min(32768) as u32
+        };
+        let (x, y) = (edge(s.x, self.physical[0], self.width, false), edge(s.y, self.physical[1], self.height, false));
+        let right = edge(s.x.saturating_add(s.width), self.physical[0], self.width, true);
+        let bottom = edge(s.y.saturating_add(s.height), self.physical[1], self.height, true);
+        let (x, y) = (x.min(32767), y.min(32767));
+        ProjectedScissor { x, y, width: right.saturating_sub(x).max(1), height: bottom.saturating_sub(y).max(1) }
+    }
+    /// A physical point (drawing buffer pixels) in design pixels, by the exact per-axis mapping.
+    pub fn design_point(&self, x: f64, y: f64) -> (f64, f64) {
+        (x * f64::from(self.width) / f64::from(self.physical[0]), y * f64::from(self.height) / f64::from(self.physical[1]))
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct ProjectedViewport {
     pub width: u32,
@@ -171,11 +217,40 @@ impl crate::world::World {
         if self.projected_frame.is_some(){return Err("PROJECTED_FRAME_MIXED: active Frame cannot mix legacy batches".into());}
         self.projected_geometry.remove(id).map(|_|()).ok_or_else(||format!("PROJECTED_MISSING: {id}"))
     }
+    /// The viewport in the game's pixels (display.pixels).
+    pub(crate) fn projected_design_view(&self)->DesignView {
+        design_view(self.projected_viewport.width,self.projected_viewport.height,self.projected_design)
+    }
     pub(crate) fn set_projected_viewport(&mut self,width:u32,height:u32)->Result<(),String> {
         if width==0 || height==0 || width>32768 || height>32768 {return Err("PROJECTED_VIEWPORT_INVALID: pixel dimensions1..32768 required".into());}
         let old=&self.projected_viewport;
         if old.width==width && old.height==height {return Ok(());}
         self.projected_viewport=ProjectedViewport {width,height,aspect:width as f64/height as f64,
             revision:old.revision.checked_add(1).ok_or("PROJECTED_REVISION_LIMIT")?};Ok(())
+    }
+}
+
+/// A physical input batch (its JSON as api.input.getPhysicalBatch hands it out) in design pixels: each point and
+/// viewport event by its own viewport (so a replay converts as the run did), its width and height the design view's
+/// and its x, y and inside scaled to them. Rect and CSS fields stay the page's.
+pub fn design_physical_batch(batch: &mut serde_json::Value, design: [u32; 2]) {
+    fn viewport(v: &mut serde_json::Value, design: [u32; 2]) -> Option<DesignView> {
+        let width = u32::try_from(v.get("width")?.as_u64()?).ok()?;
+        let height = u32::try_from(v.get("height")?.as_u64()?).ok()?;
+        let view = design_view(width, height, Some(design));
+        v["width"] = view.width.into();
+        v["height"] = view.height.into();
+        Some(view)
+    }
+    let Some(events) = batch.get_mut("events").and_then(|e| e.as_array_mut()) else { return };
+    for event in events {
+        if let Some(v) = event.get_mut("viewport") { viewport(v, design); }
+        let Some(point) = event.get_mut("point").filter(|p| p.is_object()) else { continue };
+        let Some(view) = point.get_mut("viewport").and_then(|v| viewport(v, design)) else { continue };
+        let (Some(x), Some(y)) = (point["x"].as_f64(), point["y"].as_f64()) else { continue };
+        let (x, y) = view.design_point(x, y);
+        point["x"] = x.into();
+        point["y"] = y.into();
+        point["inside"] = (x >= 0.0 && y >= 0.0 && x < f64::from(view.width) && y < f64::from(view.height)).into();
     }
 }

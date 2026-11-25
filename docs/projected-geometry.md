@@ -52,7 +52,8 @@ triangle order is index order. Depth comparison is strictly Less by default.
 `depth_test=false` means Always-pass, independently of`depth_write`; Three keeps
 depth testing enabled with AlwaysDepth so writes match native semantics.
 
-Optional`scissor={x,y,width,height}` uses integer physical pixels with a top-left
+Optional`scissor={x,y,width,height}` uses integer pixels (physical, or design
+pixels under `display.pixels: "design"`, below) with a top-left
 origin. Width/height must be positive; right/bottom boundaries fit0..32768.
 Hosts intersect it with the actual drawing buffer, skipping an empty intersection.
 This safely handles resize before the next game publication. No scissor means
@@ -87,8 +88,8 @@ Default true is omitted from canonical JSON; false appears as
 
 ## Viewport and picking
 
-`getViewport()` returns physical render-target`width`, `height`, `aspect` and
-monotonic`revision`. Headless defaults are1280x720/revision1. A host may provide
+`getViewport()` returns physical render-target`width`, `height`, `aspect`,
+`scale` (1) and monotonic`revision`. Headless defaults are1280x720/revision1. A host may provide
 `HostProject.viewport_size=[width,height]` before Game.start; physical size takes
 precedence over the legacy aspect-only value. Runtime hosts update through
 `EngineRuntime.set_viewport_size`; dimensions must be1..32768. No-op sizes keep
@@ -99,6 +100,40 @@ after window creation/resize. The official Web player supplies drawing-buffer
 dimensions, including its capped device pixel ratio; its viewport ABI fails
 explicitly when paired with an older Web runtime. Legacy aspect-only hosts must
 be updated before claiming physical-pixel projector support.
+
+### Design pixels
+
+A game that draws at a fixed pixel scale (an original renderer's projection, a
+pixel-art HUD) shows more of its world the larger the window, and past the
+shapes it was made for, edges it never drew. With
+`"display": {"width": 1280, "height": 720, "pixels": "design"}` it works in
+design pixels instead: `getViewport()` reports the design size scaled by
+`scale` physical pixels per design pixel, the largest scale at which the whole
+design size fits, so the window's longer side extends the viewport (1882x1242 is
+1280x845 at 1.47; 900x1600 is 1280x2276). The points and viewports of
+`api.input.getPhysicalBatch()` come in the same pixels (each by its own viewport,
+so a replay converts as the run did; the page's rect and CSS fields stay), and
+the engine turns scissors from `set` and `setFrame` into the physical pixels
+they cover (outward) for the host, which still draws at full resolution: clip
+space needs no change. The sides are whole pixels, so the buffer maps onto them
+exactly per axis (physical width over viewport width, and height), as clip space
+does: points and scissors use that mapping, within half a pixel of `scale`, which
+is the nominal factor (for choosing detail, say). At the design size nothing
+changes. As with physical pixels:
+
+- A point carries the viewport the page had when it arrived; during a resize it
+  can differ from `getViewport()`. Compare the two, as for physical pixels.
+- A host resize between a `set` and a draw keeps the old scissor until the game
+  sets it again. A scissor wholly past the viewport stays past the buffer (the
+  host drops it), except at the 32768-pixel limit.
+- A replay converts points by their recorded viewports, but scissors and
+  `getViewport()` follow the replaying host's viewport (a headless replay keeps
+  the 1280x720 default); hosts that report only an aspect (the development
+  runner) leave the default too.
+
+Undeclared `pixels` is `"device"` and is not written back, so a runtime from
+before the field still loads the project. Pixel distances in packages that read
+physical batches (the gestures package's pan threshold) are in the same pixels.
 
 Game picking must use the same projector, viewport and view revision as rendered
 geometry. An ordinary perspective ray is not automatically an inverse for a

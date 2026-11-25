@@ -821,6 +821,8 @@ impl EngineRuntime {
         let ui = Rc::new(RefCell::new(None));
         // The declared design shape until a host says what it draws into.
         let viewport_aspect = Rc::new(RefCell::new(config.display.map_or(crate::ui::UI_REFERENCE_ASPECT, |display| display.aspect_ratio())));
+        // A game in design pixels reads the projected viewport, its physical points and scissors scaled.
+        world.borrow_mut().projected_design = config.display.and_then(|display| display.design_pixels());
         // A restored save has to exist before Game.start runs: start is the only
         // place a game can rebuild its state before the first frame, and an
         // injection after start would both hide the payload and silently

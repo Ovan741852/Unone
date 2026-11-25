@@ -1137,6 +1137,9 @@ pub(crate) struct World {
     pub projected_frame: Option<crate::ProjectedFrame>,
     pub projected_revision: u64,
     pub projected_viewport: crate::ProjectedViewport,
+    /// The design size when the project works in design pixels (display.pixels): what the game
+    /// reads of the viewport and its scissors are converted (crate::projected::design_view).
+    pub projected_design: Option<[u32; 2]>,
     pub projected_world_hidden: bool,
     pub heightfields: BTreeMap<String, crate::Heightfield>,
     /// Monotonic per runtime, including remove/recreate and scene transitions.
@@ -2387,7 +2390,7 @@ mod tests {
         World {
             ui_image_batches:BTreeMap::new(),ui_image_batch_revision:0,
             ui_cursor:None,projected_geometry:BTreeMap::new(),projected_frame:None,projected_revision:0,
-            projected_viewport:Default::default(),projected_world_hidden:false,
+            projected_viewport:Default::default(),projected_design:None,projected_world_hidden:false,
             application: Default::default(),
             network: Default::default(),
             heightfields: BTreeMap::new(),

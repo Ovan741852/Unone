@@ -26,17 +26,19 @@ fn dense(t:Table,max:usize)->mlua::Result<Vec<Value>> {
     if !pairs.keys().copied().eq(1..=pairs.len()){return Err(error("dense sequence required"));}
     Ok(pairs.into_values().collect())
 }
-fn draw(t:Table,profile:&str)->mlua::Result<ProjectedFrameDraw> {
+fn draw(t:Table,profile:&str,view:crate::projected::DesignView)->mlua::Result<ProjectedFrameDraw> {
     fields(&t,&["id","texture","vertices","indices","clip_policy","material","scissor"])?;
     let vertices=t.get::<mlua::Buffer>("vertices")?;let indices=t.get::<mlua::Buffer>("indices")?;
     if vertices.len()>40*crate::projected::MAX_PROJECTED_VERTICES||indices.len()>4*crate::projected::MAX_PROJECTED_INDICES {
         return Err(error("geometry limit"));
     }
-    let scissor=match t.get::<Value>("scissor")? {Value::Nil=>None,v=>Some(json::<crate::ProjectedScissor>(v)?)};
+    // In the game's pixels (display.pixels), made physical.
+    let scissor=match t.get::<Value>("scissor")? {Value::Nil=>None,v=>{
+        let scissor=json::<crate::ProjectedScissor>(v)?;scissor.validate().map_err(error)?;Some(view.physical_scissor(scissor))}};
     ProjectedFrameDraw::new_for_profile(profile,text(&t,"id")?,text(&t,"texture")?,json::<FrameClipPolicy>(t.get("clip_policy")?)?,
         json(t.get("material")?)?,scissor,vertices.to_vec(),indices.to_vec()).map_err(error)
 }
-fn decode(t:Table)->mlua::Result<ProjectedFrame> {
+fn decode(t:Table,view:crate::projected::DesignView)->mlua::Result<ProjectedFrame> {
     fields(&t,&["profile","initial","draws"])?;
     let profile=crate::projected_frame::parse_frame_profile(&text(&t,"profile")?).map_err(error)?;
     let initial=t.get::<Table>("initial")?;fields(&initial,&["rgb8","depth"])?;
@@ -46,13 +48,14 @@ fn decode(t:Table)->mlua::Result<ProjectedFrame> {
         let Value::Table(t)=v else{return Err(error("draw table required"));};
         vertices+=t.get::<mlua::Buffer>("vertices")?.len();indices+=t.get::<mlua::Buffer>("indices")?.len();
         if vertices>1_048_576*40||indices>6_291_456*4{return Err(error("world geometry limit"));}
-        draws.push(draw(t,profile)?);
+        draws.push(draw(t,profile,view)?);
     }
     ProjectedFrame::new_for_profile(profile,json(Value::Table(initial))?,draws).map_err(error)
 }
 pub(super) fn install(lua:&Lua,state:&ApiState,api:&Table)->mlua::Result<()> {
     let world=std::rc::Rc::clone(&state.world);
     api.set("setFrame",lua.create_function(move |_,t:Table| {
-        let frame=decode(t)?;world.borrow_mut().set_projected_frame(frame).map_err(error)
+        let view=world.borrow().projected_design_view();
+        let frame=decode(t,view)?;world.borrow_mut().set_projected_frame(frame).map_err(error)
     })?)
 }

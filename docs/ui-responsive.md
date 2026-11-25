@@ -47,6 +47,12 @@ otherwise. `aspect` says what hosts do on a device of another shape:
   letterboxes the stage (the page background shows around it); the native
   player holds its window to the shape.
 
+`pixels` says what one pixel is to a game that draws its own screen pixels
+(`api.projected`, the points of `api.input.getPhysicalBatch`): `device` (default)
+the drawing buffer's, `design` the design size's scaled to fit the window
+(see [design pixels](projected-geometry.md#design-pixels)). UI coordinates are
+not pixels and do not change.
+
 Undeclared means 1280 x 720 (16:9), expanding; `game project init` declares
 `{"width": 1280, "height": 720}`. Zero sizes and unknown fields are refused
 (`PROJECT_CONFIG_INVALID`). UI coordinates stay the 0..100 design space either
