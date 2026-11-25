@@ -480,7 +480,9 @@ async function launchBrowser(executable,options){
  const gpu=await readGpu(cdp);
  async function close(){
   try{await cdp.send('Browser.close',{},undefined,5000);}catch{}
-  await Promise.race([wasClosed,sleep(10000)]);
+  let closeTimer=null;
+  await Promise.race([wasClosed,new Promise(resolve=>{closeTimer=setTimeout(resolve,10000);})]);
+  clearTimeout(closeTimer);
   if(!closed){cdp.close();if(browserPid)try{process.kill(browserPid);}catch{}}
   // The browser's helper processes release the profile a moment after it closes.
   for(let i=0;i<40;i++){try{await rm(profileDir,{recursive:true,force:true});break;}catch{await sleep(250);}}
@@ -858,7 +860,10 @@ async function openPage(browser,options){
   const readyOrError=new Promise(resolve=>{readyResolve=resolve;});
   const started=Date.now();
   await send('Page.navigate',{url});
-  const first=await Promise.race([readyOrError,sleep(timeoutMs).then(()=>'timeout')]);readyResolve=null;
+  // The timer is cleared once ready: a pending one would keep the process alive for timeoutMs after the report.
+  let readyTimer=null;
+  const first=await Promise.race([readyOrError,new Promise(resolve=>{readyTimer=setTimeout(()=>resolve('timeout'),timeoutMs);})]);
+  clearTimeout(readyTimer);readyResolve=null;
   let outcome={ready:first==='ready',error:null,presented:[],milestones:false,timedOut:first==='timeout'},focused=false;
   // A console error is not necessarily fatal; the player's own error attribute is.
   for(;;){
