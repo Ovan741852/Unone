@@ -183,15 +183,20 @@ Bloom is explicitly rejected because the default framebuffer does not share the
 offscreen world depth attachment. Hide normal world3D or disable Bloom. Projected
 draws occur after the normal world/postprocess and before UI.
 
-## Optional source-over artwork
+## Optional blending: source-over artwork and additive passes
 
 On this advanced stream, `blend="source_over"` opts a legacy batch into straight-alpha
-source-over composition through the official **WebGL host-raster** path. This is
-a reusable presentation primitive for already-authored geometry, not an engine
-map/fog/layout rule. V1 requires both `depth_test=false` and `depth_write=false`;
-omitting either retains its legacy true default and rejects the publication
-before world mutation. Native and checked-raster paths reject source-over with
-`PROJECTED_BLEND_UNSUPPORTED`; WebGPU/custom retain their existing unsupported
+source-over composition, and `blend="add"` into additive composition (RGB times
+alpha added to the destination, destination alpha kept: a specular highlight or
+glow pass over geometry already drawn), both through the official **WebGL
+host-raster** path. These are reusable presentation primitives for already-authored
+geometry, not engine map/fog/layout rules. A blended batch keeps its own
+`depth_test` and `depth_write`: alpha-blended strips can be hidden behind nearer
+opaque batches (depth test on) and may write depth as a pre-projected renderer's
+z-buffer did; 2D artwork turns both off. Depth testing is strictly Less, so an
+additive pass over the same triangles as the batch under it turns its depth test
+off and relies on paint order. Native and checked-raster paths reject both blends
+with `PROJECTED_BLEND_UNSUPPORTED`; WebGPU/custom retain their existing unsupported
 projected-backend boundary.
 
 ```luau
@@ -212,7 +217,7 @@ and alpha comparison are still independent controls: use explicit
 coverage values. Adding blend never silently changes cutoff, filtering, address
 mode or depth policy. Omitted/explicit `opaque` keeps old behavior, is omitted
 from canonical JSON and preserves identical-batch revisions. Source-over is
-serialized and participates in exact batch equality/revision updates.
+serialized and participates in exact batch equality/revision updates; `add` likewise.
 
 For Canvas-style encoded-RGB artwork, explicitly select encoded modulation and
 encoded sampling. The source-over encoded bilinear path filters premultiplied

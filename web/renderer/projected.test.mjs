@@ -7,11 +7,12 @@ import * as THREE from '../vendor/three/three.player.min.js';
 import {Texture as FixtureTexture} from '../vendor/three/three.core.js';
 const b64=a=>Buffer.from(a.buffer).toString('base64');
 
-test('source-over is opt-in, depth-free and shares the authored rank queue with opaque batches',()=>{
+test('source-over is opt-in and shares the authored rank queue with opaque batches',()=>{
  const source={...fixture(),blend:'source_over',depth_test:false,depth_write:false,alpha_cutoff:0};
  assert.doesNotThrow(()=>projectedEntries({projected_geometry:{s:source}}));
  for(const blend of [null,1,false,'normal','SOURCE_OVER'])assert.throws(()=>projectedEntries({projected_geometry:{s:{...source,blend}}}),/PROJECTED_INVALID: blend/);
- for(const flags of [{depth_test:true},{depth_write:true}])assert.throws(()=>projectedEntries({projected_geometry:{s:{...source,...flags}}}),/source_over requires depth_test=false and depth_write=false/);
+ // Blending keeps the batch's own depth policy.
+ for(const flags of [{depth_test:true},{depth_write:true}])assert.doesNotThrow(()=>projectedEntries({projected_geometry:{s:{...source,...flags}}}));
  const texture=new FixtureTexture(),adapter=createProjectedRenderer(THREE,()=>({state:'ready',texture}));
  const specs=new Map([['t',{kind:'texture2d'}]]);let meshes;
  const renderer={autoClear:true,getScissor:v=>v.set(0,0,1,1),getScissorTest:()=>false,setScissor(){},setScissorTest(){},getDrawingBufferSize:v=>v.set(64,48),getPixelRatio:()=>1,render:s=>meshes=s.children.slice()};
@@ -139,4 +140,16 @@ test('repeat wraps individual bilinear neighbors across both UV seams including 
  for(const uv of [[0,.25],[1,.25],[-1,.25],[2,.25]])assert.deepEqual(sample(...uv),[.5,.5,1,32/255]);
  assert.deepEqual(sample(-.25,.25,'nearest'),[1,1,1,0]);assert.deepEqual(sample(1.25,1.25,'nearest'),[0,0,1,64/255]);
  for(const uv of [[-.1,.3],[.9,.3],[1.9,.3]]){const a=sample(...uv),b=sample(.9,.3);for(let i=0;i<4;i++)assert.ok(Math.abs(a[i]-b[i])<1e-12);}
+});
+
+test('an additive batch adds rgb times alpha, keeps destination alpha and its depth test and write',()=>{
+ const add={...fixture(),blend:'add',depth_test:true,depth_write:false,alpha_cutoff:0,order:1};
+ const texture=new FixtureTexture(),adapter=createProjectedRenderer(THREE,()=>({state:'ready',texture}));
+ const specs=new Map([['t',{kind:'texture2d'}]]);let meshes;
+ const renderer={autoClear:true,getScissor:v=>v.set(0,0,1,1),getScissorTest:()=>false,setScissor(){},setScissorTest(){},getDrawingBufferSize:v=>v.set(64,48),getPixelRatio:()=>1,render:s=>meshes=s.children.slice()};
+ adapter.prepare(projectedEntries({projected_geometry:{base:{...fixture(),order:0},highlight:add}}),specs);adapter.draw(renderer,new THREE.PerspectiveCamera());
+ const m=meshes.find(x=>x.renderOrder===1).material;
+ assert.equal(m.blending,THREE.CustomBlending);assert.equal(m.blendSrc,THREE.SrcAlphaFactor);assert.equal(m.blendDst,THREE.OneFactor);
+ assert.equal(m.blendSrcAlpha,THREE.ZeroFactor);assert.equal(m.blendDstAlpha,THREE.OneFactor);
+ assert.equal(m.depthFunc,THREE.LessDepth);assert.equal(m.depthWrite,false);assert.equal(m.uniforms.projectedSourceOver.value,1);
 });

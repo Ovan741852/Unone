@@ -48,8 +48,8 @@ pub(crate) fn ensure_shader_backend(snapshot: &WorldSnapshot) -> R<()> {
     if snapshot.camera3d.as_ref().is_some_and(|c|c.curvature!=0.0||c.rect.is_some()||c.handedness!=unone_engine::CameraHandedness::Right){
         return Err("HOST_CAMERA_PROJECTION_UNSUPPORTED: camera curvature, rect and left handedness require the official Web player; export Web".into());
     }
-    if snapshot.projected_geometry.values().any(|batch|batch.blend==unone_engine::ProjectedBlend::SourceOver) {
-        return Err("PROJECTED_BLEND_UNSUPPORTED: source_over requires the official WebGL projected renderer; native sRGB hardware blending does not implement the encoded-color contract".into());
+    if snapshot.projected_geometry.values().any(|batch|batch.blend!=unone_engine::ProjectedBlend::Opaque) {
+        return Err("PROJECTED_BLEND_UNSUPPORTED: source_over and add require the official WebGL projected renderer; native sRGB hardware blending does not implement the encoded-color contract".into());
     }
     // Native executes every built-in pass kind (ADR 0048); host extensions
     // are Web JavaScript modules.
@@ -1118,6 +1118,7 @@ pub fn desktop() -> R<()> {
         descriptor["projected_geometry"]["material_defaults"]["alpha_compare"]=json!("greater_equal");
         descriptor["projected_geometry"]["material_defaults"]["blend"]=json!("opaque");
         descriptor["projected_geometry"]["source_over"]=json!({"supported":false,"error":"PROJECTED_BLEND_UNSUPPORTED","phase":"before_GPU_prepare","reason":"native sRGB hardware blending does not implement encoded-color source-over parity"});
+        descriptor["projected_geometry"]["add"]=json!({"supported":false,"error":"PROJECTED_BLEND_UNSUPPORTED","phase":"before_GPU_prepare","reason":"native sRGB hardware blending does not implement encoded-color additive parity"});
         descriptor["raster"]=json!({"sample_count":{"omitted":1,"false":1,"true":4},"antialias":{"omitted":"single_sample","false":"single_sample","true":"msaa_4x_world_and_sprites"},"unsupported_adapter":"single_sample","static_until_relaunch":true});
         descriptor["raster"]["projected_raster"]=json!({"omitted":"native_host_raster","explicit":"unsupported_package_admission","before_runtime_or_gpu":true});
         descriptor["raster"]["projected_material_profile"]=json!({"omitted":"legacy_unchanged","explicit":"unsupported_package_admission","snapshot":"unsupported_before_GPU_prepare"});

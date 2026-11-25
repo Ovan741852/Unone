@@ -19,7 +19,7 @@ test('same revision cannot bypass changed byte/count/index or material validatio
  const d=fixture(),decoder=createProjectedGeometryDecoder();decoder.entries(snapshot(d));const baseline=decoder.metrics();
  const badVertices=Buffer.from(d.vertices,'base64');badVertices.writeFloatLE(NaN,0);
  const badIndices=Buffer.from(d.indices,'base64');badIndices.writeUInt32LE(3,0);
- for(const change of [{vertices:badVertices.toString('base64')},{indices:badIndices.toString('base64')},{vertex_count:4},{blend:'source_over',depth_write:true},{blend:'typo'}])
+ for(const change of [{vertices:badVertices.toString('base64')},{indices:badIndices.toString('base64')},{vertex_count:4},{blend:'typo'}])
   assert.throws(()=>decoder.entries(snapshot({...d,...change})),/PROJECTED_INVALID/);
  assert.deepEqual(decoder.metrics(),baseline);decoder.entries(snapshot(d));assert.equal(decoder.metrics().projected_geometry_decodes,1);
  const changed=Buffer.from(d.vertices,'base64');changed.writeFloatLE(-.25,0);const next={...d,vertices:changed.toString('base64')};

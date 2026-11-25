@@ -25,7 +25,10 @@ pub enum ProjectedAddressMode {#[default] Clamp,Repeat}
 pub enum ProjectedAlphaCompare {#[default] GreaterEqual,Greater}
 #[derive(Debug,Clone,Copy,PartialEq,Eq,Serialize,Deserialize,Default)]
 #[serde(rename_all="snake_case")]
-pub enum ProjectedBlend {#[default] Opaque,SourceOver}
+/// How a batch's fragments meet what is drawn: replaced (opaque), straight-alpha source-over, or added
+/// (rgb times alpha plus the destination, as an additive specular pass). Blending keeps the batch's own depth
+/// test and write.
+pub enum ProjectedBlend {#[default] Opaque,SourceOver,Add}
 #[derive(Debug,Clone,PartialEq,Eq,Serialize,Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ProjectedScissor {pub x:u32,pub y:u32,pub width:u32,pub height:u32}
@@ -190,9 +193,6 @@ impl ProjectedBatch {
     pub fn with_address_mode(mut self,mode:ProjectedAddressMode)->Self {self.address_mode=mode;self}
     pub fn with_alpha_compare(mut self,mode:ProjectedAlphaCompare)->Self {self.alpha_compare=mode;self}
     pub fn with_blend(mut self,mode:ProjectedBlend)->Result<Self,String> {
-        if mode==ProjectedBlend::SourceOver && (self.depth_test || self.depth_write) {
-            return Err(invalid("source_over requires depth_test=false and depth_write=false"));
-        }
         self.blend=mode;Ok(self)
     }
 }

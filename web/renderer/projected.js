@@ -27,12 +27,14 @@ export function createProjectedRenderer(THREE,textureFor,{raster='host'}={}){
  }
  const materialKey=d=>JSON.stringify([d.depth_test,d.depth_write,d.color_mode??'linear',d.alpha_cutoff??.05,d.alpha_compare??'greater_equal',d.sampling_space==='encoded'&&d.filter==='linear',d.address_mode??'clamp',d.blend??'opaque',d.filter??'nearest']);
  function material(d){
-  const sourceOver=d.blend==='source_over',m=new THREE.ShaderMaterial({...shaders,
-   uniforms:{projectedTexture:{value:null},projectedEncodedMode:{value:d.color_mode==='encoded'?1:0},projectedAlphaCutoff:{value:d.alpha_cutoff??.05},projectedAlphaStrict:{value:d.alpha_compare==='greater'?1:0},projectedEncodedSampling:{value:d.sampling_space==='encoded'&&d.filter==='linear'?1:0},projectedRepeatAddress:{value:d.address_mode==='repeat'?1:0},projectedSourceOver:{value:sourceOver?1:0},projectedLinearFiltering:{value:d.filter==='linear'?1:0}},
+  const sourceOver=d.blend==='source_over',add=d.blend==='add',m=new THREE.ShaderMaterial({...shaders,
+   uniforms:{projectedTexture:{value:null},projectedEncodedMode:{value:d.color_mode==='encoded'?1:0},projectedAlphaCutoff:{value:d.alpha_cutoff??.05},projectedAlphaStrict:{value:d.alpha_compare==='greater'?1:0},projectedEncodedSampling:{value:d.sampling_space==='encoded'&&d.filter==='linear'?1:0},projectedRepeatAddress:{value:d.address_mode==='repeat'?1:0},projectedSourceOver:{value:sourceOver||add?1:0},projectedLinearFiltering:{value:d.filter==='linear'?1:0}},
    side:THREE.DoubleSide,depthTest:true,depthFunc:d.depth_test?THREE.LessDepth:THREE.AlwaysDepth,depthWrite:d.depth_write,
    // Keep both modes in one authored rank queue; the transparent queue moves
    // translucent draws after later opaque draws regardless of their rank.
-   transparent:false,toneMapped:false,...(sourceOver?{blending:THREE.CustomBlending,blendSrc:THREE.SrcAlphaFactor,blendDst:THREE.OneMinusSrcAlphaFactor,blendSrcAlpha:THREE.OneFactor,blendDstAlpha:THREE.OneMinusSrcAlphaFactor,premultipliedAlpha:false}:{blending:THREE.NoBlending})});
+   // Add keeps the destination alpha: an additive pass only brightens what is there.
+   transparent:false,toneMapped:false,...(sourceOver?{blending:THREE.CustomBlending,blendSrc:THREE.SrcAlphaFactor,blendDst:THREE.OneMinusSrcAlphaFactor,blendSrcAlpha:THREE.OneFactor,blendDstAlpha:THREE.OneMinusSrcAlphaFactor,premultipliedAlpha:false}
+    :add?{blending:THREE.CustomBlending,blendSrc:THREE.SrcAlphaFactor,blendDst:THREE.OneFactor,blendSrcAlpha:THREE.ZeroFactor,blendDstAlpha:THREE.OneFactor,premultipliedAlpha:false}:{blending:THREE.NoBlending})});
   materialBuilds++;return m;
  }
  function stage({id,d,data,texture,rank},created){
@@ -73,10 +75,7 @@ export function createProjectedRenderer(THREE,textureFor,{raster='host'}={}){
  }
  function prepare(entries,specs){
   const ids=new Set();for(const [id,d]of entries){if(ids.has(id))throw Error('PROJECTED_INVALID: duplicate batch id');ids.add(id);
-   if(d.blend==='source_over'){
-    if(raster!=='host')throw Error('PROJECTED_BLEND_UNSUPPORTED: source_over requires raster=host');
-    if(d.depth_test!==false||d.depth_write!==false)throw Error('PROJECTED_INVALID: source_over requires depth_test=false and depth_write=false');
-   }
+   if((d.blend==='source_over'||d.blend==='add')&&raster!=='host')throw Error('PROJECTED_BLEND_UNSUPPORTED: '+d.blend+' requires raster=host');
   }
   // Decode/validate every changed payload and preflight all sources before any
   // existing resource changes. The private decoder checks both full strings,

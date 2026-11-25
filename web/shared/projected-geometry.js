@@ -12,7 +12,7 @@ export function projectedModulate(textureEncoded,vertexRgb,mode='linear'){
 }
 // RGBA8 top-left source, official bottom-left UV; returns encoded RGB and linear alpha.
 export function projectedSampleRgba8(image,width,height,u,v,{filter='nearest',sampling_space='linear',address_mode='clamp',blend='opaque'}={}){
- if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||image.length!==width*height*4||![u,v].every(Number.isFinite)||!['linear','encoded'].includes(sampling_space)||!['nearest','linear'].includes(filter)||!['clamp','repeat'].includes(address_mode)||!['opaque','source_over'].includes(blend))invalid('sample reference arguments');
+ if(!Number.isInteger(width)||!Number.isInteger(height)||width<1||height<1||image.length!==width*height*4||![u,v].every(Number.isFinite)||!['linear','encoded'].includes(sampling_space)||!['nearest','linear'].includes(filter)||!['clamp','repeat'].includes(address_mode)||!['opaque','source_over','add'].includes(blend))invalid('sample reference arguments');
  const address=(n,size)=>address_mode==='repeat'?((n%size)+size)%size:Math.max(0,Math.min(size-1,n));
  const pixel=(x,y)=>{x=address(x,width);y=address(y,height);return Array.from(image.slice((y*width+x)*4,(y*width+x)*4+4),n=>n/255);};
  if(filter==='nearest')return pixel(Math.floor(u*width),Math.floor((1-v)*height));
@@ -20,7 +20,7 @@ export function projectedSampleRgba8(image,width,height,u,v,{filter='nearest',sa
  const p=[pixel(x0,y0),pixel(x0+1,y0),pixel(x0,y0+1),pixel(x0+1,y0+1)];
  const weights=[(1-fx)*(1-fy),fx*(1-fy),(1-fx)*fy,fx*fy];
  const alpha=p.reduce((sum,pixel,i)=>sum+weights[i]*pixel[3],0);
- return [0,1,2,3].map(c=>{const linear=c<3&&sampling_space==='linear',premultiply=c<3&&blend==='source_over';let value=0;for(let i=0;i<4;i++)value+=weights[i]*(linear?decodeSrgb(p[i][c]):p[i][c])*(premultiply?p[i][3]:1);if(premultiply)value=alpha?value/alpha:0;return linear?encodeSrgb(value):value;});
+ return [0,1,2,3].map(c=>{const linear=c<3&&sampling_space==='linear',premultiply=c<3&&blend!=='opaque';let value=0;for(let i=0;i<4;i++)value+=weights[i]*(linear?decodeSrgb(p[i][c]):p[i][c])*(premultiply?p[i][3]:1);if(premultiply)value=alpha?value/alpha:0;return linear?encodeSrgb(value):value;});
 }
 export function projectedScissor(scissor,width,height){
  const s=scissor??{x:0,y:0,width,height};
@@ -67,8 +67,7 @@ function decodeEntries(snapshot,geometryFor){
   if(d.address_mode!==undefined&&!['clamp','repeat'].includes(d.address_mode))invalid('address_mode');
   if(d.alpha_cutoff!==undefined&&(typeof d.alpha_cutoff!=='number'||!Number.isFinite(d.alpha_cutoff)||d.alpha_cutoff<0||d.alpha_cutoff>1))invalid('alpha_cutoff');
   if(d.alpha_compare!==undefined&&!['greater_equal','greater'].includes(d.alpha_compare))invalid('alpha_compare');
-  if(d.blend!==undefined&&!['opaque','source_over'].includes(d.blend))invalid('blend');
-  if(d.blend==='source_over'&&(d.depth_test||d.depth_write))invalid('source_over requires depth_test=false and depth_write=false');
+  if(d.blend!==undefined&&!['opaque','source_over','add'].includes(d.blend))invalid('blend');
   const s=d.scissor;if(s!==undefined&&(!s||typeof s!=='object'||Array.isArray(s)||Object.keys(s).some(k=>!['x','y','width','height'].includes(k))||![s.x,s.y,s.width,s.height].every(Number.isInteger)||s.x<0||s.y<0||s.width<=0||s.height<=0||s.x+s.width>32768||s.y+s.height>32768))invalid('physical pixel scissor rectangle');
   // Validate before any GPU mutation, including replacements with a stale revision.
   geometryFor(d);

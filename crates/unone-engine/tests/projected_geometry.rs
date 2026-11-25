@@ -11,7 +11,7 @@ return {{start=function(api) api.projected.set('tri',d) end,update=function(api)
  elseif turn==2 then d.blend='source_over'
  elseif turn==4 then d.blend=nil end
  api.projected.set('tri',d)
- for _,bad in {{'add','SourceOver','',false,1,{{}}}} do
+ for _,bad in {{'additive','SourceOver','',false,1,{{}}}} do
   local invalid=table.clone(d);invalid.blend=bad
   assert(not pcall(api.projected.set,'tri',invalid))
  end
@@ -41,21 +41,29 @@ end}}"#);
 }
 
 #[test]
-fn source_over_requires_both_explicit_disabled_depth_flags_before_mutation() {
+fn blended_batches_keep_their_depth_flags_and_add_is_accepted() {
     let script=format!(r#"{FIXTURE}
 return {{start=function(api)
  api.projected.set('tri',d)
- for _,depth in {{{{}},{{depth_test=false}},{{depth_write=false}},{{depth_test=true,depth_write=false}},{{depth_test=false,depth_write=true}}}} do
-  local invalid=table.clone(d);invalid.blend='source_over'
-  invalid.depth_test=depth.depth_test;invalid.depth_write=depth.depth_write
-  local accepted,message=pcall(api.projected.set,'tri',invalid)
-  assert(not accepted and string.find(tostring(message),'source_over requires depth_test=false and depth_write=false',1,true))
- end
+ local blended=table.clone(d);blended.blend='source_over';blended.depth_test=true;blended.depth_write=false
+ api.projected.set('strip',blended)
+ local add=table.clone(d);add.blend='add';add.depth_test=false;add.depth_write=false
+ api.projected.set('glint',add)
+ local bad=table.clone(d);bad.blend='additive'
+ local accepted,message=pcall(api.projected.set,'tri',bad)
+ assert(not accepted and string.find(tostring(message),'blend opaque, source_over or add required',1,true))
 end,update=function()end}}"#);
-    let runtime=game(&script);let snapshot=runtime.observe();let batch=&snapshot.projected_geometry["tri"];
+    let runtime=game(&script);let snapshot=runtime.observe();
+    let batch=&snapshot.projected_geometry["tri"];
     assert_eq!(batch.revision,1);
     assert_eq!(batch.blend,unone_engine::ProjectedBlend::Opaque);
-    assert!(batch.depth_test&&batch.depth_write);
+    let strip=&snapshot.projected_geometry["strip"];
+    assert_eq!(strip.blend,unone_engine::ProjectedBlend::SourceOver);
+    assert!(strip.depth_test&&!strip.depth_write);
+    let glint=&snapshot.projected_geometry["glint"];
+    assert_eq!(glint.blend,unone_engine::ProjectedBlend::Add);
+    assert!(!glint.depth_test&&!glint.depth_write);
+    assert_eq!(serde_json::to_value(&snapshot.projected_geometry).unwrap()["glint"]["blend"],"add");
 }
 
 #[test]
