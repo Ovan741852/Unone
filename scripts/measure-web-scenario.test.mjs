@@ -2,7 +2,7 @@
 // OS process memory parsing and the round/trend bookkeeping, driven against a fake page.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {SCENARIO_SCHEMA,parseScenario,usesTouch,keyFields,flattenMemory,flattenHeap,flattenProcesses,windowsMemoryScript,parseWindowsMemory,parseProcStatus,readProcessMemory,trend,phaseTrends,columns,runScenario,distributionOf,frameWindowMetrics,flattenFrames,profileWindowSummary,measureBlank,probeTouch,cpuTimes,hostCpuBusy,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
+import {SCENARIO_SCHEMA,parseScenario,usesTouch,keyFields,flattenMemory,flattenHeap,flattenProcesses,windowsMemoryScript,parseWindowsMemory,parseProcStatus,readProcessMemory,trend,phaseTrends,columns,runScenario,distributionOf,frameWindowMetrics,splitLongTasks,frameSource,flattenFrames,profileWindowSummary,measureBlank,probeTouch,cpuTimes,hostCpuBusy,BLANK_PATH,BLANK_HTML} from './measure-web-scenario.mjs';
 import {parseArgs,scenarioSummary,scenarioConsole} from './measure-web-export.mjs';
 
 const roundTrip={schema:SCENARIO_SCHEMA,name:'city-tech-bag',start_mark:'city.interactive',
@@ -211,6 +211,82 @@ test('a frame window uses completed scheduler draws inside it and counts missing
  assert.equal(flattenFrames(m).completed_submissions,4);
 });
 const round3=n=>Math.round(n*1000)/1000;
+
+test('a long task splits into the RAF callbacks it held: ticks, submission and the rest',()=>{
+ const row=(sequence,raf,wake,ticks,start,callback,extra={})=>({sequence,source:'scheduler_raf',raf,wake,ticks,start,end:callback-1,callback,frame:sequence,outcome:'completed',fresh:true,...extra});
+ const rows=[
+  row(1,1000,1001,[4],1006,1010),
+  // One task at 1100 for 70 ms: a callback with three ticks (9, 41, 3) and 6 ms of drawing.
+  row(2,1100,1102,[9,41,3],1158,1164),
+  // One task at 1300 for 60 ms holding two callbacks (a catch-up after a slow one).
+  row(3,1300,1301,[30],1332,1335),row(4,1336,1336.5,[12,8],1357,1359),
+  // A callback that only overlaps the task at 1500 (its tick resumed in a later task).
+  row(5,1490,1490,[70],1561,1565),
+  row(6,1700,null,[5],1706,1708),
+ ];
+ const {tasks,summary}=splitLongTasks([{start_ms:1100,duration_ms:70},{start_ms:1300,duration_ms:60},{start_ms:1500,duration_ms:55},{start_ms:1900,duration_ms:51}],rows);
+ assert.deepEqual(tasks[0],{start_ms:1100,duration_ms:70,callbacks:1,partial:0,frames:[2],ticks:[9,41,3],tick_ms:53,submit_ms:6,other_ms:11});
+ assert.deepEqual([tasks[1].callbacks,tasks[1].frames,tasks[1].ticks,tasks[1].tick_ms,tasks[1].submit_ms,tasks[1].other_ms],[2,[3,4],[30,12,8],50,5,5]);
+ assert.deepEqual([tasks[2].callbacks,tasks[2].partial,tasks[2].tick_ms,tasks[2].other_ms],[0,1,0,55]);
+ assert.deepEqual([tasks[3].callbacks,tasks[3].partial,tasks[3].other_ms],[0,0,51],'no callback: the browser or a non-RAF handler');
+ assert.deepEqual(summary,{in_raf:2,unknown:0,tick_ms:103,submit_ms:11,other_ms:122,max_ticks:3,max_tick_ms:41});
+ // Rows lost between reads: a task holding no callback may have held the lost one, so its split is unknown.
+ const lost=splitLongTasks([{start_ms:1100,duration_ms:70},{start_ms:1900,duration_ms:51}],rows,{complete:false});
+ assert.deepEqual(lost.tasks.map(t=>[t.callbacks,t.tick_ms,t.submit_ms,t.other_ms]),[[1,53,6,11],[0,null,null,null]]);
+ assert.deepEqual([lost.summary.unknown,lost.summary.submit_ms,lost.summary.other_ms],[1,6,11]);
+ // The window decides whether its rows report ticks (a warmup row read back from before it does not).
+ assert.equal(splitLongTasks([{start_ms:1900,duration_ms:51}],rows,{supported:false}).summary,null);
+ // A gap at the very start of the window shows: rows are counted over everything read, not only the window's.
+ const read=[1,2,3,10,11,12].map(sequence=>({sequence,source:'scheduler_raf',raf:sequence*16,start:sequence*16+1,end:sequence*16+2,callback:sequence*16+3,frame:sequence,outcome:'completed',fresh:true}));
+ assert.equal(frameWindowMetrics({rows:read,start:150,end:400}).rows_missing,6);
+ // ... and rows the player recorded after the last one any read returned (a late last read reached back too little).
+ assert.equal(frameWindowMetrics({rows:read,start:150,end:400,recordedEnd:15}).rows_missing,9);
+ // Rows from an older player say nothing of wakes or ticks: their callbacks start at their draw, their ticks are
+ // unknown (null, never 0), and there is no summary.
+ const old=splitLongTasks([{start_ms:1100,duration_ms:70}],rows.map(r=>({...r,ticks:null,wake:null})));
+ assert.equal(old.summary,null);assert.deepEqual([old.tasks[0].callbacks,old.tasks[0].submit_ms,old.tasks[0].ticks,old.tasks[0].tick_ms,old.tasks[0].other_ms],[1,6,null,null,null]);
+ // ... also for a task that holds none of their callbacks (one that only overlaps it).
+ const oldPartial=splitLongTasks([{start_ms:100,duration_ms:60}],[{sequence:1,source:'scheduler_raf',raf:150,start:155,end:164,callback:165,frame:1,outcome:'completed',fresh:true}]);
+ assert.deepEqual([oldPartial.tasks[0].callbacks,oldPartial.tasks[0].partial,oldPartial.tasks[0].ticks,oldPartial.tasks[0].tick_ms,oldPartial.tasks[0].other_ms],[0,1,null,null,null]);
+ // The window's tick distribution covers the ticks of every callback whose row is in it.
+ const m=frameWindowMetrics({rows,start:900,end:1800});
+ assert.deepEqual([m.tick.n,m.tick.max_ms],[9,70]);
+ assert.equal(frameWindowMetrics({rows:rows.map(r=>({...r,ticks:null,wake:null})),start:900,end:1800}).tick,null);
+});
+
+test('the window read asks for tick fields and falls back for an older player that refuses the option',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const row={sequence:7,source:'scheduler_raf',raf_time_ms:100,start_ms:140,end_ms:144,callback_end_ms:145,snapshot_frame:3,outcome:'completed',new_snapshot:true};
+ const read=snapshot=>JSON.parse(runInNewContext(frameSource(2000,false),{JSON,performance:{now:()=>200},
+  document:{body:{dataset:{}},visibilityState:'visible',hasFocus:()=>true},window:{unonePlayerPerformance:{snapshot}}}));
+ const asked=[];
+ const current=read(o=>{asked.push(Object.keys(o).sort().join());return {dropped_steps_total:0,raf_diagnostics:{recorded_total:7,samples:[{...row,wake_start_ms:101,tick_ms:[38]}]},input_latency:{admitted:0}};});
+ assert.deepEqual(asked,['includeRafSamples,includeRafTicks,windowMs']);assert.deepEqual(current.rows[0].slice(9),[101,[38]]);
+ const older=read(o=>{if(Object.hasOwn(o,'includeRafTicks'))throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID');return {dropped_steps_total:0,raf_diagnostics:{recorded_total:7,samples:[row]},input_latency:{admitted:0}};});
+ assert.equal(older.error,null);assert.deepEqual(older.rows[0].slice(9),[null,null]);
+ const broken=read(()=>{throw Error('PLAYER_PERFORMANCE_WINDOW_INVALID');});
+ assert.match(broken.error,/WINDOW_INVALID/);
+});
+
+test('a callback is counted in one long task only, and a window without ticks still totals its drawing',()=>{
+ const row=(sequence,wake,ticks,start,callback)=>({sequence,source:'scheduler_raf',raf:wake,wake,ticks,start,end:callback-1,callback,frame:sequence,outcome:'completed',fresh:true});
+ // Adjacent tasks 100-160 and 160-220; a callback at 160.2-161.5 is within both tasks' slack but overlaps only the second.
+ const {tasks,summary}=splitLongTasks([{start_ms:100,duration_ms:60},{start_ms:160,duration_ms:60}],[row(1,101,[50],152,159),row(2,160.2,[1],160.5,161.5)]);
+ assert.deepEqual(tasks.map(t=>[t.callbacks,t.frames,t.tick_ms]),[[1,[1],50],[1,[2],1]]);assert.equal(summary.in_raf,2);
+ // A paused window: callbacks with their wake but no ticks.
+ const paused=splitLongTasks([{start_ms:100,duration_ms:60}],[row(1,101,null,102,158)]);
+ assert.deepEqual([paused.tasks[0].ticks,paused.tasks[0].tick_ms,paused.tasks[0].submit_ms,paused.summary.submit_ms,paused.summary.max_ticks,paused.summary.max_tick_ms],[[],0,56,56,0,null]);
+ // A callback with no length (a coarse clock) goes to the task holding its instant.
+ const flat=splitLongTasks([{start_ms:100,duration_ms:60}],[row(1,120,[0],120,120)]);
+ assert.deepEqual([flat.tasks[0].callbacks,flat.tasks[0].frames,flat.summary.in_raf],[1,[1],1]);
+ // ... at a boundary between two tasks, the one starting there; at the end of a task with no long task after it, none
+ // (it ran in the next, short, task).
+ const edge=splitLongTasks([{start_ms:100,duration_ms:60},{start_ms:160,duration_ms:60}],[row(1,160,[1],160,160)]);
+ assert.deepEqual(edge.tasks.map(t=>t.callbacks),[0,1]);
+ const after=splitLongTasks([{start_ms:100,duration_ms:60}],[row(1,160,[1],160,160)]);
+ assert.deepEqual([after.tasks[0].callbacks,after.summary.in_raf],[0,0]);
+ assert.deepEqual(frameWindowMetrics({rows:[row(1,101,null,102,158)],start:0,end:200}).tick,{n:0,p50_ms:null,p95_ms:null,p99_ms:null,max_ms:null});
+});
 
 test('profiler events become per-span totals with their parents, largest first',()=>{
  const events=[{kind:'update',wall:10,spans:[['backend_request',null,7],['execute','backend_request',6]]},{kind:'update',wall:12,spans:[['backend_request',null,9]]},{kind:'draw',wall:3,spans:[['ui_draw',null,2]]}];

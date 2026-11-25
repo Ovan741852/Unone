@@ -43,6 +43,9 @@ export function createAsyncScheduler({
   frame=null;if(!started||hidden()||busy)return;
   const token=generation,at=Number.isFinite(timestamp)?timestamp:now(),began=now(),elapsed=Math.max(0,at-last);
   last=at;busy=true;let steps=0,error=null,preparationStart=null,tag,preparationReported=false,submissionStart=null,submissionEnd=null;
+  // Each awaited tick's wall time, in order (one that threw included), for the preparation observer only: with a
+  // main-thread runtime the ticks and the submission run in one browser task, so a long task can be split into them.
+  let ticks=null;
   const diagnostic=onWakeDiagnostic?beginWakeDiagnostic(token,at,began,elapsed):null;
   try{
    if(!paused){
@@ -52,9 +55,10 @@ export function createAsyncScheduler({
     const count=Math.min(maxCatchUpSteps,Math.floor((acc+toleranceMs)/stepMs));
     if(diagnostic){diagnostic.due=due;diagnostic.admitted=count;diagnostic.lost=lost;diagnostic.acc_after_ms=acc;}
     if(count>0){
-     preparationStart=now();tag=onPreparationStart?.();
-     while(steps<count&&started&&!hidden()&&!paused&&token===generation&&acc+toleranceMs>=stepMs){acc-=stepMs;if(diagnostic){diagnostic.acc_after_ms=acc;diagnostic.attempted_steps++;}await tick(steps+1>=count);steps++;}
-     preparationReported=true;onPreparationEnd?.(tag,at,preparationStart,now(),steps,!started||hidden()||paused||token!==generation,stepMs);
+     preparationStart=now();tag=onPreparationStart?.();if(onPreparationEnd)ticks=[];
+     while(steps<count&&started&&!hidden()&&!paused&&token===generation&&acc+toleranceMs>=stepMs){acc-=stepMs;if(diagnostic){diagnostic.acc_after_ms=acc;diagnostic.attempted_steps++;}
+      if(ticks){const tickStart=now();try{await tick(steps+1>=count);}finally{ticks.push(now()-tickStart);}}else await tick(steps+1>=count);steps++;}
+     preparationReported=true;onPreparationEnd?.(tag,at,preparationStart,now(),steps,!started||hidden()||paused||token!==generation,stepMs,ticks);
     }
    }
    if(started&&!hidden()&&token===generation){
@@ -71,12 +75,12 @@ export function createAsyncScheduler({
    if(started&&token===generation){error=String(cause?.message??cause);stop();onError(cause);}
   }
   finally{
-   if(preparationStart!==null&&!preparationReported)onPreparationEnd?.(tag,at,preparationStart,now(),steps,true,stepMs);
+   if(preparationStart!==null&&!preparationReported)onPreparationEnd?.(tag,at,preparationStart,now(),steps,true,stepMs,ticks);
    busy=false;
    // Capture the old generation/debt and body endpoint before any completion,
    // feed or legacy observer can consume time or reset the scheduler clock.
    if(diagnostic)finalizeWakeDiagnostic(diagnostic,now(),steps);
-   try{if(submissionStart!==null)onRafEnd?.(at,submissionStart,submissionEnd,false,stepMs);
+   try{if(submissionStart!==null)onRafEnd?.(at,submissionStart,submissionEnd,false,stepMs,began);
     onWake?.({source:'raf',start_ms:began,end_ms:now(),timestamp_ms:at,elapsed_ms:elapsed,steps,busy:false,dropped_steps:dropped,error});}
    finally{try{if(diagnostic)emitWakeDiagnostic(diagnostic);}finally{schedule();}}
   }

@@ -11,7 +11,7 @@ const frameOf=n=>Number.isSafeInteger(n)&&n>=0?n:null;
 const known=value=>value?.status==='completed'||value?.status==='skipped';
 const SOURCES=['manual','startup','scheduler_raf','unknown'];
 const OUTCOMES=['completed','skipped','unknown','error','no_submission'];
-const NOMINAL_BUDGET=1000/60,RAF_SOURCE=2,MILESTONE_LIMIT=256,INPUT_PENDING_LIMIT=256;
+const NOMINAL_BUDGET=1000/60,RAF_SOURCE=2,MILESTONE_LIMIT=256,INPUT_PENDING_LIMIT=256,TICK_LIMIT=8;
 function ring(){return {values:new Float64Array(LIMIT),ends:new Float64Array(LIMIT),cursor:0,count:0};}
 function push(r,value,end){if(!finite(value)||value<0||!finite(end))return;r.values[r.cursor]=value;r.ends[r.cursor]=end;r.cursor=(r.cursor+1)%LIMIT;r.count=Math.min(r.count+1,LIMIT);}
 function distribution(r,at,windowMs){
@@ -46,6 +46,10 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
   }
  }
  const rowSource=new Uint8Array(LIMIT),rowOutcome=new Uint8Array(LIMIT),rowFlags=new Uint8Array(LIMIT),rowRaf=new Float64Array(LIMIT),rowStart=new Float64Array(LIMIT),rowEnd=new Float64Array(LIMIT),rowCallback=new Float64Array(LIMIT),rowFrame=new Float64Array(LIMIT),rowAt=new Float64Array(LIMIT),rowSequence=new Float64Array(LIMIT);
+ // A scheduler RAF row's wake (the callback's start) and its preparation: start, end, steps and each awaited tick's
+ // wall time (the first TICK_LIMIT), so one browser task can be split into its ticks and its submission.
+ const rowWake=new Float64Array(LIMIT),rowPrepStart=new Float64Array(LIMIT),rowPrepEnd=new Float64Array(LIMIT),rowSteps=new Uint16Array(LIMIT),rowTickCount=new Uint8Array(LIMIT),rowTicks=new Float64Array(LIMIT*TICK_LIMIT);
+ let pendingPreparation=null;
  const sourceCounts=new Float64Array(SOURCES.length),outcomeCounts=new Float64Array(OUTCOMES.length),deadlineCounts=new Float64Array(9);
  let session=0,accepted=0,attempts=0,completed=0,unique=0,unknown=0,errors=0,skipped=0,cursor=0,retained=0,droppedAtStart=0;
  let frame=null,time=null,published=null,lastFrame=null,lastCompleted=null,lastStatus='unknown',contract='unknown',lastOutcome=DRAW_UNKNOWN;
@@ -72,6 +76,7 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
   for(const r of allRings)r.cursor=r.count=0;sourceCounts.fill(0);outcomeCounts.fill(0);deadlineCounts.fill(0);rowCursor=rowCount=rowTotal=0;lastRafRow=-1;lastRafSequence=0;
   lastRafTimestamp=highestFrame=lastRafFrame=lastSuccessfulRaf=lastFreshRaf=null;
   rafAttempts=rafCompleted=rafRepeats=rafRegressions=rafAlreadyShown=rafInFlight=rafUnknownFrames=rafUnknownTimes=rafNonIncreasingTimes=callbacks=callbackInFlight=preparations=preparationCancelled=preparationSteps=preparationUnknownSteps=0;lastBudget=null;
+  pendingPreparation=null;
  }
  function accept(snapshot,newSession=false,droppedSteps=0){if(newSession)reset(droppedSteps);const world=snapshot?.world;
   frame=frameOf(world?.frame);time=finite(world?.time_seconds)?world.time_seconds:null;published=now();accepted++;acceptMarks(snapshot?.profile_marks,published);}
@@ -82,6 +87,7 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
   let sourceIndex=SOURCES.indexOf(source);if(sourceIndex<0)sourceIndex=SOURCES.length-1;const index=rowCursor;rowCursor=(rowCursor+1)%LIMIT;rowCount=Math.min(rowCount+1,LIMIT);rowTotal++;
   rowSource[index]=sourceIndex;rowOutcome[index]=outcome;rowRaf[index]=finite(rafTime)?rafTime:NaN;rowStart[index]=finite(start)?start:NaN;rowEnd[index]=finite(end)?end:NaN;rowCallback[index]=NaN;rowFrame[index]=presentedFrame===null?NaN:presentedFrame;rowAt[index]=finite(end)?end:now();rowSequence[index]=rowTotal;
   rowFlags[index]=(newSnapshot?1:0)|(regression?2:0)|(inFlight===true?4:0)|(repeat?8:0);sourceCounts[sourceIndex]++;outcomeCounts[outcome]++;
+  rowWake[index]=rowPrepStart[index]=rowPrepEnd[index]=NaN;rowSteps[index]=rowTickCount[index]=0;
   if(sourceIndex===RAF_SOURCE){lastRafRow=index;lastRafSequence=rowTotal;lastRafTimestamp=finite(rafTime)?rafTime:null;}
  }
  function submitted(source,outcome,rafTime,startAt,inFlight,at,presentedFrame,budgetMs){
@@ -113,14 +119,27 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
   submitted(source,outcome,rafTime,startAt,inFlight,at,presentedFrame,budgetMs);return result;
  }
  function error(source='manual',rafTime=null,startAt=null,inFlight=false,at=now(),presentedFrame=null,budgetMs=NOMINAL_BUDGET){errors++;lastStatus='error';lastOutcome=DRAW_UNKNOWN;submitted(source,3,rafTime,startAt,inFlight,at,presentedFrame,budgetMs);}
- function rafEnd(rafTime,start,end,inFlight=false,budgetMs=NOMINAL_BUDGET){
+ // wakeStart: when the RAF callback began (before its preparation). The row this callback ends (its last submission,
+ // else a no_submission row) takes the wake and the callback's preparation (same timestamp), so a submission that
+ // recorded two rows (one completed, then an error from work after it) keeps them together on the last.
+ function rafEnd(rafTime,start,end,inFlight=false,budgetMs=NOMINAL_BUDGET,wakeStart=null){
   callbacks++;if(inFlight===true)callbackInFlight++;if(finite(start)&&finite(end)&&end>=start)push(callbackWall,end-start,end);deadline(1,rafTime,end,budgetMs);
-  if(lastRafRow>=0&&rowSequence[lastRafRow]===lastRafSequence&&lastRafTimestamp!==null&&lastRafTimestamp===rafTime){rowCallback[lastRafRow]=finite(end)?end:NaN;if(finite(end))rowAt[lastRafRow]=end;lastRafRow=-1;}
-  else{record('scheduler_raf',4,rafTime,start,null,null,inFlight);const index=(rowCursor+LIMIT-1)%LIMIT;rowCallback[index]=finite(end)?end:NaN;rowAt[index]=finite(end)?end:now();lastRafRow=-1;}
+  let index;
+  if(lastRafRow>=0&&rowSequence[lastRafRow]===lastRafSequence&&lastRafTimestamp!==null&&lastRafTimestamp===rafTime){index=lastRafRow;rowCallback[index]=finite(end)?end:NaN;if(finite(end))rowAt[index]=end;lastRafRow=-1;}
+  else{record('scheduler_raf',4,rafTime,start,null,null,inFlight);index=(rowCursor+LIMIT-1)%LIMIT;rowCallback[index]=finite(end)?end:NaN;rowAt[index]=finite(end)?end:now();lastRafRow=-1;}
+  rowWake[index]=finite(wakeStart)?wakeStart:NaN;
+  const p=pendingPreparation;pendingPreparation=null;
+  if(p&&finite(rafTime)&&p.raf===rafTime){rowPrepStart[index]=p.start;rowPrepEnd[index]=p.end;rowSteps[index]=Math.min(p.steps,0xFFFF);
+   rowTickCount[index]=Math.min(p.ticks.length,TICK_LIMIT);for(let k=0;k<rowTickCount[index];k++)rowTicks[index*TICK_LIMIT+k]=p.ticks[k];}
  }
- function preparationEnd(tag,rafTime,start,end,steps,cancelled=false,budgetMs=NOMINAL_BUDGET){
+ // ticks: each awaited tick's wall time, kept for the row the same callback ends (rafEnd, same timestamp); a cancelled
+ // preparation has no submission in its callback, so it is kept for none.
+ function preparationEnd(tag,rafTime,start,end,steps,cancelled=false,budgetMs=NOMINAL_BUDGET,ticks=null){
   if(tag!==session)return false;preparations++;if(cancelled===true)preparationCancelled++;if(Number.isSafeInteger(steps)&&steps>=0)preparationSteps+=steps;else preparationUnknownSteps++;
-  if(cancelled!==true){if(finite(start)&&finite(end)&&end>=start)push(preparationWall,end-start,end);deadline(2,rafTime,end,budgetMs);}return true;
+  if(cancelled!==true){if(finite(start)&&finite(end)&&end>=start)push(preparationWall,end-start,end);deadline(2,rafTime,end,budgetMs);}
+  pendingPreparation=cancelled!==true&&finite(rafTime)&&finite(start)&&finite(end)?{raf:rafTime,start,end,steps:Number.isSafeInteger(steps)&&steps>=0?steps:0,
+   ticks:Array.isArray(ticks)?ticks.filter(finite):[]}:null;
+  return true;
  }
  function inputReport(at,windowMs,includeSamples){
   let rows=null;
@@ -133,8 +152,10 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
  }
  function report(options={}){
   const {droppedSteps=null,paused=false,backend=null,windowMs=5000}=options,includeRafSamples=Object.hasOwn(options,'includeRafSamples')?options.includeRafSamples:false;
+  const includeRafTicks=Object.hasOwn(options,'includeRafTicks')?options.includeRafTicks:false;
   if(!finite(windowMs)||windowMs<=0||windowMs>60000)throw Error('PLAYER_PERFORMANCE_WINDOW_INVALID');
   if(typeof includeRafSamples!=='boolean')throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID: includeRafSamples must be boolean');
+  if(typeof includeRafTicks!=='boolean')throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID: includeRafTicks must be boolean');
   const at=now(),values=[];let oldest=null,newest=null;
   for(let i=0;i<retained;i++)if(ends[i]>=at-windowMs){values.push(intervals[i]);oldest=oldest===null?ends[i]:Math.min(oldest,ends[i]);newest=newest===null?ends[i]:Math.max(newest,ends[i]);}
   values.sort((a,b)=>a-b);const percentile=p=>values.length?values[Math.ceil(values.length*p)-1]:null;
@@ -142,7 +163,15 @@ export function createPlayerCompletionMetrics({now=()=>performance.now(),timeOri
   const sources={},outcomes={};for(let i=0;i<SOURCES.length;i++)sources[SOURCES[i]]=sourceCounts[i];for(let i=0;i<OUTCOMES.length;i++)outcomes[OUTCOMES[i]]=outcomeCounts[i];
   let windowRows=0;const samples=includeRafSamples?[]:null,first=(rowCursor-rowCount+LIMIT)%LIMIT;
   for(let j=0;j<rowCount;j++){const i=(first+j)%LIMIT;if(rowAt[i]<at-windowMs)continue;windowRows++;if(!samples)continue;
-   samples.push(Object.freeze({source:SOURCES[rowSource[i]],raf_time_ms:finite(rowRaf[i])?rowRaf[i]:null,start_ms:finite(rowStart[i])?rowStart[i]:null,end_ms:finite(rowEnd[i])?rowEnd[i]:null,callback_end_ms:finite(rowCallback[i])?rowCallback[i]:null,snapshot_frame:finite(rowFrame[i])?rowFrame[i]:null,outcome:OUTCOMES[rowOutcome[i]],new_snapshot:Boolean(rowFlags[i]&1),regression:Boolean(rowFlags[i]&2),in_flight:Boolean(rowFlags[i]&4),sequence:rowSequence[i]}));
+   const row={source:SOURCES[rowSource[i]],raf_time_ms:finite(rowRaf[i])?rowRaf[i]:null,start_ms:finite(rowStart[i])?rowStart[i]:null,end_ms:finite(rowEnd[i])?rowEnd[i]:null,callback_end_ms:finite(rowCallback[i])?rowCallback[i]:null,snapshot_frame:finite(rowFrame[i])?rowFrame[i]:null,outcome:OUTCOMES[rowOutcome[i]],new_snapshot:Boolean(rowFlags[i]&1),regression:Boolean(rowFlags[i]&2),in_flight:Boolean(rowFlags[i]&4),sequence:rowSequence[i]};
+   // With includeRafTicks (the default rows, and so the bounded performance feed, stay as they were): a scheduler
+   // callback's wake, and its preparation when it ran ticks, only on the rows that have them; ticks to the microsecond.
+   if(includeRafTicks){
+    if(finite(rowWake[i]))row.wake_start_ms=rowWake[i];
+    if(finite(rowPrepStart[i])){row.preparation_start_ms=rowPrepStart[i];row.preparation_end_ms=rowPrepEnd[i];row.steps=rowSteps[i];
+     const ticks=[];for(let k=0;k<rowTickCount[i];k++)ticks.push(Math.round(rowTicks[i*TICK_LIMIT+k]*1000)/1000);row.tick_ms=Object.freeze(ticks);}
+   }
+   samples.push(Object.freeze(row));
   }
   const nominal={scope:'Nominal RAF timestamp plus supplied budget; wall-time diagnostics, not GPU, OS compositor or presentation deadlines.',budget_ms_last:lastBudget};
   for(const [i,name]of ['submission','callback','preparation'].entries())nominal[name]=Object.freeze({eligible:deadlineCounts[i*3],missed:deadlineCounts[i*3+1],unknown:deadlineCounts[i*3+2]});

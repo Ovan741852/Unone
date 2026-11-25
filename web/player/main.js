@@ -69,10 +69,10 @@ const playerCompletion=createPlayerCompletionMetrics();
 for(const type of ['keydown','keyup','pointerdown','pointermove','pointerup','pointercancel','wheel','touchstart','touchmove','touchend'])
  window.addEventListener(type,event=>playerCompletion.noteInput(event.timeStamp,performance.now()),{capture:true,passive:true});
 function readPlayerPerformance(options={}){
- if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(key=>!['windowMs','includeRafSamples','includeMemory'].includes(key))||Object.hasOwn(options,'includeMemory')&&typeof options.includeMemory!=='boolean')throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID');
+ if(!options||typeof options!=='object'||Array.isArray(options)||Object.keys(options).some(key=>!['windowMs','includeRafSamples','includeRafTicks','includeMemory'].includes(key))||Object.hasOwn(options,'includeMemory')&&typeof options.includeMemory!=='boolean')throw Error('PLAYER_PERFORMANCE_OPTIONS_INVALID');
  // Memory owners are read on request only: renderer and UI reports walk their resources.
  const memory=options.includeMemory?{memory:playerMemorySnapshot({backend:backend?.report()??null,images:imageAssets?.report()??null,renderer:renderer?.metrics()??null,ui:uiRenderer.report(),audio:audio?.report()??null,drawingBuffer:[canvas.width,canvas.height]})}:{};
- return Object.freeze({...playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend?.kind??null,windowMs:Object.hasOwn(options,'windowMs')?options.windowMs:5000,includeRafSamples:Object.hasOwn(options,'includeRafSamples')?options.includeRafSamples:false}),image_assets:window.unonePlayerAssets?.snapshot()??null,gamepad_input:gamepadInput.report(),...memory});
+ return Object.freeze({...playerCompletion.snapshot({droppedSteps:scheduler?.totalDroppedSteps??null,paused:frozen,backend:backend?.kind??null,windowMs:Object.hasOwn(options,'windowMs')?options.windowMs:5000,includeRafSamples:Object.hasOwn(options,'includeRafSamples')?options.includeRafSamples:false,includeRafTicks:Object.hasOwn(options,'includeRafTicks')?options.includeRafTicks:false}),image_assets:window.unonePlayerAssets?.snapshot()??null,gamepad_input:gamepadInput.report(),...memory});
 }
 const removePerformanceAccessor=installPlayerPerformanceAccessor(window,readPlayerPerformance);
 let performanceFeed=createPlayerPerformanceFeed({search:location.search,target:document.body,
@@ -258,8 +258,8 @@ async function finishStartup(presentation,kind){
  assertRasterReady(metrics.raster,renderCount);persistSave();orderedRouter?.activate();publishPhysical();metrics.first_presented_ms=performance.now()-window.playerBoot;metrics.backend=kind;metrics.resources=performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,transfer_bytes:r.transferSize,encoded_bytes:r.encodedBodySize,duration_ms:r.duration}));document.body.dataset.playerMetrics=JSON.stringify(metrics);console.info('UNONE_PLAYER_READY '+JSON.stringify(metrics));startupScreen.ready();
  scheduler=createAsyncScheduler({/* PROFILE_WAKE */tick:presenting=>frozen?undefined:tickOnce(presenting),render:draw,onError:fail,
   onWakeDiagnostic:profiler?recordSchedulerWake:null,
-  onRafEnd:(at,start,end,flight,budget)=>{playerCompletion.rafEnd(at,start,end,flight,budget);if(performanceFeed)publishPerformanceFeed();},onPreparationStart:()=>playerCompletion.epoch(),
-  onPreparationEnd:(tag,at,start,end,steps,cancelled,budget)=>playerCompletion.preparationEnd(tag,at,start,end,steps,cancelled,budget),
+  onRafEnd:(at,start,end,flight,budget,wake)=>{playerCompletion.rafEnd(at,start,end,flight,budget,wake);if(performanceFeed)publishPerformanceFeed();},onPreparationStart:()=>playerCompletion.epoch(),
+  onPreparationEnd:(tag,at,start,end,steps,cancelled,budget,ticks)=>playerCompletion.preparationEnd(tag,at,start,end,steps,cancelled,budget,ticks),
   onVisibilityChange:({visible})=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();audio?.setVisibility(visible);}});
  /* DEVELOPER_CONNECT */
  if(performanceFeed)publishPerformanceFeed();

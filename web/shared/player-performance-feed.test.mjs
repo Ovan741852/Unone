@@ -49,6 +49,22 @@ test('the real512-row primitive ring is retained within the feed byte bound with
  assert.equal(rows.length,512);assert.equal(report.completion.raf_diagnostics.recorded_total,700);assert.equal(rows[0].snapshot_frame,189);assert.equal(rows.at(-1).snapshot_frame,700);assert(Buffer.byteLength(f.body.dataset.playerCompletion,'utf8')<=PLAYER_PERFORMANCE_FEED_MAX_BYTES);f.feed.dispose();
 });
 
+test('the feed carries the rows as they always were, without the tick fields the player also records',()=>{
+ // 360 Hz RAF for the 1500 ms window (512 rows kept), a 60 Hz tick on every sixth with its timing, 90 input ticks
+ // and 256 long milestone names. The tick fields are opt-in (includeRafTicks), so the feed's envelope is unchanged.
+ const f=fixture(),m=f.metrics;m.accept({world:{frame:0},profile_marks:{marks:Array.from({length:256},(_,i)=>({name:`milestone.${String(i).padStart(3,'0')}.`.padEnd(64,'x'),frame:i,sequence:i+1})),dropped:0}},true);
+ let frame=0;
+ for(let i=0;i<540;i++){const at=10000+i*1000/360,start=at+0.123456789;
+  if(i%6===0){frame++;m.noteInput(at-3.123456789,at-1.987654321);m.acceptInput(at-3.123456789,frame,at-1.987654321);m.preparationEnd(m.epoch(),at,at+0.011111111,at+12.345678901,1,false,1000/60,[12.333333333]);}
+  f.setTime(start+2.456789012);m.finish(done,done,done,frame,start+2.456789012,'scheduler_raf',at,start);m.rafEnd(at,start,start+2.987654321,false,1000/60,at+0.0123456789);}
+ assert.equal(f.feed.publish(),true);const bytes=Buffer.byteLength(f.body.dataset.playerCompletion,'utf8');
+ assert(bytes<=PLAYER_PERFORMANCE_FEED_MAX_BYTES*0.95,`${bytes} bytes leaves too little room under ${PLAYER_PERFORMANCE_FEED_MAX_BYTES}`);
+ const rows=f.report().completion.raf_diagnostics.samples;assert.equal(rows.length,512);
+ assert.deepEqual(rows.filter(r=>['wake_start_ms','preparation_start_ms','preparation_end_ms','steps','tick_ms'].some(k=>k in r)),[]);
+ assert.equal(m.snapshot({windowMs:1500,includeRafSamples:true,includeRafTicks:true}).raf_diagnostics.samples.filter(r=>Array.isArray(r.tick_ms)).length>=85,true,'the player has them');
+ f.feed.dispose();
+});
+
 test('publication cost is complete only in the NEXT envelope and never requires a second serialization',()=>{
  let time=0,readCost=2,value='',encodes=0;
  const m=createPlayerCompletionMetrics({now:()=>0}),target={dataset:{}};Object.defineProperty(target.dataset,'playerCompletion',{configurable:true,get:()=>value,set(text){time+=5;value=text;}});

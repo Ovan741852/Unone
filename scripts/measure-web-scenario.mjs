@@ -307,15 +307,23 @@ export function distributionOf(values,{gaps=false}={}){
  * on the page clock between `start` and `end`. Submission intervals are completed scheduler draws'
  * end times; RAF and new-snapshot intervals use those draws' RAF timestamps, as the player does.
  */
-export function frameWindowMetrics({rows,inputs=[],start,end,droppedStart=null,droppedEnd=null}){
+export function frameWindowMetrics({rows,inputs=[],start,end,droppedStart=null,droppedEnd=null,recordedEnd=null}){
  const at=r=>finite(r.end)?r.end:r.callback;
  const inWindow=rows.filter(r=>finite(at(r))&&at(r)>=start&&at(r)<=end);
  const completed=inWindow.filter(r=>r.source==='scheduler_raf'&&r.outcome==='completed').sort((a,b)=>a.end-b.end);
  const diffs=(list,key)=>{const out=[];for(let i=1;i<list.length;i++){const a=list[i-1][key],b=list[i][key];if(finite(a)&&finite(b)&&b>=a)out.push(b-a);}return out;};
  const outcomes={};for(const r of inWindow)outcomes[r.outcome]=(outcomes[r.outcome]??0)+1;
- const sequences=inWindow.map(r=>r.sequence).filter(Number.isSafeInteger);
- const missing=sequences.length?Math.max(...sequences)-Math.min(...sequences)+1-new Set(sequences).size:null;
+ // Rows lost between reads, over every stitched row (the first read reaches back before the window, so a gap at its
+ // start shows too); a loop, not spreading (a long window at a fast display holds 100000s of rows).
+ let low=Infinity,high=-Infinity;const seen=new Set();
+ for(const r of rows)if(Number.isSafeInteger(r.sequence)){seen.add(r.sequence);if(r.sequence<low)low=r.sequence;if(r.sequence>high)high=r.sequence;}
+ // recordedEnd: the player's row count at the last read; rows it recorded that no read returned are lost too.
+ if(seen.size&&Number.isSafeInteger(recordedEnd)&&recordedEnd>high)high=recordedEnd;
+ const missing=seen.size?high-low+1-seen.size:null;
  const shown=inputs.filter(x=>finite(x.presented)&&x.presented>=start&&x.presented<=end);
+ // The ticks of the RAF callbacks whose rows fall in the window (a callback's ticks count with its draw), from
+ // players whose RAF rows carry their wake and ticks (null from older players).
+ const raf=inWindow.filter(r=>r.source==='scheduler_raf'),ticked=raf.some(r=>finite(r.wake));
  return {window_ms:round(end-start),completed_submissions:completed.length,
   coverage:completed.length>=2?round((completed[completed.length-1].end-completed[0].end)/(end-start)):0,
   rows:inWindow.length,rows_missing:missing,outcomes,
@@ -323,10 +331,54 @@ export function frameWindowMetrics({rows,inputs=[],start,end,droppedStart=null,d
   raf_interval:distributionOf(diffs(completed,'raf'),{gaps:true}),
   new_snapshot_interval:distributionOf(diffs(completed.filter(r=>r.fresh),'raf'),{gaps:true}),
   draw_sync:distributionOf(completed.map(r=>finite(r.callback)&&finite(r.start)?r.callback-r.start:null)),
+  tick:ticked?distributionOf(raf.flatMap(r=>Array.isArray(r.ticks)?r.ticks:[])):null,
   dropped_steps:finite(droppedEnd)&&finite(droppedStart)?droppedEnd-droppedStart:null,
   input_latency:distributionOf(shown.map(x=>x.presented-x.at)),
   // From the event's own timestamp to the page receiving it: time the browser held the event.
   input_delivery:distributionOf(shown.map(x=>finite(x.delivered)?x.delivered-x.at:null))};
+}
+
+/**
+ * What of the player's RAF callbacks each long task held. A scheduler row's callback runs from its wake to its
+ * callback end; each callback belongs to the one task it overlaps most, inside it when it starts and ends within it
+ * (2 ms either way: the browser rounds task times), else `partial` (a tick that awaited a worker job resumes in a
+ * later task). Callbacks inside split the task into ticks (each awaited tick's wall time), submission (draw start to
+ * callback end) and the rest (`other_ms`: the browser's work, other handlers, garbage collection outside the
+ * callbacks; never below 0, so rounding can make ticks and submission add up to a little more than the task). A
+ * callback with no length (a coarse clock) belongs to the task holding its instant (a task's end is the next task's
+ * start, so not that task's). What is unknown stays null, never 0: ticks, tick_ms and other_ms of a task holding a row from an older
+ * player (no wake or ticks; its callback starts at its draw), of every task when the window's rows do not report ticks
+ * (`supported` false; by default whether any row does), and, with submit_ms too, of a task holding no callback when
+ * rows were lost between reads (`complete` false: the callback it held may be the lost one). With a worker runtime a
+ * tick's wall time is waiting, not main-thread work. Returns {tasks, summary}; the summary is null when the rows do not
+ * report ticks, and adds up the tasks whose split is known (`unknown` counts the rest).
+ */
+export function splitLongTasks(tasks,rows,options={}){
+ const SLACK=2,complete=options.complete??true;
+ const callbacks=rows.filter(r=>r.source==='scheduler_raf'&&finite(r.callback)).map(r=>{const current=finite(r.wake);
+  return {r,current,from:current?r.wake:finite(r.start)?r.start:r.raf,ticks:current?(Array.isArray(r.ticks)?r.ticks:[]):null};}).filter(x=>finite(x.from));
+ const supported=options.supported??callbacks.some(x=>x.current);
+ const inside=tasks.map(()=>[]),partial=tasks.map(()=>0);
+ for(const x of callbacks){
+  let best=-1;
+  if(x.r.callback<=x.from)best=tasks.findIndex(t=>t.start_ms<=x.from&&x.from<t.start_ms+t.duration_ms);
+  else{let most=0;tasks.forEach((t,i)=>{const overlap=Math.min(t.start_ms+t.duration_ms,x.r.callback)-Math.max(t.start_ms,x.from);if(overlap>most){most=overlap;best=i;}});}
+  if(best<0)continue;
+  const t=tasks[best];
+  if(x.from>=t.start_ms-SLACK&&x.r.callback<=t.start_ms+t.duration_ms+SLACK)inside[best].push(x);else partial[best]++;
+ }
+ const split=tasks.map((t,i)=>{
+  const held=inside[i].sort((a,b)=>a.from-b.from),lost=held.length===0&&!complete,known=supported&&held.every(x=>x.current)&&!lost;
+  const ticks=held.flatMap(x=>x.ticks??[]),tickMs=ticks.reduce((a,b)=>a+b,0);
+  const submitMs=held.reduce((a,x)=>a+(finite(x.r.start)?Math.max(0,x.r.callback-x.r.start):0),0);
+  return {start_ms:round(t.start_ms),duration_ms:round(t.duration_ms),callbacks:held.length,partial:partial[i],frames:held.map(x=>x.r.frame??null),
+   ticks:known?ticks.map(round):null,tick_ms:known?round(tickMs):null,submit_ms:lost?null:round(submitMs),other_ms:known?round(Math.max(0,t.duration_ms-tickMs-submitMs)):null};
+ });
+ if(!supported)return {tasks:split,summary:null};
+ const knownTasks=split.filter(t=>t.tick_ms!==null),sum=key=>round(knownTasks.reduce((a,t)=>a+t[key],0));
+ const maxTick=knownTasks.reduce((a,t)=>t.ticks.reduce((b,x)=>Math.max(b,x),a),-Infinity);
+ return {tasks:split,summary:{in_raf:split.filter(t=>t.callbacks>0).length,unknown:split.length-knownTasks.length,tick_ms:sum('tick_ms'),submit_ms:sum('submit_ms'),other_ms:sum('other_ms'),
+  max_ticks:knownTasks.reduce((a,t)=>Math.max(a,t.ticks.length),0),max_tick_ms:Number.isFinite(maxTick)?round(maxTick):null}};
 }
 
 /** Frame metrics as flat names (submission_interval.p95_ms, outcomes.skipped, ...) for summaries. */
@@ -350,13 +402,14 @@ export function profileWindowSummary(events,windowMs){
 
 // The player's draw and input rows over the last windowMs, plus the profiler's events when asked.
 // Reading the profiler clears it, so consecutive reads never repeat an event.
-const frameSource=(windowMs,profiling)=>`JSON.stringify((()=>{const d=document.body?.dataset??{};let s=null;
-try{s=window.unonePlayerPerformance?.snapshot({windowMs:${Number(windowMs)},includeRafSamples:true})??null;}catch(e){return {error:String(e.message??e)};}
+export const frameSource=(windowMs,profiling)=>`JSON.stringify((()=>{const d=document.body?.dataset??{};let s=null;
+try{s=window.unonePlayerPerformance?.snapshot({windowMs:${Number(windowMs)},includeRafSamples:true,includeRafTicks:true})??null;}
+catch(e){/* An older player refuses includeRafTicks: its rows without them. */try{s=window.unonePlayerPerformance?.snapshot({windowMs:${Number(windowMs)},includeRafSamples:true})??null;}catch(e){return {error:String(e.message??e)};}}
 if(!s)return {error:d.playerError??null,missing:true,now:performance.now()};
 const r=s.raf_diagnostics,i=s.input_latency;let profile=null;
 ${profiling?`try{const p=window.unonePlayerProfile;if(p){const rep=p.report();p.clear();profile={events:rep.events.map(e=>[e.id,e.kind,e.status,e.start_ms,e.wall_ms,e.spans.map(x=>[x.name,x.parent,x.ms])]),overwritten:rep.counts.overwritten??0,abandoned:rep.counts.abandoned??0};}}catch(e){profile={error:String(e.message??e)};}`:''}
 return {error:d.playerError??null,now:performance.now(),visibility:document.visibilityState,focused:document.hasFocus(),dropped_steps_total:s.dropped_steps_total,recorded_total:r.recorded_total,
-rows:(r.samples??[]).map(x=>[x.sequence??null,x.source,x.raf_time_ms,x.start_ms,x.end_ms,x.callback_end_ms,x.snapshot_frame,x.outcome,x.new_snapshot?1:0]),
+rows:(r.samples??[]).map(x=>[x.sequence??null,x.source,x.raf_time_ms,x.start_ms,x.end_ms,x.callback_end_ms,x.snapshot_frame,x.outcome,x.new_snapshot?1:0,x.wake_start_ms??null,x.tick_ms??null]),
 inputs:i?.samples?i.samples.map(x=>[x.sequence,x.input_at_ms,x.tick_frame,x.presented_at_ms,x.delivered_at_ms??null]):null,input_admitted:i?.admitted??null,profile};})())`;
 
 // ---------------------------------------------------------------- blank-page control
@@ -426,7 +479,7 @@ const maxMetrics=samples=>{const out={};for(const s of samples)for(const [name,v
  * readOs(): OS process memory or null. Returns the run's rounds, checkpoints, trends and raw samples;
  * a step that fails ends the run with ok:false and keeps what was measured.
  */
-export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()=>performance.now(),pollMs=50,framePollMs=2000,profiling=false}={}){
+export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()=>performance.now(),pollMs=50,framePollMs=1000,profiling=false}={}){
  const t0=clock(),at=()=>round(clock()-t0),samples=[];
  // The memory sampler pauses during frame windows: its player reads would land in the frames measured.
  let where={phase:null,round:null},seen=0,stop=false,samplerError=null,samplerPaused=false;
@@ -518,7 +571,8 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
    const state=JSON.parse(await page.evaluate(frameSource(framePollMs*2,profiling),15000));
    if(state.error)throw Error(`MEASURE_PLAYER_ERROR: ${state.error}`);
    if(state.missing)throw Error('MEASURE_SCENARIO_NO_FRAMES: this player has no unonePlayerPerformance accessor');
-   for(const r of state.rows)rows.set(r[0]??`${r[2]}|${r[3]}|${r[4]}|${r[7]}`,{sequence:r[0],source:r[1],raf:r[2],start:r[3],end:r[4],callback:r[5],frame:r[6],outcome:r[7],fresh:r[8]===1});
+   for(const r of state.rows)rows.set(r[0]??`${r[2]}|${r[3]}|${r[4]}|${r[7]}`,{sequence:r[0],source:r[1],raf:r[2],start:r[3],end:r[4],callback:r[5],frame:r[6],outcome:r[7],fresh:r[8]===1,
+    wake:r[9]??null,ticks:Array.isArray(r[10])?r[10]:null});
    if(state.inputs===null)inputsReported=false;else for(const x of state.inputs)inputs.set(x[0],{sequence:x[0],at:x[1],frame:x[2],presented:x[3],delivered:x[4]});
    if(state.profile?.error)profileError??=state.profile.error;
    else if(state.profile){profileFirst??=state.profile;profileLast=state.profile;for(const e of state.profile.events)events.set(e[0],{id:e[0],kind:e[1],status:e[2],start:e[3],wall:e[4],spans:e[5]});}
@@ -536,15 +590,21 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
   stopLoop=true;await looping;samplerPaused=false;
   error??=loopError;
   let longTasks=null;
-  if(first&&last)try{longTasks=JSON.parse(await page.evaluate(`JSON.stringify(window.__unoneMeasure?(window.__unoneMeasure.long_tasks??[]).filter(t=>t.start_ms+t.duration_ms>=${first.now}&&t.start_ms<=${last.now}):null)`,10000));if(!Array.isArray(longTasks))longTasks=null;}catch{}
+  // Unknown (null) without an observer, or when the probe's list filled before the window ended (later tasks lost).
+  if(first&&last)try{longTasks=JSON.parse(await page.evaluate(`JSON.stringify((()=>{const m=window.__unoneMeasure;if(!m||!Array.isArray(m.long_tasks))return null;
+try{m.drain_long_tasks?.();}catch{}
+if(Number.isFinite(m.long_tasks_full_at)&&m.long_tasks_full_at<${last.now})return null;
+return m.long_tasks.filter(t=>t.start_ms+t.duration_ms>=${first.now}&&t.start_ms<=${last.now});})())`,10000));if(!Array.isArray(longTasks))longTasks=null;}catch{}
   const window={name:phase.name,kind:'frames',warmup_ms:phase.warmup_ms,window_ms:phase.window_ms,loop_iterations:iterations,foreground,error};
   if(first&&last){
    window.window={start_ms:first.now,end_ms:last.now};
-   window.metrics=frameWindowMetrics({rows:[...rows.values()],inputs:[...inputs.values()],start:first.now,end:last.now,droppedStart:first.dropped_steps_total,droppedEnd:last.dropped_steps_total});
+   window.metrics=frameWindowMetrics({rows:[...rows.values()],inputs:[...inputs.values()],start:first.now,end:last.now,droppedStart:first.dropped_steps_total,droppedEnd:last.dropped_steps_total,recordedEnd:last.recorded_total});
    if(!inputsReported){window.metrics.input_latency=null;window.metrics.input_delivery=null;}
    window.metrics.host_cpu_busy=hostCpu;
-   window.metrics.long_tasks=longTasks?{count:longTasks.length,total_ms:round(longTasks.reduce((sum,t)=>sum+t.duration_ms,0)),max_ms:round(longTasks.reduce((max,t)=>Math.max(max,t.duration_ms),0))}:null;
-   if(longTasks?.length)window.long_tasks=longTasks.slice(0,100).map(t=>({start_ms:round(t.start_ms),duration_ms:round(t.duration_ms)}));
+   // Each long task split into the RAF callbacks it held (ticks, submission, the rest), with their totals.
+   const split=longTasks?splitLongTasks(longTasks,[...rows.values()],{complete:window.metrics.rows_missing===0,supported:window.metrics.tick!==null}):null;
+   window.metrics.long_tasks=longTasks?{count:longTasks.length,total_ms:round(longTasks.reduce((sum,t)=>sum+t.duration_ms,0)),max_ms:round(longTasks.reduce((max,t)=>Math.max(max,t.duration_ms),0)),...(split.summary??{})}:null;
+   if(longTasks?.length)window.long_tasks=split.tasks.slice(0,100);
    if(profiling)window.profile=profileError?{error:profileError}:{events:events.size,overwritten:(profileLast?.overwritten??0)-(profileFirst?.overwritten??0),abandoned:(profileLast?.abandoned??0)-(profileFirst?.abandoned??0),spans:profileWindowSummary([...events.values()],last.now-first.now)};
   }
   if(!error){const {row,os}=await checkpoint();window.end=row.metrics;window.os=os;}

@@ -272,8 +272,11 @@ export function normalizeLoad(raw,{network=[],server=[],options={},kind,index,pr
  const perf=raw?.perf??null;
  const milestoneRows=(perf?.milestones?.rows??[]).map(row=>({name:row.name,frame:row.frame,sequence:row.sequence,accepted_ms:minus(row.accepted_at_ms,boot),presented_ms:minus(row.presented_at_ms,boot),presented_frame:row.presented_frame}));
  const firstSubmission=finite(metrics?.first_presented_ms)?round(metrics.first_presented_ms):null;
- const longTasks=(raw?.probe?.long_tasks??[]).map(task=>({start_ms:minus(task.start_ms,boot),duration_ms:round(task.duration_ms)}));
- const beforeFirst=longTasks.filter(task=>firstSubmission!==null&&finite(task.start_ms)&&task.start_ms<firstSubmission);
+ // Observed through the first submission: an observer, and its list not filled before then (later tasks were lost).
+ const fullAt=minus(raw?.probe?.long_tasks_full_at,boot);
+ const observed=Array.isArray(raw?.probe?.long_tasks)&&!(finite(fullAt)&&firstSubmission!==null&&fullAt<firstSubmission);
+ const longTasks=Array.isArray(raw?.probe?.long_tasks)?raw.probe.long_tasks.map(task=>({start_ms:minus(task.start_ms,boot),duration_ms:round(task.duration_ms)})):null;
+ const beforeFirst=(longTasks??[]).filter(task=>firstSubmission!==null&&finite(task.start_ms)&&task.start_ms<firstSubmission);
  const js=resources.filter(row=>row.kind==='javascript');
  const frame=name=>perf?.[name]??null;
  const profile=raw?.profile?profileSummary(raw.profile,options.includeProfileEvents):null;
@@ -306,8 +309,8 @@ export function normalizeLoad(raw,{network=[],server=[],options={},kind,index,pr
   'resources.network_bytes':sumOrNull(resources.map(row=>row.network_bytes)),
   'resources.from_browser_cache':resources.filter(row=>['disk_cache','memory_cache','prefetch_cache','service_worker'].includes(row.cache)).length,
   'resources.revalidated':resources.filter(row=>row.cache==='revalidated').length,
-  'long_tasks.before_first_submission':firstSubmission===null?null:beforeFirst.length,
-  'long_tasks.ms_before_first_submission':firstSubmission===null?null:round(beforeFirst.reduce((sum,task)=>sum+(task.duration_ms??0),0)),
+  'long_tasks.before_first_submission':firstSubmission===null||!observed?null:beforeFirst.length,
+  'long_tasks.ms_before_first_submission':firstSubmission===null||!observed?null:round(beforeFirst.reduce((sum,task)=>sum+(task.duration_ms??0),0)),
   'frames.successful_submission_p95_ms':frame('successful_submission_raf_intervals')?.p95_ms??null,
   'frames.new_snapshot_p95_ms':frame('new_snapshot_raf_intervals')?.p95_ms??null,
   'frames.preparation_p95_ms':frame('preparation_wall')?.p95_ms??null,
@@ -683,7 +686,16 @@ W.instantiate=function(source,imports){
 if(o.compileStreaming)W.compileStreaming=function(source){return settle(row('compileStreaming'),o.compileStreaming.call(W,source));};
 W.compile=function(source){return settle(row('compile',size(source)),o.compile.call(W,source));};
 if(window.FontFace){const load=FontFace.prototype.load;FontFace.prototype.load=function(){const r={family:this.family,weight:this.weight,status:'pending',start_ms:now(),end_ms:null};if(probe.fonts.length<128)probe.fonts.push(r);return settle(r,load.call(this));};}
-try{new PerformanceObserver(list=>{for(const e of list.getEntries())if(probe.long_tasks.length<4096)probe.long_tasks.push({start_ms:e.startTime,duration_ms:e.duration});}).observe({type:'longtask',buffered:true});}catch{}
+// No longtask observer (an observer that silently ignores the type included): null, so readers report unknown rather
+// than no long task. The list keeps 4096; long_tasks_full_at is the end of the last kept one once it is full: later
+// ones are lost, so a window ending after it cannot know its long tasks. Readers call drain_long_tasks first, so
+// entries the observer has not delivered yet are counted.
+probe.long_tasks_full_at=null;
+try{if(!PerformanceObserver.supportedEntryTypes?.includes('longtask'))throw Error('no longtask entries');
+ const keep=entries=>{for(const e of entries){if(probe.long_tasks.length>=4096)continue;probe.long_tasks.push({start_ms:e.startTime,duration_ms:e.duration});
+  if(probe.long_tasks.length===4096)probe.long_tasks_full_at=e.startTime+e.duration;}};
+ const observer=new PerformanceObserver(list=>keep(list.getEntries()));observer.observe({type:'longtask',buffered:true});
+ Object.defineProperty(probe,'drain_long_tasks',{value:()=>keep(observer.takeRecords())});}catch{probe.long_tasks=null;}
 document.addEventListener('visibilitychange',()=>{if(probe.visibility.length<64)probe.visibility.push({state:document.visibilityState,at_ms:now()});});
 addEventListener('focus',()=>{if(probe.focus.length<64)probe.focus.push({focused:true,at_ms:now()});});
 addEventListener('blur',()=>{if(probe.focus.length<64)probe.focus.push({focused:false,at_ms:now()});});
@@ -697,6 +709,7 @@ const nav=performance.getEntriesByType('navigation')[0];
 let perf=null;try{perf=window.unonePlayerPerformance?.snapshot({windowMs:${Number(frameWindowMs)}})??null;}catch(e){perf={error:String(e.message??e)};}
 let assets=null;try{assets=window.unonePlayerAssets?.snapshot?.({includeTimings:true})??null;}catch(e){assets={error:String(e.message??e)};}
 let profile=null;try{profile=window.unonePlayerProfile?.report?.()??null;}catch(e){profile={error:String(e.message??e)};}
+try{window.__unoneMeasure?.drain_long_tasks?.();}catch{}
 return {boot:window.playerBoot??null,time_origin:performance.timeOrigin,now:performance.now(),visibility:document.visibilityState,focused:document.hasFocus(),dpr:devicePixelRatio,inner:[innerWidth,innerHeight],screen:[screen.width,screen.height],touch_points:navigator.maxTouchPoints,ua:navigator.userAgent,
 metrics:parse(d.playerMetrics),startup:parse(d.playerStartup),error:d.playerError??null,playerPerformance:parse(d.playerPerformance),
 nav:nav?nav.toJSON():null,resources:performance.getEntriesByType('resource').map(e=>e.toJSON()),paints:performance.getEntriesByType('paint').map(e=>({name:e.name,start_ms:e.startTime})),
@@ -1092,7 +1105,7 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
   summary:{cold:summarize(ok('cold')),warm:summarize(ok('warm')),profiler_pairs:pairDeltas(okPairs)},
   ...(scenario?{scenario:{file:scenario.file,definition:scenario.definition,conditions:{browser:attached?'the attached browser and page (--attach/--adb-socket) for every run: nothing restarts between runs, and a touch scenario first checks that a DevTools tap reaches the blank page (scenario.runs[].touch.probe)':'a new browser process and profile per run',profiler:options.scenarioProfile?'off for acceptance runs; one extra diagnostic run with ?unone_profile=1&unone_profile_limit=2048':false,sample_ms:scenario.definition.sample_ms,settle_ms:scenario.definition.settle_ms,
    touch_emulation:usesTouch(scenario.definition)?touchCondition(scenarioRuns,attached):false,
-   frame_windows:{poll_ms:2000,source:'unonePlayerPerformance.snapshot({includeRafSamples:true}) draw and input rows, stitched by sequence; the memory sampler pauses during a window',blank_control:options.blankControl?'empty page recording requestAnimationFrame timestamps, same browser and viewport, before the game loads':false},
+   frame_windows:{poll_ms:1000,source:'unonePlayerPerformance.snapshot({includeRafSamples:true,includeRafTicks:true}) draw and input rows (without includeRafTicks from an older player), stitched by sequence; the memory sampler pauses during a window',blank_control:options.blankControl?'empty page recording requestAnimationFrame timestamps, same browser and viewport, before the game loads':false},
    os_memory:attached?'not read: the attached browser\'s processes are its device\'s, not this machine\'s':process.platform==='win32'?'per process at checkpoints: working set, peak working set, private bytes, GPU dedicated/shared (Windows GPU counters)':process.platform==='linux'?'per process at checkpoints: VmRSS, VmHWM, RssAnon; no GPU memory':'not read on this platform'},
    summary:scenarioSummary(scenarioRuns),runs:scenarioRuns}}:{}),
   runs,
@@ -1101,7 +1114,7 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
 }
 
 // A few owners' movement across each phase of the first completed scenario run, for the console.
-const FRAME_CONSOLE=['host_cpu_busy','submission_interval.p50_ms','submission_interval.p95_ms','submission_interval.p99_ms','submission_interval.over_50ms','submission_interval.over_100ms','raf_interval.p95_ms','raf_interval.over_50ms','new_snapshot_interval.p95_ms','dropped_steps','input_latency.p50_ms','input_latency.p95_ms','input_delivery.p50_ms','long_tasks.count','long_tasks.max_ms','completed_submissions'];
+const FRAME_CONSOLE=['host_cpu_busy','submission_interval.p50_ms','submission_interval.p95_ms','submission_interval.p99_ms','submission_interval.over_50ms','submission_interval.over_100ms','raf_interval.p95_ms','raf_interval.over_50ms','new_snapshot_interval.p95_ms','dropped_steps','input_latency.p50_ms','input_latency.p95_ms','input_delivery.p50_ms','long_tasks.count','long_tasks.max_ms','long_tasks.max_tick_ms','tick.p95_ms','tick.max_ms','completed_submissions'];
 const CONSOLE_METRICS=['images.decoded.resident.entries','images.decoded.resident.bytes','gpu.textures.entries','gpu.geometries.entries','luau.heap.bytes','js_heap.used_bytes','os.largest_renderer.private_bytes','os.gpu_process.gpu_dedicated_bytes'];
 export function scenarioConsole(scenario){
  const run=scenario.runs.find(r=>r.ok&&!r.profiling);if(!run)return {ok:0,runs:scenario.runs.length};

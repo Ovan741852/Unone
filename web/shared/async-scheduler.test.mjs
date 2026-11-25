@@ -31,6 +31,30 @@ test('disabled wake diagnostics add neither an observer packet nor an end-clock 
  const legacy=fixture();legacy.scheduler.start();await legacy.frame(5);assert.equal(legacy.wakes.length,1);assert.equal(Object.hasOwn(legacy.wakes[0],'acc_before_ms'),false);legacy.scheduler.stop();
 });
 
+test('preparation hands its observer each awaited tick and the RAF end the wake start',async()=>{
+ const prepared=[],ends=[];let h;
+ h=fixture({tick:n=>{h.setTime(h.getTime()+(n===2?30:5));},scheduler:{
+  onPreparationEnd:(...args)=>{prepared.push(args);h.metrics.preparationEnd(...args);},
+  onRafEnd:(...args)=>{ends.push(args);h.metrics.rafEnd(...args);}}});
+ h.scheduler.start();await h.frame(30);
+ assert.deepEqual(prepared.map(a=>a.slice(1)),[[30,30,70,3,false,10,[5,30,5]]]);
+ assert.deepEqual(ends,[[30,70,70,false,10,30]]);
+ const row=h.metrics.snapshot({includeRafSamples:true,includeRafTicks:true}).raf_diagnostics.samples.at(-1);
+ assert.deepEqual([row.wake_start_ms,row.preparation_start_ms,row.preparation_end_ms,row.steps,row.tick_ms,row.callback_end_ms],[30,30,70,3,[5,30,5],70]);
+ h.scheduler.stop();
+});
+
+test('a tick that throws still reports its wall time; without a preparation observer ticks are not timed',async()=>{
+ const prepared=[];let h;
+ h=fixture({tick:n=>{h.setTime(h.getTime()+(n===2?60:5));if(n===2)throw Error('tick failed');},scheduler:{onPreparationEnd:(...args)=>prepared.push(args)}});
+ h.scheduler.start();await h.frame(30);
+ assert.deepEqual(prepared.map(a=>[a[4],a[5],a[7]]),[[1,true,[5,60]]]);assert.equal(h.errors.length,1);
+ let reads=0;const quiet=fixture({scheduler:{onWake:null,onWakeDiagnostic:null,onPreparationEnd:null,onRafEnd:null,now:()=>{reads++;return quiet.getTime();}}});
+ quiet.scheduler.start();await quiet.frame(30);
+ assert.deepEqual(quiet.counts(),{ticks:3,draws:1,timers:0});
+ assert.equal(reads,5,'clock: start, wake, preparation start, submission start and end; no read per tick');quiet.scheduler.stop();
+});
+
 test('passive wake records expose zero/two steps and retained negative debt without changing frames',async()=>{
  const rows=[],h=fixture({scheduler:{onWakeDiagnostic:r=>rows.push(r)}});h.scheduler.start();
  await h.frame(9.95);await h.frame(19.85);await h.frame(30);

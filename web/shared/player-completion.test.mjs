@@ -47,6 +47,48 @@ test('RAF timestamps, newly shown snapshots and submission wall time remain sepa
  assert.equal(rows[0].source,'startup');assert.equal(rows[0].raf_time_ms,null);assert.equal(rows[0].callback_end_ms,null);assert(Object.isFrozen(rows));assert(Object.isFrozen(rows[2]));
  assert.throws(()=>{rows[2].end_ms=999;},TypeError);assert.notEqual(m.snapshot({includeRafSamples:true}).raf_diagnostics.samples[2],rows[2]);assert.equal('samples'in m.snapshot().raf_diagnostics,false);
 });
+test('a scheduler RAF row carries its wake, its preparation and each tick, so one browser task splits into them',()=>{
+ let clock=0;const m=createPlayerCompletionMetrics({now:()=>clock});m.accept({world:{frame:0}},true);
+ // RAF at 100: wake 101, three ticks (9, 30, 4 ms) from 102 to 145, submission 146..150, callback end 151.
+ m.preparationEnd(m.epoch(),100,102,145,3,false,16,[9,30,4]);
+ clock=150;m.finish(done,done,done,3,clock,'scheduler_raf',100,146);clock=151;m.rafEnd(100,146,clock,false,16,101);
+ // A preparation whose submission never came (another RAF timestamp) is not given to the next row.
+ m.preparationEnd(m.epoch(),116,117,120,1,false,16,[3]);
+ clock=170;m.finish(done,done,done,3,clock,'scheduler_raf',132,166);clock=171;m.rafEnd(132,166,clock,false,16,165);
+ // A cancelled one is kept for no row, even one with its timestamp (a paused redraw).
+ m.preparationEnd(m.epoch(),140,140,142,1,true,16,[2]);
+ clock=144;m.finish(done,done,done,3,clock,'scheduler_raf',140,143);clock=145;m.rafEnd(140,143,clock,false,16,142.5);
+ // More ticks than a row keeps: the steps say how many ran, tick_ms the first eight.
+ m.preparationEnd(m.epoch(),148,149,180,10,false,16,[1,2,3,4,5,6,7,8,9,10]);
+ clock=185;m.finish(done,done,done,4,clock,'scheduler_raf',148,181);clock=186;m.rafEnd(148,181,clock,false,16,148.5);
+ const rows=m.snapshot({includeRafSamples:true,includeRafTicks:true}).raf_diagnostics.samples;
+ assert.deepEqual([rows[0].wake_start_ms,rows[0].preparation_start_ms,rows[0].preparation_end_ms,rows[0].steps,rows[0].tick_ms],[101,102,145,3,[9,30,4]]);
+ assert(Object.isFrozen(rows[0].tick_ms));
+ // Rows without ticks carry no preparation fields at all (the feed's rows stay small).
+ assert.equal(rows[1].wake_start_ms,165);assert.deepEqual(['preparation_start_ms','preparation_end_ms','steps','tick_ms'].filter(k=>k in rows[1]),[]);
+ assert.equal(rows[2].wake_start_ms,142.5);assert.equal('tick_ms'in rows[2],false);
+ assert.deepEqual([rows[3].steps,rows[3].tick_ms],[10,[1,2,3,4,5,6,7,8]]);
+ // Rows from other sources carry neither.
+ m.finish(done,done,done,4,190,'manual');const manual=m.snapshot({includeRafSamples:true,includeRafTicks:true}).raf_diagnostics.samples.at(-1);
+ assert.deepEqual([manual.source,'wake_start_ms'in manual,'tick_ms'in manual],['manual',false,false]);
+ // Tick times to the microsecond.
+ m.preparationEnd(m.epoch(),196,196,197,1,false,16,[0.12345678]);clock=198;m.finish(done,done,done,5,clock,'scheduler_raf',196,197);clock=199;m.rafEnd(196,197,clock,false,16,196);
+ assert.deepEqual(m.snapshot({includeRafSamples:true,includeRafTicks:true}).raf_diagnostics.samples.at(-1).tick_ms,[0.123]);
+ // A callback with no submission still has its wake.
+ m.preparationEnd(m.epoch(),200,201,230,2,false,16,[14,15]);clock=231;m.rafEnd(200,231,clock,false,16,200.5);
+ // (rows: 100, 132, 140, 148, manual, 196, then this one)
+ const last=m.snapshot({includeRafSamples:true,includeRafTicks:true}).raf_diagnostics.samples.at(-1);
+ assert.deepEqual([last.outcome,last.wake_start_ms,last.tick_ms],['no_submission',200.5,[14,15]]);
+ // A submission that recorded two rows (completed, then an error from work after it) keeps wake and ticks together on
+ // the second, the row the callback ends.
+ m.preparationEnd(m.epoch(),240,241,280,1,false,16,[39]);clock=284;m.finish(done,done,done,6,clock,'scheduler_raf',240,281);m.error('scheduler_raf',240,281,false,285,6);clock=286;m.rafEnd(240,281,clock,false,16,240.5);
+ const pair=m.snapshot({includeRafSamples:true,includeRafTicks:true}).raf_diagnostics.samples.slice(-2);
+ assert.deepEqual(pair.map(r=>[r.outcome,r.wake_start_ms,r.tick_ms]),[['completed',undefined,undefined],['error',240.5,[39]]]);
+ // Without includeRafTicks the rows are as they always were.
+ const plain=m.snapshot({includeRafSamples:true}).raf_diagnostics.samples;
+ assert.deepEqual(plain.filter(r=>'wake_start_ms'in r||'tick_ms'in r||'steps'in r),[]);
+ assert.throws(()=>m.snapshot({includeRafTicks:'yes'}),/includeRafTicks must be boolean/);
+});
 test('fresh RAF intervals exclude manual/startup already shown frames, repeats, unknown frames and regressions',()=>{
  let clock=0;const m=createPlayerCompletionMetrics({now:()=>clock});m.accept({world:{frame:10}},true);
  m.finish(done,done,done,10,1,'startup');m.finish(done,done,done,12,2,'manual');

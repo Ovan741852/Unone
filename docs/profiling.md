@@ -413,8 +413,9 @@ for `warmup_ms` (3000) and the measured `window_ms` (1000–600000):
 ```
 
 During a window the memory sampler pauses and the tool reads the player's own
-draw and input rows (`unonePlayerPerformance.snapshot({includeRafSamples:true})`)
-every 2 s, stitching them by sequence. A memory checkpoint follows the window.
+draw and input rows (`unonePlayerPerformance.snapshot({includeRafSamples:true,includeRafTicks:true})`)
+every second (the player keeps 512 rows: 1.4 s at 360 Hz), stitching them by
+sequence. A memory checkpoint follows the window.
 Per window, `metrics` holds:
 
 | Metric | What it is |
@@ -422,11 +423,12 @@ Per window, `metrics` holds:
 | `submission_interval` | Time between the end of consecutive completed scheduler draws: p50, p95, p99, max (nearest rank) and how many exceed 50 and 100 ms. |
 | `raf_interval`, `new_snapshot_interval` | The same over those draws' RAF timestamps, and only over draws that showed a newer world frame. |
 | `draw_sync` | Synchronous drawing time of each completed draw (callback end minus start). |
+| `tick` | Wall time of the ticks of every RAF callback whose row falls in the window (a callback's ticks count with its draw; a cancelled preparation has no row): p50, p95, p99, max. A game's frame cost as the page paid it. Null from a player whose rows carry no wake. |
 | `input_latency` | The player's own input-to-presentation rows inside the window (below). Null on a host that does not report them. |
 | `input_delivery` | Of that, the time from the event's own timestamp to the page receiving it: how long the browser held the event before dispatching it. |
-| `long_tasks` | Main-thread long tasks (over 50 ms, from a `longtask` observer) that overlap the window: count, total and largest, with up to 100 listed in `long_tasks` beside `metrics`. Null when the browser has no observer. A gap with no long task did not block the page's main thread. |
+| `long_tasks` | Main-thread long tasks (over 50 ms, from a `longtask` observer) that overlap the window: count, total and largest, with up to 100 listed in `long_tasks` beside `metrics`. Null when the browser has no observer, or when the tool's list of 4096 was full before the window ended. Work under 50 ms is not a long task, however many refreshes it blocks. Each listed task is split into the player's RAF callbacks inside it (each callback goes to the task it overlaps most, one with no length to the task holding its instant, a task's end being the next task's start; `callbacks`, their `frames`; `partial` counts callbacks that only overlap it): `ticks` (each tick's wall time), `tick_ms`, `submit_ms` (drawing) and `other_ms` (the rest, never below 0: work the split cannot name). What is unknown is null, never 0: a task's `ticks`, `tick_ms` and `other_ms` when it holds a row from an older player (no wake or ticks), when the window's rows do not report ticks (then there are no totals either), and, with `submit_ms`, when it holds no callback while rows were lost between reads (`rows_missing` above 0). The totals add up the known tasks: `in_raf` (tasks holding a callback), `unknown` (tasks not split), `tick_ms`, `submit_ms`, `other_ms`, `max_ticks` (most ticks in one task) and `max_tick_ms` (the slowest tick inside a long task; null with none). |
 | `dropped_steps` | Fixed steps the scheduler dropped during the window. |
-| `completed_submissions`, `outcomes`, `rows`, `rows_missing`, `coverage` | Counts, skipped/unknown/error draws, draw rows inside the window, rows lost between reads (0 when stitching was complete), and how much of the window the completed draws span. |
+| `completed_submissions`, `outcomes`, `rows`, `rows_missing`, `coverage` | Counts, skipped/unknown/error draws, draw rows inside the window, rows lost between reads over all the rows read (the first read reaches back before the window) and up to the player's row count at the last read (0 when stitching was complete), and how much of the window the completed draws span. |
 
 Two controls separate the browser and the player from the game:
 
@@ -456,6 +458,16 @@ How to read it:
 - `input_latency` runs from the earliest browser input event a tick consumed to
   the first completed submission presenting that tick. Host-only effects (UI
   scroll, hover) are timed to the same submission.
+- A long task is not always one slow frame. When its split shows several ticks,
+  the scheduler ran more than one fixed step in that RAF (up to five): a display
+  slower than the step does it every RAF (30 Hz runs two 60 Hz steps), and so
+  does catching up, after ticks that ran past the step if they are the cost
+  (`tick` p95 against the step, then the slowest; `game perf` or the development
+  build's `runtime.slowest_frames` says what ran in them) or after something
+  else held the page if the ticks are cheap (look at the task before it). A
+  task with no callback, a `partial` one or mostly `other_ms` is work the split
+  cannot name: the browser, another handler, garbage collection, or a callback
+  that resumed after awaiting a worker.
 
 `tests/memory-roundtrip-project` is a fixture with image groups and both
 scenarios (`round-trip.scenario.json` for memory, `frame-tail.scenario.json` for
@@ -679,6 +691,21 @@ submission/cadence sample. Startup/manual draws retain null RAF fields.
 must be a boolean; unknown public query options fail explicitly.
 Each row also carries `sequence`, the draw's running number, so a reader that
 queries overlapping windows can stitch rows without duplicates or gaps.
+With `includeRafTicks: true` (also a boolean; the default rows, and so the
+bounded performance feed, stay as they were) a scheduler RAF row also says what
+its callback did before drawing, in fields only the rows that have them carry:
+`wake_start_ms` (when the callback began), and when it ran ticks
+`preparation_start_ms`, `preparation_end_ms`, `steps` and `tick_ms` (each
+awaited tick's wall time to the microsecond, in order, the first eight). They
+go on the one row each callback ends (its last submission, else a
+`no_submission` row); a submission that recorded two rows (completed, then an
+error from work after drawing) carries them on the second. A preparation that
+is cancelled (paused or hidden mid-tick, or a tick that threw) has no
+submission and so no row, its ticks included. With the default main-thread runtime a callback's ticks and its
+drawing are usually one browser task; a tick that awaits a worker job resumes
+in a later one, and with `?backend=worker` a tick's wall time is mostly
+waiting for the worker. An older player refuses the option; readers retry
+without it.
 
 `input_latency` is always present: `admitted` ticks that consumed browser input,
 `presented` ones whose frame a completed submission then showed, `pending`,
