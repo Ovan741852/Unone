@@ -24,6 +24,22 @@ reading the project, running the script's top level and `Game.start` took, and
 the Luau heap after start. At most 256 distinct names are kept; later ones are
 dropped and listed in the report's notes.
 
+### Which spans made a frame slow
+
+A span's `max_ms` is its longest call over the whole run, so the maxima of two
+spans may come from different frames. To read a frame-time tail, use the
+report's `slowest_frames` instead: the eight slowest frames of the run (or of
+the profiling window), slowest first, each with `spans`, the span names that
+frame ran (most time first, at most 24; `spans_omitted` counts the rest) with
+their calls, inclusive `total_ms`, longest call `max_ms`, `parent` (the span
+open around its longest call, null straight from `update`) and `depth` (how
+many spans were open around it). `slowest_frame` is the first of them. `game
+perf` prints each frame's spans as a tree under their parents; the Web
+development profile has them in `runtime.slowest_frames`. Wrap a game's
+stages in spans (only code that does not yield: a span cannot cross a
+coroutine yield) and the slowest frames say which stage, and which part of it,
+to look at.
+
 ### Milestones the game declares: `api.profile.mark`
 
 Only the game knows when it is usable: the city is interactive, a battle has
@@ -788,7 +804,7 @@ The Node runners accept `--checkpoint-every 1` for every-tick behavior compariso
 
 `publication` now separates canonical encoding, exact SHA-256/cache work, presentation conversion and envelope output on the Web bridge. It shares the core window ID and reports bounded samples plus total byte/work counters. Native returns null. See [the cache contract](canonical-hash-cache.md) and [the tool review](performance-tools-review.md).
 
-`runtime.slowest_frame.frame` is the completed world frame (older reports used the window's sample index). `host_window.dropped_steps_delta` excludes events before the window and becomes null for unavailable/reset counters. It freezes on stop.
+`runtime.slowest_frame.frame` is the completed world frame (older reports used the window's sample index). `runtime.slowest_frames` holds the window's eight slowest frames with the spans each ran (see "Which spans made a frame slow"). `host_window.dropped_steps_delta` excludes events before the window and becomes null for unavailable/reset counters. It freezes on stop.
 
 Use `--no-profile-window` for before/after throughput comparisons without active publication timers. This does not remove the engine's existing passive runtime timing. For overhead assessment on the same export, `compare-player.mjs --before-profile-window disabled --after-profile-window enabled` records both conditions. `repeat_variation` exposes each pair's change and the observed range; mixed signs are not a reliable optimization result. `--sampling` cannot be combined with `--no-profile-window`.
 

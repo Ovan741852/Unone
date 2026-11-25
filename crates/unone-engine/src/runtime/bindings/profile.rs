@@ -19,6 +19,7 @@ pub(super) fn bind(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     api.set("span", lua.create_function(move |lua, (name, work): (String, Function)| -> mlua::Result<MultiValue> {
         valid_name(&name)?;
         let heap = lua.used_memory();
+        profile.borrow_mut().enter(&name);
         let started = Instant::now();
         let result = work.call::<MultiValue>(());
         let elapsed = started.elapsed();

@@ -59,7 +59,41 @@ pub struct SlowestFrame {
     pub script_ms: f64,
     pub physics_ms: f64,
     pub observe_ms: f64,
+    /// The `api.profile.span` names this frame ran, most time first (at most
+    /// `MAX_FRAME_SPANS`): which part of the game made this frame slow. Run-wide
+    /// span maxima cannot say that, since they may come from different frames.
+    pub spans: Vec<FrameSpan>,
+    /// Span names this frame also ran that `spans` leaves out (the least time).
+    /// Names refused by the 256-name limit are not counted; the notes list them.
+    pub spans_omitted: usize,
 }
+
+/// One span name's part of one frame.
+#[derive(Debug, Clone, Serialize, PartialEq)]
+pub struct FrameSpan {
+    pub name: String,
+    /// The span open around its longest call in this frame (none for a span
+    /// called straight from `update`): where its time went.
+    pub parent: Option<String>,
+    /// How many spans were open around that call: 0 straight from `update`.
+    pub depth: u32,
+    pub calls: u64,
+    /// Inclusive, like `SpanCost.total_ms`: it contains the spans nested in it.
+    pub total_ms: f64,
+    pub max_ms: f64,
+}
+
+/// What a frame's spans came to: the kept ones and how many were left out.
+#[derive(Debug, Clone, Default)]
+pub(crate) struct FrameParts {
+    pub spans: Vec<FrameSpan>,
+    pub omitted: usize,
+}
+
+/// The slowest frames kept with their spans, per run or profiling window.
+pub const MAX_SLOWEST_FRAMES: usize = 8;
+/// Span names kept per slow frame, most time first.
+pub const MAX_FRAME_SPANS: usize = 24;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct PerformanceReport {
@@ -72,6 +106,10 @@ pub struct PerformanceReport {
     /// The frame time 95% of retained sample-window frames came in under.
     pub p95_frame_ms: f64,
     pub slowest_frame: Option<SlowestFrame>,
+    /// The slowest frames, slowest first (at most `MAX_SLOWEST_FRAMES`, the
+    /// first is `slowest_frame`), each with the spans it ran: where to look
+    /// before optimizing a frame-time tail.
+    pub slowest_frames: Vec<SlowestFrame>,
     /// Frames per second this run would sustain at the measured mean.
     pub sustained_fps: f64,
     /// Fixed timestep budget per frame, for comparison.
@@ -206,6 +244,12 @@ struct SpanStats {
     max: Duration,
     recent: VecDeque<Duration>,
     heap_growth: u64,
+    /// The current frame's part, cleared when the next update begins.
+    frame_calls: u64,
+    frame_total: Duration,
+    frame_max: Duration,
+    frame_depth: u32,
+    frame_parent: Option<String>,
 }
 
 #[derive(Debug, Default)]
@@ -228,9 +272,56 @@ pub(crate) struct ScriptProfile {
     dropped_marks: u64,
     /// The world frame a mark made now belongs to; the runtime sets it before each update.
     mark_frame: u64,
+    /// Names of the spans open now (entered, not yet recorded), outermost
+    /// first: `open[..open_len]`; the rest are spare buffers.
+    open: Vec<String>,
+    open_len: usize,
+    /// Whether any span has a part in the current frame.
+    frame_touched: bool,
 }
 
 impl ScriptProfile {
+    /// Span `name`'s work is about to run; `span` closes it.
+    pub(crate) fn enter(&mut self, name: &str) {
+        if let Some(slot) = self.open.get_mut(self.open_len) {
+            slot.clear();
+            slot.push_str(name);
+        } else {
+            self.open.push(name.to_string());
+        }
+        self.open_len += 1;
+    }
+
+    fn clear_frame(&mut self) {
+        if !self.frame_touched { return; }
+        for stats in self.spans.values_mut() {
+            stats.frame_calls = 0;
+            stats.frame_total = Duration::ZERO;
+            stats.frame_max = Duration::ZERO;
+            stats.frame_depth = 0;
+        }
+        self.frame_touched = false;
+    }
+
+    /// The current frame's spans, most time first, if `keep` (the frame is
+    /// one of the slowest so far); the frame's parts are cleared either way.
+    pub(crate) fn frame_spans(&mut self, keep: bool) -> FrameParts {
+        let mut parts = FrameParts::default();
+        if keep && self.frame_touched {
+            let mut ran: Vec<(&String, &SpanStats)> = self.spans.iter().filter(|(_, s)| s.frame_calls > 0).collect();
+            // Ranked on exact durations: rounding to microseconds could tie two
+            // spans at the cut and keep the faster one.
+            ran.sort_by(|(an, a), (bn, b)| b.frame_total.cmp(&a.frame_total).then(a.frame_depth.cmp(&b.frame_depth)).then_with(|| an.cmp(bn)));
+            parts.omitted = ran.len().saturating_sub(MAX_FRAME_SPANS);
+            parts.spans = ran.into_iter().take(MAX_FRAME_SPANS).map(|(name, s)| FrameSpan {
+                name: name.clone(), parent: s.frame_parent.clone(), depth: s.frame_depth, calls: s.frame_calls,
+                total_ms: millis(s.frame_total), max_ms: millis(s.frame_max),
+            }).collect();
+        }
+        self.clear_frame();
+        parts
+    }
+
     fn admits(&mut self, name: &str, known: bool) -> bool {
         if known { return true; }
         if self.spans.len() + self.counters.len() < MAX_PROFILE_NAMES { return true; }
@@ -238,16 +329,31 @@ impl ScriptProfile {
         false
     }
 
+    /// A span entered with `enter` finished after `elapsed`.
     pub(crate) fn span(&mut self, name: &str, elapsed: Duration, heap_growth: usize) {
+        self.open_len = self.open_len.saturating_sub(1);
+        let depth = u32::try_from(self.open_len).unwrap_or(u32::MAX);
         let known = self.spans.contains_key(name);
         if !self.admits(name, known) { return; }
-        let stats = self.spans.entry(name.to_string()).or_default();
+        if !known { self.spans.insert(name.to_string(), SpanStats::default()); }
+        let parent = self.open_len.checked_sub(1).map(|at| self.open[at].as_str());
+        let stats = self.spans.get_mut(name).expect("admitted above");
         stats.calls += 1;
         stats.total = stats.total.saturating_add(elapsed);
         stats.max = stats.max.max(elapsed);
         stats.heap_growth = stats.heap_growth.saturating_add(heap_growth as u64);
         if stats.recent.len() == MAX_FRAME_SAMPLES { stats.recent.pop_front(); }
         stats.recent.push_back(elapsed);
+        // Where its longest call ran: a short call elsewhere must not hide
+        // where the time went.
+        if stats.frame_calls == 0 || elapsed > stats.frame_max {
+            stats.frame_depth = depth;
+            if stats.frame_parent.as_deref() != parent { stats.frame_parent = parent.map(str::to_string); }
+        }
+        stats.frame_calls += 1;
+        stats.frame_total = stats.frame_total.saturating_add(elapsed);
+        stats.frame_max = stats.frame_max.max(elapsed);
+        self.frame_touched = true;
     }
 
     pub(crate) fn count(&mut self, name: &str, amount: f64) {
@@ -258,8 +364,14 @@ impl ScriptProfile {
         stats.frame += amount;
     }
 
-    /// The update about to run produces world frame `frame`.
-    pub(crate) fn begin_update(&mut self, frame: u64) { self.mark_frame = frame; }
+    /// The update about to run produces world frame `frame`. No span is open
+    /// between updates, and the last frame's parts are cleared even when it
+    /// failed or was not recorded.
+    pub(crate) fn begin_update(&mut self, frame: u64) {
+        self.mark_frame = frame;
+        self.open_len = 0;
+        self.clear_frame();
+    }
 
     pub(crate) fn mark(&mut self, name: &str) {
         if self.marks.len() >= MAX_PROFILE_MARKS {
@@ -336,6 +448,27 @@ struct FrameSample {
     timing: FrameTiming,
 }
 
+#[derive(Debug, Clone)]
+struct SlowFrame {
+    sample: FrameSample,
+    parts: FrameParts,
+}
+
+impl SlowFrame {
+    fn report(&self) -> SlowestFrame {
+        let timing = self.sample.timing;
+        SlowestFrame {
+            frame: self.sample.frame,
+            total_ms: millis(timing.total),
+            script_ms: millis(timing.script),
+            physics_ms: millis(timing.physics),
+            observe_ms: millis(timing.observe),
+            spans: self.parts.spans.clone(),
+            spans_omitted: self.parts.omitted,
+        }
+    }
+}
+
 /// Retains exact cumulative counters for run-wide totals and a bounded recent
 /// window for distributional metrics. A long-lived runtime therefore cannot
 /// grow its profiling allocation once the window is full.
@@ -351,7 +484,8 @@ pub(crate) struct PerformanceCollector {
     serialize_frames: u64,
     observation_bytes: u64,
     positive_heap_delta_bytes: u64,
-    slowest: Option<FrameSample>,
+    /// Slowest first; among equal times the later frame first.
+    slowest: Vec<SlowFrame>,
 }
 
 impl Default for PerformanceCollector {
@@ -367,7 +501,7 @@ impl Default for PerformanceCollector {
             serialize_frames: 0,
             observation_bytes: 0,
             positive_heap_delta_bytes: 0,
-            slowest: None,
+            slowest: Vec::with_capacity(MAX_SLOWEST_FRAMES + 1),
         }
     }
 }
@@ -390,7 +524,16 @@ impl PerformanceCollector {
             self.positive_heap_delta_bytes.saturating_add(bytes as u64);
     }
 
-    pub(crate) fn record(&mut self, frame: u64, timing: FrameTiming) {
+    /// Whether a frame that took `total` would be kept among the slowest, so
+    /// its spans are worth collecting.
+    pub(crate) fn keeps(&self, total: Duration) -> bool {
+        self.slowest.len() < MAX_SLOWEST_FRAMES
+            || self.slowest.last().is_some_and(|slow| total >= slow.sample.timing.total)
+    }
+
+    /// `parts` is what `ScriptProfile::frame_spans` collected for this frame
+    /// (empty when `keeps` said no).
+    pub(crate) fn record(&mut self, frame: u64, timing: FrameTiming, parts: FrameParts) {
         self.frame_count = self.frame_count.saturating_add(1);
         self.total = self.total.saturating_add(timing.total);
         self.script = self.script.saturating_add(timing.script);
@@ -398,11 +541,10 @@ impl PerformanceCollector {
         self.observe = self.observe.saturating_add(timing.observe);
 
         let sample = FrameSample { frame, timing };
-        if self
-            .slowest
-            .is_none_or(|slowest| timing.total >= slowest.timing.total)
-        {
-            self.slowest = Some(sample);
+        if self.keeps(timing.total) {
+            let at = self.slowest.partition_point(|slow| slow.sample.timing.total > timing.total);
+            self.slowest.insert(at, SlowFrame { sample, parts });
+            self.slowest.truncate(MAX_SLOWEST_FRAMES);
         }
 
         if MAX_FRAME_SAMPLES != 0 {
@@ -428,6 +570,7 @@ impl PerformanceCollector {
                 median_frame_ms: 0.0,
                 p95_frame_ms: 0.0,
                 slowest_frame: None,
+                slowest_frames: Vec::new(),
                 sustained_fps: 0.0,
                 frame_budget_ms: budget_ms,
                 frames_over_budget: 0,
@@ -459,7 +602,7 @@ impl PerformanceCollector {
         let p95_index = ((sample_count as f64 * 0.95).ceil() as usize).clamp(1, sample_count) - 1;
         let p95 = totals[p95_index];
 
-        let slowest = self.slowest.expect("frame_count is not zero");
+        let slowest_frames: Vec<SlowestFrame> = self.slowest.iter().map(SlowFrame::report).collect();
         let measured = self
             .script
             .saturating_add(self.physics)
@@ -492,13 +635,8 @@ impl PerformanceCollector {
             mean_frame_ms: mean_ms,
             median_frame_ms: millis(median),
             p95_frame_ms: millis(p95),
-            slowest_frame: Some(SlowestFrame {
-                frame: slowest.frame,
-                total_ms: millis(slowest.timing.total),
-                script_ms: millis(slowest.timing.script),
-                physics_ms: millis(slowest.timing.physics),
-                observe_ms: millis(slowest.timing.observe),
-            }),
+            slowest_frame: slowest_frames.first().cloned(),
+            slowest_frames,
             sustained_fps: if mean.is_zero() {
                 0.0
             } else {
@@ -554,6 +692,47 @@ impl PerformanceCollector {
     }
 }
 
+/// Span lines printed per slow frame in Markdown; JSON keeps `MAX_FRAME_SPANS`.
+const MARKDOWN_FRAME_SPANS: usize = 12;
+
+/// A slow frame's spans as a tree, each under the span open around its
+/// longest call; one whose parent is not listed starts a branch of its own.
+fn push_frame_spans(out: &mut String, frame: &SlowestFrame) {
+    struct Tree<'a> { spans: &'a [FrameSpan], shown: Vec<bool>, lines: usize }
+    impl Tree<'_> {
+        fn line(&mut self, out: &mut String, at: usize, indent: usize, orphan: bool) {
+            let spans = self.spans;
+            let span = &spans[at];
+            let calls = if span.calls == 1 { String::new() } else { format!(", {} calls, max {:.3}", span.calls, span.max_ms) };
+            let within = match (&span.parent, orphan) { (Some(parent), true) => format!(" (in {parent})"), _ => String::new() };
+            out.push_str(&format!("{}- {} {:.3}{calls}{within}\n", "  ".repeat(indent), span.name, span.total_ms));
+            self.shown[at] = true;
+            self.lines += 1;
+            for child in 0..self.spans.len() {
+                if !self.shown[child] && self.lines < MARKDOWN_FRAME_SPANS && self.spans[child].parent.as_deref() == Some(span.name.as_str()) {
+                    self.line(out, child, indent + 1, false);
+                }
+            }
+        }
+    }
+    let mut tree = Tree { spans: &frame.spans, shown: vec![false; frame.spans.len()], lines: 0 };
+    // Roots, then branches whose parent is not listed, then anything left.
+    let listed = |name: &str| frame.spans.iter().any(|span| span.name == name);
+    for pass in 0..3 {
+        for at in 0..frame.spans.len() {
+            let parent = frame.spans[at].parent.as_deref();
+            let starts = match pass { 0 => parent.is_none(), 1 => parent.is_some_and(|p| !listed(p)), _ => true };
+            if starts && !tree.shown[at] && tree.lines < MARKDOWN_FRAME_SPANS {
+                tree.line(out, at, 1, pass > 0);
+            }
+        }
+    }
+    let hidden = frame.spans.len() - tree.lines + frame.spans_omitted;
+    if hidden > 0 {
+        out.push_str(&format!("  - ... {hidden} more span name(s)\n"));
+    }
+}
+
 /// Render the report the way an author reads it before deciding what to fix.
 pub fn to_markdown(report: &PerformanceReport) -> String {
     let mut out = String::new();
@@ -596,6 +775,13 @@ pub fn to_markdown(report: &PerformanceReport) -> String {
             slowest.physics_ms,
             slowest.observe_ms
         ));
+    }
+    if report.slowest_frames.iter().any(|frame| !frame.spans.is_empty()) {
+        out.push_str("\nSlowest frames with their spans (inclusive ms, each under the span it ran in):\n");
+        for frame in &report.slowest_frames {
+            out.push_str(&format!("- frame {}: {:.3} ms (script {:.3})\n", frame.frame, frame.total_ms, frame.script_ms));
+            push_frame_spans(&mut out, frame);
+        }
     }
     out.push_str(&format!(
         "\nPer frame: {} entities ({} with rigidbodies), {} UI nodes, {} effects, {} observations\n",
@@ -647,7 +833,124 @@ pub(crate) fn timed<T>(work: impl FnOnce() -> T) -> (T, Duration) {
 mod tests {
     use std::time::Duration;
 
-    use super::{FrameCounts, FrameTiming, MAX_FRAME_SAMPLES, PerformanceCollector, build_profile};
+    use super::{FrameCounts, FrameParts, FrameSpan, FrameTiming, MAX_FRAME_SAMPLES, MAX_FRAME_SPANS, MAX_SLOWEST_FRAMES, PerformanceCollector, ScriptProfile, build_profile, to_markdown};
+
+    /// Run-wide span maxima may come from different frames, so they cannot say
+    /// which spans made one slow frame; the slowest frames keep their own.
+    #[test]
+    fn the_slowest_frames_keep_the_spans_they_ran() {
+        let ms = |n: u64| Duration::from_millis(n);
+        let mut profile = ScriptProfile::default();
+        let mut collector = PerformanceCollector::default();
+        for index in 1..=20u64 {
+            profile.begin_update(index);
+            let ai = if index == 7 { 40 } else { 1 };
+            profile.enter("world");
+            profile.enter("ai");
+            profile.span("ai", ms(ai), 0);
+            profile.span("world", ms(ai + 2), 0);
+            profile.enter("draw");
+            profile.span("draw", ms(3), 0);
+            if index == 7 {
+                profile.enter("draw");
+                profile.span("draw", ms(2), 0);
+            }
+            let total = ms(ai + 6);
+            let parts = profile.frame_spans(collector.keeps(total));
+            collector.record(index, FrameTiming { script: total, total, ..FrameTiming::default() }, parts);
+        }
+        let report = collector.report(FrameCounts::default(), 0, Duration::from_millis(16));
+        let slowest = report.slowest_frame.clone().expect("a slowest frame");
+        assert_eq!((slowest.frame, slowest.spans_omitted), (7, 0));
+        let span = |name: &str, parent: Option<&str>, depth: u32, calls: u64, total_ms: f64, max_ms: f64| FrameSpan {
+            name: name.to_string(), parent: parent.map(str::to_string), depth, calls, total_ms, max_ms,
+        };
+        assert_eq!(slowest.spans, [span("world", None, 0, 1, 42.0, 42.0), span("ai", Some("world"), 1, 1, 40.0, 40.0), span("draw", None, 0, 2, 5.0, 3.0)]);
+        assert_eq!(report.slowest_frames.len(), MAX_SLOWEST_FRAMES);
+        assert_eq!(report.slowest_frames[0].frame, 7);
+        // Equal frames: the latest first, each with only its own frame's spans.
+        let rest: Vec<u64> = report.slowest_frames[1..].iter().map(|f| f.frame).collect();
+        assert_eq!(rest, [20, 19, 18, 17, 16, 15, 14]);
+        assert!(report.slowest_frames[1..].iter().all(|f| f.spans == [span("draw", None, 0, 1, 3.0, 3.0), span("world", None, 0, 1, 3.0, 3.0), span("ai", Some("world"), 1, 1, 1.0, 1.0)]));
+        // A child prints under its own parent, not under whatever sorts above it.
+        let text = to_markdown(&report);
+        assert!(text.contains("- frame 7: 46.000 ms (script 46.000)\n  - world 42.000\n    - ai 40.000\n  - draw 5.000, 2 calls, max 3.000\n"), "{text}");
+
+        // A frame that failed or was not recorded leaves nothing to the next one.
+        profile.begin_update(21);
+        profile.enter("ai");
+        profile.span("ai", ms(1), 0);
+        profile.enter("left open");
+        profile.begin_update(22);
+        profile.enter("draw");
+        profile.span("draw", ms(1), 0);
+        assert_eq!(profile.frame_spans(true).spans, [span("draw", None, 0, 1, 1.0, 1.0)]);
+        // A frame not kept collects nothing and is still cleared.
+        profile.begin_update(23);
+        profile.enter("ai");
+        profile.span("ai", ms(1), 0);
+        assert!(profile.frame_spans(false).spans.is_empty());
+        assert!(profile.frame_spans(true).spans.is_empty());
+        // Parent and depth are those of the longest call: a short shallow call
+        // must not hide where the time went.
+        profile.begin_update(24);
+        profile.enter("hooks");
+        profile.enter("path");
+        profile.span("path", ms(1), 0);
+        profile.span("hooks", ms(1), 0);
+        profile.enter("ai");
+        profile.enter("plan");
+        profile.enter("path");
+        profile.span("path", ms(30), 0);
+        profile.span("plan", ms(31), 0);
+        profile.span("ai", ms(32), 0);
+        let path = profile.frame_spans(true).spans.into_iter().find(|s| s.name == "path").expect("path ran");
+        assert_eq!((path.parent.as_deref(), path.depth, path.calls, path.total_ms), (Some("plan"), 2, 2, 31.0));
+    }
+
+    /// A frame with more span names than are kept says how many it left out,
+    /// ranks them on exact time, and a span whose parent was cut still shows.
+    #[test]
+    fn a_slow_frame_counts_the_spans_it_leaves_out() {
+        let mut profile = ScriptProfile::default();
+        profile.begin_update(1);
+        profile.enter("outer");
+        // outer and s02..s23 come first; s01 (2.4 us) and s00 (1.6 us) both
+        // round to 0.002 ms and stand at the cut, 24th and 25th; s24..s29 less.
+        for n in 0..30u64 {
+            let name = format!("s{n:02}");
+            profile.enter(&name);
+            let nanos = match n { 0 => 1_600, 1 => 2_400, 2..=23 => 10_000 * (n + 1), _ => 1_000 };
+            profile.span(&name, Duration::from_nanos(nanos), 0);
+        }
+        profile.span("outer", Duration::from_millis(5), 0);
+        let parts = profile.frame_spans(true);
+        assert_eq!((parts.spans.len(), parts.omitted), (MAX_FRAME_SPANS, 31 - MAX_FRAME_SPANS));
+        assert_eq!(parts.spans[0].name, "outer");
+        assert_eq!(parts.spans.last().map(|s| s.name.as_str()), Some("s01"), "ranked on exact time, not on rounded time then name");
+        assert!(parts.spans.iter().all(|s| s.name != "s00"));
+
+        let mut collector = PerformanceCollector::default();
+        collector.record(1, FrameTiming { script: Duration::from_millis(6), total: Duration::from_millis(6), ..FrameTiming::default() }, parts);
+        let mut report = collector.report(FrameCounts::default(), 0, Duration::from_millis(16));
+        let text = to_markdown(&report);
+        assert!(text.contains("  - outer 5.000\n    - s23 0.240\n") && text.contains("  - ... 19 more span name(s)\n"), "{text}");
+        // A span whose parent is not listed starts a branch and names it.
+        report.slowest_frames[0].spans.remove(0);
+        let text = to_markdown(&report);
+        assert!(text.contains("  - s23 0.240 (in outer)\n"), "{text}");
+        // A branch whose parent is not listed stays one branch: C under B, B (in A).
+        let span = |name: &str, parent: &str, total_ms: f64| FrameSpan { name: name.to_string(), parent: Some(parent.to_string()), depth: 1, calls: 1, total_ms, max_ms: total_ms };
+        report.slowest_frames[0].spans = vec![span("C", "B", 10.0), span("B", "A", 9.0)];
+        let text = to_markdown(&report);
+        assert!(text.contains("  - B 9.000 (in A)\n    - C 10.000\n"), "{text}");
+        // Without spans a frame still has an (empty) list, never a missing field.
+        let mut plain = PerformanceCollector::default();
+        plain.record(1, FrameTiming::default(), FrameParts::default());
+        let json = serde_json::to_value(plain.report(FrameCounts::default(), 0, Duration::from_millis(16))).unwrap();
+        assert_eq!(json["slowest_frames"][0]["spans"], serde_json::json!([]));
+        assert_eq!(json["slowest_frame"]["spans_omitted"], 0);
+    }
 
     /// A profile that cannot see the cost a host actually pays sends an author
     /// optimising the wrong phase. These three were invisible until now.
@@ -655,7 +958,7 @@ mod tests {
     fn a_profile_reports_the_costs_a_frame_time_alone_hides() {
         let mut collector = PerformanceCollector::default();
         for index in 0..4 {
-            collector.record(index, frame(100, 200, 300));
+            collector.record(index, frame(100, 200, 300), FrameParts::default());
             collector.record_heap_delta(1_000);
         }
         // Nothing asked for it, so nothing paid for it, and it is not reported.
@@ -692,7 +995,7 @@ mod tests {
     #[test]
     fn a_debug_profile_says_so_in_its_own_notes() {
         let mut collector = PerformanceCollector::default();
-        collector.record(0, frame(100, 200, 300));
+        collector.record(0, frame(100, 200, 300), FrameParts::default());
         let report = collector.report(
             FrameCounts::default(),
             0,
@@ -723,9 +1026,9 @@ mod tests {
     #[test]
     fn it_names_the_phase_that_costs_the_most_and_the_worst_frame() {
         let mut collector = PerformanceCollector::default();
-        collector.record(40, frame(1_000, 100, 100));
-        collector.record(41, frame(1_000, 100, 100));
-        collector.record(42, frame(9_000, 100, 100));
+        collector.record(40, frame(1_000, 100, 100), FrameParts::default());
+        collector.record(41, frame(1_000, 100, 100), FrameParts::default());
+        collector.record(42, frame(9_000, 100, 100), FrameParts::default());
 
         let report = collector.report(
             FrameCounts {
@@ -750,8 +1053,8 @@ mod tests {
     #[test]
     fn it_counts_frames_that_missed_the_fixed_timestep_budget() {
         let mut collector = PerformanceCollector::default();
-        collector.record(collector.frame_count, frame(1_000, 0, 0));
-        collector.record(1, frame(20_000, 0, 0));
+        collector.record(collector.frame_count, frame(1_000, 0, 0), FrameParts::default());
+        collector.record(1, frame(20_000, 0, 0), FrameParts::default());
         let report = collector.report(FrameCounts::default(), 0, Duration::from_micros(16_667));
         assert_eq!(report.frames_over_budget, 1);
         assert!(report.sustained_fps > 0.0);
@@ -773,9 +1076,9 @@ mod tests {
     #[test]
     fn it_bounds_samples_while_preserving_cumulative_totals_and_maxima() {
         let mut collector = PerformanceCollector::default();
-        collector.record(0, frame(100_000, 0, 0));
+        collector.record(0, frame(100_000, 0, 0), FrameParts::default());
         for _ in 0..MAX_FRAME_SAMPLES {
-            collector.record(collector.frame_count, frame(1_000, 0, 0));
+            collector.record(collector.frame_count, frame(1_000, 0, 0), FrameParts::default());
         }
 
         assert_eq!(collector.samples.len(), MAX_FRAME_SAMPLES);

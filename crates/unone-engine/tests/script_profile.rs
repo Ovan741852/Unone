@@ -41,6 +41,48 @@ fn spans_and_counters_are_reported_and_leave_the_run_unchanged() {
     assert!(!json["world"].to_string().contains("\"work\""), "spans never reach the world");
 }
 
+/// The slowest frame says which spans it ran, nested ones with their depth,
+/// and every kept frame holds only its own frame's spans.
+#[test]
+fn the_slowest_frame_names_the_spans_it_ran() {
+    let source = r#"
+local frame = 0
+return {
+  start = function(api) end,
+  update = function(api, dt)
+    frame += 1
+    local sum = api.profile.span('outer', function()
+      local s = api.profile.span('inner', function() return 1 end)
+      if frame == 3 then
+        s += api.profile.span('heavy', function() local t = 0 for i = 1, 3000000 do t += i % 7 end return t end)
+      end
+      return s
+    end)
+    api.observation.set('sum', sum)
+  end,
+}"#;
+    let mut runtime = EngineRuntime::load_source("slow", "main.luau", source.to_string(), None).unwrap();
+    let run = runtime.run(6, 42).value.unwrap();
+    // All six frames are kept, so frame 3 is found by its number: which frame
+    // the machine made slowest is the scheduler's business, not the test's.
+    let frames = &run.performance.slowest_frames;
+    assert_eq!(frames.len(), 6);
+    let heavy = frames.iter().find(|f| f.frame == 3).expect("frame 3 kept");
+    let mut shape: Vec<(&str, Option<&str>, u32, u64)> = heavy.spans.iter().map(|s| (s.name.as_str(), s.parent.as_deref(), s.depth, s.calls)).collect();
+    assert_eq!(shape[0].0, "outer", "a span contains what runs inside it");
+    shape.sort();
+    assert_eq!(shape, [("heavy", Some("outer"), 1, 1), ("inner", Some("outer"), 1, 1), ("outer", None, 0, 1)]);
+    for frame in frames.iter().filter(|f| f.frame != 3) {
+        let mut names: Vec<(&str, u64)> = frame.spans.iter().map(|s| (s.name.as_str(), s.calls)).collect();
+        names.sort();
+        assert_eq!(names, [("inner", 1), ("outer", 1)], "frame {}", frame.frame);
+    }
+    assert_eq!(run.performance.slowest_frame.as_ref().map(|f| f.frame), Some(frames[0].frame));
+    let json = serde_json::to_value(&run.performance).unwrap();
+    let named = |f: &serde_json::Value, name: &str| f["spans"].as_array().unwrap().iter().any(|s| s["name"] == name);
+    assert!(json["slowest_frames"].as_array().unwrap().iter().any(|f| f["frame"] == 3 && named(f, "heavy")));
+}
+
 #[test]
 fn invalid_names_and_amounts_are_rejected() {
     for (work, code) in [("api.profile.count('', 1)", "PROFILE_NAME_INVALID"), ("api.profile.count('n', math.huge)", "PROFILE_COUNT_INVALID")] {

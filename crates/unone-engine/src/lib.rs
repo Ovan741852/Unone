@@ -179,7 +179,7 @@ pub use layout::{
     draw as draw_layout, inspect as inspect_layout, to_markdown as layout_markdown,
 };
 pub use performance::{
-    CounterTotal, FrameCounts, MAX_PROFILE_MARKS, PerformanceReport, PhaseCost, ProfileMark, ProfileMarksUpdate, SlowestFrame, SpanCost, StartupCost,
+    CounterTotal, FrameCounts, FrameSpan, MAX_FRAME_SPANS, MAX_PROFILE_MARKS, MAX_SLOWEST_FRAMES, PerformanceReport, PhaseCost, ProfileMark, ProfileMarksUpdate, SlowestFrame, SpanCost, StartupCost,
     to_markdown as performance_markdown,
 };
 pub use performance_targets::{

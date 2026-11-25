@@ -342,6 +342,7 @@ mod tests {
             median_frame_ms: p95 / 2.0,
             p95_frame_ms: p95,
             slowest_frame: None,
+            slowest_frames: Vec::new(),
             sustained_fps: 0.0,
             frame_budget_ms: 16.667,
             frames_over_budget: 0,

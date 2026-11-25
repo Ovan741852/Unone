@@ -1522,15 +1522,21 @@ impl EngineRuntime {
                 self.performance.record_serialization(serialize_time, bytes);
             }
 
-            self.script_profile.borrow_mut().end_frame();
+            let (total, spans) = {
+                let mut profile = self.script_profile.borrow_mut();
+                profile.end_frame();
+                let total = started.elapsed();
+                (total, profile.frame_spans(self.performance.keeps(total)))
+            };
             self.performance.record(
                 snapshot.frame,
                 FrameTiming {
                     script: script_time,
                     physics: physics_time,
                     observe: observe_time,
-                    total: started.elapsed(),
+                    total,
                 },
+                spans,
             );
         }
         host_time_tick.commit().map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;

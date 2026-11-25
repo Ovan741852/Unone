@@ -428,7 +428,7 @@ fn tool_definitions() -> Vec<Value> {
         tool(
             "unone_perf",
             "Measure frame cost",
-            "Run the project and report where a frame's time goes: script, physics and observe phases with their share, mean/median/p95 frame time, the slowest frame, how many frames missed the fixed timestep budget, the Luau heap size, and what a frame contained. Timings are wall clock and never enter the observation digest, so measuring cannot change what a run means. The engine does not guess what fast enough is: with targets declared in project.unone.json `performance` it warns for each one missed (PERF_*_OVER_TARGET) and names the phase and game spans to start with; without them it warns that none are declared (PERF_TARGETS_UNDECLARED).",
+            "Run the project and report where a frame's time goes: script, physics and observe phases with their share, mean/median/p95 frame time, the slowest frames with the game spans each ran, how many frames missed the fixed timestep budget, the Luau heap size, and what a frame contained. Timings are wall clock and never enter the observation digest, so measuring cannot change what a run means. The engine does not guess what fast enough is: with targets declared in project.unone.json `performance` it warns for each one missed (PERF_*_OVER_TARGET) and names the phase and game spans to start with; without them it warns that none are declared (PERF_TARGETS_UNDECLARED).",
             object_schema(json!({
                 "properties": {
                     "frames": {"type": "integer", "minimum": 1, "default": 600, "description": "Frames to measure; more frames make the percentiles meaningful."},
