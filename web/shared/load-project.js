@@ -37,6 +37,22 @@ export function payloadDataSources(payload){
     ...(payload?.script_bytecode?[{id:SCRIPT_BYTECODE_DATA_ID,source:payload.script_bytecode.source}]:[]),
     ...(payload?.script_module_bytecode?[{id:SCRIPT_MODULE_BYTECODE_DATA_ID,source:payload.script_module_bytecode.source}]:[])];
 }
+export function fetchProjectData(payload,baseURI,onProgress){
+  const sources=payloadDataSources(payload);
+  const pendingBySource=new Map();
+  let loaded=0;
+  async function read(source){
+    const response=await fetch(new URL('content/'+source,baseURI));
+    if(!response.ok)throw Error(`CONTENT_LOAD_FAILED: ${source} (${response.status})`);
+    return new Uint8Array(await response.arrayBuffer());
+  }
+  return Promise.all(sources.map(async({id,source})=>{
+    if(!pendingBySource.has(source))pendingBySource.set(source,read(source));
+    const bytes=await pendingBySource.get(source);
+    onProgress?.(++loaded,sources.length);
+    return {id,bytes};
+  }));
+}
 // Optional trusted Core ABI grant: immutable resource generations are leased by
 // the runtime until its next successful publication. Never retain a heap view.
 const imageResources=new WeakMap();

@@ -13,7 +13,7 @@ import {createRuntimeBackend} from '../shared/runtime-backend.mjs';
 import {prefetchRuntime} from '../shared/runtime-core.mjs';
 import {createSpriteResourceHost} from '../shared/sprite-resource-host.mjs';
 import {createImageGroupHost} from '../shared/image-group-host.mjs';
-import {payloadDataSources,playerSeed,textureCatalog} from '../shared/load-project.js';
+import {fetchProjectData,playerSeed,textureCatalog} from '../shared/load-project.js';
 import {createPresentationInterpolator} from '../shared/presentation-interpolation.mjs';
 import {createAudioPlayback} from '../shared/audio-playback.js';
 import {requireAssetEncoding,createAssetCatalog,createImageAssetBroker,validateImagePreloadPlan,installPlayerAssetGroups,IMAGE_PRELOAD_PLAN_MAX_BYTES} from '../shared/asset-encoding.js';
@@ -124,7 +124,7 @@ function uiPassHidden(snapshot){return Boolean(snapshot.world?.render_pipeline?.
 // Core checks sprite resources against the manifest this player loads anyway.
 function withCatalog(project,manifest){const catalog=textureCatalog(manifest);if(catalog.length)project.asset_catalog=catalog;return project;}
 // Declared data assets are fetched as bytes for the core's api.assets loaders.
-function dataAssets(project,onProgress=null){const sources=payloadDataSources(project);let loaded=0;return Promise.all(sources.map(async asset=>{const r=await fetch(new URL('content/'+asset.source,document.baseURI));if(!r.ok)throw Error(`CONTENT_LOAD_FAILED: ${asset.source} (${r.status})`);const bytes=new Uint8Array(await r.arrayBuffer());onProgress?.(++loaded,sources.length);return {id:asset.id,bytes};}));}
+function dataAssets(project,onProgress=null){return fetchProjectData(project,document.baseURI,onProgress);}
 // The project's display (project.unone.json): with aspect "keep" the stage is the largest
 // rectangle of the design shape that fits the window, centred, the page showing around it;
 // otherwise it fills the window and the game takes the device's shape.
