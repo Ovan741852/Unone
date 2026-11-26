@@ -37,6 +37,21 @@ test('equal shipped data can share a source while keeping logical IDs and decode
  ]);
  assert.equal(refreshed.files.has('content/b.bin'),true);
 });
+test('deferred bytes are packaged with their policy and only eager aliases are staged at startup',t=>{
+ const root=temporary(t),dir=project(root),b=base(root);
+ for(const source of ['intro.bin','intro-copy.bin'])write(dir,source,Buffer.from([0,9,2]));
+ const movie={id:'data://movie',source:'intro.bin',kind:'data',encoding:{format:'raw',mime:'application/octet-stream',decoder:'bytes',on_demand:true}};
+ const alias={id:'data://copy',source:'intro-copy.bin',kind:'data'};
+ write(dir,'assets.json',{assets:[movie,alias]});
+ const c=assembleContent(dir,b);
+ assert.deepEqual(c.payload.data_assets,[{id:movie.id,source:movie.source,loader:'bytes',on_demand:true},{id:alias.id,source:movie.source,loader:'bytes'}]);
+ assert.deepEqual(c.data,[{id:alias.id,source:path.join(dir,movie.source)}]);
+ assert.equal(c.files.get('content/intro.bin').bytes,3);
+ for(const encoding of [{...movie.encoding,on_demand:1},{...movie.encoding,decoder:'text'}]){
+  write(dir,'assets.json',{assets:[{...movie,encoding}]});
+  assert.throws(()=>assembleContent(dir,b),/WEB_REFRESH_ENCODING_(INVALID|UNSUPPORTED)/);
+ }
+});
 test('new import/derived formats fail specifically; unchanged derived products require exact spec and bytes',t=>{
  const root=temporary(t),dir=project(root),mesh={id:'mesh://one',source:'one.mesh.json',kind:'mesh3d',encoding:{format:'unone-mesh-json',decoder:'mesh',mime:'application/json'}},bytes=Buffer.from('{"texture":"t"}');write(dir,'one.mesh.json',bytes);write(dir,'assets.json',{assets:[mesh]});const b=base(root,[mesh]);
  // Base product must be indexed; a matching path/spec alone is insufficient.

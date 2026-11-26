@@ -18,7 +18,7 @@ export function inspectRuntime(directory){
  const wasm=fs.readFileSync(files.get('runtime/'+metadata.wasm).source),exports=new Set(WebAssembly.Module.exports(new WebAssembly.Module(wasm)).map(v=>v.name));
  for(const name of ['alloc','load_project','unload_project','set_input_frame','tick','observation_ptr','observation_len','sprite_resources_request'])requireThat(exports.has('unone_web_'+name),'WEB_REFRESH_RUNTIME_ABI',name);
  for(const name of ['developer_request','reload_script','bundle_begin'])requireThat(!exports.has('unone_web_'+name),'WEB_REFRESH_RUNTIME_DEVELOPMENT_ABI',name);
- put(files,dataRecord('runtime/runtime.json',manifestBytes));return{root,metadata,files,sha256:sha(manifestBytes)};
+ put(files,dataRecord('runtime/runtime.json',manifestBytes));return{root,metadata,files,exports,sha256:sha(manifestBytes)};
 }
 async function validatePresentation(hostRoot,presentation,assets){
  const from=relative=>import(pathToFileURL(sourceFile(hostRoot,'web/'+relative)).href);
@@ -52,6 +52,9 @@ export async function refreshOfficialWeb({project,inputExport,hostRoot,hostSha25
  requireThat(!fs.existsSync(out)&&![projectRoot,baseRoot,runtimeRoot].some(root=>inside(root,out)),'WEB_REFRESH_OUTPUT_NOT_FRESH');checkedRoot(path.dirname(out));
  const inspection=inspectHostSnapshot(host);requireThat(inspection.sha256===hostSha256,'WEB_REFRESH_HOST_PIN_MISMATCH');const selected=inspectRuntime(runtimeRoot);requireThat(selected.sha256===runtimeSha256,'WEB_REFRESH_RUNTIME_PIN_MISMATCH');
  const base=verifiedExport(baseRoot),content=assembleContent(projectRoot,base),enabled=resolveSystems(host,content.payload.config.systems??{});
+ if(content.payload.data_assets?.some(asset=>asset.on_demand)){
+  for(const name of ['unone_web_data_requests','unone_web_deferred_reserve'])requireThat(selected.exports.has(name),'WEB_REFRESH_RUNTIME_ABI',name);
+ }
  for(const id of enabled)requireThat(selected.metadata.compiled_systems.includes(id),'SYSTEM_NOT_COMPILED',id);
  for(const [id,version]of Object.entries(content.payload.config.runtime_packages??{}))requireThat(selected.metadata.runtime_packages[id]===version,'RUNTIME_PACKAGE_UNAVAILABLE',id+'@'+version);
  const encoding=await validatePresentation(host,content.presentation,content.assets),built=assembleHost(host,inspection,enabled,selected.metadata,content.assets),preload=addPreload(projectRoot,content,encoding,applyStartupScreen(built.html,content.presentation.startup,content.payload.config.name));

@@ -94,6 +94,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/runtime-core.mjs",
         "shared/sprite-resource-host.mjs",
         "shared/image-group-host.mjs",
+        "shared/deferred-data-host.mjs",
         "shared/spatial-host.mjs",
         "shared/spatial-metrics.mjs",
         "shared/spatial-gpu.mjs",
@@ -228,6 +229,16 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         files.push((format!("runtime/{name}"), bytes));
     }
     let (config, settings, assets, content) = content(project)?;
+    if assets["assets"].as_array().is_some_and(|rows| rows.iter().any(|asset|
+        asset["kind"] == "data" && asset["encoding"]["on_demand"] == true
+    )) {
+        for name in ["data_requests", "deferred_reserve"] {
+            ensure!(
+                manifest["exports"].as_array().is_some_and(|exports| exports.iter().any(|e| e.as_str() == Some(name))),
+                "DATA_ASSET_RUNTIME_ABI_MISSING: rebuild the web player with support for on-demand data ({name})"
+            );
+        }
+    }
     // Validate the configuration actually serialized into this export as well,
     // in case authoring files changed after the early compatibility preflight.
     validate_runtime_packages(&config.runtime_packages, &manifest)?;
@@ -1118,7 +1129,7 @@ mod content_file_tests {
     #[test]
     fn shared_data_sources_keep_logical_ids_loaders_and_distinct_bytes() {
         let decl = |name: &str, loader: &str| unone_engine::DataAssetDecl {
-            id: name.into(), source: format!("{name}.bin"), loader: loader.into(),
+            id: name.into(), source: format!("{name}.bin"), loader: loader.into(), on_demand: false,
         };
         let mut assets = vec![decl("a", "bytes"), decl("b", "text"), decl("c", "bytes")];
         let files = vec![
@@ -1202,7 +1213,7 @@ pub(crate) fn content(project:&Path)->Result<ExportContent>{
         },
         None => Vec::new(),
     };
-    let data = data_assets.iter()
+    let data = data_assets.iter().filter(|asset| !asset.on_demand)
         .map(|asset| Ok((asset.id.clone(), fs::read(inside(project, &asset.source)?)?)))
         .collect::<Result<std::collections::BTreeMap<_, _>>>()?;
     if !data_assets.is_empty() {

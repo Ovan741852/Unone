@@ -4,6 +4,7 @@ import {isDeepStrictEqual} from 'node:util';
 import {sourceFile,fileRecord,dataRecord,json,text,put,requireThat,order,encodeJson} from './web-export-files.mjs';
 
 const assetFields=['id','source','kind','bundle','files','encoding','import'];
+const encodingFields=['format','format_version','mime','decoder','companions','on_demand'];
 const knownImages={'.png':['png','image/png'],'.jpg':['jpeg','image/jpeg'],'.jpeg':['jpeg','image/jpeg'],'.webp':['webp','image/webp'],'.svg':['svg','image/svg+xml']};
 const knownAudio={'.wav':['wav','audio/wav'],'.mp3':['mp3','audio/mpeg'],'.ogg':['ogg','audio/ogg']};
 function closed(value,allowed,code){requireThat(value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).every(k=>allowed.includes(k)),code);}
@@ -15,7 +16,7 @@ function encodingFor(asset){
  const pair=(asset.kind==='texture2d'?knownImages:knownAudio)[path.extname(asset.source).toLowerCase()];
  requireThat(pair,'WEB_REFRESH_NEW_DERIVED_FORMAT_UNSUPPORTED',asset.id);
  const [format,mime]=pair,decoder=asset.kind==='texture2d'?'image':'audio';
- if(asset.encoding!=null){closed(asset.encoding,['format','format_version','mime','decoder','companions'],'WEB_REFRESH_ENCODING_INVALID');requireThat(asset.encoding.format===format&&asset.encoding.mime===mime&&asset.encoding.decoder===decoder&&asset.encoding.format_version==null&&(asset.encoding.companions??[]).length===0,'WEB_REFRESH_ENCODING_UNSUPPORTED',asset.id);return asset.encoding;}
+ if(asset.encoding!=null){requireThat(asset.encoding.format===format&&asset.encoding.mime===mime&&asset.encoding.decoder===decoder&&asset.encoding.format_version==null&&(asset.encoding.companions??[]).length===0,'WEB_REFRESH_ENCODING_UNSUPPORTED',asset.id);return asset.encoding;}
  return{format,mime,decoder,companions:[]};
 }
 function readModules(project,entry){
@@ -31,7 +32,11 @@ function assetRecord(project,base,raw,files,reused){
  const asset={...raw,kind:raw.kind??'texture2d',bundle:raw.bundle??'content'};
  requireThat(['texture2d','audio','mesh3d','effekseer','data'].includes(asset.kind),'PLAYER_DECODER_UNAVAILABLE',asset.id);
  requireThat(asset.files===undefined||Array.isArray(asset.files)&&asset.files.every(f=>typeof f==='string'),'WEB_REFRESH_ASSET_INVALID',asset.id);
- if(asset.encoding!=null){closed(asset.encoding,['format','format_version','mime','decoder','companions'],'WEB_REFRESH_ENCODING_INVALID');for(const key of ['format','mime','decoder'])requireThat(typeof asset.encoding[key]==='string','WEB_REFRESH_ENCODING_INVALID',asset.id);requireThat(asset.encoding.format_version==null||typeof asset.encoding.format_version==='string','WEB_REFRESH_ENCODING_INVALID');requireThat(Array.isArray(asset.encoding.companions??[]),'WEB_REFRESH_ENCODING_INVALID');for(const c of asset.encoding.companions??[]){closed(c,['path','role','mime'],'WEB_REFRESH_ENCODING_INVALID');requireThat(['path','role','mime'].every(k=>typeof c[k]==='string'),'WEB_REFRESH_ENCODING_INVALID');}}
+ if(asset.encoding!=null){closed(asset.encoding,encodingFields,'WEB_REFRESH_ENCODING_INVALID');for(const key of ['format','mime','decoder'])requireThat(typeof asset.encoding[key]==='string','WEB_REFRESH_ENCODING_INVALID',asset.id);requireThat(asset.encoding.format_version==null||typeof asset.encoding.format_version==='string','WEB_REFRESH_ENCODING_INVALID');requireThat(Array.isArray(asset.encoding.companions??[]),'WEB_REFRESH_ENCODING_INVALID');for(const c of asset.encoding.companions??[]){closed(c,['path','role','mime'],'WEB_REFRESH_ENCODING_INVALID');requireThat(['path','role','mime'].every(k=>typeof c[k]==='string'),'WEB_REFRESH_ENCODING_INVALID');}
+  const deferred=asset.encoding.on_demand;
+  requireThat(deferred===undefined||typeof deferred==='boolean','WEB_REFRESH_ENCODING_INVALID',asset.id);
+  requireThat(!deferred||asset.kind==='audio'||asset.kind==='data'&&asset.encoding.decoder==='bytes','WEB_REFRESH_ENCODING_UNSUPPORTED',asset.id);
+ }
  requireThat([asset.source,...(asset.files??[])].every(name=>!/[#%]/.test(name)),'WEB_REFRESH_ASSET_PATH_UNSUPPORTED',asset.id);
  const records=[asset.source,...(asset.files??[])].map(name=>fileRecord(sourceFile(project,name),'content/'+name));
  const old=base.assets.find(a=>a.id===asset.id),matches=old&&sameSourceSpec(raw,old)&&records.every(r=>base.logical.get(r.path)?.sha256===r.sha256&&base.logical.get(r.path)?.bytes===r.bytes);
@@ -124,11 +129,14 @@ export function assembleContent(project,base){
  const data=assets.assets.filter(asset=>asset.kind==='data').map(asset=>{
   const record=files.get('content/'+asset.source);
   if(!dataSources.has(record.sha256))dataSources.set(record.sha256,asset.source);
-  return {id:asset.id,source:dataSources.get(record.sha256),loader:asset.encoding?.decoder??'bytes'};
+  const row={id:asset.id,source:dataSources.get(record.sha256),loader:asset.encoding?.decoder??'bytes'};
+  if(asset.encoding?.on_demand)row.on_demand=true;
+  return row;
  });
  if(data.length)payload.data_assets=data;
  const declared=new Map(assets.assets.map(a=>[a.id,a]));for(const entity of scene?.entities??[]){if(entity.sprite)requireThat(declared.get(entity.sprite.asset)?.kind==='texture2d','WEB_REFRESH_SPRITE_ASSET_UNDECLARED',entity.sprite.asset);if(entity.mesh3d)requireThat(['mesh://primitive/box','mesh://primitive/sphere'].includes(entity.mesh3d.asset)||declared.get(entity.mesh3d.asset)?.kind==='mesh3d','WEB_REFRESH_MESH_ASSET_UNDECLARED',entity.mesh3d.asset);}
  const presentation=presentationFor(project,files,oldPresentation?json(oldPresentation.source):{});
  put(files,dataRecord('content/project.json',encodeJson(payload)));put(files,dataRecord('content/assets.json',encodeJson(assets)));put(files,dataRecord('content/presentation.json',encodeJson(presentation)));
- return{files,payload,assets,presentation,font_subset_skipped:presentation.fontSubsetSkipped,rawConfig,data:data.map(d=>({id:d.id,source:files.get('content/'+d.source).source})),reused,project_pins:{config_sha256:fileRecord(sourceFile(project,'project.unone.json'),'').sha256,script_sha256:fileRecord(sourceFile(project,entry),'').sha256,module_sources:Object.keys(script_modules).sort(order)}};
+ const startupData=data.filter(row=>!row.on_demand).map(row=>({id:row.id,source:files.get('content/'+row.source).source}));
+ return{files,payload,assets,presentation,font_subset_skipped:presentation.fontSubsetSkipped,rawConfig,data:startupData,reused,project_pins:{config_sha256:fileRecord(sourceFile(project,'project.unone.json'),'').sha256,script_sha256:fileRecord(sourceFile(project,entry),'').sha256,module_sources:Object.keys(script_modules).sort(order)}};
 }
