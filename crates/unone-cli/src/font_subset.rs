@@ -123,20 +123,29 @@ struct FontSource {
     subset: bool,
 }
 
-/// `fonts/Sans[wght].ttf` at 600 is packaged as `fonts/Sans[wght].w600.ttf`.
-fn instance_path(path: &str, weight: u16) -> String {
+fn suffixed_path(path: &str, suffix: &str) -> String {
     match path.rsplit_once('.') {
-        Some((stem, extension)) if !extension.contains('/') => format!("{stem}.w{weight}.{extension}"),
-        _ => format!("{path}.w{weight}"),
+        Some((stem, extension)) if !extension.contains('/') => format!("{stem}.{suffix}.{extension}"),
+        _ => format!("{path}.{suffix}"),
+    }
+}
+
+fn available_font_output(files: &[(String, Vec<u8>)], source: &str, suffix: &str) -> String {
+    let mut output = suffixed_path(source, suffix);
+    let mut sequence = 0;
+    loop {
+        let packaged = format!("content/{output}");
+        if !files.iter().any(|(path, _)| path.eq_ignore_ascii_case(&packaged)) { return output; }
+        sequence += 1;
+        output = suffixed_path(source, &format!("{suffix}.{sequence}"));
     }
 }
 
 /// Subsets the faces that ask for it in `files` and returns the report, or
-/// `None` when no face asks. Static faces are replaced in place; a variable
-/// face is replaced by one instance file per declared weight, and the
-/// packaged presentation names those files. Development exports keep whole
-/// faces (reloaded scripts may show new text) but still check coverage.
-pub(crate) fn apply(project: &Path, ui: &PresentationUi, mut text: GameText, files: &mut Vec<(String, Vec<u8>)>, development: bool) -> Result<Option<Value>> {
+/// `None` when no face asks. The presentation names the subset files, while
+/// sources also declared as data keep their original bytes. Development
+/// exports keep whole faces for reloaded scripts and still check coverage.
+pub(crate) fn apply(project: &Path, ui: &PresentationUi, assets: &Value, mut text: GameText, files: &mut Vec<(String, Vec<u8>)>, development: bool) -> Result<Option<Value>> {
     if !ui.subset_enabled() { return Ok(None); }
     let default_settings = Default::default();
     let settings = ui.font_subset.as_ref().unwrap_or(&default_settings);
@@ -171,8 +180,12 @@ pub(crate) fn apply(project: &Path, ui: &PresentationUi, mut text: GameText, fil
     let keep: BTreeSet<char> = text.chars.keys().chain(&text.key_chars).copied().chain((0x20u8..0x7F).map(char::from)).collect();
 
     let mut faces = Vec::with_capacity(sources.len());
-    // (source, weight, packaged path) of each variable-font instance.
-    let mut instances: Vec<(String, u16, String)> = Vec::new();
+    // Use the authored manifest: two equal data files may share one runtime
+    // source, but both of their published paths still name the original bytes.
+    let data_sources: BTreeSet<_> = assets["assets"].as_array().into_iter().flatten()
+        .filter(|asset| asset["kind"] == "data")
+        .filter_map(|asset| asset["source"].as_str().map(str::to_ascii_lowercase)).collect();
+    let mut font_outputs: Vec<(String, Option<u16>, String)> = Vec::new();
     for (source, coverage) in sources.iter().zip(&coverage) {
         let index = index_of(files, &source.path)?;
         let original = files[index].1.len();
@@ -200,8 +213,8 @@ pub(crate) fn apply(project: &Path, ui: &PresentationUi, mut text: GameText, fil
             bail!("UI_FONT_SUBSET_SHAPING_UNSUPPORTED: {} needs OpenType layout (GSUB/GPOS) for {}, which subsetting does not keep; set \"subset\": false for this face",
                 source.path, list(&shaped, 10));
         }
-        // A variable font becomes one static instance per declared weight,
-        // each packaged as its own file; a static font is subset in place.
+        let keep_whole = data_sources.contains(&source.path.to_ascii_lowercase());
+        // Variable fonts have a distinct static instance per declared weight.
         let variable = truetype_subset::is_variable(&bytes);
         let weights: Vec<Option<u16>> = if variable {
             source.faces.iter().map(|(_, weight)| *weight).collect::<BTreeSet<_>>().into_iter().map(Some).collect()
@@ -217,31 +230,41 @@ pub(crate) fn apply(project: &Path, ui: &PresentationUi, mut text: GameText, fil
             face["glyphs"] = json!(result.glyphs);
             face["characters"] = json!(result.characters);
             face["dropped_tables"] = json!(result.dropped_tables);
-            match weight {
-                Some(weight) => {
-                    let output = instance_path(&source.path, weight);
-                    ensure!(index_of(files, &output).is_err(), "UI_FONT_SUBSET_PATH_CONFLICT: the instance of {} at weight {weight} would replace the packaged file {output}", source.path);
-                    face["output"] = json!(output);
-                    face["instance"] = json!({"wght": weight});
-                    files.push((format!("content/{output}"), result.bytes));
-                    instances.push((source.path.clone(), weight, output));
+            let output = if let Some(weight) = weight {
+                let suffix = format!("w{weight}");
+                let mut path = suffixed_path(&source.path, &suffix);
+                if data_sources.contains(&path.to_ascii_lowercase()) {
+                    path = available_font_output(files, &source.path, &suffix);
+                } else {
+                    ensure!(index_of(files, &path).is_err(), "UI_FONT_SUBSET_PATH_CONFLICT: the instance of {} at weight {weight} would replace the packaged file {path}", source.path);
                 }
-                None => files[index].1 = result.bytes,
+                face["instance"] = json!({"wght": weight});
+                Some(path)
+            } else if keep_whole {
+                Some(available_font_output(files, &source.path, "subset"))
+            } else {
+                None
+            };
+            if let Some(output) = output {
+                face["output"] = json!(output);
+                files.push((format!("content/{output}"), result.bytes));
+                font_outputs.push((source.path.clone(), weight, output));
+            } else {
+                files[index].1 = result.bytes;
             }
             faces.push(face);
         }
-        if variable {
-            // Every face of this file now names an instance.
+        if variable && !keep_whole {
             let whole = format!("content/{}", source.path);
             files.retain(|(path, _)| path != &whole);
         }
     }
-    if !instances.is_empty() {
+    if !font_outputs.is_empty() {
         let at = index_of(files, "presentation.json")?;
         let mut presentation: Value = serde_json::from_slice(&files[at].1)?;
         for face in presentation["ui"]["fonts"].as_array_mut().into_iter().flatten() {
-            let named = |(source, weight, _): &&(String, u16, String)| face["source"] == json!(source) && face["weight"] == json!(weight);
-            if let Some((_, _, output)) = instances.iter().find(named) { face["source"] = json!(output); }
+            let named = |(source, weight, _): &&(String, Option<u16>, String)| face["source"] == json!(source) && weight.is_none_or(|w| face["weight"] == w);
+            if let Some((_, _, output)) = font_outputs.iter().find(named) { face["source"] = json!(output); }
         }
         files[at].1 = serde_json::to_vec(&presentation)?;
     }
@@ -388,6 +411,54 @@ mod tests {
 
     fn face(subset: bool) -> Value {
         json!([{"family": "Fixture", "source": "fonts/a.ttf", "subset": subset}])
+    }
+
+    #[test]
+    fn shared_font_sources_keep_whole_bytes_for_every_data_id() {
+        for variable in [false, true] {
+            for font_first in [false, true] {
+                let project = Project::new(json!({"fonts": face(true)}));
+                let root = project.dir.path();
+                let whole = fixture::font(fixture::Options { variable, ..Default::default() });
+                let font = "fonts/a.ttf";
+                let alias = "data/duplicate.bin";
+                let reserved = if variable { "fonts/a.w400.ttf" } else { "fonts/a.subset.ttf" };
+                for path in [font, alias] { fs::write(root.join(path), &whole).unwrap(); }
+                fs::write(root.join(reserved), b"reserved data").unwrap();
+                let sources = if font_first { [font, alias] } else { [alias, font] };
+                let manifest = json!({"version": 1, "assets": [
+                    {"id": "data://first", "kind": "data", "source": sources[0]},
+                    {"id": "data://second", "kind": "data", "source": sources[1]},
+                    {"id": "data://reserved", "kind": "data", "source": reserved}
+                ]});
+                fs::write(root.join("assets.json"), serde_json::to_vec(&manifest).unwrap()).unwrap();
+                let (_, _, _, common) = crate::export::content(root).unwrap();
+                for path in [font, alias] {
+                    assert_eq!(common.iter().find(|(p, _)| p == &format!("content/{path}")).unwrap().1, whole);
+                }
+                let (output, report) = project.export("shared", false).unwrap();
+                for base in [output.clone(), output.join(report["release_root"].as_str().unwrap())] {
+                    let content = base.join("content");
+                    for path in [font, alias] { assert!(fs::read(content.join(path)).is_ok_and(|b| b == whole), "{path}, variable={variable}, font_first={font_first}"); }
+                    assert_eq!(fs::read(content.join(reserved)).unwrap(), b"reserved data");
+                    let read_json = |path| serde_json::from_slice::<Value>(&fs::read(content.join(path)).unwrap()).unwrap();
+                    let payload = read_json("project.json");
+                    for (i, id) in ["data://first", "data://second"].iter().enumerate() {
+                        let decl = &payload["data_assets"][i];
+                        assert_eq!(decl["id"], *id);
+                        assert_eq!(decl["source"], sources[0]);
+                        assert!(fs::read(content.join(decl["source"].as_str().unwrap())).unwrap() == whole);
+                    }
+                    let presentation = read_json("presentation.json");
+                    let path = presentation["ui"]["fonts"][0]["source"].as_str().unwrap();
+                    assert_eq!(report["font_subset"]["faces"][0]["output"], path);
+                    let subset = fs::read(content.join(path)).unwrap();
+                    assert!(subset.len() < whole.len());
+                    assert!(!truetype_subset::is_variable(&subset));
+                    assert_eq!(coverage(&subset).unwrap(), ['A', 'Z', '文', '字'].into());
+                }
+            }
+        }
     }
 
     #[test]

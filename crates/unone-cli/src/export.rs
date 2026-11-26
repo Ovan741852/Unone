@@ -254,7 +254,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
     presentation.windows_gpu_memory = None;
     let error_policy = resolve_error_policy(&mut presentation, &mut files, development)?;
     let font_subset = match game_text {
-        Some(text) => crate::font_subset::apply(project, &presentation.ui, text, &mut files, development)?,
+        Some(text) => crate::font_subset::apply(project, &presentation.ui, &assets, text, &mut files, development)?,
         None => None,
     };
     files.push((
