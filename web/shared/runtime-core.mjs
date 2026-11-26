@@ -2,8 +2,9 @@ import {createBinaryJobTransport} from './job-binary.mjs';
 import {chooseJobWorkers,createJobPool,jobRequest} from './job-pool.mjs';
 import {loadProject,readObservation,releaseObservationResources} from './load-project.js';
 import {createSpatialHost} from './spatial-host.mjs';
+import {createDeferredDataHost} from './deferred-data-host.mjs';
 const commandEncoder=new TextEncoder(),controlDecoder=new TextDecoder('utf-8',{fatal:true});
-export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBackend='cpu',createSpatialExecutor,requirePhysicalViewport=true,profile=false}={}){
+export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBackend='cpu',createSpatialExecutor,requirePhysicalViewport=true,profile=false,readDeferredSource}={}){
  if(typeof requirePhysicalViewport!=='boolean')throw Error('VIEWPORT_POLICY_INVALID');
  if(typeof profile!=='boolean')throw Error('RUNTIME_PROFILE_POLICY_INVALID');
  // Opt-in profiling: consecutive host-clock marks of the last executed command. The tick ABI
@@ -13,6 +14,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
  const spatial=createSpatialHost(module,{backend:spatialBackend,createExecutor:createSpatialExecutor});
  const read=()=>readObservation(module),binary=createBinaryJobTransport(module);
  function send(name,value){const bytes=commandEncoder.encode(JSON.stringify(value)),p=module._unone_web_alloc(bytes.length);module.HEAPU8.set(bytes,p);if(module[name](p,bytes.length)!==0)throw Error(JSON.stringify(read()));}
+ let deferred=null;
  let loaded=false,closed=false,latest,pool,policy={workers:0,reason:'jobs_disabled'},pending=[],fault=null,instanceTransport=1,spritePlanRevision=null,imageGroupRevision=null,markRevision=0,markSequence=0;
  function withSpriteResourcePlan(value){
   if(typeof module._unone_web_sprite_resources_request!=='function')return value;
@@ -74,18 +76,19 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
  async function barrier(){await spatial.barrier();if(closed)throw Error('RUNTIME_CLOSED');const results=await Promise.all(pending);if(closed)throw Error('RUNTIME_CLOSED');pending=[];for(const r of results){if(closed)throw Error('RUNTIME_CLOSED');if(r.error){fault=r.error;throw fault;}binary.complete(r.value);}}
  function dispatchJobs(){if(!pool)return;const tasks=binary.drain();pending=tasks.map(work=>pool.submit(work).then(value=>({value}),error=>({error})));}
 
- return {module,trace:()=>lastTrace,close(){if(closed)return;closed=true;loaded=false;latest=undefined;pending=[];pool?.close();pool=null;spatial.close();releaseObservationResources(module);module._unone_web_unload_project?.();},// Memory beside the world: linear capacity (only grows) and the Luau VM in use, garbage included.
+ return {module,trace:()=>lastTrace,close(){if(closed)return;closed=true;loaded=false;latest=undefined;pending=[];deferred?.close();deferred=null;pool?.close();pool=null;spatial.close();releaseObservationResources(module);module._unone_web_unload_project?.();},// Memory beside the world: linear capacity (only grows) and the Luau VM in use, garbage included.
  // Reading either never collects; a runtime without the export reports null, never a guess.
  memory(){const heap=typeof module._unone_web_luau_heap_bytes==='function'?module._unone_web_luau_heap_bytes():-1;return {wasm_linear_bytes:module.HEAPU8.buffer.byteLength,luau_heap_bytes:Number.isFinite(heap)&&heap>=0?heap:null};},report(){return {closed,policy,pool:pool?.report()??null,binary_transport:binary.report(),spatial:spatial.report(),viewport:viewportReport(),fault:fault?String(fault):null};},async execute(command){
   if(closed)throw Error('RUNTIME_CLOSED');
   if(profile)lastTrace={kind:String(command?.kind),start_ms:performance.now(),marks:[]};
-  const allowed={load:['payload','seed','data'],tick:['input','presenting'],aspect:['value'],viewport:['width','height'],transport:['mode'],developer:['request'],ui:['request'],hostTime:['request']};
+  const allowed={load:['payload','seed','data','contentBaseURL'],tick:['input','presenting'],aspect:['value'],viewport:['width','height'],transport:['mode'],developer:['request'],ui:['request'],hostTime:['request']};
   if(!command||!Object.hasOwn(allowed,command.kind)||Object.keys(command).some(k=>k!=='kind'&&!allowed[command.kind].includes(k)))throw Error('RUNTIME_COMMAND_INVALID');
   if(command.kind!=='load'&&!loaded)throw Error('RUNTIME_NOT_LOADED');
   switch(command.kind){
    case 'load':{
     loaded=false;spritePlanRevision=null;imageGroupRevision=null;markRevision=0;markSequence=0;
     // Retire the previous executor epoch; captured promises cannot inject late replies.
+    deferred?.close();deferred=null;
     pool?.close();pool=null;pending=[];fault=null;
     latest=loadProject(module,loadPayload(command.payload),BigInt(command.seed??'42'),command.data);
     await spatial.load();
@@ -98,9 +101,11 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
       policy=chooseJobWorkers(jobPolicy,{...device,workerAvailable:typeof globalThis.Worker==='function',heapBytes:module.HEAPU8.buffer.byteLength});
       if(policy.workers>0){jobRequest(module,{kind:'configure',workers:policy.workers});pool=createJobPool({url,workers:policy.workers,executeInline:work=>binary.execute(work)});}
     } else policy={workers:0,reason:'jobs_disabled'};
+    deferred=createDeferredDataHost(module,command.payload,{baseURL:command.contentBaseURL,readSource:readDeferredSource});
+    deferred?.refresh();
     loaded=true;latest=withProfileMarks(withImageGroupPlan(withSpriteResourcePlan(latest)));return latest;
    }
-   case 'tick':if(fault)throw fault;await barrier();if(closed)throw Error('RUNTIME_CLOSED');if(profile)mark('barrier_wait');if(typeof module._unone_web_set_presenting==='function')module._unone_web_set_presenting(command.presenting===false?0:1);send('_unone_web_set_input_frame',command.input);if(profile)mark('input_abi');if(module._unone_web_tick()!==0)throw Error(JSON.stringify(read()));if(profile)mark('tick_abi_atomic');latest=profile?readObservation(module,mark):read();dispatchJobs();if(profile)mark('jobs_dispatch');spatial.dispatch();if(profile)mark('spatial_dispatch');latest=withProfileMarks(withImageGroupPlan(withSpriteResourcePlan(latest)));return latest;
+   case 'tick':if(fault)throw fault;await barrier();if(closed)throw Error('RUNTIME_CLOSED');if(profile)mark('barrier_wait');if(typeof module._unone_web_set_presenting==='function')module._unone_web_set_presenting(command.presenting===false?0:1);const input=deferred?await deferred.input(command.input):command.input;if(closed)throw Error('RUNTIME_CLOSED');send('_unone_web_set_input_frame',input);if(profile)mark('input_abi');if(module._unone_web_tick()!==0)throw Error(JSON.stringify(read()));if(profile)mark('tick_abi_atomic');latest=profile?readObservation(module,mark):read();dispatchJobs();if(profile)mark('jobs_dispatch');spatial.dispatch();if(profile)mark('spatial_dispatch');deferred?.refresh();latest=withProfileMarks(withImageGroupPlan(withSpriteResourcePlan(latest)));return latest;
    case 'hostTime':if(typeof module._unone_web_host_time_request!=='function')throw Error('HOST_TIME_ABI_UNAVAILABLE: rebuild the Web runtime');send('_unone_web_host_time_request',command.request);return read();
    case 'ui':if(typeof module._unone_web_ui_request!=='function')throw Error('UI_SCROLL_ABI_UNAVAILABLE: rebuild the Web runtime');send('_unone_web_ui_request',command.request);latest=read();return latest;
    case 'aspect':if(!Number.isFinite(command.value)||command.value<=0)throw Error('VIEWPORT_INVALID');if(module._unone_web_set_viewport_aspect(command.value)!==0)throw Error(JSON.stringify(read()));return latest;
