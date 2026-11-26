@@ -77,14 +77,15 @@ export function createParticleRenderer(THREE, scene, { imageTexture = null } = {
     const material = new THREE.MeshBasicMaterial({
       map, color: tint, vertexColors: false, transparent: true,
       opacity: alphaBin / (ALPHA_BINS - 1), alphaTest: 0.01, depthTest: true, depthWrite: false,
-      side: THREE.DoubleSide, toneMapped: false,
+      // One pass: three.js otherwise draws transparent DoubleSide twice and re-flags the material before each pass.
+      side: THREE.DoubleSide, forceSinglePass: true, toneMapped: false,
       blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
     });
     const mesh = new THREE.InstancedMesh(geometry, material, capacity);
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     mesh.frustumCulled = false;
     mesh.renderOrder = (additive ? 100 : 0) + alphaBin;
-    mesh.count = 0;
+    mesh.count = 0; mesh.visible = false;
     scene.add(mesh);
     const group = {mesh, material, capacity, shape, additive, alphaBin, idleFrames:0, aspect:isImage(shape)?aspectOf(map)*cellAspect(shape):1,
       debugKey:`${shape}|${additive?1:0}|${alphaBin}|${Math.round(tint.r*(COLOR_BINS-1))}|${Math.round(tint.g*(COLOR_BINS-1))}|${Math.round(tint.b*(COLOR_BINS-1))}`};
@@ -162,14 +163,14 @@ export function createParticleRenderer(THREE, scene, { imageTexture = null } = {
         object.scale.set(p.size * group.aspect, p.size, 1);
         object.updateMatrix(); group.mesh.setMatrixAt(i, object.matrix);
       }
-      group.mesh.count = particles.length;
+      group.mesh.count = particles.length; group.mesh.visible = particles.length > 0;
       // Upload only the live instances, not the pooled capacity.
       const matrix = group.mesh.instanceMatrix;matrix.clearUpdateRanges();matrix.addUpdateRange(0, particles.length * 16);matrix.needsUpdate = true;
     }
     for (const [key, group] of groups) {
       const list=pending.get(key);
       if(!list?.length){
-        group.mesh.count=0;
+        group.mesh.count=0;group.mesh.visible=false; // an empty group is skipped, not set up and drawn with no instances
         if(++group.idleFrames>=IDLE_GROUP_FRAMES){disposeGroup(group);groups.delete(key);pending.delete(key);}
       }
       // Scratch capacity can be reused, but samples from the previous world must not stay alive.

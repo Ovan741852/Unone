@@ -72,6 +72,10 @@ async function loadThree(url) {
   return import(url);
 }
 
+// Only gaining or losing a map changes a basic material's program (USE_MAP); swapping one ready texture for another
+// is a uniform. Invalidating on every frame made three.js rebuild each sprite's program parameters and cache key.
+export function setSpriteMap(material,map){if(Boolean(material.map)!==Boolean(map))material.needsUpdate=true;material.map=map;}
+
 /**
  * Three.js presentation adapter.
  *
@@ -401,9 +405,9 @@ export async function createThreeRenderer(canvas, options = {}) {
     record.mesh.rotation.z=entity.rotation??0;syncSpriteCell(record,sprite,geometry);record.mesh.visible=true;
     const id=String(sprite.asset??''),texture=textureFor(specsOf().get(id),'sprite');
     record.assetId=id;
-    if(texture?.state==='ready'){record.material.map=texture.texture;record.material.color.set(0xffffff);}
-    else{record.material.map=null;record.material.color.copy(colorFor(entity,THREE));}
-    record.material.needsUpdate=true;record.mesh.material=shaderMaterials.assign(entity,record.material,world);record.mesh.renderOrder=Number(sprite.layer??0);
+    if(texture?.state==='ready'){setSpriteMap(record.material,texture.texture);record.material.color.set(0xffffff);}
+    else{setSpriteMap(record.material,null);record.material.color.copy(colorFor(entity,THREE));}
+    record.mesh.material=shaderMaterials.assign(entity,record.material,world);record.mesh.renderOrder=Number(sprite.layer??0);
     return texture?.state==='ready';
   }
 
@@ -515,13 +519,11 @@ export async function createThreeRenderer(canvas, options = {}) {
       record.assetId = String(sprite.asset ?? "");
       const texture = textureFor(specs.get(record.assetId),'sprite');
       if (texture?.state === "ready") {
-        record.material.map = texture.texture;
+        setSpriteMap(record.material, texture.texture);
         record.material.color.set(0xffffff);
-        record.material.needsUpdate = true;
       } else {
-        record.material.map = null;
+        setSpriteMap(record.material, null);
         record.material.color.copy(colorFor(entity, THREE));
-        record.material.needsUpdate = true;
       }
       record.mesh.material = shaderMaterials.assign(entity, record.material, world);
       record.mesh.renderOrder = Number(sprite.layer ?? 0);
