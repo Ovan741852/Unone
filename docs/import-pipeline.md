@@ -34,8 +34,16 @@ return {
 | Port type | Luau value | Becomes |
 |---|---|---|
 | `bytes` | a buffer | the file as it is |
-| `image` | `{width, height, rgba}`: straight RGBA8, first row at the top | a lossless PNG (`texture2d` assets). Images with up to 256 distinct RGBA values use indexed colour when it yields a smaller file. |
+| `image` | `{width, height, rgba}`: straight RGBA8, first row at the top | Lossless PNG by default. Up to 256 distinct RGBA values use indexed colour when it produces a smaller PNG. A `.webp` output selects lossless WebP. |
 | `json` | tables, strings, numbers, booleans | JSON text |
+
+For a WebP image product, set its source path to end in `.webp`. If the asset declares
+`encoding`, set `format` to `webp`, `mime` to `image/webp`, and `decoder` to `image`.
+The build host uses Python with Pillow and libwebp. Set `UNONE_PYTHON` to the interpreter
+path or put it on PATH as `python` on Windows or `python3` on other platforms.
+Verify the selected interpreter with `python -I -c "from PIL import features; assert features.check('webp')"`.
+The importer verifies the dimensions and every decoded RGBA byte before publishing.
+Python runs only while preparing a WebP image output.
 
 Nodes run in the same isolated VM as [jobs](jobs.md): no world, no files, no
 clock, no randomness and no output channel. Their outputs depend only on their

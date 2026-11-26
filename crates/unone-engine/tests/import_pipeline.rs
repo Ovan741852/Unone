@@ -123,6 +123,62 @@ fn file_png_inputs_keep_encoded_bytes_and_decode_straight_rgba() {
 }
 
 #[test]
+fn webp_import_requires_matching_path_and_declared_encoding() {
+    let temp = tempfile::tempdir().unwrap();
+    let mut manifest = assets();
+    manifest[0]["source"] = json!("imported/atlas.webp");
+    project(temp.path(), manifest);
+    assert_eq!(unone_engine::prepare_imports(temp.path()).unwrap_err().code, "IMPORT_IMAGE_ENCODING");
+}
+
+#[test]
+#[ignore = "requires Python with Pillow/libwebp; select the interpreter with UNONE_PYTHON"]
+fn webp_import_preserves_raw_pixels_for_chained_image_consumers() {
+    let temp = tempfile::tempdir().unwrap();
+    let dir = temp.path();
+    let mut manifest = assets();
+    manifest[0]["source"] = json!("imported/atlas.webp");
+    manifest[0]["encoding"] = json!({"format":"webp","mime":"image/webp","decoder":"image"});
+    project(dir, manifest.clone());
+    let input = dir.join("original");
+    write(&dir.join(".unone/import-roots.json"), json!({"original":input}).to_string());
+    write(&input.join("DATA/pal.dat"), [9, 8, 7, 10, 20, 30]);
+    write(&input.join("DATA/pixels.dat"), [0, 1, 0]);
+    let report = unone_engine::prepare_imports(dir).unwrap();
+    assert_eq!(report.written, 3);
+    assert_eq!((report.webp_encoded, report.webp_reused, report.png_encoded), (1, 0, 0));
+    let encoded = std::fs::read(dir.join("imported/atlas.webp")).unwrap();
+    assert_eq!(&encoded[8..16], b"WEBPVP8L");
+    assert_eq!(serde_json::from_slice::<Value>(&std::fs::read(dir.join("imported/opaque.json")).unwrap()).unwrap(), json!({"opaque":1}));
+    assert!(unone_engine::prepare_imports(dir).unwrap().up_to_date);
+    manifest[0]["bundle"] = json!("world");
+    write(&dir.join("assets.json"), json!({"version":1,"assets":manifest}).to_string());
+    let again = unone_engine::prepare_imports(dir).unwrap();
+    assert_eq!((again.webp_encoded, again.webp_reused, again.written), (0, 1, 0));
+    let output = dir.join("imported/atlas.webp");
+    let mut bad = encoded.clone();
+    *bad.last_mut().unwrap() ^= 1;
+    write(&output, bad);
+    let repaired = unone_engine::prepare_imports(dir).unwrap();
+    assert_eq!((repaired.webp_encoded, repaired.webp_reused, repaired.written), (1, 0, 1));
+    assert_eq!(std::fs::read(&output).unwrap(), encoded);
+
+    let provenance = dir.join(".unone/import-provenance.json");
+    let mut old: Value = serde_json::from_slice(&std::fs::read(&provenance).unwrap()).unwrap();
+    old["assets"]["texture://atlas"].as_object_mut().unwrap().remove("encoded_image_key");
+    write(&provenance, old.to_string());
+    let migrated = unone_engine::prepare_imports(dir).unwrap();
+    assert_eq!((migrated.webp_encoded, migrated.webp_reused, migrated.written), (1, 0, 0));
+
+    manifest[0] = assets()[0].clone();
+    std::fs::copy(&output, dir.join("imported/atlas.png")).unwrap();
+    write(&dir.join("assets.json"), json!({"version":1,"assets":manifest}).to_string());
+    let switched = unone_engine::prepare_imports(dir).unwrap();
+    assert_eq!((switched.png_encoded, switched.png_reused, switched.webp_reused), (1, 0, 0));
+    assert!(std::fs::read(dir.join("imported/atlas.png")).unwrap().starts_with(b"\x89PNG"));
+}
+
+#[test]
 fn imported_atlas_chooses_a_smaller_lossless_png() {
     let temp = tempfile::tempdir().unwrap();
     let dir = temp.path();
@@ -160,6 +216,69 @@ fn imported_atlas_chooses_a_smaller_lossless_png() {
         reader.next_frame(&mut decoded).unwrap();
         assert_eq!(decoded, rgba);
     }
+}
+
+#[test]
+fn partial_manifest_changes_only_reencode_pngs_without_verified_outputs() {
+    let temp = tempfile::tempdir().unwrap();
+    let dir = temp.path();
+    let original = dir.join("original");
+    let mut manifest = assets();
+    for name in ["second", "third"] {
+        let mut atlas = manifest[0].clone();
+        atlas["id"] = json!(format!("texture://{name}"));
+        atlas["source"] = json!(format!("imported/{name}.png"));
+        atlas["import"]["inputs"]["indices"] = json!(format!("original:{name}.raw"));
+        manifest.as_array_mut().unwrap().push(atlas);
+    }
+    project(dir, manifest.clone());
+    write(&dir.join(".unone/import-roots.json"), json!({"original": original}).to_string());
+    write(&original.join("DATA/pal.dat"), [25u8, 50, 75, 100, 125, 150]);
+    write(&original.join("DATA/pixels.dat"), [0u8, 1, 0]);
+    write(&original.join("second.raw"), [0u8, 1, 1]);
+    write(&original.join("third.raw"), [1u8, 0, 0]);
+    let prepare = || unone_engine::prepare_imports(dir).unwrap();
+    let files = ["atlas", "second", "third"].map(|n| dir.join(format!("imported/{n}.png")));
+    let first = prepare();
+    assert_eq!((first.png_encoded, first.png_reused), (3, 0));
+    let original_bytes = files.each_ref().map(|p| std::fs::read(p).unwrap());
+
+    manifest[0]["bundle"] = json!("new-group");
+    write(&dir.join("assets.json"), json!({"version":1,"assets":manifest}).to_string());
+    let metadata_only = prepare();
+    assert_eq!((metadata_only.png_encoded, metadata_only.png_reused), (0, 3));
+    assert_eq!(files.each_ref().map(|p| std::fs::read(p).unwrap()), original_bytes);
+
+    // A dependency still receives the raw image when its producer reuses the encoded PNG.
+    let count = dir.join("imported/opaque.json");
+    std::fs::remove_file(&count).unwrap();
+    assert_eq!(prepare().png_reused, 3);
+    assert_eq!(serde_json::from_slice::<Value>(&std::fs::read(count).unwrap()).unwrap(), json!({"opaque":1}));
+
+    let mut damaged = original_bytes[1].clone();
+    damaged[0] ^= 1;
+    let modified = std::fs::metadata(&files[1]).unwrap().modified().unwrap();
+    write(&files[1], damaged);
+    std::fs::File::options().write(true).open(&files[1]).unwrap().set_modified(modified).unwrap();
+    std::fs::remove_file(&files[2]).unwrap();
+    let repaired = prepare();
+    assert_eq!((repaired.png_encoded, repaired.png_reused, repaired.written), (2, 1, 2));
+    assert_eq!(files.each_ref().map(|p| std::fs::read(p).unwrap()), original_bytes);
+
+    write(&original.join("second.raw"), [1u8, 1, 1]);
+    let changed = prepare();
+    assert_eq!((changed.png_encoded, changed.png_reused, changed.written), (1, 2, 1));
+    assert_ne!(std::fs::read(&files[1]).unwrap(), original_bytes[1]);
+
+    let path = dir.join(".unone/import-provenance.json");
+    let mut old: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    old["assets"]["texture://second"].as_object_mut().unwrap().remove("encoded_image_key");
+    write(&path, old.to_string());
+    let missing_key = prepare();
+    assert_eq!((missing_key.png_encoded, missing_key.png_reused, missing_key.written), (1, 2, 0));
+    std::fs::remove_file(path).unwrap();
+    let migrated = prepare();
+    assert_eq!((migrated.png_encoded, migrated.png_reused, migrated.written), (3, 0, 0));
 }
 
 #[test]

@@ -21,6 +21,7 @@ pub const PROVENANCE_FILE: &str = ".unone/import-provenance.json";
 const STAMP_FILE: &str = ".unone/import-stamp.json";
 // Changes to the file encoder reuse the importer cache's straight RGBA products.
 const PNG_ENCODING_VERSION: u8 = 1;
+const WEBP_ENCODING_VERSION: u8 = 1;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ImportReport {
@@ -31,6 +32,16 @@ pub struct ImportReport {
     pub up_to_date: bool,
     pub ran: usize,
     pub cached: usize,
+    /// Image products passed to the PNG encoder during this prepare.
+    #[serde(default)]
+    pub png_encoded: usize,
+    /// PNG files checked by content against a previous successful prepare.
+    #[serde(default)]
+    pub png_reused: usize,
+    #[serde(default)]
+    pub webp_encoded: usize,
+    #[serde(default)]
+    pub webp_reused: usize,
     pub written: usize,
     pub unchanged: usize,
     /// Assets kept as they are because a root they read is not on this machine.
@@ -137,13 +148,48 @@ fn indexed_png(width: u32, height: u32, rgba: &[u8]) -> Result<Option<Vec<u8>>, 
     Ok(Some(bytes))
 }
 
-/// Products become files in engine formats: images as lossless PNG, JSON as JSON
-/// text, bytes as they are.
-fn encode(value: &ImportValue) -> Result<Vec<u8>, Box<Diagnostic>> {
+fn wants_webp(asset: &AssetSpec) -> bool {
+    Path::new(&asset.source).extension().is_some_and(|ext| ext.eq_ignore_ascii_case("webp"))
+        || asset.encoding.as_ref().is_some_and(|e| e.format.eq_ignore_ascii_case("webp"))
+}
+
+// Only the build host encodes WebP. Keep the encoder out of both player runtimes.
+fn encode_webp(width: u32, height: u32, rgba: &[u8]) -> Result<Vec<u8>, Box<Diagnostic>> {
+    use std::io::Write;
+    use std::process::{Command, Stdio};
+
+    let python = std::env::var_os("UNONE_PYTHON")
+        .unwrap_or_else(|| if cfg!(windows) { "python".into() } else { "python3".into() });
+    let mut child = Command::new(&python)
+        .arg("-I").arg("-c").arg(include_str!("import_webp.py"))
+        .arg(width.to_string()).arg(height.to_string())
+        .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped())
+        .spawn().map_err(|e| error("IMPORT_ENCODE_FAILED", format!(
+            "Lossless WebP import requires Python with Pillow/libwebp. Set UNONE_PYTHON to its executable ({python:?}: {e})."
+        )))?;
+    let write = child.stdin.take().expect("piped input").write_all(rgba);
+    let output = child.wait_with_output().map_err(|e| error("IMPORT_ENCODE_FAILED", e.to_string()))?;
+    if !output.status.success() {
+        return Err(error("IMPORT_ENCODE_FAILED", format!(
+            "Lossless WebP import failed with {python:?}. Set UNONE_PYTHON to a Python with Pillow/libwebp. {}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        )));
+    }
+    write.map_err(|e| error("IMPORT_ENCODE_FAILED", e.to_string()))?;
+    if !output.stdout.starts_with(b"RIFF") || output.stdout.get(8..16) != Some(b"WEBPVP8L") {
+        return Err(error("IMPORT_ENCODE_FAILED", "Python did not return a lossless WebP image"));
+    }
+    Ok(output.stdout)
+}
+
+fn encode(value: &ImportValue, asset: &AssetSpec) -> Result<Vec<u8>, Box<Diagnostic>> {
     match value {
         ImportValue::Bytes(bytes) => Ok(bytes.clone()),
         ImportValue::Json(value) => serde_json::to_vec_pretty(value).map_err(|e| error("IMPORT_ENCODE_FAILED", e.to_string())),
         ImportValue::Image { width, height, rgba } => {
+            if wants_webp(asset) {
+                return encode_webp(*width, *height, rgba);
+            }
             let mut bytes = Vec::new();
             let mut encoder = png::Encoder::new(&mut bytes, *width, *height);
             encoder.set_color(png::ColorType::Rgba);
@@ -267,6 +313,30 @@ fn parse_input(text: &str) -> Result<Input<'_>, Box<Diagnostic>> {
 
 struct Importer { module: String, module_sha256: String, source: String, node: String, definition: crate::ImportNodeDefinition }
 
+#[derive(Clone, Copy, Serialize)]
+#[serde(rename_all = "lowercase")]
+enum ImageEncoding { Png(u8), Webp(u8) }
+
+// Only read these two fields of each previous output, and only after a project stamp miss.
+#[derive(Deserialize)]
+struct PreviousOutput {
+    encoded_image_key: Option<String>,
+    sha256: String,
+}
+
+#[derive(Deserialize)]
+struct PreviousProvenance {
+    version: u32,
+    assets: BTreeMap<String, PreviousOutput>,
+}
+
+fn verified_image_digest(previous: Option<&PreviousOutput>, image_key: &str, artifact: &Path) -> Option<(String, FileStamp)> {
+    let previous = previous.filter(|row| row.encoded_image_key.as_deref() == Some(image_key))?;
+    let stamp = file_stamp(artifact)?;
+    let digest = sha256(&std::fs::read(artifact).ok()?);
+    (digest == previous.sha256).then_some((digest, stamp))
+}
+
 /// Brings every imported asset's file up to date. Projects without imports
 /// return at once; a project or manifest that cannot be read is left to the
 /// host's own loading, which reports it.
@@ -283,7 +353,12 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
     let roots = resolve_roots(&root, &import_config);
     let stamp_path = root.join(STAMP_FILE);
     // What imports read of the project file: its import section and where the manifest is.
-    let config_digest = sha256(&serde_json::to_vec(&json!({"import": config.import, "asset_manifest": config.asset_manifest})).unwrap_or_default());
+    let mut stamp_config = json!({"import": config.import, "asset_manifest": config.asset_manifest});
+    if imported.iter().any(|a| a.kind == "texture2d" && wants_webp(a)) {
+        // An older preparer could have written PNG bytes under a WebP declaration.
+        stamp_config["webp_encoding"] = json!(WEBP_ENCODING_VERSION);
+    }
+    let config_digest = sha256(&serde_json::to_vec(&stamp_config).unwrap_or_default());
     if let Some(report) = stamped_report(&stamp_path, &roots, &config_digest) { return Ok(report); }
     let _ = std::fs::remove_file(&stamp_path);
     // Each file is stamped before it is read, so a change while reading shows next time.
@@ -330,6 +405,13 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
         if *product == ImportPortType::Image && asset.kind != "texture2d" {
             return Err(error("IMPORT_PRODUCT_KIND", format!("asset '{}' holds an image product, so its kind must be texture2d", asset.id)));
         }
+        if *product == ImportPortType::Image && wants_webp(asset)
+            && (!Path::new(&asset.source).extension().is_some_and(|ext| ext.eq_ignore_ascii_case("webp"))
+                || asset.encoding.as_ref().is_some_and(|e| e.format != "webp" || e.mime != "image/webp" || e.decoder != "image")) {
+            return Err(error("IMPORT_IMAGE_ENCODING", format!(
+                "asset '{}' needs a .webp source with format=webp, mime=image/webp and decoder=image", asset.id
+            )));
+        }
         for (port, kind) in &importer.definition.inputs {
             let text = import.inputs.get(port).ok_or_else(|| error("IMPORT_INPUT_MISSING", format!("asset '{}' needs input '{port}'", asset.id)))?;
             let given = match parse_input(text)? {
@@ -368,6 +450,13 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
     let mut runs: BTreeMap<String, BTreeMap<String, ImportValue>> = BTreeMap::new();
     let mut products: BTreeMap<&str, Option<ImportValue>> = BTreeMap::new();
     let mut provenance = BTreeMap::new();
+    let path = root.join(PROVENANCE_FILE);
+    let previous = std::cell::LazyCell::new(|| {
+        std::fs::read(&path).ok()
+            .and_then(|bytes| serde_json::from_slice::<PreviousProvenance>(&bytes).ok())
+            .filter(|report| report.version == 1)
+            .map(|report| report.assets).unwrap_or_default()
+    });
     // A root file, read once however many imports use it; None when its root
     // is not on this machine.
     let mut read_root = |name: &str, path: &str| -> Result<Option<(Vec<u8>, Value)>, Box<Diagnostic>> {
@@ -469,17 +558,41 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
             runs.insert(key.clone(), outputs);
         }
         let value = runs[&key][product].clone();
-        let bytes = encode(&value)?;
-        write_file(&artifact, &bytes, &mut report)?;
-        files.insert(artifact.clone(), file_stamp(&artifact));
-        provenance.insert(id.to_string(), json!({"source": asset.source, "sha256": sha256(&bytes), "importer": import.importer,
+        let encoding = match value {
+            ImportValue::Image { .. } if wants_webp(asset) => Some(ImageEncoding::Webp(WEBP_ENCODING_VERSION)),
+            ImportValue::Image { .. } => Some(ImageEncoding::Png(PNG_ENCODING_VERSION)),
+            _ => None,
+        };
+        let image_key = encoding.map(|encoding| {
+            let identity = json!([env!("CARGO_PKG_VERSION"), encoding, &asset.source, &key, product, &records, value_hash(&value)]);
+            sha256(identity.to_string().as_bytes())
+        });
+        let verified = image_key.as_deref().and_then(|k| verified_image_digest(previous.get(id), k, &artifact));
+        match (encoding, verified.is_some()) {
+            (Some(ImageEncoding::Png(_)), true) => report.png_reused += 1,
+            (Some(ImageEncoding::Png(_)), false) => report.png_encoded += 1,
+            (Some(ImageEncoding::Webp(_)), true) => report.webp_reused += 1,
+            (Some(ImageEncoding::Webp(_)), false) => report.webp_encoded += 1,
+            (None, _) => {}
+        }
+        let (digest, stamp) = if let Some((digest, stamp)) = verified {
+            report.unchanged += 1;
+            (digest, Some(stamp))
+        } else {
+            let bytes = encode(&value, asset)?;
+            write_file(&artifact, &bytes, &mut report)?;
+            (sha256(&bytes), file_stamp(&artifact))
+        };
+        files.insert(artifact, stamp);
+        let mut record = json!({"source": asset.source, "sha256": digest, "importer": import.importer,
             "module": importer.module, "module_sha256": importer.module_sha256, "node": importer.node, "product": product,
-            "params": import.params, "inputs": records, "run": key}));
+            "params": import.params, "inputs": records, "run": key});
+        if let Some(image_key) = image_key { record["encoded_image_key"] = Value::String(image_key); }
+        provenance.insert(id.to_string(), record);
         products.insert(id, Some(value));
     }
     let text = serde_json::to_string_pretty(&json!({"version": 1, "engine": env!("CARGO_PKG_VERSION"), "assets": provenance}))
         .map_err(|e| error("IMPORT_WRITE_FAILED", e.to_string()))? + "\n";
-    let path = root.join(PROVENANCE_FILE);
     if std::fs::read_to_string(&path).ok().as_deref() != Some(text.as_str()) {
         if let Some(parent) = path.parent() { let _ = std::fs::create_dir_all(parent); }
         std::fs::write(&path, text).map_err(|e| error("IMPORT_WRITE_FAILED", e.to_string()))?;
