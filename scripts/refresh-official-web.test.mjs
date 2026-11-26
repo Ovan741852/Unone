@@ -193,15 +193,18 @@ function integrationInput(t){
  assert(runtime&&/^[a-f0-9]{64}$/.test(runtimeSha256??''),'Explicit runtime directory and exact manifest SHA required');
  const root=temporary(t),dir=project(root),b=base(root),host=inspectHostSnapshot(repo);
  write(dir,'data/level.json','{"answer":42,"name":"new payload"}');write(dir,'data/notes.txt','binary-safe text\n世界');
+ fs.copyFileSync(path.join(dir,'data/level.json'),path.join(dir,'data/level-copy.txt'));
  write(dir,'assets.json',{version:1,assets:[
   {id:'data://level',kind:'data',source:'data/level.json',encoding:{format:'json',mime:'application/json',decoder:'json'}},
-  {id:'data://notes',kind:'data',source:'data/notes.txt',encoding:{format:'text',mime:'text/plain',decoder:'text'}}
+  {id:'data://notes',kind:'data',source:'data/notes.txt',encoding:{format:'text',mime:'text/plain',decoder:'text'}},
+  {id:'data://level-as-text',kind:'data',source:'data/level-copy.txt',encoding:{format:'text',mime:'text/plain',decoder:'text'}}
  ]});
  write(dir,'scripts/main.luau',`local module=require('./value')
  return {start=function(api)
    assert(module==42, 'fresh module was not loaded')
    local data=api.assets.load('data://level')
    assert(data.answer==42 and data.name=='new payload', 'fresh JSON data was not staged')
+   assert(api.assets.load('data://level-as-text')=='{"answer":42,"name":"new payload"}', 'shared bytes lost their logical decoder')
    assert(api.assets.load('data://notes')=='binary-safe text\\n世界', 'fresh text data was not staged')
    api.observation.set('publisher_check', 'module/json/text passed')
  end,update=function()end}`);
@@ -212,7 +215,7 @@ test('actual pinned WASM loads fresh source module plus JSON/text data before pu
  assert.equal(report.preparation.validation.status,'passed');assert.equal(report.preparation.validation.initial_frame,0);assert.match(report.preparation.validation.initial_digest,/^sha256:[a-f0-9]{64}$/);
  assert.match(report.preparation.validation.scope,/Actual pinned production WASM/);assert.equal(report.preparation.mode,'source-ingestion-refresh');assert(report.preparation.limitations.some(v=>v.includes('SDK')));
  assert.equal(published.generation_matches,true);assert.equal(report.preparation.runtime_manifest_sha256,args.runtimeSha256);assert.equal(report.preparation.project.script_sha256,sha(fs.readFileSync(path.join(dir,'scripts/main.luau'))));
- const payload=json(path.join(args.output,'content/project.json'));assert.equal(payload.script_modules['value.luau'],'return 42');assert.deepEqual(payload.data_assets.map(v=>v.loader),['json','text']);assert(!Object.hasOwn(payload,'script_bytecode'));
+ const payload=json(path.join(args.output,'content/project.json'));assert.equal(payload.script_modules['value.luau'],'return 42');assert.deepEqual(payload.data_assets.map(v=>v.loader),['json','text','text']);assert.equal(payload.data_assets[2].source,payload.data_assets[0].source);assert(!Object.hasOwn(payload,'script_bytecode'));
  for(const name of ['data/level.json','data/notes.txt'])assert.deepEqual(fs.readFileSync(path.join(args.output,'content',name)),fs.readFileSync(path.join(dir,name)));
  t.diagnostic(JSON.stringify({actual_core_validation:report.preparation.validation,runtime_manifest_sha256:report.preparation.runtime_manifest_sha256,runtime_wasm_sha256:report.preparation.runtime_wasm_sha256,core_source_commit:report.preparation.core_source_commit,host_sha256:report.preparation.host_sha256,source_script_sha256:report.preparation.project.script_sha256,release_root:report.release_root,generation_matches:published.generation_matches,module_sources:report.preparation.project.module_sources,staged_data_loaders:payload.data_assets.map(v=>v.loader),indexed_files:report.files.length}));
 });
