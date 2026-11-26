@@ -114,3 +114,9 @@ Shader meshes compile their stages in the official WebGL2 player. The native
 player rejects meshes (`HOST_GEOMETRY3D_UNSUPPORTED`) and a curved,
 rect or left-handed camera (`HOST_CAMERA_PROJECTION_UNSUPPORTED`) instead of
 drawing them differently.
+
+Meshes using the same image, filter and address mode share one sampler texture.
+The renderer releases it when its last mesh leaves. Each sampler keeps a reference
+to the decoded image and tracks GPU uploads independently. Renderer diagnostics
+expose the live count as `geometry3d_sampler_variants` and the cumulative counts
+as `geometry3d_sampler_builds` and `geometry3d_sampler_disposes`.
