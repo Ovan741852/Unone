@@ -495,6 +495,7 @@ impl DeveloperSession {
         &self,
         request: &impl Serialize,
         tick_count: u64,
+        receipt_bytes_per_tick: usize,
     ) -> Result<(), Box<Diagnostic>> {
         if self.recorded_ticks + tick_count > 60_000 {
             return Err(error(
@@ -511,7 +512,9 @@ impl DeveloperSession {
                 "Input/operations must fit within 64 KiB",
             ));
         }
-        if self.recording_bytes + size + tick_count as usize * 96 + 1024 > MAX_RECORDING_BYTES {
+        let per_tick = 96usize.saturating_add(receipt_bytes_per_tick);
+        let reserved = (tick_count as usize).saturating_mul(per_tick);
+        if (self.recording_bytes + size + 1024).saturating_add(reserved) > MAX_RECORDING_BYTES {
             return Err(error(
                 "RECORDING_FULL",
                 "Export the recording and open a new session; recording is limited to 16 MiB",
@@ -696,7 +699,15 @@ impl DeveloperSession {
                     if frames!=1{return Err(error("INPUT_PHYSICAL_STEP_SINGLE_TICK","One ordered physical batch belongs to exactly one tick; submit distinct batches in separate steps"));}
                     input.validate()?;
                 }
-                self.reserve_recording(&input, frames)?;
+                let data_budget = if input.data_assets.is_none() {
+                    self.runtime.data_receipt_recording_bound()
+                } else {
+                    0
+                };
+                if data_budget > 0 || input.data_assets.is_some() {
+                    input.validate()?;
+                }
+                self.reserve_recording(&input, frames, data_budget)?;
                 if let Some(pointer) = &input.pointer {
                     crate::world::validate_vec2(pointer.position, "Pointer position")?;
                     if let Some(screen) = pointer.screen_position {
@@ -704,6 +715,7 @@ impl DeveloperSession {
                     }
                 }
                 let mut digests = Vec::new();
+                let mut data_tape = Vec::new();
                 let mut failure = None;
                 for _ in 0..frames {
                     let before = self.snapshot.clone();
@@ -744,12 +756,19 @@ impl DeveloperSession {
                         crate::observation_digest(&self.runtime.observe())
                             .expect("snapshot serializes"),
                     );
+                    if data_budget > 0 {
+                        data_tape.push(self.runtime.last_data_receipts().unwrap_or_default());
+                    }
                     if failure.is_some() {
                         break;
                     }
                 }
-                self.record(json!({"command": "step", "frames": frames, "input": input,
-                    "digests": digests, "failure": failure.as_ref().map(|diagnostic| json!({"code": diagnostic.code}))}));
+                let mut command = json!({"command": "step", "frames": frames, "input": input,
+                    "digests": digests, "failure": failure.as_ref().map(|diagnostic| json!({"code": diagnostic.code}))});
+                if data_budget > 0 {
+                    command["data_assets"] = json!(data_tape);
+                }
+                self.record(command);
                 let mut report = self.snapshot_report(None, &[])?;
                 report["completed_frames"] = json!(digests.len() - usize::from(failure.is_some()));
                 if let Some(mut diagnostic) = failure {
@@ -766,7 +785,7 @@ impl DeveloperSession {
                 ..
             } => {
                 self.check_revision(expected_revision)?;
-                self.reserve_recording(&operations, 0)?;
+                self.reserve_recording(&operations, 0, 0)?;
                 let before = self.snapshot.clone();
                 let (candidate, results) = self.runtime.enact_developer(&operations, dry_run)?;
                 let candidate = serde_json::to_value(candidate).expect("snapshot serializes");
@@ -932,6 +951,8 @@ enum RecordedCommand {
     Step {
         frames: u64,
         input: InputFrame,
+        #[serde(default, deserialize_with = "crate::physical_input::present")]
+        data_assets: Option<Vec<Vec<crate::DataAssetReceipt>>>,
         digests: Vec<String>,
         failure: Option<RecordedFailure>,
     },
@@ -968,9 +989,18 @@ fn replay(project: &Path, value: Value) -> Result<Value, Box<Diagnostic>> {
                 digests,
                 failure,
                 input,
+                data_assets,
                 ..
             } => {
                 if input.physical.is_some(){input.validate()?;if *frames!=1{return Err(error("INPUT_PHYSICAL_STEP_SINGLE_TICK","Physical batch cannot repeat across ticks"));}}
+                if let Some(tape) = data_assets {
+                    if tape.len() != digests.len() || input.data_assets.is_some() {
+                        return Err(error("RECORDING_INVALID", "On-demand data requires exactly one receipt list per attempted tick"));
+                    }
+                    for rows in tape {
+                        crate::DataAssetReceipt::validate(rows).map_err(|e| error("RECORDING_INVALID", e))?;
+                    }
+                }
                 if !(1..=600).contains(frames)
                     || digests.is_empty()
                     || digests.len() as u64 > *frames
@@ -1039,12 +1069,19 @@ fn replay(project: &Path, value: Value) -> Result<Value, Box<Diagnostic>> {
                 }
             }
             RecordedCommand::Step {
-                input,
+                mut input,
                 digests,
                 failure,
+                data_assets,
                 ..
             } => {
                 for (tick, expected) in digests.iter().enumerate() {
+                    if let Some(tape) = &data_assets {
+                        input.data_assets = Some(tape[tick].clone());
+                    }
+                    if input.data_assets.is_none() && session.runtime.last_data_receipts().is_some() {
+                        return Err(error("DEFERRED_DATA_TAPE_MISSING", "Replay needs recorded data receipts on each tick"));
+                    }
                     let result = session.runtime.tick_with_input(&input);
                     let actual = crate::observation_digest(&session.runtime.observe())
                         .expect("snapshot serializes");

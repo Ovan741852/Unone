@@ -133,3 +133,140 @@ fn a_project_on_disk_reads_data_assets_from_its_manifest() {
     let runtime = EngineRuntime::load(root).unwrap();
     assert_eq!(runtime.semantic_observations()["width"].as_f64(), Some(12.0));
 }
+
+#[test]
+fn deferred_lifecycle_is_one_request_per_attempt_and_validates_the_entire_receipt_set() {
+    use serde_json::json;
+    let script=r#"
+        local id="data://intro"
+        local tick=0
+        return {
+            start=function(api)
+                assert(api.assets.status(id).state=="idle")
+                assert(not pcall(api.assets.load,id))
+                api.assets.request(id)
+                api.assets.request(id)
+            end,
+            update=function(api)
+                tick+=1
+                local status=api.assets.status(id)
+                api.observation.set("state",status.state)
+                if tick==1 then
+                    assert(status.state=="loading")
+                    api.assets.release(id)
+                    api.assets.request(id)
+                elseif tick==2 then
+                    assert(status.state=="failed" and status.error)
+                    api.assets.request(id)
+                elseif tick==3 then
+                    local buffer1=api.assets.load(id)
+                    assert(buffer.tostring(buffer1)=="abc" and api.bytes.isFrozen(buffer1))
+                    assert(rawequal(api.assets.load(id),buffer1))
+                    api.assets.release(id)
+                    assert(buffer.tostring(buffer1)=="abc" and api.assets.status(id).state=="idle")
+                    assert(not pcall(api.assets.load,id))
+                end
+            end,
+        }
+    "#;
+    let mut runtime=host(script,json!([{"id":"data://intro","source":"intro.bin","loader":"bytes","on_demand":true}]),&[]).unwrap();
+    let input=|rows| serde_json::from_value(json!({"data_assets":rows})).unwrap();
+    let plan=runtime.data_asset_request_plan(9,0).unwrap();
+    assert_eq!(plan["requests"],json!([{"id":"data://intro","request":1}]));
+    assert!(runtime.data_asset_request_plan(9,plan["revision"].as_u64().unwrap() as u32).is_none());
+    runtime.tick_with_input(&input(json!([]))).unwrap();
+    assert!(runtime.reserve_deferred_bytes(1,3).is_none());
+    let failed=|request|json!({"id":"data://intro","request":request,"state":"failed"});
+    assert!(runtime.tick_with_input(&input(json!([failed(1)]))).unwrap_err().explanation.contains("REQUEST_MISMATCH"));
+    runtime.tick_with_input(&input(json!([failed(2)]))).unwrap();
+    let ptr=runtime.reserve_deferred_bytes(3,3).unwrap();
+    unsafe {std::ptr::copy_nonoverlapping(b"abc".as_ptr(),ptr,3)};
+    let ready=|hash:&str|json!({"id":"data://intro","state":"ready","request":3,"sha256":hash});
+    let sha="ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad";
+    assert!(runtime.tick_with_input(&input(json!([ready(&"0".repeat(64))]))).unwrap_err().explanation.contains("HASH_MISMATCH"));
+    let mixed=input(json!([ready(sha),{"id":"data://unknown","state":"failed","request":56}]));
+    assert!(runtime.tick_with_input(&mixed).unwrap_err().explanation.contains("REQUEST_MISMATCH"));
+    assert_eq!(runtime.current_frame(),2);
+    runtime.tick_with_input(&input(json!([ready(sha)]))).unwrap();
+    assert_eq!(runtime.semantic_observations()["state"],"ready");
+    assert_eq!(runtime.data_asset_request_plan(9,0).unwrap()["requests"],json!([]));
+}
+
+#[test]
+fn native_deferred_reads_only_after_request_and_records_the_exact_receipt() {
+    use serde_json::json;
+    let dir=tempfile::tempdir().unwrap();
+    let root=dir.path();
+    std::fs::write(root.join("project.unone.json"),br#"{"name":"deferred","entry_script":"main.luau","asset_manifest":"assets.json"}"#).unwrap();
+    std::fs::write(root.join("assets.json"),json!({"version":1,"assets":[{
+        "id":"data://movie","kind":"data","source":"movie.bin","bundle":"content",
+        "encoding":{"format":"raw","mime":"application/octet-stream","decoder":"bytes","on_demand":true}
+    }]}).to_string()).unwrap();
+    std::fs::write(root.join("main.luau"),r#"
+        local id="data://movie"
+        return {start=function() end,update=function(api)
+            local s=api.assets.status(id).state
+            api.observation.set("state",s)
+            if s=="idle" or s=="failed" then api.assets.request(id) end
+            if s=="ready" then api.observation.set("content",buffer.tostring(api.assets.load(id))) end
+        end}
+    "#).unwrap();
+    let mut r=EngineRuntime::load(root).unwrap();
+    r.tick().unwrap(); // File is still absent.
+    assert_eq!(r.last_data_receipts().unwrap().len(),0);
+    r.tick().unwrap();
+    assert_eq!(r.semantic_observations()["state"],"failed");
+    std::fs::write(root.join("movie.bin"),b"abc").unwrap();
+    let hold=serde_json::from_value(json!({"data_assets":[]})).unwrap();
+    r.tick_with_input(&hold).unwrap();
+    assert_eq!(r.semantic_observations()["state"],"loading");
+    r.tick().unwrap();
+    assert_eq!(r.semantic_observations()["content"],"abc");
+    let recording=unone_engine::record_run(root,4,42,&[]).value.unwrap();
+    let tape=serde_json::to_value(&recording).unwrap();
+    assert_eq!(tape["input_sequence"][0]["data_assets"],json!([]));
+    assert_eq!(tape["input_sequence"][1]["data_assets"][0]["request"],1);
+    assert_eq!(tape["input_sequence"][1]["data_assets"][0]["sha256"],"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+    assert!(unone_engine::diff_run(root,&recording).value.unwrap().identical);
+    std::fs::write(root.join("movie.bin"),b"abd").unwrap();
+    let changed=unone_engine::diff_run(root,&recording);
+    assert!(!changed.ok && changed.diagnostics[0].explanation.contains("HASH_MISMATCH"));
+}
+
+#[test]
+fn developer_recording_replays_the_receipt_on_a_failed_tick() {
+    use serde_json::json;
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    std::fs::write(root.join("project.unone.json"), json!({
+        "name": "debug-data", "entry_script": "main.luau", "asset_manifest": "assets.json"
+    }).to_string()).unwrap();
+    std::fs::write(root.join("assets.json"), json!({"version":1,"assets":[{
+        "id":"data://reel","kind":"data","source":"reel.bin","bundle":"content",
+        "encoding":{"format":"raw","mime":"application/octet-stream","decoder":"bytes","on_demand":true}
+    }]}).to_string()).unwrap();
+    std::fs::write(root.join("main.luau"), r#"
+        local id = "data://reel"
+        return {start = function() end, update = function(api)
+            local state = api.assets.status(id).state
+            if state == "idle" then api.assets.request(id) end
+            if state == "failed" then error("reel unavailable") end
+        end}
+    "#).unwrap();
+    let mut protocol = unone_engine::DeveloperProtocol::default();
+    let open = protocol.execute_json(root, json!({"command":"open"})).value.unwrap();
+    let session = &open["session"];
+    let step = protocol.execute_json(root, json!({"command":"step","session":session,
+        "expected_revision":open["revision"],"frames":4}));
+    assert!(!step.ok);
+    let mut recording = protocol.execute_json(root, json!({"command":"recording","session":session})).value.unwrap();
+    let command = &recording["commands"][0];
+    assert_eq!(command["data_assets"], json!([[], [{"state":"failed","id":"data://reel","request":1}]]));
+    assert_eq!(command["digests"].as_array().unwrap().len(), 2);
+    std::fs::write(root.join("reel.bin"), b"available only at replay").unwrap();
+    let replay = protocol.execute_json(root, json!({"command":"replay","recording":recording}));
+    assert_eq!(replay.value.unwrap()["identical"], true);
+    recording["commands"][0].as_object_mut().unwrap().remove("data_assets");
+    let missing = protocol.execute_json(root, json!({"command":"replay","recording":recording}));
+    assert_eq!(missing.diagnostics[0].code, "DEFERRED_DATA_TAPE_MISSING");
+}
