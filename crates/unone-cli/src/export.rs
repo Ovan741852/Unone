@@ -121,6 +121,7 @@ use sha2::{Digest, Sha256};
 use std::{
     fs,
     path::{Path, PathBuf},
+    rc::Rc,
 };
 
 fn digest(bytes: &[u8]) -> String {
@@ -420,29 +421,15 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
         .replace("__RUNTIME_JS__", manifest["javascript"].as_str().unwrap());
     let index = apply_startup_screen(index, presentation.startup.as_ref(), &config.name)?;
     let module_dependencies=crate::web_dependencies::validate(&files)?;
-    let (release_root,index)=seal_web_generation(&mut files,&index)?;
-    files.push(("index.html".into(), index.into_bytes()));
-    files.sort_by(|a, b| a.0.cmp(&b.0));
-    files.dedup_by(|a, b| a.0 == b.0 && a.1 == b.1);
-    let mut destinations = std::collections::BTreeSet::new();
-    for (path, _) in &files {
-        ensure!(
-            destinations.insert(path.replace('\\', "/").to_lowercase()),
-            "export destination collision: {path}"
-        );
-    }
-    let mut report = json!({"version":1,"project":config.name,"release_root":release_root,"module_dependencies_checked":module_dependencies,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer_mode":presentation.renderer_mode,"renderer_module":presentation.renderer_module,"renderer":if presentation.renderer_mode == crate::hosts::RendererMode::Official {"three-webgl"} else {"custom-module"},"total_bytes":files.iter().map(|f|f.1.len()).sum::<usize>(),"files":files.iter().map(|(p,b)|json!({"path":p,"bytes":b.len(),"sha256":digest(b)})).collect::<Vec<_>>()});
+    let generation = seal_web_generation(files, &index)?;
+    let mut report = json!({"version":1,"project":config.name,"release_root":generation.root,"module_dependencies_checked":module_dependencies,"cache_policy":{"index.html":"no-cache, must-revalidate","releases/":"public, max-age=31536000, immutable","deployment":"publish complete generation before index; retain old generations for open clients","legacy_aliases":"unversioned files retained for existing CLI inspection tools; browser entry uses only release_root"},"enabled_systems":settings.enabled_ids(),"compiled_systems":compiled,"profile":"release","variant":if development {"development"} else {"production"},"dev_tools":false,"preview_tools":development,"renderer_mode":presentation.renderer_mode,"renderer_module":presentation.renderer_module,"renderer":if presentation.renderer_mode == crate::hosts::RendererMode::Official {"three-webgl"} else {"custom-module"},"total_bytes":generation.files.iter().map(|(_, content)| content.bytes.len()).sum::<usize>(),"files":generation.inventory()});
     report["error_policy"] = serde_json::to_value(error_policy)?;
     if let Some(sources) = script_sources { report["script_sources"] = sources; }
     if let Some(font_subset) = font_subset { report["font_subset"] = font_subset; }
     // All validation and reads finish first. Remove only our newly created tree on write failure.
     fs::create_dir_all(output)?;
     let write = (|| -> Result<()> {
-        for (path, bytes) in &files {
-            let destination = output.join(path);
-            fs::create_dir_all(destination.parent().unwrap())?;
-            fs::write(destination, bytes)?;
-        }
+        generation.write_files(output)?;
         fs::write(
             output.join("export.json"),
             serde_json::to_vec_pretty(&report)?,
@@ -570,7 +557,7 @@ mod tests {
         descriptor["runtime_packages"] = serde_json::to_value(&packages).unwrap();
         fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
         let output = directory.path().join("exact");
-        web_with_templates(directory.path(), &output, Some(&runtime), false, &repo).unwrap();
+        export_and_verify(directory.path(), &output, &runtime, false, &repo);
         let payload = serde_json::from_slice::<Value>(&fs::read(output.join("content/project.json")).unwrap()).unwrap();
         assert_eq!(payload["config"]["runtime_packages"], serde_json::to_value(&packages).unwrap());
         // A production export ships production bytecode instead of entry source.
@@ -583,7 +570,7 @@ mod tests {
         descriptor.as_object_mut().unwrap().remove("runtime_packages");
         fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
         let legacy_output = directory.path().join("legacy");
-        web_with_templates(directory.path(), &legacy_output, Some(&runtime), false, &repo).unwrap();
+        export_and_verify(directory.path(), &legacy_output, &runtime, false, &repo);
         assert!(legacy_output.join("index.html").exists());
     }
 
@@ -595,10 +582,10 @@ mod tests {
         fs::write(project.path().join("project.unone.json"), br#"{"name":"shared profile fixture","entry_script":"main.luau"}"#).unwrap();
         fs::write(project.path().join("main.luau"), "return {start=function()end,update=function()end}").unwrap();
         let default = project.path().join("default");
-        web_with_templates(project.path(), &default, Some(&runtime), false, &repo).unwrap();
+        export_and_verify(project.path(), &default, &runtime, false, &repo);
         fs::write(project.path().join("player.presentation.json"), br#"{"windows_gpu_memory":"memory_usage"}"#).unwrap();
         let shared = project.path().join("with-windows-profile");
-        web_with_templates(project.path(), &shared, Some(&runtime), false, &repo).unwrap();
+        export_and_verify(project.path(), &shared, &runtime, false, &repo);
         assert_eq!(fs::read(default.join("content/presentation.json")).unwrap(),
             fs::read(shared.join("content/presentation.json")).unwrap());
     }
@@ -615,7 +602,7 @@ mod tests {
         fs::write(directory.path().join("project.unone.json"), serde_json::to_vec(&json!({"name":"modules","entry_script":"scripts/main.luau"})).unwrap()).unwrap();
         fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
         let output = directory.path().join("production");
-        web_with_templates(directory.path(), &output, Some(&runtime), false, &repo).unwrap();
+        export_and_verify(directory.path(), &output, &runtime, false, &repo);
         let payload = serde_json::from_slice::<Value>(&fs::read(output.join("content/project.json")).unwrap()).unwrap();
         assert!(payload.get("script_modules").is_none());
         let decl = &payload["script_module_bytecode"];
@@ -632,7 +619,7 @@ mod tests {
         descriptor["preview_tools"] = json!(true);
         fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
         let development = directory.path().join("development");
-        web_with_templates(directory.path(), &development, Some(&runtime), true, &repo).unwrap();
+        export_and_verify(directory.path(), &development, &runtime, true, &repo);
         let payload = serde_json::from_slice::<Value>(&fs::read(development.join("content/project.json")).unwrap()).unwrap();
         assert!(payload.get("script_module_bytecode").is_none());
         assert_eq!(payload["script_modules"]["world/a.luau"], "return require('../shared')");
@@ -666,7 +653,7 @@ mod tests {
             let systems=if minimal {json!({"ui":false,"particle":false,"effekseer":false,"audio":false,"save":false})}else{json!({})};
             fs::write(dir.path().join("project.unone.json"),serde_json::to_vec(&json!({"name":"dependency closure","entry_script":"main.luau","systems":systems})).unwrap()).unwrap();
             let output=dir.path().join(if minimal {"minimal"}else{"full"});
-            let report=web_with_templates(dir.path(),&output,Some(&runtime),false,&repo).unwrap();
+            let report=export_and_verify(dir.path(), &output, &runtime, false, &repo);
             assert_eq!(output.join("web/shared/ui-presentation.mjs").is_file(), !minimal,
                 "UI-only presentation dependency follows the enabled UI inventory");
             for name in ["ui-text-input.mjs", "ui-cursor.mjs", "ui-image-batch.mjs"] {
@@ -705,7 +692,7 @@ mod tests {
         fs::write(dir.path().join("main.luau"), "return {start=function()end,update=function()end}").unwrap();
         fs::write(dir.path().join("project.unone.json"), br#"{"name":"no inventory","entry_script":"main.luau"}"#).unwrap();
         let output = dir.path().join("development");
-        let report = web_with_templates(dir.path(), &output, Some(&runtime), true, &repo).unwrap();
+        let report = export_and_verify(dir.path(), &output, &runtime, true, &repo);
         let index_bytes = fs::read(output.join("content/asset-usages.json")).unwrap();
         let index: Value = serde_json::from_slice(&index_bytes).unwrap();
         assert_eq!(index["version"], 1);
@@ -723,7 +710,7 @@ mod tests {
         descriptor["preview_tools"] = json!(false);
         fs::write(runtime.join("runtime.json"), serde_json::to_vec(&descriptor).unwrap()).unwrap();
         let production = dir.path().join("production");
-        web_with_templates(dir.path(), &production, Some(&runtime), false, &repo).unwrap();
+        export_and_verify(dir.path(), &production, &runtime, false, &repo);
         assert!(!production.join("content/asset-usages.json").exists());
         assert!(!production.join("web/developer").exists());
     }
@@ -740,7 +727,7 @@ mod tests {
         fs::write(dir.path().join("fixture.svg"), br#"<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>"#).unwrap();
         let expected = serde_json::to_value(unone_engine::asset_usages(dir.path(), None).value.unwrap()).unwrap();
         let output = dir.path().join("development");
-        web_with_templates(dir.path(), &output, Some(&runtime), true, &repo).unwrap();
+        export_and_verify(dir.path(), &output, &runtime, true, &repo);
         let actual: Value = serde_json::from_slice(&fs::read(output.join("content/asset-usages.json")).unwrap()).unwrap();
         assert_eq!(actual, expected);
         assert_eq!(actual["scope"]["scan_complete"], true);
@@ -748,16 +735,81 @@ mod tests {
         assert!(!actual["references"].as_array().unwrap().is_empty());
     }
 
+    fn verify_written_inventory(output: &Path, inventory: &[Value]) -> usize {
+        let mut total_bytes = 0;
+        for row in inventory {
+            let bytes = fs::read(output.join(row["path"].as_str().unwrap())).unwrap();
+            assert_eq!(row["bytes"], bytes.len());
+            assert_eq!(row["sha256"], digest(&bytes));
+            total_bytes += bytes.len();
+        }
+        assert!(inventory.windows(2).all(|w| w[0]["path"].as_str() < w[1]["path"].as_str()));
+        total_bytes
+    }
+
+    fn export_and_verify(project: &Path, output: &Path, runtime: &Path, development: bool, repo: &Path) -> Value {
+        let report = web_with_templates(project, output, Some(runtime), development, repo).unwrap();
+        let written: Value = serde_json::from_slice(&fs::read(output.join("export.json")).unwrap()).unwrap();
+        assert_eq!(written, report);
+        assert_eq!(written["total_bytes"], verify_written_inventory(output, written["files"].as_array().unwrap()));
+        report
+    }
+
+    fn write_test_generation(files: Vec<(String, Vec<u8>)>, html: &str) -> (WebGeneration, tempfile::TempDir) {
+        let generation = seal_web_generation(files, html).unwrap();
+        let dir = tempfile::tempdir().unwrap();
+        generation.write_files(dir.path()).unwrap();
+        verify_written_inventory(dir.path(), &generation.inventory());
+        (generation, dir)
+    }
+
     #[test]
     fn web_generation_pins_all_resources_and_changes_on_any_input() {
-        let input=vec![("runtime/core.js".into(),b"js".to_vec()),("runtime/core.wasm".into(),b"wasm".to_vec()),("web/player/main.js".into(),b"host".to_vec()),("content/project.json".into(),b"project".to_vec())];
-        let html="<html><head></head></html>";
-        let (root,index)=seal_web_generation(&mut input.clone(),html).unwrap();
-        assert!(index.contains(&format!("<base href=\"{root}\">")));
-        let mut reversed=input.clone();reversed.reverse();assert_eq!(seal_web_generation(&mut reversed,html).unwrap().0,root);
-        for i in 0..input.len(){let mut changed=input.clone();changed[i].1.push(1);let (next,_)=seal_web_generation(&mut changed,html).unwrap();assert_ne!(next,root);for (path,bytes) in &input{if path!=&input[i].0{assert!(changed.contains(&(format!("{next}{path}"),bytes.clone())));}}}
-        assert_ne!(seal_web_generation(&mut input.clone(),"<head>new</head>").unwrap().0,root);
-        assert!(seal_web_generation(&mut input.clone(),"<head><base href='x'></head>").is_err());
+        let input = vec![("runtime/core.js".into(), b"js".to_vec()), ("runtime/core.wasm".into(), b"wasm".to_vec()),
+            ("web/player/main.js".into(), b"host".to_vec()), ("content/project.json".into(), b"project".to_vec())];
+        let html = "<html><head></head></html>";
+        let (generation, dir) = write_test_generation(input.clone(), html);
+        let root = &generation.root;
+        assert_eq!(root, "releases/7e36e54bd4ab262ffe93b1eb8a37bd56ef1e10f3ff3a6ec885ac10e161c0b6dd/");
+        assert!(fs::read_to_string(dir.path().join("index.html")).unwrap().contains(&format!("<base href=\"{root}\">")));
+        assert_eq!(generation.files.len(), 2 * input.len() + 1);
+        for (path, bytes) in &input {
+            let find = |name: &str| &generation.files.iter().find(|(p, _)| p == name).unwrap().1;
+            assert!(Rc::ptr_eq(find(path), find(&format!("{root}{path}"))));
+            let alias = dir.path().join(path);
+            let release = dir.path().join(root).join(path);
+            assert_eq!(&fs::read(&alias).unwrap(), bytes);
+            fs::write(alias, "mutable alias").unwrap();
+            assert_eq!(&fs::read(release).unwrap(), bytes);
+        }
+        let mut reversed = input.clone();
+        reversed.reverse();
+        assert_eq!(&write_test_generation(reversed, html).0.root, root);
+        for i in 0..input.len() {
+            let mut changed = input.clone();
+            changed[i].1.push(1);
+            let (next, output) = write_test_generation(changed.clone(), html);
+            assert_ne!(&next.root, root);
+            for (path, bytes) in changed {
+                assert_eq!(fs::read(output.path().join(&next.root).join(&path)).unwrap(), bytes);
+                assert_eq!(fs::read(output.path().join(path)).unwrap(), bytes);
+            }
+        }
+        assert_ne!(&write_test_generation(input.clone(), "<head>new</head>").0.root, root);
+        assert!(seal_web_generation(input, "<head><base href='x'></head>").is_err());
+    }
+
+    #[test]
+    fn web_generation_keeps_duplicate_identity_and_rejects_conflicting_destinations() {
+        let file = ("assets/a".to_owned(), vec![1, 2, 3]);
+        let html = "<head></head>";
+        let (single, _dir) = write_test_generation(vec![file.clone()], html);
+        let (duplicate, _dir) = write_test_generation(vec![file.clone(), file.clone()], html);
+        assert_ne!(single.root, duplicate.root);
+        assert_eq!(duplicate.inventory().len(), 3);
+        for (collision, bytes) in [("assets/a", vec![4]), ("Assets/A", file.1.clone()), ("assets\\a", file.1.clone())] {
+            assert!(seal_web_generation(vec![file.clone(), (collision.to_owned(), bytes)], html).is_err());
+        }
     }
     #[test]
     fn exports_carry_the_image_plans_group_names_and_refuse_an_unknown_one() {
@@ -869,11 +921,14 @@ mod tests {
         assert_eq!(first.iter().filter(|(path,_)|path.starts_with("content/fonts/")).count(),2);
         assert!(first.iter().any(|(path,bytes)|path=="content/fonts/bold.otf"&&bytes==b"bold-font"));
         let html = "<head><title>Font fixture</title></head>";
-        let hash = seal_web_generation(&mut first, html).unwrap().0;
+        let (first_generation, first_output) = write_test_generation(first, html);
+        assert_eq!(fs::read(first_output.path().join(&first_generation.root).join("content/fonts/bold.otf")).unwrap(), b"bold-font");
         fs::write(dir.path().join("fonts/bold.otf"), b"updated-bold-font").unwrap();
         let mut second = vec![];
         append_presentation(dir.path(), &mut second).unwrap();
-        assert_ne!(hash, seal_web_generation(&mut second, html).unwrap().0);
+        let (second_generation, second_output) = write_test_generation(second, html);
+        assert_ne!(first_generation.root, second_generation.root);
+        assert_eq!(fs::read(second_output.path().join(&second_generation.root).join("content/fonts/bold.otf")).unwrap(), b"updated-bold-font");
         for (ui, code) in [
             (json!({"fonts":[{"family":"Fixture","source":"fonts/regular.ttf"},{"family":"Fixture","source":"fonts/bold.otf"}]}),"UI_FONT_DUPLICATE"),
             (json!({"fonts":[{"family":"Fixture","source":"fonts/regular.ttf","weight":99}]}),"UI_FONT_WEIGHT_INVALID"),
@@ -898,8 +953,9 @@ mod tests {
         let presentation = append_presentation(dir.path(), &mut files).unwrap();
         assert_eq!(presentation.renderer_mode, crate::hosts::RendererMode::Custom);
         assert!(files.iter().any(|(path, _)| path == "content/host/render.mjs"));
-        let (root, _) = seal_web_generation(&mut files, "<head></head>").unwrap();
-        assert!(files.iter().any(|(path, _)| path == &format!("{root}content/host/render.mjs")));
+        let (generation, output) = write_test_generation(files, "<head></head>");
+        let release = output.path().join(&generation.root).join("content/host/render.mjs");
+        assert_eq!(fs::read(release).unwrap(), b"export const createRenderer = () => ({})");
         for invalid in ["../secret", "C:/secret", "/secret", "host\\render.mjs", "host//render.mjs", "host/./render.mjs", "host/%2e%2e/render.mjs", "render.mjs?query", "render.mjs#fragment"] {
             fs::write(dir.path().join("player.presentation.json"), serde_json::to_vec(&declaration(json!(["host/render.mjs", invalid]))).unwrap()).unwrap();
             assert!(append_presentation(dir.path(), &mut vec![]).is_err(), "{invalid}");
@@ -1093,18 +1149,67 @@ pub(crate) fn native_shader_gate(files: &[(String, Vec<u8>)]) -> Result<()> {
     Ok(())
 }
 
-/// The browser loads a closed immutable generation, including transitive imports
-/// and the JS/WASM pair. Legacy file aliases remain for CLI consumer compatibility.
-fn seal_web_generation(files:&mut Vec<(String,Vec<u8>)>,index:&str)->Result<(String,String)> {
-    ensure!(!index.contains("<base"),"PLAYER_BASE_CONFLICT: template must not supply a base element");
-    let mut inventory=files.iter().map(|(p,b)|(p.clone(),digest(b))).collect::<Vec<_>>();
-    inventory.sort();
-    let identity=serde_json::to_vec(&(index,inventory))?;
-    let root=format!("releases/{}/",digest(&identity));
-    let copies=files.iter().map(|(p,b)|(format!("{root}{p}"),b.clone())).collect::<Vec<_>>();
-    files.extend(copies);
-    let index=replace_required(index.to_owned(),"<head>",&format!("<head><base href=\"{root}\">"))?;
-    Ok((root,index))
+struct WebFileContent {
+    bytes: Vec<u8>,
+    sha256: String,
+}
+
+impl WebFileContent {
+    fn new(bytes: Vec<u8>) -> Self {
+        let sha256 = digest(&bytes);
+        Self { bytes, sha256 }
+    }
+}
+
+struct WebGeneration {
+    root: String,
+    files: Vec<(String, Rc<WebFileContent>)>,
+}
+
+impl WebGeneration {
+    fn inventory(&self) -> Vec<Value> {
+        self.files.iter().map(|(path, content)| {
+            json!({"path": path, "bytes": content.bytes.len(), "sha256": content.sha256})
+        }).collect()
+    }
+
+    fn write_files(&self, output: &Path) -> Result<()> {
+        for (path, content) in &self.files {
+            // A legacy alias is independently writable after export.
+            let destination = output.join(path);
+            fs::create_dir_all(destination.parent().unwrap())?;
+            fs::write(destination, &content.bytes)?;
+        }
+        Ok(())
+    }
+}
+
+/// The generation and each legacy destination share their in-memory bytes and digest.
+fn seal_web_generation(files: Vec<(String, Vec<u8>)>, index: &str) -> Result<WebGeneration> {
+    ensure!(!index.contains("<base"), "PLAYER_BASE_CONFLICT: template must not supply a base element");
+    let mut files: Vec<_> = files.into_iter()
+        .map(|(path, bytes)| (path, Rc::new(WebFileContent::new(bytes)))).collect();
+    // Identity includes every supplied row, even when equivalent destinations coalesce below.
+    let mut inventory: Vec<_> = files.iter().map(|(path, content)| (path, &content.sha256)).collect();
+    inventory.sort_unstable();
+    let identity = serde_json::to_vec(&(index, inventory))?;
+    let root = format!("releases/{}/", digest(&identity));
+    let index = replace_required(index.to_owned(), "<head>", &format!("<head><base href=\"{root}\">"))?;
+
+    let count = files.len();
+    files.reserve(count + 1);
+    for i in 0..count {
+        let (path, content) = &files[i];
+        files.push((format!("{root}{path}"), Rc::clone(content)));
+    }
+    files.push(("index.html".to_owned(), Rc::new(WebFileContent::new(index.into_bytes()))));
+    files.sort_by(|a, b| a.0.cmp(&b.0));
+    files.dedup_by(|a, b| a.0 == b.0 && a.1.bytes == b.1.bytes);
+    let mut seen = std::collections::BTreeSet::new();
+    for (path, _) in &files {
+        ensure!(seen.insert(path.replace('\\', "/").to_lowercase()), "export destination collision: {path}");
+    }
+    Ok(WebGeneration { root, files })
 }
 fn push_unique_content_file(
     files: &mut Vec<(String, Vec<u8>)>,
