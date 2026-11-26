@@ -193,7 +193,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   const instances = createInstanceRenderer(THREE,world3d,meshAssetFor,options.instanceMemory,lighting);
   const meshEntities = createMeshEntityRenderer(THREE,world3d,meshAssetFor,lighting);
   // Image particles share the sprite texture cache: a texture is drawn once it is ready.
-  const particles = createParticleRenderer(THREE,world3d,{imageTexture:id=>{const record=textureFor(specsOf().get(id),'sprite');return record?.state==='ready'?record.texture:null;}});
+  const particles = createParticleRenderer(THREE,world3d,{imageTexture:id=>{const record=textureFor(specsOf().get(id),'frame');return record?.state==='ready'?record.texture:null;}});
   const projected = createProjectedRenderer(THREE,textureFor,{raster:rasterPolicy.requested});
   const uiImageBatchPrefix=createUiImageBatchPrefix(THREE,renderer,{enabled:backend==='webgl'&&!checkedRaster&&!frameProfile});
   const textureRecords = new Map();
@@ -272,7 +272,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   const heightfields = createHeightfieldRenderer(THREE,world3d,textureFor,lighting);
   const curvature = createWorldCurvature(),rectSize = new THREE.Vector2();
   const dataTextures = createDataTextures(THREE,{memory:options.instanceMemory});
-  const geometry3d = createGeometry3DRenderer(THREE,world3d,{textureFor,memory:options.instanceMemory,curvature,dataTextures});
+  const geometry3d = createGeometry3DRenderer(THREE,world3d,{textureFor:asset=>textureFor(asset,'frame'),memory:options.instanceMemory,curvature,dataTextures});
   // A camera rect (normalized, lower-left origin) renders the world into part of
   // the surface; the rest of the surface is still cleared.
   function drawInRect(rect,render){
@@ -336,13 +336,14 @@ export async function createThreeRenderer(canvas, options = {}) {
 
   function textureFor(asset,owner='persistent') {
     const id = String(asset?.id ?? "");
+    const persistent=owner!=='frame';
     const imageAssets=options.getImageAssets?.();
     if (!id || (!imageAssets&&typeof options.loadAssetUrl !== "function")) {assetRequestPending=true;return null;}
     const existing = textureRecords.get(id);
-    if (existing) {if(existing.state!=='ready')assetRequestPending=true;textureCache.touch(id,existing,{persistent:owner!=='sprite'});return existing;}
+    if (existing) {if(existing.state!=='ready')assetRequestPending=true;textureCache.touch(id,existing,{persistent});return existing;}
     const record = { state: "loading", texture: null, error: null };
     if(imageAssets){
-      textureRecords.set(id,record);textureCache.touch(id,record,{persistent:owner!=='sprite'});
+      textureRecords.set(id,record);textureCache.touch(id,record,{persistent});
       const current=()=>!record.discarded&&textureRecords.get(id)===record;
       const fail=error=>{if(current()){record.state='error';record.error=error;}};
       const attach=()=>{
@@ -380,7 +381,7 @@ export async function createThreeRenderer(canvas, options = {}) {
         record.state = "error";
         record.error = error;
       });
-    textureRecords.set(id,record);textureCache.touch(id,record,{persistent:owner!=='sprite'});
+    textureRecords.set(id,record);textureCache.touch(id,record,{persistent});
     return record;
   }
 
@@ -403,7 +404,7 @@ export async function createThreeRenderer(canvas, options = {}) {
     record.mesh.position.set(entity.transform.x,entity.transform.y,(sprite.layer??0)/1000);
     record.mesh.scale.set((sprite.size?.x??1)*(scale.x??1),(sprite.size?.y??1)*(scale.y??1),1);
     record.mesh.rotation.z=entity.rotation??0;syncSpriteCell(record,sprite,geometry);record.mesh.visible=true;
-    const id=String(sprite.asset??''),texture=textureFor(specsOf().get(id),'sprite');
+    const id=String(sprite.asset??''),texture=textureFor(specsOf().get(id),'frame');
     record.assetId=id;
     if(texture?.state==='ready'){setSpriteMap(record.material,texture.texture);record.material.color.set(0xffffff);}
     else{setSpriteMap(record.material,null);record.material.color.copy(colorFor(entity,THREE));}
@@ -517,7 +518,7 @@ export async function createThreeRenderer(canvas, options = {}) {
       syncSpriteCell(record, sprite, geometry);
       record.mesh.visible = true;
       record.assetId = String(sprite.asset ?? "");
-      const texture = textureFor(specs.get(record.assetId),'sprite');
+      const texture = textureFor(specs.get(record.assetId),'frame');
       if (texture?.state === "ready") {
         setSpriteMap(record.material, texture.texture);
         record.material.color.set(0xffffff);
