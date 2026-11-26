@@ -18,8 +18,8 @@ mod tests {
         let bytes=serde_json::to_vec(&presentation).unwrap();
         let manifest=serde_json::to_vec(&json!({"files":[{"path":"content/presentation.json",
             "bytes":bytes.len(),"sha256":if corrupt {"bad".into()}else{crate::hash(&bytes)}}]})).unwrap();
-        crate::Package::load(|path|match path {
-            "export.json"=>Ok(manifest.clone()),"content/presentation.json"=>Ok(bytes.clone()),_=>Err("unexpected read".into())})
+        crate::Package::load(move |path|match path {
+            "export.json"=>Ok(manifest.clone()),"content/presentation.json"=>Ok(bytes.clone()),_=>Err("unexpected read".into())}).map(|loaded|loaded.0)
     }
     #[test]
     fn direct_native_package_admission_rejects_declared_raster_before_any_runtime_or_gpu() {

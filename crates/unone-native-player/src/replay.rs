@@ -102,7 +102,11 @@ impl InputSequence {
 
     /// Read without consuming. Commit only after the engine tick succeeds.
     pub(crate) fn frame(&self) -> InputFrame {
-        self.frames.get(self.applied_frames).cloned().unwrap_or_default()
+        let mut frame = self.frames.get(self.applied_frames).cloned().unwrap_or_default();
+        // Omitted receipts in normalized input mean no completion on this
+        // tick, including after exhaustion. Never poll live storage in replay.
+        frame.data_assets.get_or_insert_with(Vec::new);
+        frame
     }
 
     pub(crate) fn applied(&mut self) {
@@ -131,6 +135,7 @@ mod tests {
     fn input_is_not_consumed_until_success_and_exhaustion_releases_held_state() {
         let mut sequence = InputSequence::parse(br#"[{"actions":{"Move":true}},{}]"#).unwrap();
         assert!(sequence.frame().actions["Move"]);
+        assert_eq!(sequence.frame().data_assets.as_deref(), Some(&[][..]));
         assert!(sequence.frame().actions["Move"]);
         assert_eq!(sequence.report()["applied_frames"], 0);
         sequence.applied();

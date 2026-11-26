@@ -436,7 +436,7 @@ pub(crate) struct Launcher {
     window: Option<Arc<Window>>,
     gpu: Option<Gpu>,
     painter: Painter,
-    package: Option<Package>,
+    package: Option<super::LoadedPackage>,
     app: Option<App>,
     renderer: Option<Renderer>,
     error: Option<String>,

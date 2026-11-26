@@ -25,6 +25,7 @@ use std::{
     collections::BTreeMap,
     io::Write,
     path::{Path, PathBuf},
+    rc::Rc,
     sync::Arc,
     time::{Duration, Instant},
 };
@@ -144,6 +145,15 @@ pub struct Package {
     files: BTreeMap<String, Vec<u8>>,
     digest: String,
 }
+type DataReader = Box<dyn FnMut(&str) -> R<Vec<u8>>>;
+struct LoadedPackage(Package, Option<DataReader>);
+
+#[cfg(test)]
+impl From<Package> for LoadedPackage {
+    fn from(package: Package) -> Self {
+        Self(package, None)
+    }
+}
 /// Reads and verifies a package's content files against its manifest, a few
 /// at a time, so the startup screen can show how far it has got.
 pub(crate) struct PackageLoader<F> {
@@ -155,6 +165,7 @@ pub(crate) struct PackageLoader<F> {
     files: BTreeMap<String, Vec<u8>>,
     loaded_bytes: u64,
     total_bytes: u64,
+    deferred: BTreeMap<String, (Value, Value)>,
 }
 impl<F: FnMut(&str) -> R<Vec<u8>>> PackageLoader<F> {
     pub(crate) fn open(mut read: F) -> R<Self> {
@@ -176,7 +187,102 @@ impl<F: FnMut(&str) -> R<Vec<u8>>> PackageLoader<F> {
             entries.push((path.to_owned(), file["bytes"].clone(), file["sha256"].clone()));
         }
         let total_bytes = entries.iter().map(|entry| entry.1.as_u64().unwrap_or(0)).sum();
-        Ok(Self { read, digest: hash(&manifest), entries, next: 0, files: BTreeMap::new(), loaded_bytes: 0, total_bytes })
+        let mut loader = Self {
+            read, digest: hash(&manifest), entries, next: 0, files: BTreeMap::new(),
+            loaded_bytes: 0, total_bytes, deferred: BTreeMap::new(),
+        };
+        loader.select_deferred()?;
+        Ok(loader)
+    }
+    fn select_deferred(&mut self) -> R<()> {
+        #[derive(Deserialize)]
+        struct Header {
+            #[serde(default)]
+            data_assets: Vec<unone_engine::DataAssetDecl>,
+            script_bytecode: Option<unone_engine::ScriptBytecodeDecl>,
+            script_module_bytecode: Option<unone_engine::ScriptModuleBytecodeDecl>,
+        }
+        let Some(index) = self
+            .entries
+            .iter()
+            .position(|e| e.0 == "content/project.json")
+        else {
+            return Ok(());
+        };
+        self.load_entry(index)?;
+        let header: Header = serde_json::from_slice(&self.files["content/project.json"])
+            .map_err(|e| e.to_string())?;
+        let mut paths: std::collections::BTreeSet<_> = header
+            .data_assets
+            .iter()
+            .filter(|d| d.on_demand)
+            .map(|d| d.source.clone())
+            .collect();
+        if paths.is_empty() {
+            return Ok(());
+        }
+        for d in header.data_assets.iter().filter(|d| !d.on_demand) {
+            paths.remove(&d.source);
+        }
+        if let Some(d) = header.script_bytecode {
+            paths.remove(&d.source);
+        }
+        if let Some(d) = header.script_module_bytecode {
+            paths.remove(&d.source);
+        }
+        // One physical file may also serve a startup texture, font or another
+        // presentation resource. Keep it eager for that independent consumer.
+        fn protect(value: &Value, paths: &mut std::collections::BTreeSet<String>) {
+            match value {
+                Value::String(s) => {
+                    paths.remove(s);
+                }
+                Value::Array(items) => {
+                    for item in items {
+                        protect(item, paths);
+                    }
+                }
+                Value::Object(fields) => {
+                    for value in fields.values() {
+                        protect(value, paths);
+                    }
+                }
+                _ => {}
+            }
+        }
+        for file in ["content/assets.json", "content/presentation.json"] {
+            let Some(index) = self.entries.iter().position(|e| e.0 == file) else {
+                continue;
+            };
+            self.load_entry(index)?;
+            let mut json: Value =
+                serde_json::from_slice(&self.files[file]).map_err(|e| e.to_string())?;
+            if file == "content/assets.json"
+                && let Some(assets) = json["assets"].as_array_mut()
+            {
+                for a in assets {
+                    if a["kind"] == "data" && a["encoding"]["on_demand"] == true {
+                        a.as_object_mut().unwrap().remove("source");
+                    }
+                }
+            }
+            protect(&json, &mut paths);
+        }
+        self.entries.retain(|(path, size, sha)| {
+            if path
+                .strip_prefix("content/")
+                .is_some_and(|source| paths.contains(source))
+                && !self.files.contains_key(path)
+            {
+                self.deferred
+                    .insert(path.clone(), (size.clone(), sha.clone()));
+                self.total_bytes -= size.as_u64().unwrap_or(0);
+                false
+            } else {
+                true
+            }
+        });
+        Ok(())
     }
     fn load_entry(&mut self, index: usize) -> R<()> {
         let (path, bytes_declared, sha_declared) = &self.entries[index];
@@ -213,14 +319,40 @@ impl<F: FnMut(&str) -> R<Vec<u8>>> PackageLoader<F> {
     pub(crate) fn progress(&self) -> (u64, u64, usize, usize) {
         (self.loaded_bytes, self.total_bytes, self.files.len(), self.entries.len())
     }
-    pub(crate) fn finish(mut self) -> R<Package> {
+    pub(crate) fn finish(mut self) -> R<LoadedPackage>
+    where
+        F: 'static,
+    {
         while !self.advance(Duration::MAX)? {}
-        presentation_raster::validate(self.files.get("content/presentation.json").map(Vec::as_slice))?;
-        Ok(Package { files: self.files, digest: self.digest })
+        presentation_raster::validate(
+            self.files
+                .get("content/presentation.json")
+                .map(Vec::as_slice),
+        )?;
+        let deferred = self.deferred;
+        let mut read = self.read;
+        let lazy: DataReader = Box::new(move |source| {
+            let path = format!("content/{source}");
+            let (size, sha) = deferred
+                .get(&path)
+                .ok_or_else(|| format!("NATIVE_FILE_MISSING: {path}"))?;
+            let bytes = read(&path)?;
+            if *sha != hash(&bytes) || *size != bytes.len() as u64 {
+                return Err(format!("NATIVE_HASH_MISMATCH: {path}"));
+            }
+            Ok(bytes)
+        });
+        Ok(LoadedPackage(
+            Package {
+                files: self.files,
+                digest: self.digest,
+            },
+            Some(lazy),
+        ))
     }
 }
 impl Package {
-    fn load(read: impl FnMut(&str) -> R<Vec<u8>>) -> R<Self> {
+    fn load(read: impl FnMut(&str) -> R<Vec<u8>> + 'static) -> R<LoadedPackage> {
         PackageLoader::open(read)?.finish()
     }
     fn get(&self, path: &str) -> R<&[u8]> {
@@ -249,8 +381,7 @@ impl Package {
         }
         Ok(project)
     }
-    /// The verified package already holds every content file; hand the
-    /// declared data assets and precompiled scripts to the runtime by id.
+    /// Hand eager data assets and precompiled scripts to the runtime by id.
     fn data_assets(&self, project:&HostProject) -> R<BTreeMap<String,Vec<u8>>> {
         project.staged_files().into_iter()
             .map(|(id, source)| Ok((id.to_string(), self.get(&format!("content/{source}"))?.to_vec())))
@@ -471,7 +602,7 @@ struct App {
     world_pointer_owner: Option<u64>,
     ui_input: ui::PointerRouter,
     cursor: [f64; 2],
-    package: Package,
+    package: Rc<Package>,
     runtime: EngineRuntime,
     snapshot: WorldSnapshot,
     settings: Settings,
@@ -592,12 +723,14 @@ impl App {
         }
     }
     fn new(
-        package: Package,
+        package: impl Into<LoadedPackage>,
         mut settings: Settings,
         report: Option<PathBuf>,
         boot: Instant,
         store: save::Store,
     ) -> R<Self> {
+        let LoadedPackage(package, lazy) = package.into();
+        let package = Rc::new(package);
         if !settings.measure_seconds.is_finite() || settings.measure_seconds < 0. {
             return Err("INVALID_MEASUREMENT_DURATION".into());
         }
@@ -629,6 +762,13 @@ impl App {
             settings.height = Some(display.height.get());
         }
         let mut runtime = Package::start(project,seed,Some([settings.width.unwrap_or(1280),settings.height.unwrap_or(720)]),data)?;
+        if let Some(mut read) = lazy {
+            let shared = Rc::clone(&package);
+            runtime.set_data_asset_reader(move |source| match shared.files.get(&format!("content/{source}")) {
+                Some(bytes) => Ok(bytes.clone()),
+                None => read(source),
+            });
+        }
         match spatial_backend {
             "cpu" => {},
             "gpu" => runtime.set_spatial_executor(Box::new(unone_spatial_gpu::SpatialGpuExecutor::new()?))?,
@@ -1274,7 +1414,7 @@ fn android_main(android: winit::platform::android::activity::AndroidApp) {
             event_loop.run_app(&mut launcher).map_err(|e| e.to_string())?;
             return launcher.error().map_or(Ok(()), Err);
         }
-        let package = Package::load(&mut read)?;
+        let package = Package::load(read)?;
         let mut app = App::new(package, settings, report, boot, store)?;
         event_loop.run_app(&mut app).map_err(|e| e.to_string())?;
         Ok(())
@@ -1286,6 +1426,51 @@ fn android_main(android: winit::platform::android::activity::AndroidApp) {
 
 #[cfg(test)]
 mod telemetry_tests {
+    #[test]
+    fn deferred_native_package_reads_and_verifies_each_requested_payload() {
+        use super::*;
+        use std::cell::Cell;
+        for (shared, payload, state) in [
+            (false, b"abc", "ready"), (false, b"bad", "failed"), (true, b"abc", "ready"),
+        ] {
+            let mut declarations = vec![json!({
+                "id":"data://x","source":"x.bin","loader":"bytes","on_demand":true
+            })];
+            if shared {
+                declarations.push(json!({"id":"data://also-eager","source":"x.bin","loader":"bytes"}));
+            }
+            let project = json!({"config":{"name":"native-lazy"}, "data_assets":declarations,
+                "script": r#"
+                    return {start=function(a) a.assets.request('data://x') end, update=function(a)
+                        local state = a.assets.status('data://x').state
+                        a.observation.set('state', state)
+                        if state=='ready' then a.observation.set('value',buffer.tostring(a.assets.load('data://x'))) end
+                    end}
+                "#
+            }).to_string().into_bytes();
+            let manifest = json!({"files":[
+                {"path":"content/project.json","bytes":project.len(),"sha256":hash(&project)},
+                {"path":"content/x.bin","bytes":3,"sha256":hash(b"abc")}
+            ]}).to_string().into_bytes();
+            let reads = Rc::new(Cell::new(0));
+            let seen = Rc::clone(&reads);
+            let package = Package::load(move |path| match path {
+                "export.json" => Ok(manifest.clone()),
+                "content/project.json" => Ok(project.clone()),
+                "content/x.bin" => { seen.set(seen.get() + 1); Ok(payload.to_vec()) },
+                _ => Err(path.into()),
+            }).unwrap();
+            let settings = Settings { headless: true, ..Default::default() };
+            let mut app = App::new(package, settings, None, Instant::now(), save::Store::desktop()).unwrap();
+            assert_eq!(reads.get(), usize::from(shared));
+            app.advance_tick().unwrap();
+            assert_eq!(app.snapshot.observations["state"], state);
+            assert_eq!(reads.get(), 1);
+            if state == "ready" {
+                assert_eq!(app.snapshot.observations["value"], "abc");
+            }
+        }
+    }
     #[test]
     fn physical_keys_have_game_neutral_names() {
         use winit::keyboard::{KeyCode, PhysicalKey};
