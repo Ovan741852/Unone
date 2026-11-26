@@ -401,8 +401,7 @@ pub struct EngineRuntime {
     ui: Rc<RefCell<Option<Arc<UiTree>>>>,
     viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<SaveState>>,
-    /// Shared with a hot-reloaded VM, which decodes data assets afresh.
-    #[cfg(feature = "preview-tools")]
+    /// The host and the active VM share the on-demand request registry.
     data_assets: Rc<RefCell<crate::data_assets::DataAssets>>,
     #[cfg(feature = "dev-tools")]
     generation: u64,
@@ -935,7 +934,6 @@ impl EngineRuntime {
             ui,
             viewport_aspect,
             save_payload,
-            #[cfg(feature = "preview-tools")]
             data_assets,
             #[cfg(feature = "dev-tools")]
             generation: 0,
