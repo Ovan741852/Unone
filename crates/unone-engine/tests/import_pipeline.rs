@@ -123,6 +123,46 @@ fn file_png_inputs_keep_encoded_bytes_and_decode_straight_rgba() {
 }
 
 #[test]
+fn imported_atlas_chooses_a_smaller_lossless_png() {
+    let temp = tempfile::tempdir().unwrap();
+    let dir = temp.path();
+    let original = dir.join("original");
+    project(dir, json!([{"id":"texture://atlas","kind":"texture2d","source":"atlas.png",
+        "import":{"importer":"pal","inputs":{"rgba":"original:pixels.raw"},"product":"image"}}]));
+    write(&dir.join(".unone/import-roots.json"), json!({"original": original}).to_string());
+    write(&dir.join("import/pop.luau"), r#"return {
+        opaque={outputs={},run=function() return {} end},
+        palette={inputs={rgba="bytes"},outputs={image="image"},run=function(inputs)
+            return {image={width=64,height=buffer.len(inputs.rgba)//256,rgba=inputs.rgba}}
+        end}}"#);
+    let mut pixels = Vec::new();
+    let mut random = 0u32;
+    for i in 0..8192 {
+        random = random.wrapping_mul(1664525).wrapping_add(1013904223);
+        let index = if i < 256 { i as u8 } else { (random >> 24) as u8 };
+        // Pairs share RGB but differ in alpha. Preserve the RGB behind alpha zero.
+        pixels.extend_from_slice(&[index / 2, !index / 2, 29, if index % 2 == 0 { 0 } else { 153 }]);
+    }
+    let cases = [
+        (pixels.clone(), png::ColorType::Indexed),
+        ({ pixels[0..4].copy_from_slice(&[0, 0, 0, 255]); pixels }, png::ColorType::Rgba),
+        (vec![17; 64 * 4], png::ColorType::Rgba),
+    ];
+    for (rgba, color) in cases {
+        write(&original.join("pixels.raw"), &rgba);
+        assert_eq!(unone_engine::prepare_imports(dir).unwrap().ran, 1);
+        let encoded = std::fs::read(dir.join("atlas.png")).unwrap();
+        let mut decoder = png::Decoder::new(std::io::Cursor::new(encoded));
+        decoder.set_transformations(png::Transformations::normalize_to_color8() | png::Transformations::ALPHA);
+        let mut reader = decoder.read_info().unwrap();
+        assert_eq!(reader.info().color_type, color);
+        let mut decoded = vec![0; reader.output_buffer_size().unwrap()];
+        reader.next_frame(&mut decoded).unwrap();
+        assert_eq!(decoded, rgba);
+    }
+}
+
+#[test]
 fn hosts_produce_imported_assets_from_local_roots_with_cache_and_provenance() {
     let root = std::env::temp_dir().join(format!("unone-import-pipeline-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&root);
@@ -155,6 +195,16 @@ fn hosts_produce_imported_assets_from_local_roots_with_cache_and_provenance() {
     let again = unone_engine::prepare_imports(&dir).unwrap();
     assert!(again.up_to_date);
     assert_eq!((again.imports, again.ran, again.cached, again.written, again.unchanged), (3, 0, 0, 0, 0));
+    // A previous encoder's stamp must revisit the files, but the original
+    // decoded image in the import cache is still valid.
+    let stamp_path = dir.join(".unone/import-stamp.json");
+    let mut old: Value = serde_json::from_slice(&std::fs::read(&stamp_path).unwrap()).unwrap();
+    old.as_object_mut().unwrap().remove("png_encoding");
+    write(&stamp_path, old.to_string());
+    let migrated = unone_engine::prepare_imports(&dir).unwrap();
+    assert!(!migrated.up_to_date);
+    assert_eq!((migrated.ran, migrated.cached), (0, 2));
+    assert!(unone_engine::prepare_imports(&dir).unwrap().up_to_date);
     // The project file counts by what imports read of it: a test added to it changes nothing they do.
     let config = dir.join("project.unone.json");
     let mut edited: Value = serde_json::from_slice(&std::fs::read(&config).unwrap()).unwrap();

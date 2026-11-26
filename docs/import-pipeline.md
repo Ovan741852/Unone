@@ -34,7 +34,7 @@ return {
 | Port type | Luau value | Becomes |
 |---|---|---|
 | `bytes` | a buffer | the file as it is |
-| `image` | `{width, height, rgba}`: straight RGBA8, first row at the top | an RGBA PNG (`texture2d` assets) |
+| `image` | `{width, height, rgba}`: straight RGBA8, first row at the top | a lossless PNG (`texture2d` assets). Images with up to 256 distinct RGBA values use indexed colour when it yields a smaller file. |
 | `json` | tables, strings, numbers, booleans | JSON text |
 
 Nodes run in the same isolated VM as [jobs](jobs.md): no world, no files, no

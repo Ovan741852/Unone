@@ -11,7 +11,7 @@ use crate::{AssetSpec, Diagnostic, ImportPortType, ImportValue, ProjectConfig};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::path::{Component, Path, PathBuf};
 
 const CACHE_DIR: &str = ".unone/import-cache";
@@ -19,6 +19,8 @@ const CACHE_DIR: &str = ".unone/import-cache";
 pub const LOCAL_ROOTS_FILE: &str = ".unone/import-roots.json";
 pub const PROVENANCE_FILE: &str = ".unone/import-provenance.json";
 const STAMP_FILE: &str = ".unone/import-stamp.json";
+// Changes to the file encoder reuse the importer cache's straight RGBA products.
+const PNG_ENCODING_VERSION: u8 = 1;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ImportReport {
@@ -98,7 +100,44 @@ fn value_hash(value: &ImportValue) -> String {
     format!("{:x}", hasher.finalize())
 }
 
-/// Products become files in engine formats: images as RGBA PNG, JSON as JSON
+/// An indexed PNG can store up to 256 distinct straight RGBA values. Entries
+/// with identical RGB and different alpha must remain distinct, including RGB
+/// behind alpha zero. Use first occurrence order to keep encoding deterministic.
+fn indexed_png(width: u32, height: u32, rgba: &[u8]) -> Result<Option<Vec<u8>>, png::EncodingError> {
+    let mut lookup = HashMap::new();
+    let mut palette = Vec::new();
+    let mut alpha = Vec::new();
+    let mut indices = Vec::new();
+    for pixel in rgba.chunks_exact(4) {
+        let color = [pixel[0], pixel[1], pixel[2], pixel[3]];
+        let index = match lookup.get(&color) {
+            Some(&index) => index,
+            None => {
+                let Ok(index) = u8::try_from(lookup.len()) else { return Ok(None) };
+                lookup.insert(color, index);
+                palette.extend_from_slice(&pixel[..3]);
+                alpha.push(pixel[3]);
+                index
+            }
+        };
+        indices.push(index);
+    }
+    let mut bytes = Vec::new();
+    let mut encoder = png::Encoder::new(&mut bytes, width, height);
+    encoder.set_color(png::ColorType::Indexed);
+    encoder.set_depth(png::BitDepth::Eight);
+    encoder.set_compression(png::Compression::High);
+    encoder.set_filter(png::Filter::NoFilter);
+    encoder.set_palette(palette);
+    if let Some(last) = alpha.iter().rposition(|&a| a != 255) {
+        alpha.truncate(last + 1);
+        encoder.set_trns(alpha);
+    }
+    encoder.write_header()?.write_image_data(&indices)?;
+    Ok(Some(bytes))
+}
+
+/// Products become files in engine formats: images as lossless PNG, JSON as JSON
 /// text, bytes as they are.
 fn encode(value: &ImportValue) -> Result<Vec<u8>, Box<Diagnostic>> {
     match value {
@@ -112,6 +151,12 @@ fn encode(value: &ImportValue) -> Result<Vec<u8>, Box<Diagnostic>> {
             encoder.set_compression(png::Compression::High);
             encoder.write_header().and_then(|mut writer| writer.write_image_data(rgba))
                 .map_err(|e| error("IMPORT_ENCODE_FAILED", e.to_string()))?;
+            if let Some(indexed) = indexed_png(*width, *height, rgba)
+                .map_err(|e| error("IMPORT_ENCODE_FAILED", e.to_string()))?
+                && indexed.len() < bytes.len()
+            {
+                return Ok(indexed);
+            }
             Ok(bytes)
         }
     }
@@ -193,6 +238,8 @@ fn file_stamp(path: &Path) -> Option<FileStamp> {
 #[derive(Serialize, Deserialize)]
 struct ImportStamp {
     engine: String,
+    #[serde(default)]
+    png_encoding: u8,
     written_ns: u64,
     #[serde(default)]
     config: String,
@@ -203,7 +250,7 @@ struct ImportStamp {
 }
 fn stamped_report(path: &Path, roots: &BTreeMap<String, Option<PathBuf>>, config: &str) -> Option<ImportReport> {
     let stamp: ImportStamp = serde_json::from_slice(&std::fs::read(path).ok()?).ok()?;
-    if stamp.engine != env!("CARGO_PKG_VERSION") || stamp.roots != *roots || stamp.config != config { return None; }
+    if stamp.png_encoding != PNG_ENCODING_VERSION || stamp.engine != env!("CARGO_PKG_VERSION") || stamp.roots != *roots || stamp.config != config { return None; }
     for (file, recorded) in &stamp.files {
         if file_stamp(file) != *recorded || recorded.as_ref().is_some_and(|r| r.modified_ns >= stamp.written_ns) { return None; }
     }
@@ -441,7 +488,7 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
     for (_, _, file, stamp) in reads.into_values() { files.insert(file, stamp); }
     let written_ns = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)
         .ok().and_then(|now| u64::try_from(now.as_nanos()).ok()).unwrap_or(0);
-    let stamp = ImportStamp { engine: env!("CARGO_PKG_VERSION").to_string(), written_ns, config: config_digest, roots, files,
+    let stamp = ImportStamp { engine: env!("CARGO_PKG_VERSION").to_string(), png_encoding: PNG_ENCODING_VERSION, written_ns, config: config_digest, roots, files,
         imports: report.imports, unverified: report.unverified.clone() };
     if let Ok(text) = serde_json::to_vec(&stamp) { let _ = std::fs::write(&stamp_path, text); }
     Ok(report)
