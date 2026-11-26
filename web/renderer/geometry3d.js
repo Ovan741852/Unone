@@ -5,6 +5,7 @@
 // nothing here. A mesh may name a scene shader material, which brings its own
 // vertex stage and declares extra per-vertex attributes after the color.
 import {meshShaderLayout,createMeshShaderMaterial,applyMeshShaderValues} from './shader-materials.js';
+import {worldFieldPublication} from '../shared/world-field-publication.mjs';
 const FORMATS={'f32le-p3-uv2-rgba4-u32-v1':{stride:9,billboard:false},'f32le-p3-o2-uv2-rgba4-u32-v1':{stride:11,billboard:true}};
 const ATTRIBUTE_FORMAT='f32le-p3-uv2-rgba4-attr-u32-v1';
 const IDENTITY={position:{x:0,y:0,z:0},rotation:{x:0,y:0,z:0},scale:{x:1,y:1,z:1}};
@@ -64,11 +65,20 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
     return texture;
   }
   function dispose(record){scene.remove(record.mesh);record.mesh.geometry.dispose();record.mesh.material.dispose();record.mesh.dispose();}
-  // Everything but the bytes: a new revision with the same shape updates the
-  // existing GPU buffers in place instead of rebuilding mesh and material. A
-  // shader mesh's shape includes its program, so a new definition rebuilds.
-  const programOf=d=>d?[d.vertex??null,d.fragment,d.attributes??[],d.varyings??[],Object.entries(d.uniforms??{}).map(([n,v])=>[n,Array.isArray(v)?v.length:1]),
-    Object.entries(d.samplers??{}).map(([n,s])=>[n,s.type??'float'])]:null;
+  // Compare shader source strings directly. Serializing both stages per mesh
+  // per draw used to escape thousands of unchanged characters each time.
+  const interfaces=new WeakMap();
+  function shaderInterface(definition,leased){
+    if(!definition)return null;
+    if(leased&&interfaces.has(definition))return interfaces.get(definition);
+    const key=JSON.stringify([definition.attributes??[],definition.varyings??[],
+      Object.entries(definition.uniforms??{}).map(([name,value])=>[name,Array.isArray(value)?value.length:1]),
+      Object.entries(definition.samplers??{}).map(([name,sampler])=>[name,sampler.type??'float'])]);
+    // The publication owns a deeply frozen tree. Other callers may mutate a
+    // definition in place, so their interface must be read on every draw.
+    if(leased)interfaces.set(definition,key);
+    return key;
+  }
   // Points each declared sampler at its bound texture; false while an asset loads.
   function bindSamplers(material,definition,specs){
     let ready=true;
@@ -86,8 +96,6 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
     }
     return ready;
   }
-  const shapeOf=(mesh,materials)=>JSON.stringify([mesh.format,mesh.vertex_count,mesh.index_count,mesh.texture??null,mesh.material??null,
-    programOf(materials?.[mesh.material?.shader])]);
   function update(record,mesh,materials){
     const {vertices,indices}=geometry3dViews(mesh,memory,materials),geometry=record.mesh.geometry;
     const interleaved=geometry.attributes.position.data,index=geometry.index;
@@ -125,20 +133,27 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
   // `world` supplies the scene's shader materials and the simulation clock.
   function draw(meshes,placements,specs,world={}){
     let pending=false;const alive=new Set(),materials=world.shader_materials;
+    const leasedMaterials=worldFieldPublication(materials);
     shared.unone_time.value=Number(world.time_seconds??0);shared.unone_frame.value=Number(world.frame??0);
     // Undo the host's left-handed root mirror (world3d scale z = -1) for game shaders.
     shared.unone_handedness.value.makeScale(1,1,world.camera3d?.handedness==='left'?-1:1);
     for(const [id,mesh]of Object.entries(meshes??{})){
       alive.add(id);const placement=placements?.[id],transforms=placement?.transforms??[IDENTITY];
-      let record=records.get(id);const revision=String(mesh.revision),shape=shapeOf(mesh,materials);
-      if(record&&record.revision!==revision&&record.capacity>=transforms.length&&record.shape===shape){
-        update(record,mesh,materials);record.revision=revision;
-      }else if(record?.revision!==revision||record.capacity<transforms.length||record.shape!==shape){
+      const shader=mesh.material?.shader,definition=materials?.[shader];
+      const vertex=definition?.vertex??null,fragment=definition?.fragment??null;
+      const layout=shaderInterface(definition,leasedMaterials);
+      const shape=JSON.stringify([mesh.format,mesh.vertex_count,mesh.index_count,mesh.texture??null,mesh.material??null]);
+      const revision=String(mesh.revision);
+      let record=records.get(id);
+      if(!record||record.capacity<transforms.length||record.shape!==shape||record.layout!==layout||
+          record.vertex!==vertex||record.fragment!==fragment){
         if(record)dispose(record);
         const capacity=2**Math.ceil(Math.log2(Math.max(1,transforms.length)));
-        record={revision,capacity,shape,mesh:build(mesh,capacity,materials),placement:null};records.set(id,record);scene.add(record.mesh);
+        record={revision,capacity,shape,layout,vertex,fragment,mesh:build(mesh,capacity,materials),placement:null};records.set(id,record);scene.add(record.mesh);
+      }else if(record.revision!==revision){
+        update(record,mesh,materials);record.revision=revision;
       }
-      const instanced=record.mesh,key=JSON.stringify(transforms),shader=mesh.material?.shader;
+      const instanced=record.mesh,key=JSON.stringify(transforms);
       let ready=true;
       if(shader){applyMeshShaderValues(instanced.material,materials[shader]);if(!bindSamplers(instanced.material,materials[shader],specs)){ready=false;pending=true;}}
       if(record.placement!==key){

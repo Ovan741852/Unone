@@ -4,6 +4,7 @@ import * as THREE from '../vendor/three/three.core.js';
 import {createGeometry3DRenderer,geometry3dBytes} from './geometry3d.js';
 import {createWorldCurvature} from './world-curvature.js';
 import {InstanceTransfer,InstanceReceiver} from '../shared/instance-transfer.mjs';
+import {createWorldFieldPublication} from '../shared/world-field-publication.mjs';
 
 // One triangle: position.xyz, uv, RGBA per vertex; u32 indices.
 function triangle(lift=0){
@@ -158,4 +159,70 @@ test('shader meshes read the layout and stages their scene material declares',()
   assert.throws(()=>renderer.draw({land:land(3,{shader:'missing'})},{},specs,world),/SHADER_MATERIAL_UNKNOWN/);
   const plain={...exact,attributes:[]};
   assert.throws(()=>renderer.draw({land:land(3)},{},specs,{shader_materials:{exact:plain}}),/GEOMETRY3D_INVALID: byte counts/);
+});
+
+test('in-place edits to an unleased shader update values or rebuild its program',()=>{
+  const scene=new THREE.Scene(),renderer=createGeometry3DRenderer(THREE,scene,{});
+  const spec=new Map(),meshes={ground:mesh(1,{material:{shader:'ground'}})};
+  const ground={fragment:'vec4 unoneShade(vec2 uv, vec4 color){return color;}',uniforms:{shade:[1,2]}};
+  // Freezing just the outer dictionary does not make the caller's shader immutable.
+  const world={shader_materials:Object.freeze({ground})};
+  const draw=()=>{renderer.draw(meshes,{},spec,world);return scene.children[0];};
+  const first=draw();
+  ground.uniforms.shade[0]=3;
+  assert.equal(draw(),first);
+  assert.deepEqual(first.material.uniforms.shade.value,[3,2]);
+  ground.uniforms.shade.push(4);
+  const vector=draw();
+  assert.notEqual(vector,first);
+  assert.match(vector.material.vertexShader,/uniform vec3 shade;/);
+  ground.varyings=[{name:'tone',size:3}];
+  const varying=draw();
+  assert.notEqual(varying,vector);
+  ground.varyings[0].interpolation='flat';
+  const flat=draw();
+  assert.notEqual(flat,varying);
+  assert.match(flat.material.fragmentShader,/flat varying vec3 tone;/);
+  ground.vertex='vec4 unoneVertex(vec3 position, mat4 model){return model*vec4(position,1.0);}';
+  const vertex=draw();
+  assert.notEqual(vertex,flat);
+  assert.ok(vertex.material.vertexShader.includes(ground.vertex));
+  ground.fragment='vec4 unoneShade(vec2 uv, vec4 color){return color*0.5;}';
+  const fragment=draw();
+  assert.notEqual(fragment,vertex);
+  assert.ok(fragment.material.fragmentShader.includes(ground.fragment));
+  assert.equal(draw(),fragment);
+  renderer.clear();
+});
+
+test('meshes sharing a published shader reuse geometry across value changes and rebuild together for a new program',t=>{
+  const scene=new THREE.Scene(),renderer=createGeometry3DRenderer(THREE,scene,{});
+  const ground={fragment:'vec4 unoneShade(vec2 uv, vec4 color){return color*brightness;}',uniforms:{brightness:1}};
+  const materials={ground,water:{...ground}};
+  const publish=()=>createWorldFieldPublication(JSON.stringify(materials)).value;
+  const meshes={left:mesh(1,{material:{shader:'ground'}}),right:mesh(2,{material:{shader:'ground'}}),lake:mesh(3,{material:{shader:'water'}})};
+  const specs=new Map(),draw=shader_materials=>renderer.draw(meshes,{},specs,{shader_materials});
+  const first=publish();
+  draw(first);
+  const [left,right,lake]=scene.children;
+  {
+    // Escaping the whole GLSL program for every retained mesh was the frame-time regression.
+    const stringify=JSON.stringify;
+    const spy=t.mock.method(JSON,'stringify',function(...args){
+      const result=stringify(...args);
+      assert.ok(!result.includes('unoneShade'), 'steady drawing serializes the shader source');
+      return result;
+    });
+    try {draw(first);} finally {spy.mock.restore();}
+  }
+  materials.ground.uniforms={brightness:0.25};
+  draw(publish());
+  assert.deepEqual(scene.children,[left,right,lake]);
+  assert.deepEqual(scene.children.map(m=>m.material.uniforms.brightness.value),[0.25,0.25,1]);
+  materials.ground.fragment+=' // new program';
+  draw(publish());
+  assert.ok(scene.children.includes(lake));
+  assert.ok(!scene.children.includes(left)&&!scene.children.includes(right));
+  assert.equal(renderer.metrics().geometry3d_rebuilds,5);
+  renderer.clear();
 });
