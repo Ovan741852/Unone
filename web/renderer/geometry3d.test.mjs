@@ -56,6 +56,71 @@ test('meshes rebuild only on a new revision; placement and visibility update in 
   assert.throws(()=>renderer.draw({bad:mesh(4,{texture:'texture://missing'})},{},specs),/GEOMETRY3D_TEXTURE_MISSING/);
 });
 
+test('mesh sampler textures follow the last mesh using that source and sampler',()=>{
+  const scene=new THREE.Scene(),textures=new Map(),specs=new Map(),disposed=[];
+  const renderer=createGeometry3DRenderer(THREE,scene,{curvature:createWorldCurvature(),textureFor:spec=>({state:'ready',texture:textures.get(spec.id)})});
+  for(let i=0;i<32;i++){
+    const id='tile'+i;specs.set(id,{id,kind:'texture2d'});textures.set(id,new THREE.Texture({width:512,height:512}));
+    renderer.draw({land:mesh(i,{texture:id}),border:mesh(i,{texture:id})},{},specs);
+    const sampler=scene.children[0].material.map;
+    assert.equal(scene.children[1].material.map,sampler);
+    sampler.addEventListener('dispose',()=>disposed.push(i));
+    renderer.draw({land:mesh(i,{texture:id})},{},specs);
+    assert.equal(disposed.length,i);
+  }
+  renderer.draw({}, {}, specs);
+  assert.deepEqual(disposed,Array.from({length:32},(_,i)=>i));
+  renderer.clear();
+  assert.equal(disposed.length,32);
+});
+
+test('active samplers track source updates and retire once on context loss',()=>{
+  let source=new THREE.Texture({width:2,height:2});
+  const scene=new THREE.Scene(),renderer=createGeometry3DRenderer(THREE,scene,{textureFor:()=>({state:'ready',texture:source}),curvature:createWorldCurvature()});
+  const specs=new Map([['tile',{kind:'texture2d'}]]);
+  const draw=()=>renderer.draw({a:mesh(1,{texture:'tile'}),b:mesh(1,{texture:'tile'}),
+    c:mesh(1,{texture:'tile',material:{address:'repeat'}})},{},specs);
+  draw();
+  const retired=new Set(),textures=[];
+  // The renderer supplies geometry, material and each distinct owned sampler.
+  renderer.contextLost(value=>{assert.ok(!retired.has(value));retired.add(value);if(value.isTexture)textures.push(value);});
+  assert.equal(textures.length,2);
+  const versions=textures.map(t=>t.version);
+  source.image={width:4,height:4};source.needsUpdate=true;
+  draw();
+  for(const [i,t] of textures.entries()){
+    assert.equal(t.image,source.image);assert.ok(t.version>versions[i]);versions[i]=t.version;
+  }
+  draw();assert.deepEqual(textures.map(t=>t.version),versions);
+  const oldSource=source.source;
+  source.source=new THREE.Source({width:1,height:1});source.needsUpdate=true;
+  draw();
+  assert.equal(scene.children[0].material.map,textures[0]);
+  for(const texture of textures){
+    assert.notEqual(texture.source,source.source);
+    assert.notEqual(texture.source,oldSource);
+    assert.equal(texture.image,source.image);
+  }
+  assert.equal(renderer.metrics().geometry3d_sampler_disposes,0);
+  source=new THREE.Texture({width:8,height:8});
+  draw();assert.equal(renderer.metrics().geometry3d_sampler_variants,2);
+  renderer.clear();assert.equal(renderer.metrics().geometry3d_sampler_variants,0);
+});
+
+test('a pending mesh retains its sampler until the current source is ready',()=>{
+  const scene=new THREE.Scene(),source=new THREE.Texture();let pending=false;
+  const renderer=createGeometry3DRenderer(THREE,scene,{curvature:createWorldCurvature(),textureFor:spec=>({state:pending&&spec.id==='late'?'pending':'ready',texture:source})});
+  const specs=new Map([['now',{id:'now',kind:'texture2d'}],['late',{id:'late',kind:'texture2d'}]]);
+  const a=mesh(1,{texture:'now'}),b=mesh(1,{texture:'late'});
+  renderer.draw({a,b},{},specs);const first=scene.children[0].material.map;
+  let releases=0;first.addEventListener('dispose',()=>releases++);
+  source.source=new THREE.Source({width:1,height:1});pending=true;
+  assert.equal(renderer.draw({a,b},{},specs),true);assert.equal(releases,0);
+  assert.equal(renderer.draw({b},{},specs),true);assert.equal(renderer.metrics().geometry3d_sampler_variants,1);
+  pending=false;renderer.draw({b},{},specs);assert.equal(scene.children[0].material.map.image,source.image);
+  renderer.clear();assert.equal(releases,1);assert.equal(renderer.metrics().geometry3d_sampler_variants,0);
+});
+
 test('placements draw as instances and screen billboards carry pixel offsets',()=>{
   const scene=new THREE.Scene(),curvature=createWorldCurvature(),renderer=createGeometry3DRenderer(THREE,scene,{textureFor:()=>null,curvature});
   const tiles=[-128,0,128].map(x=>({...placement,position:{x,y:0,z:0}}));
@@ -118,7 +183,8 @@ test('same-shape revisions upload heap bytes into the existing buffers without a
   renderer.draw({tri:viewed(3,3,[2,1,0],1500)},{},new Map());
   assert.deepEqual([...index.array],[2,1,0]);assert.ok(index.version>version);
   bytes.fill(0);assert.equal(tri.geometry.attributes.position.getY(2),3,'the geometry never aliases the heap');
-  assert.deepEqual(renderer.metrics(),{geometry3d_meshes:1,geometry3d_rebuilds:1,geometry3d_updates:2});
+  assert.deepEqual(renderer.metrics(),{geometry3d_meshes:1,geometry3d_rebuilds:1,geometry3d_updates:2,
+    geometry3d_sampler_variants:0,geometry3d_sampler_builds:0,geometry3d_sampler_disposes:0});
 });
 
 test('shader meshes read the layout and stages their scene material declares',()=>{

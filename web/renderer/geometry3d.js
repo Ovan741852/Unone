@@ -50,21 +50,49 @@ function sameBytes(a,b){
 }
 
 export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvature,dataTextures}){
-  const records=new Map(),variants=new Map(),object=new THREE.Object3D();let rebuilds=0,updates=0;
+  const records=new Map(),variants=new Map(),object=new THREE.Object3D();let rebuilds=0,updates=0,samplerBuilds=0,samplerDisposes=0;
   // Engine values every mesh shader reads; materials share these objects.
   const shared={unone_time:{value:0},unone_frame:{value:0},unone_viewport:{value:[0,0,1,1]},unone_handedness:{value:new THREE.Matrix4()}};
   let white=null;const blank=()=>{if(!white){white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;}return white;};
-  // Sampler state lives on the texture object, so each filter/address pair of
-  // one asset gets its own shallow clone sharing the decoded image.
-  function sampled(source,filter,address){
-    const key=filter+':'+address;let byKey=variants.get(source);if(!byKey){byKey=new Map();variants.set(source,byKey);}
-    let texture=byKey.get(key);
-    if(!texture){texture=source.clone();const mode=filter==='nearest'?THREE.NearestFilter:THREE.LinearFilter;
-      texture.minFilter=texture.magFilter=mode;texture.generateMipmaps=false;
-      texture.wrapS=texture.wrapT=address==='repeat'?THREE.RepeatWrapping:THREE.ClampToEdgeWrapping;texture.needsUpdate=true;byKey.set(key,texture);}
-    return texture;
+  // Meshes own their sampler variants together. Each variant borrows the source image.
+  function releaseSampler(record){
+    const sample=record.sampler;if(!sample)return;
+    record.sampler=null;
+    if(--sample.users)return;
+    const group=sample.group;group.samples.delete(sample.key);
+    if(!group.samples.size)variants.delete(sample.source);
+    sample.texture.dispose();samplerDisposes++;
   }
-  function dispose(record){scene.remove(record.mesh);record.mesh.geometry.dispose();record.mesh.material.dispose();record.mesh.dispose();}
+  function sampled(record,source,filter,address){
+    let sample=record.sampler;
+    const pixels=source.source;
+    let group=sample?.source===source?sample.group:variants.get(source);
+    if(!group){
+      group={samples:new Map(),pixels,version:source.version,dataVersion:pixels.version,image:pixels.data,ready:pixels.dataReady};
+      variants.set(source,group);
+    }else if(group.version!==source.version||group.pixels!==pixels||group.dataVersion!==pixels.version||group.image!==pixels.data||group.ready!==pixels.dataReady){
+      // Three tracks uploads per Source. Different sampler modes can map to
+      // different GPU textures, so they need independent upload versions.
+      for(const active of group.samples.values()){
+        active.texture.source.data=pixels.data;active.texture.source.dataReady=pixels.dataReady;active.texture.needsUpdate=true;
+      }
+      group.pixels=pixels;group.version=source.version;group.dataVersion=pixels.version;group.image=pixels.data;group.ready=pixels.dataReady;
+    }
+    if(sample?.source!==source||sample.filter!==filter||sample.address!==address){
+      const key=filter+':'+address;sample=group.samples.get(key);
+      if(!sample){
+        const texture=source.clone(),mode=filter==='nearest'?THREE.NearestFilter:THREE.LinearFilter;
+        texture.source=new THREE.Source(pixels.data);texture.source.dataReady=pixels.dataReady;
+        texture.minFilter=texture.magFilter=mode;texture.generateMipmaps=false;
+        texture.wrapS=texture.wrapT=address==='repeat'?THREE.RepeatWrapping:THREE.ClampToEdgeWrapping;texture.needsUpdate=true;
+        group.dataVersion=pixels.version; // cloning touched the shared source version
+        sample={source,group,key,filter,address,texture,users:0};group.samples.set(key,sample);samplerBuilds++;
+      }
+      sample.users++;releaseSampler(record);record.sampler=sample;
+    }
+    return sample.texture;
+  }
+  function dispose(record){scene.remove(record.mesh);releaseSampler(record);record.mesh.geometry.dispose();record.mesh.material.dispose();record.mesh.dispose();}
   // Compare shader source strings directly. Serializing both stages per mesh
   // per draw used to escape thousands of unchanged characters each time.
   const interfaces=new WeakMap();
@@ -147,9 +175,14 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
       let record=records.get(id);
       if(!record||record.capacity<transforms.length||record.shape!==shape||record.layout!==layout||
           record.vertex!==vertex||record.fragment!==fragment){
-        if(record)dispose(record);
         const capacity=2**Math.ceil(Math.log2(Math.max(1,transforms.length)));
-        record={revision,capacity,shape,layout,vertex,fragment,mesh:build(mesh,capacity,materials),placement:null};records.set(id,record);scene.add(record.mesh);
+        const previous=record;
+        record={revision,capacity,shape,layout,vertex,fragment,mesh:build(mesh,capacity,materials),placement:null,sampler:null};
+        if(previous){
+          if(mesh.texture){record.sampler=previous.sampler;previous.sampler=null;}
+          dispose(previous);
+        }
+        records.set(id,record);scene.add(record.mesh);
       }else if(record.revision!==revision){
         update(record,mesh,materials);record.revision=revision;
       }
@@ -165,7 +198,7 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
         const spec=specs.get(mesh.texture);if(spec?.kind!=='texture2d')throw Error(`GEOMETRY3D_TEXTURE_MISSING: ${mesh.texture}`);
         const texture=textureFor(spec);if(!texture)throw Error(`GEOMETRY3D_TEXTURE_LOADER_MISSING: ${mesh.texture}`);if(texture.error)throw texture.error;
         const loaded=texture.state==='ready';ready&&=loaded;
-        if(loaded){const m=mesh.material??{},map=sampled(texture.texture,m.filter??'linear',m.address??'clamp');
+        if(loaded){const m=mesh.material??{},map=sampled(record,texture.texture,m.filter??'linear',m.address??'clamp');
           if(shader)instanced.material.uniforms.unone_texture.value=map;
           else if(instanced.material.map!==map){instanced.material.map=map;instanced.material.needsUpdate=true;}}
         else pending=true;
@@ -176,11 +209,13 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
     for(const [id,record]of records)if(!alive.has(id)){dispose(record);records.delete(id);}
     return pending;
   }
-  function clearVariants(){for(const byKey of variants.values())for(const texture of byKey.values())texture.dispose();variants.clear();}
   return {draw,
     // The area the world draws into, in drawing-buffer pixels (lower-left origin).
     viewport(x,y,width,height){const v=shared.unone_viewport.value;v[0]=x;v[1]=y;v[2]=Math.max(1,width);v[3]=Math.max(1,height);},
-    contextLost(retire){for(const record of records.values()){retire(record.mesh.geometry);retire(record.mesh.material);}if(white)retire(white);},
-    clear(){for(const record of records.values())dispose(record);records.clear();clearVariants();white?.dispose();white=null;},
-    metrics:()=>({geometry3d_meshes:records.size,geometry3d_rebuilds:rebuilds,geometry3d_updates:updates})};
+    contextLost(retire){const samplers=new Set();
+      for(const record of records.values()){retire(record.mesh.geometry);retire(record.mesh.material);if(record.sampler)samplers.add(record.sampler.texture);}
+      for(const texture of samplers)retire(texture);if(white)retire(white);},
+    clear(){for(const record of records.values())dispose(record);records.clear();white?.dispose();white=null;},
+    metrics:()=>({geometry3d_meshes:records.size,geometry3d_rebuilds:rebuilds,geometry3d_updates:updates,
+      geometry3d_sampler_variants:samplerBuilds-samplerDisposes,geometry3d_sampler_builds:samplerBuilds,geometry3d_sampler_disposes:samplerDisposes})};
 }
