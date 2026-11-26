@@ -120,7 +120,13 @@ export function assembleContent(project,base){
   requireThat(plan&&plan.groups&&typeof plan.groups==='object'&&!Array.isArray(plan.groups),'WEB_REFRESH_IMAGE_PLAN_INVALID','groups');
   const names=Object.keys(plan.groups).sort(order);if(names.length)payload.image_groups=names;
  }
- const data=assets.assets.filter(a=>a.kind==='data').map(a=>({id:a.id,source:a.source,loader:a.encoding?.decoder??'bytes'}));if(data.length)payload.data_assets=data;
+ const dataSources=new Map();
+ const data=assets.assets.filter(asset=>asset.kind==='data').map(asset=>{
+  const record=files.get('content/'+asset.source);
+  if(!dataSources.has(record.sha256))dataSources.set(record.sha256,asset.source);
+  return {id:asset.id,source:dataSources.get(record.sha256),loader:asset.encoding?.decoder??'bytes'};
+ });
+ if(data.length)payload.data_assets=data;
  const declared=new Map(assets.assets.map(a=>[a.id,a]));for(const entity of scene?.entities??[]){if(entity.sprite)requireThat(declared.get(entity.sprite.asset)?.kind==='texture2d','WEB_REFRESH_SPRITE_ASSET_UNDECLARED',entity.sprite.asset);if(entity.mesh3d)requireThat(['mesh://primitive/box','mesh://primitive/sphere'].includes(entity.mesh3d.asset)||declared.get(entity.mesh3d.asset)?.kind==='mesh3d','WEB_REFRESH_MESH_ASSET_UNDECLARED',entity.mesh3d.asset);}
  const presentation=presentationFor(project,files,oldPresentation?json(oldPresentation.source):{});
  put(files,dataRecord('content/project.json',encodeJson(payload)));put(files,dataRecord('content/assets.json',encodeJson(assets)));put(files,dataRecord('content/presentation.json',encodeJson(presentation)));

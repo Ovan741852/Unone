@@ -23,6 +23,20 @@ test('source refresh reconstructs fresh scene/config/data/modules and never reta
  const root=temporary(t),b=base(root),dir=project(root);write(dir,'data/new.json','{"answer":42}');write(dir,'assets.json',{version:1,assets:[{id:'data://new',kind:'data',source:'data/new.json',encoding:{format:'json',decoder:'json',mime:'application/json'}}]});write(dir,'scenes/main.json',{entities:[],shader_materials:{fresh:{fragment:'vec4 unoneShade(vec2 uv,vec4 c){return c;}',uniforms:{}}}});
  const c=assembleContent(dir,b);assert.equal(c.payload.config.name,'Fresh');assert(c.payload.scene.shader_materials.fresh);assert.equal(c.payload.script_modules['value.luau'],'return 42');assert.equal(c.payload.data_assets[0].id,'data://new');assert.equal(c.data[0].source,path.join(dir,'data/new.json'));assert(!('script_bytecode'in c.payload));assert.equal(c.files.has('content/old.luaubc'),false);assert.equal(c.presentation.bloom,false,'absent fresh presentation never inherits base settings');
 });
+test('equal shipped data can share a source while keeping logical IDs and decoders',t=>{
+ const root=temporary(t),dir=project(root),b=base(root);
+ const assets=['a','b','c'].map(id=>({id,source:id+'.bin',kind:'data'}));
+ assets[1].encoding={format:'text',decoder:'text',mime:'text/plain'};
+ for(const asset of assets)write(dir,asset.source,asset.id==='c'?'ab':'aa');
+ write(dir,'assets.json',{version:1,assets});
+ const refreshed=assembleContent(dir,b);
+ assert.deepEqual(refreshed.payload.data_assets,[
+  {id:'a',source:'a.bin',loader:'bytes'},
+  {id:'b',source:'a.bin',loader:'text'},
+  {id:'c',source:'c.bin',loader:'bytes'},
+ ]);
+ assert.equal(refreshed.files.has('content/b.bin'),true);
+});
 test('new import/derived formats fail specifically; unchanged derived products require exact spec and bytes',t=>{
  const root=temporary(t),dir=project(root),mesh={id:'mesh://one',source:'one.mesh.json',kind:'mesh3d',encoding:{format:'unone-mesh-json',decoder:'mesh',mime:'application/json'}},bytes=Buffer.from('{"texture":"t"}');write(dir,'one.mesh.json',bytes);write(dir,'assets.json',{assets:[mesh]});const b=base(root,[mesh]);
  // Base product must be indexed; a matching path/spec alone is insufficient.

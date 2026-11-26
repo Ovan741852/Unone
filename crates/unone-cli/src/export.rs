@@ -288,7 +288,7 @@ pub fn web_with_templates(project: &Path, output: &Path, runtime: Option<&Path>,
             if !settings.is_enabled("particle") {
                 text = replace_required(
                     text,
-                    "import { createParticleRenderer } from \"./particles.js?build=particle-texture-colorbins-v1\";",
+                    "import { createParticleRenderer } from \"./particles.js?build=particle-image-v1\";",
                     "const createParticleRenderer = () => ({draw(){}, clear(){}, contextLost(_retire){}, dispose(){}, count:0,debugBatches:[],metrics:()=>({groups:0,capacity:0,instance_buffer_bytes:0,compactions:0})});",
                 )?;
             }
@@ -1113,7 +1113,24 @@ fn push_unique_content_file(
 
 #[cfg(test)]
 mod content_file_tests {
-    use super::push_unique_content_file;
+    use super::{push_unique_content_file, share_data_sources};
+
+    #[test]
+    fn shared_data_sources_keep_logical_ids_loaders_and_distinct_bytes() {
+        let decl = |name: &str, loader: &str| unone_engine::DataAssetDecl {
+            id: name.into(), source: format!("{name}.bin"), loader: loader.into(),
+        };
+        let mut assets = vec![decl("a", "bytes"), decl("b", "text"), decl("c", "bytes")];
+        let files = vec![
+            ("content/c.bin".into(), vec![0, 2]),
+            ("content/b.bin".into(), vec![0, 1]),
+            ("content/a.bin".into(), vec![0, 1]),
+        ];
+        share_data_sources(&mut assets, &files).unwrap();
+        assert_eq!(assets[0], decl("a", "bytes"));
+        assert_eq!(assets[1], unone_engine::DataAssetDecl { source: "a.bin".into(), ..decl("b", "text") });
+        assert_eq!(assets[2], decl("c", "bytes"));
+    }
 
     #[test]
     fn identical_references_are_deduplicated() {
@@ -1131,6 +1148,22 @@ mod content_file_tests {
         assert!(error.is_err());
         assert_eq!(files.len(), 1);
     }
+}
+
+// Logical IDs and their decoders remain independent. Pick the first declared
+// source for identical packaged bytes, even when their original paths differ.
+fn share_data_sources(assets: &mut [unone_engine::DataAssetDecl], files: &[(String, Vec<u8>)]) -> Result<()> {
+    use std::collections::HashMap;
+    let packaged: HashMap<_, _> = files.iter()
+        .filter_map(|(path, bytes)| Some((path.strip_prefix("content/")?, bytes.as_slice())))
+        .collect();
+    let mut sources = HashMap::new();
+    for asset in assets {
+        let bytes = *packaged.get(asset.source.as_str()).with_context(|| format!("Missing packaged data asset {}", asset.source))?;
+        let source = sources.entry(bytes).or_insert_with(|| asset.source.clone());
+        asset.source.clone_from(source);
+    }
+    Ok(())
 }
 
 type ExportContent = (unone_engine::ProjectConfig, unone_engine::SystemSettings, Value, Vec<(String, Vec<u8>)>);
@@ -1159,7 +1192,7 @@ pub(crate) fn content(project:&Path)->Result<ExportContent>{
     if !image_groups.is_empty() { payload["image_groups"] = json!(image_groups); }
     // Data assets travel as content files; the payload only declares them.
     let mut asset_catalog = Vec::new();
-    let data_assets: Vec<unone_engine::DataAssetDecl> = match &config.asset_manifest {
+    let mut data_assets: Vec<unone_engine::DataAssetDecl> = match &config.asset_manifest {
         Some(path) => {
             let manifest: unone_engine::AssetManifest = serde_json::from_slice(&fs::read(inside(project, path)?)?)?;
             // Only textures can back sprite resources.
@@ -1305,6 +1338,10 @@ pub(crate) fn content(project:&Path)->Result<ExportContent>{
                 "PLAYER_DECODER_UNAVAILABLE: mesh {mesh}; declare a supported mesh asset"
             );
         }
+    }
+    if !data_assets.is_empty() {
+        share_data_sources(&mut data_assets, &files)?;
+        payload["data_assets"] = serde_json::to_value(&data_assets)?;
     }
     push_unique_content_file(
         &mut files,
