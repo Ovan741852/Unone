@@ -153,7 +153,32 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
       if(error){readyWaiters.delete(check);reject(error);}else if(!loadingAssets){readyWaiters.delete(check);resolve();}
     };readyWaiters.add(check);check();});
   }
-  function releaseAsset(entry,id,reason){try{if(entry.lease)entry.lease.release();else entry.image?.close?.();}finally{traceAsset(id,entry,'release',false,reason);}}
+  // A tinted quad draws a copy of its source pixels with r,g,b multiplied and
+  // alpha kept. ImageData is straight alpha, so translucent edges keep their
+  // own colour. One copy per decoded image, whole-pixel crop and tint; copies
+  // live while painted and go with their image.
+  const tinted=new Map();let tintPass=0;
+  function releaseTinted(image,stale=false){const copies=tinted.get(image);if(!copies)return;
+    for(const [key,copy]of copies)if(!stale||copy.pass!==tintPass){copy.surface.width=copy.surface.height=1;copies.delete(key);}
+    if(!copies.size)tinted.delete(image);}
+  function tintedSource(image,source,tint){
+    const iw=image.naturalWidth??image.width,ih=image.naturalHeight??image.height,s=source??{x:0,y:0,width:iw,height:ih};
+    if(s.x+s.width>iw||s.y+s.height>ih)throw Error(`UI_SLICE_BOUNDS: source exceeds image ${iw}x${ih}`);
+    const x0=Math.floor(s.x),y0=Math.floor(s.y),w=Math.ceil(s.x+s.width)-x0,h=Math.ceil(s.y+s.height)-y0,key=`${x0},${y0},${w},${h},${tint.join(',')}`;
+    let copies=tinted.get(image);if(!copies){copies=new Map();tinted.set(image,copies);}
+    let copy=copies.get(key);
+    if(!copy){
+      const surface=createSurface();surface.width=w;surface.height=h;
+      const layer=surface.getContext('2d',{willReadFrequently:true});if(!layer)throw Error('UI_CANVAS_2D_UNAVAILABLE: tint layer');
+      layer.drawImage(image,x0,y0,w,h,0,0,w,h);
+      const pixels=layer.getImageData(0,0,w,h),data=pixels.data;
+      for(let i=0;i<data.length;i+=4){data[i]*=tint[0];data[i+1]*=tint[1];data[i+2]*=tint[2];}
+      layer.putImageData(pixels,0,0);copy={surface,pass:tintPass};copies.set(key,copy);
+    }
+    copy.pass=tintPass;
+    return {image:copy.surface,source:{x:s.x-x0,y:s.y-y0,width:s.width,height:s.height}};
+  }
+  function releaseAsset(entry,id,reason){try{if(entry.image)releaseTinted(entry.image);if(entry.lease)entry.lease.release();else entry.image?.close?.();}finally{traceAsset(id,entry,'release',false,reason);}}
   function ensureAsset(id){if(assets.has(id)){const entry=assets.get(id);if(assetTrace)traceEntry(id,entry,false);return entry;}
     // A runtime data texture has no file: the GPU presenter reads it by ID at draw.
     if(id.startsWith(DATA_TEXTURE_ASSET)){
@@ -203,10 +228,12 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
     const asset=quadIndex===null?node.asset:batches.get(node)?.definition.quads[quadIndex]?.asset??node.asset;
     const value={code,node:node.id,asset,message:error.message,...(quadIndex!==null?{quad:quadIndex}:{})};diagnostics.set(key,value);onDiagnostic(value);
   }
-  function image(node,x,y,w,h,target=ctx,quadIndex=null){const e=ensureAsset(node.asset);if(!e.image)return;
+  function image(node,x,y,w,h,target=ctx,quadIndex=null,tint=null){const e=ensureAsset(node.asset);if(!e.image)return;
     const key=quadIndex===null?node.id:quadDiagnosticKeys.get(node.id)?.get(quadIndex);
     try {
-      renderRegions+=paintUiImage(target,node,e.image,{x,y,width:w,height:h,viewportHeight:canvas.height});
+      let leaf=node,picture=e.image;
+      if(tint){const copy=tintedSource(e.image,node.slice?.source,tint);picture=copy.image;leaf={...node,slice:{left:0,top:0,right:0,bottom:0,pixels_per_unit:1,source:copy.source}};}
+      renderRegions+=paintUiImage(target,leaf,picture,{x,y,width:w,height:h,viewportHeight:canvas.height});
       if(key!==undefined)diagnostics.delete(key);
     }catch(error){imageFailure(node,quadIndex,error);}
   }
@@ -219,9 +246,9 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
       const r=q.rect,leaf={id:node.id,asset:q.asset,fit:'stretch',...(q.source?{slice:{left:0,top:0,right:0,bottom:0,pixels_per_unit:1,source:q.source}}:{})};
       ctx.save();
       try{ctx.globalAlpha=(ctx.globalAlpha??1)*(q.opacity??1);if(instance.pixelSnap){const snapped=imageBatchSnappedRect(instance,r,canvas.width,canvas.height);if(!snapped.width||!snapped.height)continue;
-          ctx.transform(Math.sign(snapped.width),0,0,Math.sign(snapped.height),snapped.x,snapped.y);image(leaf,0,0,Math.abs(snapped.width),Math.abs(snapped.height),ctx,index);}
-        else if(instance.retained)image(leaf,r.x-instance.definition.originX,-(r.y-instance.definition.originY)-r.height,r.width,r.height,ctx,index);
-        else image(leaf,r.x*canvas.width/100,(100-r.y-r.height)*canvas.height/100,r.width*canvas.width/100,r.height*canvas.height/100,ctx,index);}
+          ctx.transform(Math.sign(snapped.width),0,0,Math.sign(snapped.height),snapped.x,snapped.y);image(leaf,0,0,Math.abs(snapped.width),Math.abs(snapped.height),ctx,index,q.tint);}
+        else if(instance.retained)image(leaf,r.x-instance.definition.originX,-(r.y-instance.definition.originY)-r.height,r.width,r.height,ctx,index,q.tint);
+        else image(leaf,r.x*canvas.width/100,(100-r.y-r.height)*canvas.height/100,r.width*canvas.width/100,r.height*canvas.height/100,ctx,index,q.tint);}
       finally{ctx.restore();}
     }
     }finally{ctx.restore();}
@@ -328,7 +355,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
       if(presented!==gpuPrefix){gpuPrefix=presented;compositionChanged=true;}
       if(compositionChanged){const paintNodes=nodes.filter(node=>node.kind!=='image_batch'||batches.get(node).prefixIndex<0||batches.get(node).prefixIndex>=gpuPrefix),nextKey=JSON.stringify(paintNodes),definitions=paintNodes.filter(n=>n.kind==='image_batch').map(n=>batches.get(n).definition);
         if(nextKey!==paintKey||definitions.length!==paintDefinitions.length||definitions.some((d,i)=>d!==paintDefinitions[i]))dirty=true;paintKey=nextKey;paintDefinitions=definitions;}
-      if(!dirty){notifyReady();return presenter?.completion?.()?.status==='skipped'?DRAW_SKIPPED.ui_target_unavailable:outcome();}dirty=false;const started=performance.now();renderRegions=0;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,bw,bh);
+      if(!dirty){notifyReady();return presenter?.completion?.()?.status==='skipped'?DRAW_SKIPPED.ui_target_unavailable:outcome();}dirty=false;const started=performance.now();renderRegions=0;tintPass++;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,bw,bh);
       for(const [id,d]of diagnostics)if(d.node)diagnostics.delete(id);quadDiagnosticKeys.clear();
       for(const node of nodes){const r=node.rect,x=r.x*bw/100,y=(100-r.y-r.height)*bh/100,w=r.width*bw/100,h=r.height*bh/100;
         if(node.kind==='input_region')continue;
@@ -355,14 +382,15 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
           else if(['panel','slider','combobox'].includes(node.kind)){renderRegions++;}
           else {text(ctx,node,x,y,w,h,scale);renderRegions++;}
         }finally{if(c)ctx.restore();}}
+      for(const image of [...tinted.keys()])releaseTinted(image,true);
       renderMs=performance.now()-started;
       notifyReady();
       return presenter?.completion?.()?.status==='skipped'?DRAW_SKIPPED.ui_target_unavailable:outcome();
     },
     pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,ready,setAssetObserver,assetDiagnostics,
     setFont(family){fontFamily=family;dirty=true;},
-    invalidateAssets(){retireGpu();generation++;for(const [id,e]of assets)releaseAsset(e,id,'invalidate');assets.clear();loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
+    invalidateAssets(){retireGpu();generation++;for(const [id,e]of assets)releaseAsset(e,id,'invalidate');assets.clear();for(const image of [...tinted.keys()])releaseTinted(image);loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
     report(){const gpu=canvas?null:getPresenter();return {backend:canvas?'canvas2d':'three.js',...(gpu?{gpu:gpu.metrics()}:{}),nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},
-    dispose(){if(disposed)return;try{retireGpu();router.dispose();disposed=true;generation++;for(const [id,e]of assets)releaseAsset(e,id,'dispose');assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];paintNodeKeys=null;nodeKeys=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();notifyReady();}finally{assetTrace=null;}},
+    dispose(){if(disposed)return;try{retireGpu();router.dispose();disposed=true;generation++;for(const [id,e]of assets)releaseAsset(e,id,'dispose');assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];paintNodeKeys=null;nodeKeys=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();for(const image of [...tinted.keys()])releaseTinted(image);notifyReady();}finally{assetTrace=null;}},
   };
 }

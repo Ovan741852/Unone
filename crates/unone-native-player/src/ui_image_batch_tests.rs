@@ -1,20 +1,27 @@
 use super::*;
 use serde_json::json;
 
+fn png_bytes(width: u32, height: u32, pixels: &[u8]) -> Vec<u8> {
+    let mut bytes = Vec::new();
+    {
+        let mut encoder = png::Encoder::new(&mut bytes, width, height);
+        encoder.set_color(png::ColorType::Rgba);
+        encoder.set_depth(png::BitDepth::Eight);
+        encoder.write_header().unwrap().write_image_data(pixels).unwrap();
+    }
+    bytes
+}
+
 fn raster() -> Rasterizer {
     let colors = [[255,0,0,255], [0,0,255,255], [0,255,0,255], [255,255,0,255]];
     let mut pixels = Vec::new();
     for y in 0..32 { for x in 0..32 { pixels.extend_from_slice(&colors[(y/16)*2+x/16]); } }
-    let mut bytes = Vec::new();
-    {
-        let mut encoder = png::Encoder::new(&mut bytes, 32, 32);
-        encoder.set_color(png::ColorType::Rgba);
-        encoder.set_depth(png::BitDepth::Eight);
-        encoder.write_header().unwrap().write_image_data(&pixels).unwrap();
-    }
+    // A uniformly half-transparent texture: tint must not touch its alpha.
+    let glass = [200u8,100,40,128].repeat(4);
     let package = Package { digest:String::new(), files:BTreeMap::from([
-        ("content/assets.json".into(), br#"{"assets":[{"kind":"texture2d","id":"texture://atlas","source":"atlas.png"}]}"#.to_vec()),
-        ("content/presentation.json".into(), b"{}".to_vec()), ("content/atlas.png".into(), bytes)]) };
+        ("content/assets.json".into(), br#"{"assets":[{"kind":"texture2d","id":"texture://atlas","source":"atlas.png"},{"kind":"texture2d","id":"texture://glass","source":"glass.png"}]}"#.to_vec()),
+        ("content/presentation.json".into(), b"{}".to_vec()), ("content/atlas.png".into(), png_bytes(32, 32, &pixels)),
+        ("content/glass.png".into(), png_bytes(2, 2, &glass))]) };
     Rasterizer::new(&package).unwrap()
 }
 
@@ -42,6 +49,33 @@ fn image_batch_native_crop_opacity_and_original_paint_order() {
     let mut reversed = node(); reversed["quads"].as_array_mut().unwrap().reverse();
     let pixels = raster.draw(&tree(reversed),100,100).unwrap();
     assert_eq!(&pixels[((50*100+50)*4)..][..4], &[255,0,0,255]);
+}
+
+#[test]
+fn image_batch_native_tint_multiplies_texture_colour_and_keeps_alpha() {
+    let raster = raster();
+    let tinted = json!({"kind":"image_batch","id":"tint","rect":{"x":0,"y":0,"width":100,"height":100},"quads":[
+        // Yellow quadrant of a larger atlas, scaled up: the crop alone is filtered.
+        {"asset":"texture://atlas","rect":{"x":0,"y":0,"width":25,"height":100},"source":{"x":17,"y":17,"width":14,"height":14},"tint":[0.5,1,0.25]},
+        {"asset":"texture://atlas","rect":{"x":25,"y":0,"width":25,"height":100},"source":{"x":17,"y":17,"width":14,"height":14},"tint":[0.5,1,0.25]},
+        {"asset":"texture://glass","rect":{"x":50,"y":0,"width":25,"height":100},"tint":[0.5,0.5,1]},
+        {"asset":"texture://atlas","rect":{"x":75,"y":0,"width":25,"height":100},"source":{"x":17,"y":17,"width":14,"height":14},"opacity":0.5,"tint":[0,0.5,1]}]});
+    let pixels = raster.draw(&tree(tinted.clone()), 100, 100).unwrap();
+    let pixel = |pixels: &[u8], x: usize| pixels[(50*100+x)*4..][..4].to_vec();
+    let near = |actual: Vec<u8>, expected: [u8; 4]| assert!(actual.iter().zip(expected).all(|(a,b)| a.abs_diff(b)<=3), "{actual:?} != {expected:?}");
+    near(pixel(&pixels, 12), [128,255,0,255]);
+    near(pixel(&pixels, 37), [128,255,0,255]);
+    near(pixel(&pixels, 62), [100,50,40,128]);
+    near(pixel(&pixels, 87), [0,128,0,128]);
+    let markup = raster.node_markup(3, &tree(tinted.clone()).children[0], 100, 100).unwrap();
+    assert_eq!(markup.matches("<filter").count(), 3, "one filter per distinct tint and crop");
+    let mut plain = tinted;
+    for quad in plain["quads"].as_array_mut().unwrap() { quad.as_object_mut().unwrap().remove("tint"); }
+    assert!(!raster.node_markup(3, &tree(plain.clone()).children[0], 100, 100).unwrap().contains("filter"));
+    let pixels = raster.draw(&tree(plain), 100, 100).unwrap();
+    near(pixel(&pixels, 12), [255,255,0,255]);
+    near(pixel(&pixels, 62), [200,100,40,128]);
+    near(pixel(&pixels, 87), [255,255,0,128]);
 }
 
 #[test]

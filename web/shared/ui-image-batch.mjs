@@ -23,18 +23,20 @@ function definition(value,id,token,stage=false){
  if(!quads.length)fail('UI_IMAGE_BATCH_EMPTY',id);
  const out=[],assets=new Set(),requirements=new Map();let stringBytes=0;
  for(let i=0;i<quads.length;i++){
-  const q=fields(quads[i],['asset','rect','source','opacity'],'UI_IMAGE_BATCH_FIELDS',id),asset=q.asset,
+  const q=fields(quads[i],['asset','rect','source','opacity','tint'],'UI_IMAGE_BATCH_FIELDS',id),asset=q.asset,
    match=typeof asset==='string'?asset.match(/^([a-zA-Z0-9+.-]+):\/\/(.*)$/s):null;
   if(!match||!match[2].trim()||['http','https','file','data'].includes(match[1].toLowerCase()))fail('UI_IMAGE_BATCH_ASSET',id);
   const r=rect(q.rect,'UI_IMAGE_BATCH_BOUNDS',id,stage),dx=r.x-bounds.x,dy=r.y-bounds.y;
   if(dx< -1e-8||dy< -1e-8||r.width>bounds.width+1e-8-dx||r.height>bounds.height+1e-8-dy)fail('UI_IMAGE_BATCH_BOUNDS',id);
   if(q.opacity!=null&&(!Number.isFinite(q.opacity)||q.opacity<0||q.opacity>1))fail('UI_IMAGE_BATCH_OPACITY',id);
+  // Three r,g,b multipliers of the texture colour; alpha is unchanged.
+  const tint=q.tint==null?undefined:Array.isArray(q.tint)&&q.tint.length===3&&q.tint.every(v=>Number.isFinite(v)&&v>=0&&v<=1)?Object.freeze([q.tint[0],q.tint[1],q.tint[2]]):fail('UI_IMAGE_BATCH_TINT',id);
   const source=q.source==null?undefined:rect(q.source,'UI_IMAGE_BATCH_SOURCE',id);
   if(source&&(source.x<0||source.y<0||!Number.isFinite(source.x+source.width)||!Number.isFinite(source.y+source.height)))fail('UI_IMAGE_BATCH_SOURCE',id);
   assets.add(asset);stringBytes+=encoder.encode(asset).length;
   let need=requirements.get(asset);if(!need){need={asset,maxX:0,maxY:0};requirements.set(asset,need);}if(source){need.maxX=Math.max(need.maxX,source.x+source.width);need.maxY=Math.max(need.maxY,source.y+source.height);}
   if(stringBytes>UI_CONTRACT.max_string_bytes)fail('UI_STRING_LIMIT',`${id}; quads[${i}]`);
-  out.push(Object.freeze({asset,rect:r,...(source?{source}:{}),...(q.opacity!=null?{opacity:q.opacity}:{})}));
+  out.push(Object.freeze({asset,rect:r,...(source?{source}:{}),...(q.opacity!=null?{opacity:q.opacity}:{}),...(tint?{tint}:{})}));
  }
  return Object.freeze({token,bounds,quads:Object.freeze(out),assets:Object.freeze([...assets]),requirements:Object.freeze([...requirements.values()].map(Object.freeze)),stringBytes,revision:value.revision,originX:bounds.x,originY:bounds.y});
 }

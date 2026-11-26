@@ -36,12 +36,15 @@ return {start=function(api)
     local ui=api.ui.components.create({image={opacity=.2}})
     local quads={
         {asset='texture://floor',rect={x=10,y=20,width=30,height=20},source={x=32,y=0,width=64,height=32}},
-        {asset='texture://mist',rect={x=20,y=25,width=20,height=10},opacity=.6},
+        {asset='texture://mist',rect={x=20,y=25,width=20,height=10},opacity=.6,tint={1,.5,.25}},
     }
     local art=ui.imageBatch({id='art',rect={x=0,y=0,width=100,height=100},quads=quads})
     assert(art.kind=='image_batch' and art.style==nil)
-    quads[1].source.x=999;quads[2].opacity=0
-    assert(art.quads[1].source.x==32 and art.quads[2].opacity==.6)
+    quads[1].source.x=999;quads[2].opacity=0;quads[2].tint[1]=0
+    assert(art.quads[1].source.x==32 and art.quads[2].opacity==.6 and art.quads[2].tint[1]==1)
+    local tinted,tintError=pcall(api.ui.setRoot,ui.screen({id='screen',node='art',children={
+        ui.imageBatch({id='bad',rect=art.rect,quads={{asset='texture://mist',rect=art.rect,tint={1,1}}}})}}))
+    assert(not tinted and string.find(tostring(tintError),'UI_IMAGE_BATCH_TINT',1,true),tostring(tintError))
     for _,bad in ipairs({
         function()ui.imageBatch({id='a',rect=art.rect,quads=art.quads,action='Attack'})end,
         function()ui.imageBatch({id='a',anchor='center',size={width=100,height=100},quads=art.quads})end,
@@ -59,6 +62,8 @@ end,update=function()end}
     assert_eq!(tree["children"][0]["kind"],"image_batch");
     assert_eq!(tree["children"][0]["quads"][0]["asset"],"texture://floor");
     assert_eq!(tree["children"][0]["quads"][0]["source"]["x"],32.0);
+    assert!(tree["children"][0]["quads"][0].get("tint").is_none());
+    assert_eq!(tree["children"][0]["quads"][1]["tint"],json!([1.0,0.5,0.25]));
     assert_eq!(tree["children"][1]["kind"],"button");
     assert_eq!(tree["children"][1]["action"],"Go");
 }

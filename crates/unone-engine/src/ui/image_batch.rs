@@ -199,7 +199,7 @@ mod tests {
 
     fn definition(count:usize)->UiImageBatchDefinition {
         let bounds=UiRect{x:-5.,y:-5.,width:10.,height:10.};
-        UiImageBatchDefinition{bounds,quads:vec![UiImageQuad{asset:"texture://tile".into(),rect:bounds,source:None,opacity:None};count]}
+        UiImageBatchDefinition{bounds,quads:vec![UiImageQuad{asset:"texture://tile".into(),rect:bounds,source:None,opacity:None,tint:None};count]}
     }
 
     #[test]

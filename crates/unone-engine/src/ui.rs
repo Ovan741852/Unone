@@ -569,6 +569,27 @@ pub struct UiImageQuad {
     pub source: Option<UiRect>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub opacity: Option<f64>,
+    /// Red, green and blue multipliers in 0..1 for the sampled texture; alpha is unchanged.
+    /// Absent means white: the texture's own colours.
+    #[serde(default, skip_serializing_if = "Option::is_none", deserialize_with = "image_quad_tint")]
+    #[cfg_attr(feature = "dev-tools", schemars(with = "Option<[f64; 3]>"))]
+    pub tint: Option<[f64; 3]>,
+}
+
+const IMAGE_QUAD_TINT_ERROR: &str = "UI_IMAGE_BATCH_TINT: tint must be an array of three finite numbers between 0 and 1";
+
+/// Name the tint rule for any malformed value, not serde's generic
+/// "invalid length" or "invalid type". Range is checked by validation, so a
+/// quad built in Rust is held to the same rule.
+fn image_quad_tint<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<[f64; 3]>, D::Error> {
+    let Some(value) = Option::<serde_json::Value>::deserialize(deserializer)? else { return Ok(None) };
+    match value.as_array().map(Vec::as_slice) {
+        Some([r, g, b]) => match (r.as_f64(), g.as_f64(), b.as_f64()) {
+            (Some(r), Some(g), Some(b)) => Ok(Some([r, g, b])),
+            _ => Err(serde::de::Error::custom(IMAGE_QUAD_TINT_ERROR)),
+        },
+        _ => Err(serde::de::Error::custom(IMAGE_QUAD_TINT_ERROR)),
+    }
 }
 
 impl UiImageQuad {
@@ -590,6 +611,9 @@ impl UiImageQuad {
         }
         if self.opacity.is_some_and(|v| !v.is_finite() || !(0.0..=1.0).contains(&v)) {
             return Err("UI_IMAGE_BATCH_OPACITY: opacity must be finite and between 0 and 1".into());
+        }
+        if self.tint.is_some_and(|rgb| rgb.iter().any(|v| !v.is_finite() || !(0.0..=1.0).contains(v))) {
+            return Err(IMAGE_QUAD_TINT_ERROR.into());
         }
         if let Some(s) = self.source
             && ([s.x, s.y, s.width, s.height, s.x+s.width, s.y+s.height].iter().any(|v| !v.is_finite())

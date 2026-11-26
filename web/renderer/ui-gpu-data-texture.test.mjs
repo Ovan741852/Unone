@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as THREE from '../vendor/three/three.module.js';
 import {createGpuUi} from './ui-gpu.js';
 import {createCanvasUi} from '../shared/canvas-ui.mjs';
+import {createImageBatchResolver} from '../shared/ui-image-batch.mjs';
 
 const ASSET='data-texture://minimap';
 const node=(asset=ASSET)=>({kind:'image',id:'picture',asset,fit:'stretch',rect:{x:0,y:0,width:20,height:20}});
@@ -14,9 +15,22 @@ function fixture(textures){
     setRenderTarget(){},setScissorTest(){},setViewport(){},compile(){},properties:{get:()=>({currentProgram:{getUniforms(){}}})},
     initTexture(){},render(s){scene=s;}};
   const gpu=createGpuUi(THREE,renderer,{dataTextures:textures});
-  return {gpu,get drawn(){return scene?.children.find(mesh=>mesh.visible)?.material.uniforms.uiTexture.value??null;},
-    draw(nodes,errors=[]){return gpu.draw({nodes,images:new Map(),batches:new Map(),scale:1,changed:true,identity:'fixture',hasText:()=>false,imageError:(_,__,error)=>errors.push(error)});}};
+  return {gpu,get scene(){return scene;},get drawn(){return scene?.children.find(mesh=>mesh.visible)?.material.uniforms.uiTexture.value??null;},
+    draw(nodes,errors=[],batches=new Map()){return gpu.draw({nodes,images:new Map(),batches,scale:1,changed:true,identity:'fixture',hasText:()=>false,imageError:(_,__,error)=>errors.push(error)});}};
 }
+
+test('an image-batch quad tint reaches the texture shader as uiColor.rgb while other image quads stay white',()=>{
+  const texture=new THREE.DataTexture(new Uint8Array(16),2,2),f=fixture({get:()=>texture});
+  try{
+    const batch={kind:'image_batch',id:'art',rect:{x:0,y:0,width:100,height:100},quads:[
+      {asset:ASSET,rect:{x:0,y:0,width:10,height:10},opacity:.5,tint:[.25,.5,1]},{asset:ASSET,rect:{x:10,y:0,width:10,height:10}}]};
+    const errors=[];f.draw([batch,node()],errors,new Map([[batch,createImageBatchResolver().resolve(batch)]]));assert.deepEqual(errors,[]);
+    const mesh=f.scene.children.find(m=>m.visible),attribute=mesh.geometry.attributes.uiColor,stride=attribute.data.stride;
+    assert.equal(mesh.geometry.instanceCount,3,'both quads and the image share one texture run');
+    assert.deepEqual([0,1,2].map(i=>[...attribute.data.array.slice(i*stride+attribute.offset,i*stride+attribute.offset+4)]),[[.25,.5,1,.5],[1,1,1,1],[1,1,1,1]]);
+    assert.match(mesh.material.fragmentShader,/texture2D\(uiTexture,vUv\)\*vec4\(vColor\.rgb,1\.0\)\*vColor\.a/);
+  }finally{f.gpu.dispose();}
+});
 
 test('a UI image names a data texture and draws that very texture, with no file behind it',()=>{
   const texture=new THREE.DataTexture(new Uint8Array(16),2,2);

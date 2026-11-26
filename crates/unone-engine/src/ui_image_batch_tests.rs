@@ -156,8 +156,50 @@ fn image_batch_validates_every_quad_geometry_source_and_opacity() {
     let mut node = batch();
     node["rect"] = json!({"x":0,"y":0,"width":20,"height":20});
     assert!(UiTree::from_json(screen(node)).unwrap_err().contains("UI_IMAGE_BATCH_BOUNDS"));
-    let quad = UiImageQuad { asset:"texture://a".into(), rect:UiRect{x:0.,y:0.,width:1.,height:1.},source:None,opacity:Some(f64::NAN) };
+    let quad = UiImageQuad { asset:"texture://a".into(), rect:UiRect{x:0.,y:0.,width:1.,height:1.},source:None,opacity:Some(f64::NAN),tint:None };
     assert!(quad.validate(UiRect{x:0.,y:0.,width:100.,height:100.}).unwrap_err().contains("OPACITY"));
+}
+
+#[test]
+fn image_batch_tint_is_an_optional_rgb_multiplier_in_unit_range() {
+    let mut value = screen(batch());
+    value["children"][0]["quads"][1]["tint"] = json!([1, 0.5, 0]);
+    let tree = UiTree::from_json(value).unwrap();
+    let serialized = serde_json::to_value(&tree).unwrap();
+    assert_eq!(serialized["children"][0]["quads"][1]["tint"], json!([1.0, 0.5, 0.0]));
+    assert!(serialized["children"][0]["quads"][0].get("tint").is_none(), "absent tint is not serialized");
+    assert_eq!(UiTree::from_json(serialized).unwrap(), tree);
+    let mut absent = screen(batch());
+    absent["children"][0]["quads"][1]["tint"] = Value::Null;
+    assert_eq!(UiTree::from_json(absent).unwrap(), UiTree::from_json(screen(batch())).unwrap());
+    for bad in [json!([1, 1]), json!([1, 1, 1, 1]), json!([]), json!([1, "1", 1]), json!([1, null, 1]),
+        json!("white"), json!(1), json!({"r":1,"g":1,"b":1}), json!(true),
+        json!([-0.01, 0, 0]), json!([0, 1.01, 0]), json!([0, 0, 2])] {
+        let mut node = batch(); node["quads"][1]["tint"] = bad.clone();
+        let error = UiTree::from_json(screen(node)).unwrap_err();
+        assert!(error.contains("UI_IMAGE_BATCH_TINT"), "{bad}: {error}");
+    }
+    for bad in [[f64::NAN, 0., 0.], [0., f64::INFINITY, 0.], [0., 0., f64::NEG_INFINITY]] {
+        let quad = UiImageQuad { asset:"texture://a".into(), rect:UiRect{x:0.,y:0.,width:1.,height:1.},source:None,opacity:None,tint:Some(bad) };
+        assert!(quad.validate(UiRect{x:0.,y:0.,width:100.,height:100.}).unwrap_err().contains("UI_IMAGE_BATCH_TINT"));
+    }
+    let definition: super::UiImageBatchDefinition = serde_json::from_value(json!({"bounds":{"x":0,"y":0,"width":10,"height":10},
+        "quads":[{"asset":"texture://a","rect":{"x":0,"y":0,"width":10,"height":10},"tint":[0.25,0.5,1]}]})).unwrap();
+    assert_eq!(definition.quads[0].tint, Some([0.25, 0.5, 1.0]));
+    definition.validate().unwrap();
+    let error = serde_json::from_value::<super::UiImageBatchDefinition>(json!({"bounds":{"x":0,"y":0,"width":10,"height":10},
+        "quads":[{"asset":"texture://a","rect":{"x":0,"y":0,"width":10,"height":10},"tint":[0.25,0.5]}]})).unwrap_err();
+    assert!(error.to_string().contains("UI_IMAGE_BATCH_TINT"), "{error}");
+}
+
+#[cfg(feature="dev-tools")]
+#[test]
+fn image_batch_tint_schema_declares_three_unit_components() {
+    let schema=crate::contract_schema("ui").unwrap();
+    let tint=&schema["$defs"]["UiImageQuad"]["properties"]["tint"];
+    assert_eq!((tint["minItems"].as_u64(),tint["maxItems"].as_u64()),(Some(3),Some(3)));
+    assert_eq!((tint["items"]["minimum"].as_f64(),tint["items"]["maximum"].as_f64()),(Some(0.),Some(1.)));
+    assert!(!schema["$defs"]["UiImageQuad"]["required"].as_array().unwrap().iter().any(|field|field=="tint"));
 }
 
 #[test]

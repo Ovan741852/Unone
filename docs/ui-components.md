@@ -519,14 +519,18 @@ Canonical styles, bounds, image slicing and node budgets remain authoritative.
 
 `ui.imageBatch({id,rect,quads,background_for?})` constructs an explicit drawing
 layer of stretch images. Each quad has `asset`, `rect`, optional `source` pixel
-crop and optional `opacity` in 0..1. Quad rectangles use the same coordinate
-space as the batch and must fit its rectangle. Array order is paint order.
+crop, optional `opacity` in 0..1 and optional `tint={r,g,b}` (three values in
+0..1 that multiply the texture's colour, alpha unchanged; omitted means white).
+Quad rectangles use the same coordinate space as the batch and must fit its
+rectangle. Array order is paint order. See
+[quad tint](ui-slice-and-budget.md#retained-image-artwork) for host details.
 
 ```lua
 local scenery = ui.imageBatch({id="scenery",rect={x=0,y=0,width=100,height=100},
     background_for={screen=true},quads={
         {asset="texture://grass",rect={x=10,y=20,width=8,height=4}},
         {asset="texture://cloud",rect={x=12,y=21,width=8,height=5},opacity=.8},
+        {asset="texture://cloud",rect={x=30,y=22,width=8,height=5},tint={1,.6,.4}},
     }})
 ```
 

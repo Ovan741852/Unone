@@ -948,7 +948,7 @@ mod tests {
     fn retained_and_inline_batch_backgrounds_have_identical_layout_evidence() {
         let bounds=crate::ui::UiRect{x:0.,y:0.,width:100.,height:100.};
         let definition=crate::ui::UiImageBatchDefinition{bounds,quads:vec![crate::ui::UiImageQuad{
-            asset:"texture://art".into(),rect:bounds,source:None,opacity:None};2]};
+            asset:"texture://art".into(),rect:bounds,source:None,opacity:None,tint:None};2]};
         let mut world=crate::world::World::default();
         world.define_ui_image_batch("shared-art".into(),definition.clone(),None).unwrap();
         let screen=|node|serde_json::json!({"kind":"screen","id":"same","node":"same","children":[node,

@@ -499,12 +499,15 @@ export type UiImageNode = UiPlacement & {
 }
 -- Ordered, noninteractive artwork. Quads use the batch's coordinate space;
 -- source is an optional pixel crop, while rect is an absolute design rectangle.
+-- tint is exactly three r,g,b values in 0..1 multiplying the texture colour
+-- (alpha unchanged); omitted means white.
 export type UiImageQuad = {
     read asset: string, read rect: UiRect,
     read source: {read x:number,read y:number,read width:number,read height:number}?, read opacity: number?,
+    read tint: UiReadArray<number>?,
 }
 export type UiImageQuadInput = {
-    asset:string,rect:UiRectInput,source:UiRectInput?,opacity:number?,
+    asset:string,rect:UiRectInput,source:UiRectInput?,opacity:number?,tint:{number}?,
 }
 -- x'=a*x+c*y+tx, y'=b*x+d*y+ty. Maps retained local coordinates to stage y-up.
 export type UiImageTransform = {read a:number,read b:number,read c:number,read d:number,read tx:number,read ty:number}

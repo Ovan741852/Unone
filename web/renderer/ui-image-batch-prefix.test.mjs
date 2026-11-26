@@ -47,6 +47,21 @@ test('changed inline generations update owned same-capacity storage without geom
  const m=h.presenter.metrics();assert.equal(m.geometry_builds,1);assert.equal(m.geometry_disposes,0);assert.equal(m.material_builds,1);assert.equal(m.mesh_builds,1);assert.equal(m.geometry_updates,200);
  h.presenter.dispose();retired(h.presenter);assert.equal(h.presenter.metrics().live_meshes,0);
 });
+test('each vertex carries position, uv, opacity and tint; untinted quads stay white and tint edits reuse storage',()=>{
+ const h=harness(),tint=[.25,.5,1];let p=resolved(h,'tinted',[quad(10,'asset://a',{opacity:.5,tint}),quad(20)],{retained:false});
+ assert.equal(h.presenter.drawPrefix([p],h.context),1);
+ const mesh=h.renderer.scene.children[0],geometry=mesh.geometry,buffer=geometry.attributes.position.data,a=geometry.attributes;
+ assert.equal(buffer.stride,9);assert.deepEqual([a.uv.offset,a.imageOpacity.offset,a.imageTint.offset,a.imageTint.itemSize],[3,5,6,3]);
+ assert.equal(buffer.array.length,h.presenter.metrics().buffer_capacity_quads*36);
+ for(let v=0;v<4;v++)assert.deepEqual([...buffer.array.slice(v*9+5,v*9+9)],[.5,...tint]);
+ for(let v=4;v<8;v++)assert.deepEqual([...buffer.array.slice(v*9+5,v*9+9)],[1,1,1,1]);
+ assert.deepEqual([buffer.array[9],buffer.array[36]],[15,20],'second vertex and second quad start at the 9-float stride');
+ assert.match(mesh.material[0].vertexShader,/projectedColor=vec4\(imageTint,imageOpacity\)/);
+ assert.match(mesh.material[0].fragmentShader,/projectedToEncoded\(texel\.rgb\)\*projectedColor\.rgb/);assert.equal(mesh.material[0].uniforms.projectedEncodedMode.value,1);
+ p=resolved(h,'tinted',[quad(10,'asset://a',{opacity:.5,tint:[1,0,0]}),quad(20)],{retained:false});h.presenter.drawPrefix([p],h.context);
+ assert.equal(h.renderer.scene.children[0].geometry,geometry);assert.deepEqual([...buffer.array.slice(6,9)],[1,0,0]);assert.equal(h.presenter.metrics().geometry_builds,1);
+ h.presenter.dispose();retired(h.presenter);
+});
 test('texture runs share one geometry/material and preserve authored A/B/A order across instance reorder',()=>{
  const h=harness(),imageB={width:8,height:8};h.context.images.set('asset://b',{state:'ready',image:imageB});
  const quads=[quad(1),quad(2,'asset://b'),quad(3)],a=resolved(h,'first',quads),b=resolved(h,'second',quads,{t:{...transform,tx:4}});

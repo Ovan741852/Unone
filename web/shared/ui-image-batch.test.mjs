@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createCanvasUi,createUiPointerRouter,flattenUi} from './canvas-ui.mjs';
 import {uiUsage,UI_CONTRACT} from './ui-geometry.mjs';
 import {projectScrollTree} from './ui-scroll.mjs';
+import {createImageBatchResolver} from './ui-image-batch.mjs';
 import {createUiTree} from './ui-tree.js';
 const rect={x:0,y:0,width:100,height:100};
 const quad=(asset='asset://a',overrides={})=>({asset,rect:{x:10,y:20,width:20,height:10},...overrides});
@@ -48,6 +49,8 @@ test('batch contract rejects malformed artwork instead of interpreting controls 
   [batch([quad('asset://a',{rect:{...rect,width:101}})]),'BOUNDS'],[batch([quad('asset://a',{opacity:NaN})]),'OPACITY'],[batch([quad('asset://a',{opacity:1.01})]),'OPACITY'],
   [batch([quad('asset://a',{source:{x:-1,y:0,width:2,height:2}})]),'SOURCE'],[batch([quad('asset://a',{source:{x:0,y:0,width:0,height:2}})]),'SOURCE'],
   [batch([quad('asset://a',{source:{x:0,y:0,width:Infinity,height:2}})]),'SOURCE'],
+  ...[[1,1],[1,1,1,1],[],[NaN,0,0],[0,Infinity,0],[-.01,0,0],[0,1.01,0],[0,0,'1'],'white',1,{0:1,1:1,2:1,length:3}]
+   .map(tint=>[batch([quad('asset://a',{tint})]),'TINT']),
  ];
  for(const [node,code]of invalid)assert.throws(()=>flattenUi({children:[node]}),new RegExp('UI_IMAGE_BATCH_'+code));
  const scroll={kind:'scroll_view',id:'scroll',rect,scroll:{axis:'vertical',enabled:true},children:[{kind:'component',id:'group',rect,children:[batch()]}]};
@@ -55,6 +58,14 @@ test('batch contract rejects malformed artwork instead of interpreting controls 
  let replacements=0;const legacy=createUiTree({replaceChildren(){replacements++}});
  assert.throws(()=>legacy(tree(batch())),/UI_HOST_CAPABILITY_UNSUPPORTED.*image_batch/);
  assert.throws(()=>legacy(tree(batch())),/UI_HOST_CAPABILITY_UNSUPPORTED.*image_batch/);assert.equal(replacements,0);
+});
+test('quad tint is an optional frozen r,g,b copy and part of the content identity',()=>{
+ const tint=[1,.5,0],node=batch([quad('asset://a',{tint}),quad('asset://b',{tint:null}),quad('asset://a')]),resolver=createImageBatchResolver();
+ const first=resolver.resolve(node).definition;
+ assert.deepEqual(first.quads.map(q=>q.tint),[[1,.5,0],undefined,undefined]);assert.equal('tint'in first.quads[1],false);
+ assert.ok(Object.isFrozen(first.quads[0].tint));assert.notEqual(first.quads[0].tint,tint);
+ tint[1]=0;assert.equal(first.quads[0].tint[1],.5,'caller mutation cannot alias the validated quad');
+ const second=resolver.resolve(node).definition;assert.notEqual(second.token,first.token);assert.deepEqual(second.quads[0].tint,[1,0,0]);
 });
 test('invalid decoded source bounds never stretch the whole image or erase another quad diagnostic',async()=>{
  const s=surface(),ui=createCanvasUi(s.canvas,{resolveAsset:()=>({width:40,height:40})});

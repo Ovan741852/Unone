@@ -105,6 +105,9 @@ return {{start=function(api)
  reject({{bounds=bounds,quads={{q,q}}}},'UI_NODE_LIMIT')
  reject({{bounds=bounds,quads={{q}},unknown=true}},'unknown field')
  reject({{bounds=bounds,quads={{{{asset='texture://tile',rect=q.rect,rotation=0}}}}}},'unknown field')
+ for _,tint in {{{{1,1}},{{1,1,1,1}},{{1,'1',1}},{{1,1,1.5}},{{-1,0,0}},'white',{{r=1,g=1,b=1}}}} do
+  reject({{bounds=bounds,quads={{{{asset='texture://tile',rect=q.rect,tint=tint}}}}}},'UI_IMAGE_BATCH_TINT')
+ end
  assert(not pcall(api.ui.imageBatch.define,'shared',{{bounds={{x=1e308,y=0,width=1e308,height=1}},quads={{q}}}}))
  local invalid=table.clone(node);invalid.quads={{q}}
  assert(not pcall(api.ui.setRoot,{{kind='screen',id='s',node='s',children={{invalid}}}}))

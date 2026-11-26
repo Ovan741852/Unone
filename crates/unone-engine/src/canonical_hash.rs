@@ -78,7 +78,7 @@ mod tests {
         let rect=crate::UiRect{x:0.,y:0.,width:100.,height:100.};
         world.define_ui_image_batch("art".into(),crate::UiImageBatchDefinition{
             bounds:rect,
-            quads:vec![crate::UiImageQuad{asset:"texture://".to_owned()+&"a".repeat(3*BLOCK),rect,source:None,opacity:None}],
+            quads:vec![crate::UiImageQuad{asset:"texture://".to_owned()+&"a".repeat(3*BLOCK),rect,source:None,opacity:None,tint:None}],
         },None).unwrap();
         let mut snapshot=world.snapshot();
         let mut cached=CanonicalHasher::default();

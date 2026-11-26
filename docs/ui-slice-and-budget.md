@@ -130,7 +130,7 @@ recursively frozen node in UI 0.6. Mutable authored definitions can use
 does not mutate an earlier constructor result or Core resource generation.
 See the [ownership migration](ui-components.md#theme-copying-and-surfaces).
 For explicit replacement, retain a `UiImageBatchDefinitionInput` builder, change
-its quad opacity/crop as authored, and call `define(id,builder)` again. Use the
+its quad opacity/tint/crop as authored, and call `define(id,builder)` again. Use the
 readonly `UiImageBatchDefinition` view when no caller mutation is required.
 
 ```lua
@@ -153,9 +153,25 @@ local artwork = {
 The required resource `bounds` contains every local quad rectangle. Local x/y
 may be negative or extend beyond 0..100; dimensions and all coordinates must be
 finite. Each quad retains the existing ordered `asset`, `rect`, optional pixel
-`source` and `opacity` semantics. The engine owns source-dimension resolution,
+`source` and `opacity` semantics, plus an optional `tint` (see below). The engine owns source-dimension resolution,
 quad tessellation, compatible GPU runs and resource lifetime. A game neither
 groups textures nor sends GPU material flags.
+
+`tint={r,g,b}` multiplies the sampled texture's red, green and blue by three
+finite numbers in 0..1; alpha is unchanged and `opacity` still multiplies it.
+Omitting it means white, the texture's own colours, and it is not serialized.
+Use it for colour-modulated sprites (a palette shade, a team colour, a flash)
+instead of exporting a recoloured copy of the art. The multiply applies to the
+stored (sRGB-encoded) colour values on every host: the Web GPU passes in their
+shaders, the Web Canvas fallback through a cached tinted copy of the crop, and
+native through an SVG colour matrix. Anything else, such as an array of two or
+four values or a component outside 0..1, fails with `UI_IMAGE_BATCH_TINT`.
+
+```lua
+-- A red-shaded HUD sprite: texture colour times (1, 0.25, 0.25).
+{asset="texture://hud", rect={x=4, y=90, width=6, height=6},
+    source={x=0, y=0, width=16, height=16}, tint={1, .25, .25}}
+```
 
 The transform uses `x'=a*x+c*y+tx`, `y'=b*x+d*y+ty`, mapping local coordinates to
 the existing stage y-up space. Omission means identity; a supplied transform
@@ -179,7 +195,7 @@ size, including JSON syntax; the raw UTF-8 string budget alone is insufficient.
 Each immutable generation computes/caches this encoding once before admission.
 Over-limit content fails with `UI_IMAGE_BATCH_ENCODED_LIMIT` before replacing
 either a resource or the published tree.
-Unknown keys, invalid assets/crops/opacities and overflow reject atomically.
+Unknown keys, invalid assets/crops/opacities/tints and overflow reject atomically.
 Decoded image crop bounds are still validated by the host.
 
 `api.ui.imageBatch.remove(id)` returns whether an unused resource existed.

@@ -602,8 +602,12 @@ impl Rasterizer {
         Ok(())
     }
 
-    fn draw_image_batch(&self, svg: &mut String, quads: &[UiImageQuad], width: u32, height: u32,
+    fn draw_image_batch(&self, svg: &mut String, node_index: usize, quads: &[UiImageQuad], width: u32, height: u32,
         defined_images: &mut BTreeMap<String, usize>) -> R<()> {
+        // One colour-matrix filter per distinct (tint, crop). Its region is the
+        // crop in image pixels, so the filter layer stays the size of what is
+        // drawn rather than the whole atlas; the viewport clips the margin.
+        let mut tints: BTreeMap<[u64; 7], usize> = BTreeMap::new();
         for (index, quad) in quads.iter().enumerate() {
             let asset = &quad.asset;
             let uri = self.images.get(asset).ok_or_else(|| format!("UI_IMAGE_UNAVAILABLE: {asset}; image_batch quad={index}; native UI accepts PNG or self-contained static SVG"))?;
@@ -616,9 +620,25 @@ impl Rasterizer {
                 *svg += &format!("<defs><image id='slice{id}' width='{iw}' height='{ih}' xlink:href='{uri}'/></defs>");
                 id
             };
+            // sRGB interpolation multiplies the stored colour values, as the
+            // Web hosts do; alpha passes through the matrix unchanged.
+            let filter = match quad.tint {
+                Some([red, green, blue]) => {
+                    let key = [red, green, blue, source.x, source.y, source.width, source.height].map(f64::to_bits);
+                    let next = tints.len();
+                    let id = *tints.entry(key).or_insert_with(|| {
+                        *svg += &format!(
+                            "<defs><filter id='tint{node_index}_{next}' filterUnits='userSpaceOnUse' x='{}' y='{}' width='{}' height='{}' color-interpolation-filters='sRGB'><feColorMatrix type='matrix' values='{red} 0 0 0 0 0 {green} 0 0 0 0 0 {blue} 0 0 0 0 0 1 0'/></filter></defs>",
+                            source.x - 1., source.y - 1., source.width + 2., source.height + 2.);
+                        next
+                    });
+                    format!(" filter='url(#tint{node_index}_{id})'")
+                }
+                None => String::new(),
+            };
             let r = quad.rect;
             *svg += &format!(
-                "<svg x='{}' y='{}' width='{}' height='{}' viewBox='{} {} {} {}' preserveAspectRatio='none' overflow='hidden' opacity='{}'><use xlink:href='#slice{image_id}'/></svg>",
+                "<svg x='{}' y='{}' width='{}' height='{}' viewBox='{} {} {} {}' preserveAspectRatio='none' overflow='hidden' opacity='{}'><use xlink:href='#slice{image_id}'{filter}/></svg>",
                 r.x*width as f64/100., (100.-r.y-r.height)*height as f64/100.,
                 r.width*width as f64/100., r.height*height as f64/100.,
                 source.x, source.y, source.width, source.height, quad.opacity.unwrap_or(1.));
@@ -674,7 +694,7 @@ impl Rasterizer {
         );
         match node {
             UiNode::ImageBatch { id, quads, .. } => {
-                self.draw_image_batch(&mut svg, quads, width, height, &mut defined_images)
+                self.draw_image_batch(&mut svg, index, quads, width, height, &mut defined_images)
                     .map_err(|e| format!("{e}; batch={id}"))?;
             }
             UiNode::Image {

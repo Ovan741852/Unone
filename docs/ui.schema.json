@@ -399,6 +399,21 @@
               "type": "null"
             }
           ]
+        },
+        "tint": {
+          "description": "Red, green and blue multipliers in 0..1 for the sampled texture; alpha is unchanged.\nAbsent means white: the texture's own colours.",
+          "items": {
+            "format": "double",
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "type": [
+            "array",
+            "null"
+          ]
         }
       },
       "required": [

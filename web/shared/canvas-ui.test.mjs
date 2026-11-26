@@ -145,3 +145,34 @@ test('combobox captures the complete field and keeps capture when expanded chang
  r.pointer({kind:'down',x:10,y:10});r.setTree({children:[]});
  assert.equal(events.at(-1).phase,'cancel');r.pointer({kind:'up'});
 });
+test('Canvas paints a tinted batch quad from its source pixels times the tint with alpha kept; untinted quads keep the shared image path',async()=>{
+ // A 2x1 image: an opaque orange pixel, then a half-transparent grey one.
+ const image={width:2,height:1,pixels:new Uint8ClampedArray([200,100,40,255,120,120,120,128])},surfaces=[];
+ const createSurface=()=>{
+  const surface={width:1,height:1,pixels:null};
+  const layer={drawImage(source,sx,sy,sw,sh,dx,dy,dw,dh){
+    assert.deepEqual([dx,dy,dw,dh],[0,0,sw,sh],'whole source pixels are copied without resampling');
+    const out=new Uint8ClampedArray(surface.width*surface.height*4);
+    for(let y=0;y<sh;y++)for(let x=0;x<sw;x++)for(let c=0;c<4;c++)out[(y*surface.width+x)*4+c]=source.pixels[((sy+y)*source.width+sx+x)*4+c];
+    surface.pixels=out;},
+   getImageData:()=>({data:new Uint8ClampedArray(surface.pixels)}),putImageData(data){surface.pixels=new Uint8ClampedArray(data.data);}};
+  surface.getContext=()=>layer;surfaces.push(surface);return surface;};
+ const calls=[],stack=[],ctx={globalAlpha:1,setTransform(){},clearRect(){},beginPath(){},rect(){},clip(){},save(){stack.push(this.globalAlpha);},restore(){this.globalAlpha=stack.pop();},
+  drawImage(...args){calls.push({args,alpha:this.globalAlpha});},fillText(){},measureText:()=>({width:1})};
+ const ui=createCanvasUi({width:100,height:100,getContext:()=>ctx},{resolveAsset:()=>image,createSurface});
+ const r={x:0,y:0,width:50,height:50},art=quads=>({ui:{children:[{kind:'image_batch',id:'art',rect:{x:0,y:0,width:100,height:100},quads}]}});
+ const tinted=art([{asset:'asset://a',rect:r,tint:[.5,1,.25]},{asset:'asset://a',rect:{...r,x:50},source:{x:1,y:0,width:1,height:1},opacity:.5,tint:[.5,1,.25]},{asset:'asset://a',rect:{...r,y:50}}]);
+ ui.draw(tinted,{width:100,height:100,dpr:1});await new Promise(setImmediate);calls.length=0;ui.draw(tinted,{width:100,height:100,dpr:1});
+ assert.equal(calls.length,3);assert.equal(surfaces.length,2);
+ assert.equal(calls[0].args[0],surfaces[0]);assert.deepEqual([...surfaces[0].pixels],[100,100,10,255,60,120,30,128]);
+ assert.deepEqual(calls[0].args.slice(1),[0,0,2,1,0,50,50,50]);
+ assert.equal(calls[1].args[0],surfaces[1]);assert.deepEqual([...surfaces[1].pixels],[60,120,30,128]);
+ assert.deepEqual(calls[1].args.slice(1),[0,0,1,1,50,50,50,50]);assert.equal(calls[1].alpha,.5);
+ assert.equal(calls[2].args[0],image,'an untinted quad draws the decoded image itself');assert.deepEqual(calls[2].args.slice(1),[0,0,50,50]);
+ calls.length=0;ui.draw(tinted,{width:100,height:100,dpr:2});
+ assert.equal(calls.length,3);assert.equal(surfaces.length,2,'a repaint reuses the tinted copies');
+ ui.draw(art([{asset:'asset://a',rect:r}]),{width:100,height:100,dpr:2});
+ assert.deepEqual(surfaces.map(s=>[s.width,s.height]),[[1,1],[1,1]],'copies no longer painted are released');
+ ui.draw(tinted,{width:100,height:100,dpr:2});assert.equal(surfaces.length,4);
+ ui.dispose();assert.ok(surfaces.every(s=>s.width===1&&s.height===1));
+});

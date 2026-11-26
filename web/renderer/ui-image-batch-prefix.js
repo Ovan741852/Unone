@@ -1,13 +1,18 @@
 import {PROJECTED_FRAGMENT_SHADER} from './projected-raster-shaders.js';
 import {DRAW_COMPLETED,DRAW_SKIPPED} from '../shared/player-completion.mjs';
 import {isSuspectedContextLoss} from './link-loss.js';
+// Per vertex: position xyz, uv, opacity, tint rgb (9 floats, 36 per quad). The
+// projected fragment shader in encoded mode multiplies the sRGB-encoded sample
+// by projectedColor.rgb, as Canvas and the UI pass multiply stored colours.
+const VERTEX_FLOATS=9,QUAD_FLOATS=VERTEX_FLOATS*4;
 const VERTEX=`attribute float imageOpacity;
+attribute vec3 imageTint;
 uniform mat3 imageTransform;
 uniform vec2 imageFramebufferSize;
 uniform int imagePixelSnap;
 varying vec2 projectedUv;
 varying vec4 projectedColor;
-void main(){vec3 pixel=imageTransform*vec3(position.xy,1.0);if(imagePixelSnap==1)pixel.xy=sign(pixel.xy)*floor(abs(pixel.xy)+0.5);gl_Position=vec4(pixel.xy/imageFramebufferSize*2.0-1.0,0.0,1.0);projectedUv=uv;projectedColor=vec4(1.0,1.0,1.0,imageOpacity);}`;
+void main(){vec3 pixel=imageTransform*vec3(position.xy,1.0);if(imagePixelSnap==1)pixel.xy=sign(pixel.xy)*floor(abs(pixel.xy)+0.5);gl_Position=vec4(pixel.xy/imageFramebufferSize*2.0-1.0,0.0,1.0);projectedUv=uv;projectedColor=vec4(imageTint,imageOpacity);}`;
 const FRAGMENT='uniform vec4 imageClip;\n'+PROJECTED_FRAGMENT_SHADER.replace('void main(){','void main(){\n if(gl_FragCoord.x<imageClip.x||gl_FragCoord.y<imageClip.y||gl_FragCoord.x>=imageClip.z||gl_FragCoord.y>=imageClip.w)discard;');
 const imageWidth=image=>image?.naturalWidth??image?.width,imageHeight=image=>image?.naturalHeight??image?.height;
 function clipBox(instance,width,height){
@@ -61,8 +66,8 @@ export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
  const capacityFor=count=>2**Math.ceil(Math.log2(Math.max(1,count)));
  function allocate(data,capacity){
   const geometry=new THREE.BufferGeometry();geometryBuilds++;
-  try{const buffer=new THREE.InterleavedBuffer(new Float32Array(capacity*24),6);buffer.setUsage(THREE.DynamicDrawUsage);
-   geometry.setAttribute('position',new THREE.InterleavedBufferAttribute(buffer,3,0));geometry.setAttribute('uv',new THREE.InterleavedBufferAttribute(buffer,2,3));geometry.setAttribute('imageOpacity',new THREE.InterleavedBufferAttribute(buffer,1,5));
+  try{const buffer=new THREE.InterleavedBuffer(new Float32Array(capacity*QUAD_FLOATS),VERTEX_FLOATS);buffer.setUsage(THREE.DynamicDrawUsage);
+   geometry.setAttribute('position',new THREE.InterleavedBufferAttribute(buffer,3,0));geometry.setAttribute('uv',new THREE.InterleavedBufferAttribute(buffer,2,3));geometry.setAttribute('imageOpacity',new THREE.InterleavedBufferAttribute(buffer,1,5));geometry.setAttribute('imageTint',new THREE.InterleavedBufferAttribute(buffer,3,6));
    const indices=new Uint32Array(capacity*6);for(let q=0;q<capacity;q++){const v=q*4,i=q*6;indices[i]=v;indices[i+1]=v+1;indices[i+2]=v+2;indices[i+3]=v;indices[i+4]=v+2;indices[i+5]=v+3;}
    geometry.setIndex(new THREE.BufferAttribute(indices,1));const old=data.geometry;data.geometry=geometry;data.buffer=buffer;data.capacity=capacity;data.shrinkFrames=0;if(old)freeGeometry(old);
   }catch(error){freeGeometry(geometry);throw error;}
@@ -74,15 +79,15 @@ export function createUiImageBatchPrefix(THREE,renderer,{enabled=true}={}){
   const values=data.buffer.array,groups=data.geometry.groups;
   let offset=0,changed=false,groupCount=0,group=null;
   const value=n=>{n=Math.fround(n);if(values[offset]!==n){values[offset]=n;changed=true;}offset++;};
-  const vertex=(x,y,u,v,a)=>{value(x);value(y);value(0);value(u);value(v);value(a);};
+  const vertex=(x,y,u,v,a,t)=>{value(x);value(y);value(0);value(u);value(v);value(a);value(t?t[0]:1);value(t?t[1]:1);value(t?t[2]:1);};
   for(let i=0;i<count;i++){
    const q=definition.quads[i],source=byAsset.get(q.asset),iw=source.width,ih=source.height,s=q.source,r=q.rect,
-    u0=s?s.x/iw:0,u1=s?(s.x+s.width)/iw:1,v0=s?1-(s.y+s.height)/ih:0,v1=s?1-s.y/ih:1,alpha=q.opacity??1,x=r.x-ox,y=r.y-oy;
-   vertex(x,y,u0,v0,alpha);vertex(x+r.width,y,u1,v0,alpha);vertex(x+r.width,y+r.height,u1,v1,alpha);vertex(x,y+r.height,u0,v1,alpha);
+    u0=s?s.x/iw:0,u1=s?(s.x+s.width)/iw:1,v0=s?1-(s.y+s.height)/ih:0,v1=s?1-s.y/ih:1,alpha=q.opacity??1,t=q.tint,x=r.x-ox,y=r.y-oy;
+   vertex(x,y,u0,v0,alpha,t);vertex(x+r.width,y,u1,v0,alpha,t);vertex(x+r.width,y+r.height,u1,v1,alpha,t);vertex(x,y+r.height,u0,v1,alpha,t);
    if(!group||group.asset!==q.asset){group=groups[groupCount]??{};groups[groupCount++]=group;group.start=i*6;group.count=0;group.materialIndex=0;group.asset=q.asset;group.texture=source.texture;}group.count+=6;
   }
   groups.length=groupCount;data.geometry.setDrawRange(0,count*6);
-  if(changed){data.buffer.clearUpdateRanges();data.buffer.addUpdateRange(0,count*24);data.buffer.needsUpdate=true;geometryUpdates++;}
+  if(changed){data.buffer.clearUpdateRanges();data.buffer.addUpdateRange(0,count*QUAD_FLOATS);data.buffer.needsUpdate=true;geometryUpdates++;}
   data.definition=definition;data.sources=sources;data.ox=ox;data.oy=oy;data.count=count;
  }
  function resource(instance,assets,activeTokens,acquireAsset,stagedImages,touchedResources){

@@ -816,7 +816,7 @@ local function makeKit(theme: any?): any
             assert(props.transform==nil,"UI_IMAGE_BATCH_TRANSFORM: transform requires retained content")
             dense(props.quads,"imageBatch.quads")
             for _,quad in ipairs(props.quads) do
-                fields(quad,{asset=true,rect=true,source=true,opacity=true},"imageBatch.quad")
+                fields(quad,{asset=true,rect=true,source=true,opacity=true,tint=true},"imageBatch.quad")
                 fields(quad.rect,rectFields,"imageBatch.quad.rect")
                 if quad.source~=nil then fields(quad.source,rectFields,"imageBatch.quad.source") end
             end

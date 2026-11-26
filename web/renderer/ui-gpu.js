@@ -24,8 +24,10 @@ vPixel=pixel;vUv=mix(uiUv.xy,uiUv.zw,corner);vColor=uiColor;vBorder=uiBorder;vBo
 gl_Position=vec4(pixel.x/uiSize.x*2.0-1.0,1.0-pixel.y/uiSize.y*2.0,0.0,1.0);}`;
 // Modes: 0 rounded fill, 1 rounded border ring (Canvas stroke on the half-width
 // inset path), 2 premultiplied texture clipped to the rounded box, 3 texture
-// with the rectangular clip only. Output is premultiplied sRGB, blended like
-// the browser composites a 2D layer.
+// with the rectangular clip only. Texture modes multiply the premultiplied
+// sample's rgb by uiColor.rgb (an image-batch quad tint; white for every other
+// image and text quad) and the whole sample by uiColor.a. Output is
+// premultiplied sRGB, blended like the browser composites a 2D layer.
 const FRAGMENT=`uniform sampler2D uiTexture;
 varying vec2 vPixel;varying vec2 vUv;varying vec4 vColor;varying vec4 vBorder;varying vec4 vBox;varying vec4 vParams;varying vec4 vClip;
 float roundedBox(vec2 p,vec4 b,float r){vec2 h=b.zw*0.5;r=clamp(r,0.0,min(h.x,h.y));vec2 q=abs(p-(b.xy+h))-h+r;return length(max(q,0.0))+min(max(q.x,q.y),0.0)-r;}
@@ -37,7 +39,7 @@ void main(){
  else if(mode<1.5){float w=vParams.y;vec4 inner=vec4(vBox.xy+w,vBox.zw-2.0*w);
   float hole=inner.z>0.0&&inner.w>0.0?coverage(inner,max(0.0,vParams.x-w)):0.0;
   color=vec4(vBorder.rgb,1.0)*vBorder.a*coverage(vBox,vParams.x)*(1.0-hole);}
- else{color=texture2D(uiTexture,vUv)*vColor.a;if(mode<2.5)color*=coverage(vBox,vParams.x);}
+ else{color=texture2D(uiTexture,vUv)*vec4(vColor.rgb,1.0)*vColor.a;if(mode<2.5)color*=coverage(vBox,vParams.x);}
  gl_FragColor=color*vParams.w;
 }`;
 const DATA_TEXTURE_ASSET='data-texture://';
@@ -260,7 +262,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
     let origin,axisX,axisY;
     if(instance.pixelSnap){const snapped=imageBatchSnappedRect(instance,r,W,H);if(!snapped.width||!snapped.height)return;origin=[snapped.x,snapped.y];axisX=[snapped.width,0];axisY=[0,snapped.height];}
     else{const tl=point(r.x,r.y+r.height),tr=point(r.x+r.width,r.y+r.height),bl=point(r.x,r.y);origin=tl;axisX=[tr[0]-tl[0],tr[1]-tl[1]];axisY=[bl[0]-tl[0],bl[1]-tl[1]];}
-    prims.push({mode:FREE,origin,axisX,axisY,uv:s?[s.x/iw,s.y/ih,(s.x+s.width)/iw,(s.y+s.height)/ih]:FULL_UV,color:[1,1,1,q.opacity??1],border:NONE,box:[0,0,0,0],radius:0,width:0,opacity:1,clip:stage,texture:entry.texture??imageTexture(q.asset,entry.image,usedImages,created,promoted)});
+    prims.push({mode:FREE,origin,axisX,axisY,uv:s?[s.x/iw,s.y/ih,(s.x+s.width)/iw,(s.y+s.height)/ih]:FULL_UV,color:q.tint?[q.tint[0],q.tint[1],q.tint[2],q.opacity??1]:[1,1,1,q.opacity??1],border:NONE,box:[0,0,0,0],radius:0,width:0,opacity:1,clip:stage,texture:entry.texture??imageTexture(q.asset,entry.image,usedImages,created,promoted)});
    });
   }
   function text(node,x,y,w,h,radius,opacity,clip,bounds){

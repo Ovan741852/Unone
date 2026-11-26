@@ -71,6 +71,10 @@ pub fn contract_schema(name: &str) -> Option<Value> {
         value["$defs"]["UiImageQuad"]["properties"]["asset"]["minLength"] = serde_json::json!(1);
         value["$defs"]["UiImageQuad"]["properties"]["opacity"]["minimum"] = serde_json::json!(0);
         value["$defs"]["UiImageQuad"]["properties"]["opacity"]["maximum"] = serde_json::json!(1);
+        value["$defs"]["UiImageQuad"]["properties"]["tint"]["items"]["minimum"] = serde_json::json!(0);
+        value["$defs"]["UiImageQuad"]["properties"]["tint"]["items"]["maximum"] = serde_json::json!(1);
+        value["$defs"]["UiImageQuad"]["properties"]["tint"]["minItems"] = serde_json::json!(3);
+        value["$defs"]["UiImageQuad"]["properties"]["tint"]["maxItems"] = serde_json::json!(3);
         for field in ["font_size", "border_width", "border_radius"] {
             value["$defs"]["UiStyle"]["properties"][field]["maximum"] = serde_json::json!(100);
             let bound = if field == "font_size" { "exclusiveMinimum" } else { "minimum" };
