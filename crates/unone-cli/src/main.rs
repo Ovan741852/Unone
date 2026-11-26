@@ -42,6 +42,7 @@ mod plugins;
 mod prepare;
 mod session;
 mod sync;
+mod test_memory;
 mod test_runs;
 #[cfg(test)]
 mod ui_preview_tests;
@@ -179,7 +180,7 @@ enum Command {
         /// Only shard K of N (for example 2/4) of the tests chosen: every N-th from the K-th.
         #[arg(long, value_parser = parse_shard)]
         shard: Option<(usize, usize)>,
-        /// Run this many tests at once, each in its own process; 0 is one per processor.
+        /// Run up to this many tests at once, each in its own process; 0 is one per processor. Fewer run while the machine lacks the memory (shared with every game test on it).
         #[arg(long, default_value_t = 1)]
         jobs: usize,
         /// List the tests chosen (path, name, frames) without running them.
@@ -1121,7 +1122,7 @@ fn run() -> Result<ExitCode> {
             }
         }
         Command::Test { filter, shard, jobs, list, file, rollback } => {
-            // A worker of --jobs (given --file) leaves the times to the run that started it.
+            // A worker of --jobs (given --file) leaves the times and the memory to the run that started it.
             let worker = !file.is_empty();
             let selection = unone_engine::TestSelection { filters: filter, files: file, shard, rollback };
             if list {
@@ -1130,13 +1131,10 @@ fn run() -> Result<ExitCode> {
             let jobs = test_runs::workers(jobs);
             let result = if jobs > 1 {
                 test_runs::run(&cli.project, cli.sdk.as_deref(), &selection, jobs)
+            } else if worker {
+                EngineRuntime::run_tests_with(&cli.project, &selection)
             } else {
-                let result = EngineRuntime::run_tests_with(&cli.project, &selection);
-                // Rolled-back runs take longer than the times --jobs orders by.
-                if let Some(report) = result.value.as_ref().filter(|_| !worker && rollback.is_none()) {
-                    test_runs::write_times(&cli.project, &report.cases);
-                }
-                result
+                test_runs::run_here(&cli.project, &selection)
             };
             let passed = result.ok
                 && result

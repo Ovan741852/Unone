@@ -1,7 +1,10 @@
 //! `game test --jobs N` runs the chosen tests in worker processes and reports
 //! them as one run in one process would.
 use serde_json::{Value, json};
-use std::{path::Path, process::Command};
+use std::{
+    path::Path,
+    process::{Command, Stdio},
+};
 
 const SOURCE: &str = r#"
 return {
@@ -29,11 +32,21 @@ fn project(dir: &Path) {
     }).to_string()).unwrap();
 }
 
-fn game(dir: &Path, args: &[&str]) -> (Option<i32>, Value) {
-    let output = Command::new(env!("CARGO_BIN_EXE_game")).arg("--project").arg(dir).arg("--json").arg("test").args(args).output().unwrap();
+/// `game test` on `dir`, sharing memory only with runs given the same `ledger`.
+fn command(dir: &Path, ledger: &Path, args: &[&str]) -> Command {
+    let mut command = Command::new(env!("CARGO_BIN_EXE_game"));
+    command.arg("--project").arg(dir).arg("--json").arg("test").args(args).env("UNONE_TEST_MEMORY_DIR", ledger);
+    command
+}
+
+fn report(output: std::process::Output) -> (Option<i32>, Value) {
     let report = serde_json::from_slice(&output.stdout)
         .unwrap_or_else(|error| panic!("{error}: {}\n{}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr)));
     (output.status.code(), report)
+}
+
+fn game(dir: &Path, args: &[&str]) -> (Option<i32>, Value) {
+    report(command(dir, &dir.join(".memory"), args).output().unwrap())
 }
 
 fn verdicts(report: &Value) -> Vec<(String, bool)> {
@@ -75,4 +88,50 @@ fn filters_shards_and_lists_choose_the_same_tests_with_or_without_workers() {
     let (code, none) = game(dir.path(), &["--filter", "swim", "--jobs", "2"]);
     assert_eq!(code, Some(1));
     assert_eq!(none["diagnostics"][0]["code"], json!("TESTS_NONE_SELECTED"));
+}
+
+fn memory_note(report: &Value) -> Option<&Value> {
+    report["diagnostics"].as_array().unwrap().iter().find(|d| d["code"] == json!("TEST_JOBS_MEMORY"))
+}
+
+#[test]
+fn memory_holds_workers_back_across_runs_and_each_worker_leaves_its_peak() {
+    let (one, two) = (tempfile::tempdir().unwrap(), tempfile::tempdir().unwrap());
+    project(one.path());
+    project(two.path());
+    let ledger = tempfile::tempdir().unwrap();
+    let expected: Vec<(String, bool)> =
+        [("walk", true), ("wrong", false), ("boom", false), ("walk", true), ("jump", true)].iter().map(|(n, p)| (n.to_string(), *p)).collect();
+    // A reserve larger than any machine: a test starts only when the machine runs none.
+    let start = |dir: &Path| command(dir, ledger.path(), &["--jobs", "3"]).env("UNONE_TEST_MEMORY_RESERVE", "1048576G").stdout(Stdio::piped()).stderr(Stdio::piped()).spawn().unwrap();
+    let runs = [start(one.path()), start(two.path())];
+    let mut notes = Vec::new();
+    for run in runs {
+        let output = run.wait_with_output().unwrap();
+        let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+        let (code, report) = report(output);
+        assert_eq!(code, Some(1));
+        assert_eq!(verdicts(&report), expected, "the memory changes when tests run, not what they find: {report:#}");
+        let note = memory_note(&report).unwrap_or_else(|| panic!("the run says the memory held it back: {report:#}")).clone();
+        assert_eq!((note["severity"].as_str(), note["facts"]["jobs"].as_u64(), note["facts"]["most_at_once"].as_u64()), (Some("INFO"), Some(3), Some(1)), "{note:#}");
+        assert!(stderr.contains("game test: waiting for memory to start"), "a waiting run says so: {stderr}");
+        notes.push(note);
+    }
+    assert!(
+        notes.iter().any(|note| !note["facts"]["other_runs"].as_array().unwrap().is_empty()),
+        "one of two runs started together waited for the other: {notes:#?}"
+    );
+    // Both runs left the ledger as they found it.
+    let book: Value = serde_json::from_slice(&std::fs::read(ledger.path().join("ledger.json")).unwrap()).unwrap();
+    assert_eq!(book["entries"], json!([]), "{book:#}");
+    let alive = std::fs::read_dir(ledger.path()).unwrap().flatten().filter(|item| item.file_name().to_string_lossy().ends_with(".alive")).count();
+    assert_eq!(alive, 0);
+    // Each worker's peak working set is what that test is taken to need next time.
+    let times: Value = serde_json::from_slice(&std::fs::read(one.path().join(".unone/test-times.json")).unwrap()).unwrap();
+    let peaks = times["peak_bytes"].as_object().unwrap();
+    assert_eq!(peaks.len(), 4, "{times:#}");
+    assert!(peaks.values().all(|peak| peak.as_u64().unwrap() > 1 << 20), "{times:#}");
+    // A run in one process that never waited says nothing about memory.
+    let (_, here) = game(one.path(), &["--filter", "jump"]);
+    assert!(memory_note(&here).is_none(), "{here:#}");
 }
