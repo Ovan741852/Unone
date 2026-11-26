@@ -55,6 +55,9 @@ impl EngineRuntime {
 
     /// Why this runtime cannot be checkpointed right now, if it cannot.
     fn rollback_blocker(&self) -> Option<&'static str> {
+        if !self.data_assets.borrow().deferred.is_empty() {
+            return Some("the project declares on-demand data, whose delivery and host requests cross ticks");
+        }
         if self.spatial.borrow().rollback_blocked() {
             return Some("the game uses spatial batches (api.spatial), whose queries finish on later ticks");
         }

@@ -322,6 +322,10 @@ pub struct TestSpec {
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct InputFrame {
+    /// Omit for live host timing. An explicit list (including an empty list)
+    /// fixes the on-demand data completions observed on this tick.
+    #[serde(default, skip_serializing_if="Option::is_none",deserialize_with="crate::physical_input::present")]
+    pub data_assets: Option<Vec<crate::DataAssetReceipt>>,
     #[cfg_attr(feature="dev-tools",schemars(with="crate::PhysicalBatch"))]
     #[serde(default, skip_serializing_if = "Option::is_none",deserialize_with="crate::physical_input::present")]
     pub physical: Option<crate::PhysicalBatch>,
@@ -444,6 +448,10 @@ pub struct PointerInput {
 impl InputFrame {
     /// Validate before mutating input or ticking, across every host path.
     pub fn validate(&self) -> Result<(), Box<crate::Diagnostic>> {
+        if let Some(rows)=&self.data_assets {
+            crate::DataAssetReceipt::validate(rows).map_err(|e| Box::new(crate::Diagnostic::error(
+                "INPUT_DATA_ASSETS_INVALID", "Invalid on-demand data receipt", e)))?;
+        }
         self.presentation_resources.validate().map_err(|e| Box::new(crate::Diagnostic::error(
             "INPUT_PRESENTATION_INVALID", "Invalid presentation resource feedback", e)))?;
         if let Some(b)=&self.physical {b.validate().map_err(|e|Box::new(crate::Diagnostic::error("INPUT_PHYSICAL_INVALID","Invalid physical batch",e)))?;}

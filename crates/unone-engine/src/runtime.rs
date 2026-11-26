@@ -18,6 +18,7 @@ use crate::{
 const FIXED_DT: f64 = 1.0 / 60.0;
 mod bindings;
 mod host_time;
+mod deferred_data;
 mod save_state;
 mod sprite_resources;
 mod rollback;
@@ -194,6 +195,7 @@ struct InputState {
     host_data: BTreeMap<String, Rc<serde_json::Value>>,
     pending_host_data: BTreeMap<String, Rc<serde_json::Value>>,
     pending_presentation: crate::PresentationResourceInput,
+    pending_data_assets: Option<Vec<crate::DataAssetReceipt>>,
     /// Every name scripts have asked about, for INPUT_ACTION_UNKNOWN. Shared, not
     /// copied, when a reload snapshots this state.
     #[cfg(feature = "dev-tools")]
@@ -252,6 +254,7 @@ impl InputTick {
         input.pending_ui_text_inputs.clear();
         input.pending_host_data.clear();
         input.pending_presentation = Default::default();
+        input.pending_data_assets = None;
         input.physical.commit();
         self.committed = true;
     }
@@ -359,6 +362,7 @@ struct ScriptStamp {
 
 #[cfg(feature = "dev-tools")]
 struct ReloadRollbackState {
+    deferred: crate::data_assets::deferred::DeferredAssets,
     input: InputState,
     random: DeterministicRng,
     trace: Vec<TraceEvent>,
@@ -810,6 +814,14 @@ impl EngineRuntime {
         let image_groups = Rc::new(RefCell::new(crate::image_groups::Registry::new(image_groups, image_group_host)
             .map_err(|e| Box::new(Diagnostic::error("IMAGE_PLAN_INVALID", "Invalid image group names", e)))?));
         let data_assets = Rc::new(RefCell::new(data_assets));
+        #[cfg(feature="dev-tools")]
+        if script_source.is_none() && !data_assets.borrow().deferred.is_empty() {
+            let root=paths.root.clone();
+            data_assets.borrow_mut().reader.0=Some(Box::new(move |source| {
+                let file=crate::project::resolve_project_path(&root,source).map_err(|e|e.explanation)?;
+                std::fs::read(file).map_err(|e|e.to_string())
+            }));
+        }
         let sprite_resources = Rc::new(RefCell::new(sprite_resources::Registry::new(asset_catalog)
             .map_err(|e| Box::new(script_diagnostic(&paths, e)))?));
         let host_time = Rc::new(RefCell::new(crate::host_time::HostTime::new(config.host_time.clone())
@@ -1178,6 +1190,15 @@ impl EngineRuntime {
         frame: &InputFrame,
     ) -> Result<WorldSnapshot, Box<Diagnostic>> {
         frame.validate()?;
+        let data_tick={
+            let input=self.input.borrow();
+            if let (Some(pending),Some(incoming))=(&input.pending_data_assets,&frame.data_assets)
+                && pending!=incoming {
+                return Err(Box::new(Diagnostic::error("INPUT_DATA_ASSETS_PENDING","Data receipts are pending",
+                    "Complete the pending tick before replacing its data receipts.")));
+            }
+            self.begin_data_tick(frame.data_assets.as_deref().or(input.pending_data_assets.as_deref()))?
+        };
         // Host data is parsed once, here, before any part of the frame is admitted: a channel
         // that is not JSON rejects the whole frame. Admitted values replace pending ones per
         // channel (latest state wins); they never conflict like one-shot UI edits.
@@ -1215,6 +1236,7 @@ impl EngineRuntime {
                 )));
             }
             input.physical.stage(frame.physical.clone()).map_err(|e|Box::new(Diagnostic::error("INPUT_PHYSICAL_INVALID","Physical input admission rejected",e)))?;
+            if frame.data_assets.is_some() {input.pending_data_assets=frame.data_assets.clone();}
             input.down = frame.actions.clone();
             input.gamepads = frame.gamepads.clone();
             input.pending_ui_sliders.extend(frame.ui_sliders.clone());
@@ -1230,7 +1252,7 @@ impl EngineRuntime {
         } else {
             self.input.borrow_mut().pointer.down = false;
         }
-        self.tick().map_err(|mut diagnostic|{
+        self.tick_admitted(data_tick).map_err(|mut diagnostic|{
             if frame.physical.is_some(){diagnostic.facts["physical_input"]=self.physical_input_report();}
             diagnostic
         })
@@ -1320,6 +1342,11 @@ impl EngineRuntime {
     }
 
     pub fn tick(&mut self) -> Result<WorldSnapshot, Box<Diagnostic>> {
+        let data_tick=self.begin_data_tick(self.input.borrow().pending_data_assets.as_deref())?;
+        self.tick_admitted(data_tick)
+    }
+
+    fn tick_admitted(&mut self, data_tick:Option<crate::data_assets::deferred::Tick>) -> Result<WorldSnapshot, Box<Diagnostic>> {
         self.input.borrow().physical.healthy().map_err(|e|Box::new(Diagnostic::error("INPUT_PHYSICAL_TERMINAL","Physical input session faulted",e)))?;
         self.host_time.borrow().healthy().map_err(|e| Box::new(script_diagnostic(&self.paths, e)))?;
         let started = std::time::Instant::now();
@@ -1545,6 +1572,7 @@ impl EngineRuntime {
         input_tick.commit();
         sprite_tick.commit();
         image_group_tick.commit();
+        if let Some(tick)=data_tick {tick.commit();}
         snapshot.physical_input_receipt=self.input.borrow().physical.receipt.clone();
         #[cfg(feature = "phase-profile")]
         if let Some(scope)=phase_tick { scope.complete(); }
@@ -2004,6 +2032,7 @@ impl EngineRuntime {
     #[cfg(feature = "dev-tools")]
     fn capture_reload_state(&self) -> ReloadRollbackState {
         ReloadRollbackState {
+            deferred:self.data_assets.borrow().deferred.clone(),
             input: self.input.borrow().clone(),
             random: self.random.borrow().clone(),
             trace: self.trace.borrow().clone(),
@@ -2019,6 +2048,7 @@ impl EngineRuntime {
 
     #[cfg(feature = "dev-tools")]
     fn restore_failed_reload(&mut self, state: ReloadRollbackState) {
+        self.data_assets.borrow_mut().deferred=state.deferred;
         *self.input.borrow_mut() = state.input;
         *self.random.borrow_mut() = state.random;
         *self.trace.borrow_mut() = state.trace;

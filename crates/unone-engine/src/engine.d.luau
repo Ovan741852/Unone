@@ -1016,6 +1016,9 @@ export type BytesApi = {
 -- (deep-frozen tables), or one registered at runtime.
 export type AssetLoader = (data: buffer, id: string) -> any
 export type AssetsApi = {
+    request: (id: string) -> (),
+    status: (id: string) -> {state: "idle" | "loading" | "ready" | "failed", error: string?},
+    release: (id: string) -> (),
     -- Decode once with the manifest's loader; later calls return the same
     -- frozen value.
     load: (id: string) -> any,

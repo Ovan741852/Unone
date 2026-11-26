@@ -7,6 +7,7 @@ mod ui_transport;
 mod save_transport;
 mod ui_tree_transport;
 mod world_transport;
+mod deferred_data;
 use unone_engine::{
     Diagnostic, EngineRuntime, HostInputState, HostProject, Vec2, WorldSnapshot, parse_input_frame,
 };
@@ -599,6 +600,7 @@ pub unsafe extern "C" fn unone_web_load_project(
     let project_name = payload.config.name.clone();
     match create_runtime(payload, seed) {
         Ok(runtime_value) => {
+            if let Err(error)=deferred_data::new_session() {write_error(error);return -1;}
             if let Err(error)=ui_transport::new_runtime() {write_error(error);return -1;}
             CANONICAL_HASHER.with(|h| *h.borrow_mut() = unone_engine::CanonicalHasher::default());
             INSTANCE_MEMORY.with(|mode| mode.set(false));

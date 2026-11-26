@@ -63,7 +63,7 @@ pub mod material;
 pub use material::Material;
 pub use lighting::{AmbientLight, Environment, HemisphereLight, Lighting, MAX_POINT_LIGHTS, PointLight, SHADOW_MAP_SIZES, Shadows, SunLight};
 pub use render_pipeline::{BUILTIN_RENDER_PASSES, RENDER_PASS_GUIDE, RenderParam, RenderPass, RenderPassGuide, RenderPipeline};
-pub use data_assets::{BUILTIN_DATA_LOADERS, DataAssetDecl};
+pub use data_assets::{BUILTIN_DATA_LOADERS, DataAssetDecl, DataAssetReceipt};
 #[cfg(feature = "dev-tools")]
 pub use data_assets::decl_for as data_asset_decl;
 #[cfg(feature = "physics2d")]

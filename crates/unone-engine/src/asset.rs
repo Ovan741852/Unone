@@ -91,7 +91,8 @@ pub struct AssetEncoding {
     pub companions: Vec<AssetCompanion>,
     /// Decode the first time it is used instead of before the game starts. For
     /// a bank too large to decode up front; its first use starts late by as long
-    /// as the decode takes. Audio only.
+    /// as the decode takes. Data assets with the bytes decoder instead wait
+    /// for an explicit request and a successful tick-boundary delivery.
     #[serde(default, skip_serializing_if = "is_false")]
     pub on_demand: bool,
 }
@@ -1096,6 +1097,10 @@ pub(crate) fn validate_asset_paths(root: &Path, asset: &AssetSpec) -> Result<(),
 
 pub(crate) fn validate_asset_spec(asset: &AssetSpec) -> Result<(), Box<Diagnostic>> {
     if let Some(encoding) = &asset.encoding {
+        if encoding.on_demand && !(asset.kind=="audio" || (asset.kind=="data" && encoding.decoder=="bytes")) {
+            return Err(Box::new(Diagnostic::error("ASSET_DEFERRED_INVALID", "Unsupported on-demand encoding",
+                "Use on_demand with audio or a data asset using the bytes decoder.")));
+        }
         let mime_valid = |mime: &str| {
             mime.split_once('/')
                 .is_some_and(|(a, b)| !a.is_empty() && !b.is_empty())

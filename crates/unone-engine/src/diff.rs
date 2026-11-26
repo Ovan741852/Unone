@@ -82,8 +82,9 @@ pub fn record(
         Err(diagnostic) => return EngineResult::failure(*diagnostic),
     };
     let mut recorded = Vec::with_capacity(frames as usize);
+    let mut recorded_input=input_sequence.to_vec();
     for index in 0..frames {
-        let frame = input_sequence
+        let mut frame = input_sequence
             .get(index as usize)
             .cloned()
             .unwrap_or_default();
@@ -92,6 +93,11 @@ pub fn record(
             Err(diagnostic) => return EngineResult::failure(*diagnostic),
         };
         recorded.push(recorded_frame(index, &snapshot));
+        if let Some(receipts)=runtime.last_data_receipts() {
+            frame.data_assets=Some(receipts);
+            recorded_input.resize_with(recorded_input.len().max(index as usize+1),InputFrame::default);
+            recorded_input[index as usize]=frame;
+        }
     }
     let digest = recorded
         .last()
@@ -102,7 +108,7 @@ pub fn record(
         project: runtime.project_name().to_string(),
         seed,
         frames,
-        input_sequence: input_sequence.to_vec(),
+        input_sequence: recorded_input,
         observation_digest: digest,
         recorded,
         host_time: runtime.host_time_recorded_prefix(),
@@ -184,6 +190,10 @@ pub fn diff(project_root: impl AsRef<Path>, baseline: &Recording) -> EngineResul
             .get(index as usize)
             .cloned()
             .unwrap_or_default();
+        if runtime.last_data_receipts().is_some() && frame.data_assets.is_none() {
+            return EngineResult::failure(Diagnostic::error("DEFERRED_DATA_TAPE_MISSING","Recording lacks data receipts",
+                format!("Frame {index} needs an explicit data_assets array for deterministic replay.")));
+        }
         let snapshot = match runtime.tick_with_input(&frame) {
             Ok(snapshot) => snapshot,
             Err(diagnostic) => return EngineResult::failure(*diagnostic),

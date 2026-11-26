@@ -78,7 +78,8 @@ impl HostProject {
     /// content-relative source): declared data assets, then the precompiled
     /// entry script and modules. The Web host's `payloadDataSources` lists the same.
     pub fn staged_files(&self) -> Vec<(&str, &str)> {
-        let mut files: Vec<(&str, &str)> = self.data_assets.iter().map(|asset| (asset.id.as_str(), asset.source.as_str())).collect();
+        let mut files: Vec<(&str, &str)> = self.data_assets.iter().filter(|asset| !asset.on_demand)
+            .map(|asset| (asset.id.as_str(), asset.source.as_str())).collect();
         if let Some(decl) = &self.script_bytecode {
             files.push((crate::SCRIPT_BYTECODE_DATA_ID, &decl.source));
         }
@@ -186,6 +187,9 @@ pub struct HostInputState {
 impl HostInputState {
     pub fn try_queue_frame(&mut self,frame:InputFrame)->Result<(),String>{
         frame.validate().map_err(|e|e.explanation.clone())?;
+        if self.queued.as_ref().is_some_and(|old|old.data_assets.is_some()) {
+            return Err("DEFERRED_DATA_ALREADY_QUEUED: tick the queued data receipts first".into());
+        }
         if self.queued.as_ref().is_some_and(|old|old.physical.is_some()) {
             return Err("INPUT_PHYSICAL_ALREADY_QUEUED: tick the accepted batch before another input frame".into());
         }
@@ -235,7 +239,7 @@ impl HostInputState {
             if let Some(pointer) = &mut frame.pointer {
                 pointer.down = false;
             }
-            if frame.physical.is_none() && frame.ui_sliders.is_empty() && frame.ui_text_inputs.is_empty() && frame.host_data.is_empty() {
+            if frame.data_assets.is_none() && frame.physical.is_none() && frame.ui_sliders.is_empty() && frame.ui_text_inputs.is_empty() && frame.host_data.is_empty() {
                 self.queued = None;
             }
         }

@@ -13,8 +13,12 @@ pub(super) fn bind(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let loaders = lua.create_table()?;
 
     let store = Rc::clone(&state.data_assets);
+    let vm=Rc::new(());
     let (cache, registered) = (values.clone(), loaders.clone());
     api.set("load", lua.create_function(move |lua, id: String| {
+        if store.borrow().decl(&id).is_some_and(|decl| decl.on_demand) {
+            return store.borrow_mut().deferred.load(&vm,&id,|bytes| frozen_buffer(lua,bytes)).map(Value::Buffer);
+        }
         let cached: Value = cache.raw_get(id.as_str())?;
         if !cached.is_nil() {
             return Ok(cached);
@@ -22,6 +26,26 @@ pub(super) fn bind(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         let value = decode(lua, &store, &registered, &id).map_err(mlua::Error::RuntimeError)?;
         cache.raw_set(id.as_str(), value.clone())?;
         Ok(value)
+    })?)?;
+
+    for name in ["request","release"] {
+        let store=Rc::clone(&state.data_assets);
+        let view=Rc::clone(&state.pure_view);
+        let operation=format!("assets.{name}");
+        api.set(name,lua.create_function(move |_, id:String| {
+            super::ensure_not_view(&view,&operation)?;
+            let mut store=store.borrow_mut();
+            if name=="request" {store.deferred.request(&id)} else {store.deferred.release(&id)}
+                .map_err(mlua::Error::RuntimeError)
+        })?)?;
+    }
+    let store=Rc::clone(&state.data_assets);
+    api.set("status",lua.create_function(move |lua,id:String| {
+        let state=store.borrow().deferred.status(&id).map_err(mlua::Error::RuntimeError)?;
+        let status=lua.create_table()?;
+        status.set("state",state)?;
+        if state=="failed" {status.set("error","DEFERRED_DATA_FAILED")?;}
+        Ok(status)
     })?)?;
 
     let store = Rc::clone(&state.data_assets);

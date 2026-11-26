@@ -6,6 +6,9 @@ use crate::Diagnostic;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
 
+pub(crate) mod deferred;
+pub use deferred::DataAssetReceipt;
+
 /// Loaders the engine provides. Games add others with `api.assets.registerLoader`.
 pub const BUILTIN_DATA_LOADERS: &[&str] = &["bytes", "text", "json"];
 
@@ -20,13 +23,20 @@ pub struct DataAssetDecl {
     pub source: String,
     /// The manifest's `encoding.decoder`, or "bytes" without an encoding.
     pub loader: String,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub on_demand: bool,
 }
+
+fn is_false(value: &bool) -> bool { !*value }
 
 /// Declared data assets and the bytes the host delivered for them.
 #[derive(Debug, Default)]
 pub(crate) struct DataAssets {
     decls: BTreeMap<String, DataAssetDecl>,
     bytes: HashMap<String, Vec<u8>>,
+    pub(crate) deferred: deferred::DeferredAssets,
+    pub(crate) reader: deferred::DataReader,
+    pub(crate) last_receipts: Vec<DataAssetReceipt>,
 }
 
 impl DataAssets {
@@ -38,11 +48,22 @@ impl DataAssets {
     ) -> Result<Self, Box<Diagnostic>> {
         let mut assets = Self::default();
         for decl in decls {
+            if assets.decls.contains_key(&decl.id) {
+                return Err(error("ASSET_MANIFEST_DUPLICATE_ID", format!("Data asset '{}' is declared twice.", decl.id)));
+            }
             if !valid_loader_name(&decl.loader) {
                 return Err(error(
                     "ASSET_LOADER_INVALID",
                     format!("Data asset '{}' names loader '{}'; use 1-64 characters of a-z, 0-9, '.', '_' or '-'.", decl.id, decl.loader),
                 ));
+            }
+            if decl.on_demand {
+                if decl.loader != "bytes" || delivered.contains_key(&decl.id) {
+                    return Err(error("ASSET_DEFERRED_INVALID", format!("Deferred asset {} requires the bytes loader and post-load delivery", decl.id)));
+                }
+                assets.deferred.declare(&decl.id);
+                assets.decls.insert(decl.id.clone(), decl);
+                continue;
             }
             let Some(bytes) = delivered.remove(&decl.id) else {
                 return Err(error(
@@ -51,9 +72,7 @@ impl DataAssets {
                 ));
             };
             assets.bytes.insert(decl.id.clone(), bytes);
-            if let Some(previous) = assets.decls.insert(decl.id.clone(), decl) {
-                return Err(error("ASSET_MANIFEST_DUPLICATE_ID", format!("Data asset '{}' is declared twice.", previous.id)));
-            }
+            assets.decls.insert(decl.id.clone(), decl);
         }
         if let Some(id) = delivered.keys().next() {
             return Err(error(
@@ -106,6 +125,10 @@ pub(crate) fn read_from_project(
     let mut bytes = BTreeMap::new();
     for asset in manifest.assets.iter().filter(|asset| asset.kind == "data") {
         let decl = decl_for(asset);
+        if decl.on_demand {
+            decls.push(decl);
+            continue;
+        }
         let path = crate::project::resolve_project_path(&paths.root, &asset.source)?;
         let data = std::fs::read(&path).map_err(|e| {
             error("ASSET_DATA_READ_FAILED", format!("Data asset '{}': {}: {e}", asset.id, path.display()))
@@ -123,6 +146,7 @@ pub fn decl_for(asset: &crate::AssetSpec) -> DataAssetDecl {
         id: asset.id.clone(),
         source: asset.source.clone(),
         loader: asset.encoding.as_ref().map_or_else(|| "bytes".to_string(), |e| e.decoder.clone()),
+        on_demand: asset.encoding.as_ref().is_some_and(|e| e.on_demand),
     }
 }
 
@@ -131,7 +155,7 @@ mod tests {
     use super::*;
 
     fn decl(id: &str, loader: &str) -> DataAssetDecl {
-        DataAssetDecl { id: id.into(), source: format!("data/{id}"), loader: loader.into() }
+        DataAssetDecl { id: id.into(), source: format!("data/{id}"), loader: loader.into(), on_demand: false }
     }
 
     #[test]
