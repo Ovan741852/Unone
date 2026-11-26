@@ -8,6 +8,39 @@ import {createWorldCurvature} from './world-curvature.js';
 const base64=bytes=>Buffer.from(bytes).toString('base64');
 const ints=values=>new Uint8Array(new Int32Array(values).buffer);
 
+test('same-shape data texture revisions retain their CPU storage and admit only complete texels',()=>{
+  let heap=new ArrayBuffer(40);
+  const textures=createDataTextures(THREE,{memory:()=>heap});
+  for(const format of ['rgba8','r32i','rgba32i','r32f','rgba32f']){
+    const byteLength=format.startsWith('rgba32')?32:8;
+    const raw=Uint8Array.from({length:byteLength},(_,i)=>255-i);
+    const first={width:2,height:1,format,revision:1,data:base64(raw)};
+    textures.sync({id:first});
+    const texture=textures.get('id'),storage=texture.image.data;
+    const storedBytes=new Uint8Array(storage.buffer);
+    heap=new ArrayBuffer(40);
+    raw.reverse();
+    new Uint8Array(heap,3,byteLength).set(raw);
+    const update={width:2,height:1,format,revision:2,memory:{offset:3,byte_length:byteLength}};
+    textures.sync({id:update});
+    assert.equal(texture.image.data,storage,format+' allocated another staging buffer');
+    assert.deepEqual(storedBytes,raw);
+    new Uint8Array(heap).fill(0);
+    assert.deepEqual(storedBytes,raw,'the texture owns its bytes after sync');
+    const version=texture.version;
+    for(const bad of [{memory:{offset:3,byte_length:byteLength-1}},{data:base64(raw.subarray(1))}]){
+      assert.throws(()=>textures.sync({id:{width:2,height:1,format,revision:3,...bad}}),/DATA_TEXTURE_INVALID/);
+      assert.deepEqual(storedBytes,raw);
+      assert.equal(texture.version,version,'invalid input must not schedule an upload');
+    }
+    raw.fill(42);
+    textures.sync({id:{...first,revision:3,data:base64(raw)}});
+    assert.equal(texture.image.data,storage);
+    assert.deepEqual(storedBytes,raw);
+    textures.sync({});
+  }
+});
+
 test('data textures upload exact texels once per revision and never alias the heap',()=>{
   const heap=new ArrayBuffer(64),textures=createDataTextures(THREE,{memory:()=>heap});
   textures.sync({heights:{width:2,height:2,format:'r32i',revision:1,data:base64(ints([0,-1,65536,-32768]))}});

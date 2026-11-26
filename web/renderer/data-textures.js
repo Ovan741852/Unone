@@ -4,20 +4,28 @@
 // or base64. All are nearest-sampled and clamped: shaders read exact texels.
 const FORMATS={rgba8:{bytes:4,integer:false},r32i:{bytes:4,integer:true},rgba32i:{bytes:16,integer:true},r32f:{bytes:4,integer:false},rgba32f:{bytes:16,integer:false}};
 const invalid=message=>{throw Error(`DATA_TEXTURE_INVALID: ${message}`);};
-function decodeBase64(text){const raw=atob(text),bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);return bytes;}
 export const dataTextureFormat=format=>FORMATS[format]??invalid(`format ${format}`);
 // A private, aligned copy of one texture's texels.
 export function dataTextureBytes(entry,memory){
+  return copyTexels(entry,memory);
+}
+function copyTexels(entry,memory,storage){
   const layout=dataTextureFormat(entry.format),{width,height}=entry;
   if(!Number.isSafeInteger(width)||width<1||width>4096||!Number.isSafeInteger(height)||height<1||height>4096)invalid('size');
-  let bytes;
+  const length=width*height*layout.bytes;
   if(entry.memory){
     const view=entry.memory,buffer=memory?.({memory:view});
     if(!(buffer instanceof ArrayBuffer)||!Number.isSafeInteger(view.offset)||view.offset<0||!Number.isSafeInteger(view.byte_length)||view.offset+view.byte_length>buffer.byteLength)invalid('memory view');
-    bytes=new Uint8Array(buffer,view.offset,view.byte_length).slice();
-  }else if(typeof entry.data==='string')bytes=decodeBase64(entry.data);
-  else invalid('texels missing');
-  if(bytes.byteLength!==width*height*layout.bytes)invalid('byte count');
+    if(view.byte_length!==length)invalid('byte count');
+    const bytes=storage??new Uint8Array(length);
+    bytes.set(new Uint8Array(buffer,view.offset,length));
+    return bytes;
+  }
+  if(typeof entry.data!=='string')invalid('texels missing');
+  const raw=atob(entry.data);
+  if(raw.length!==length)invalid('byte count');
+  const bytes=storage??new Uint8Array(length);
+  for(let i=0;i<length;i++)bytes[i]=raw.charCodeAt(i);
   return bytes;
 }
 export function createDataTextures(THREE,{memory}={}){
@@ -39,12 +47,13 @@ export function createDataTextures(THREE,{memory}={}){
     for(const [id,entry]of Object.entries(entries??{})){
       alive.add(id);const revision=String(entry.revision);let record=records.get(id);
       if(record?.revision===revision)continue;
-      const bytes=dataTextureBytes(entry,memory);
       if(record&&record.format===entry.format&&record.width===entry.width&&record.height===entry.height){
-        record.texture.image.data=typed(entry.format,bytes);record.texture.needsUpdate=true;record.revision=revision;
+        copyTexels(entry,memory,record.bytes);
+        record.texture.needsUpdate=true;record.revision=revision;
       }else{
+        const bytes=dataTextureBytes(entry,memory);
         record?.texture.dispose();
-        record={revision,format:entry.format,width:entry.width,height:entry.height,texture:create(entry.format,entry.width,entry.height,bytes)};records.set(id,record);
+        record={revision,format:entry.format,width:entry.width,height:entry.height,bytes,texture:create(entry.format,entry.width,entry.height,bytes)};records.set(id,record);
       }
       uploads++;
     }
