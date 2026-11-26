@@ -61,6 +61,68 @@ fn assets() -> Value {
 }
 
 #[test]
+fn file_png_inputs_keep_encoded_bytes_and_decode_straight_rgba() {
+    let temp = tempfile::tempdir().unwrap();
+    let dir = temp.path();
+    let mut manifest = json!([
+        {"id":"texture://input", "kind":"texture2d", "source":"input.PNG"},
+        {"id":"data://pixels", "kind":"data", "source":"pixels.json", "import":{
+            "importer":"count", "inputs":{"image":"asset:texture://input", "raw":"asset:texture://input"}, "product":"pixels"}}
+    ]);
+    project(dir, manifest.clone());
+    let module = r#"return {opaque = {
+        inputs = {image = "image", raw = "bytes"}, outputs = {pixels = "json"},
+        run = function(inputs)
+            local im = inputs.image
+            local rgba = {}
+            for i = 0, buffer.len(im.rgba)-1 do table.insert(rgba, buffer.readu8(im.rgba,i)) end
+            return {pixels={im.width, im.height, rgba, buffer.len(inputs.raw), buffer.readu8(inputs.raw, 0)}}
+        end}, palette={outputs={}, run=function() return {} end}}"#;
+    write(&dir.join("import/pop.luau"), module);
+    use png::{BitDepth::*, ColorType::*};
+    for (color, depth, samples, expected) in [
+        (Rgba, Eight, vec![200,64,16,0, 30,60,90,128], vec![200,64,16,0, 30,60,90,128]),
+        (Rgb, Eight, vec![9,8,7, 6,5,4], vec![9,8,7,255, 6,5,4,255]),
+        (GrayscaleAlpha, Sixteen, vec![29,99,200,55, 63,111,25,22], vec![29,29,29,200, 63,63,63,25]),
+        (Grayscale, One, vec![0b0100_0000], vec![0,0,0,255, 255,255,255,255]),
+        (Indexed, One, vec![0b0100_0000], vec![31,30,29,0, 98,97,96,123]),
+    ] {
+        let mut bytes = Vec::new();
+        {
+            let mut encoder = png::Encoder::new(&mut bytes, 2, 1);
+            encoder.set_color(color);
+            encoder.set_depth(depth);
+            if color == Indexed {
+                encoder.set_palette([31,30,29,98,97,96].as_slice());
+                encoder.set_trns([0,123].as_slice());
+            }
+            encoder.write_header().unwrap().write_image_data(&samples).unwrap();
+        }
+        write(&dir.join("input.PNG"), &bytes);
+        let report = unone_engine::prepare_imports(dir).unwrap();
+        assert_eq!(report.ran, 1);
+        let result: Value = serde_json::from_slice(&std::fs::read(dir.join("pixels.json")).unwrap()).unwrap();
+        assert_eq!(result, json!([2,1,expected,bytes.len(),137]), "{color:?}");
+        assert!(unone_engine::prepare_imports(dir).unwrap().up_to_date);
+    }
+    let previous = std::fs::read(dir.join("pixels.json")).unwrap();
+    write(&dir.join("input.PNG"), b"bad PNG");
+    assert_eq!(unone_engine::prepare_imports(dir).unwrap_err().code, "IMPORT_IMAGE_INVALID");
+    assert_eq!(std::fs::read(dir.join("pixels.json")).unwrap(), previous);
+    // A legal one-row header that exceeds the engine's dimension bound.
+    let mut oversized = Vec::new();
+    png::Encoder::new(&mut oversized, 16385, 1).write_header().unwrap().write_image_data(&vec![0; 16385]).unwrap();
+    write(&dir.join("input.PNG"), oversized);
+    assert_eq!(unone_engine::prepare_imports(dir).unwrap_err().code, "IMPORT_IMAGE_INVALID");
+    for (kind, path) in [("data", "input.PNG"), ("texture2d", "input.svg")] {
+        manifest[0]["kind"] = json!(kind);
+        manifest[0]["source"] = json!(path);
+        write(&dir.join("assets.json"), json!({"version":1,"assets":manifest}).to_string());
+        assert_eq!(unone_engine::prepare_imports(dir).unwrap_err().code, "IMPORT_TYPE_MISMATCH");
+    }
+}
+
+#[test]
 fn hosts_produce_imported_assets_from_local_roots_with_cache_and_provenance() {
     let root = std::env::temp_dir().join(format!("unone-import-pipeline-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&root);

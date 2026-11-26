@@ -40,6 +40,43 @@ fn error(code: &str, message: impl Into<String>) -> Box<Diagnostic> {
 }
 fn sha256(bytes: &[u8]) -> String { format!("{:x}", Sha256::digest(bytes)) }
 
+fn read_png_input(asset_id: &str, path: &Path) -> Result<ImportValue, Box<Diagnostic>> {
+    let file = std::fs::File::open(path).map_err(|e| error("IMPORT_SOURCE_READ", format!("asset:{asset_id}: {e}")))?;
+    let invalid = |reason: &str| error("IMPORT_IMAGE_INVALID", format!("asset:{asset_id} ({}): {reason}", path.display()));
+    let decode_error = |e: png::DecodingError| invalid(&e.to_string());
+    let mut decoder = png::Decoder::new(std::io::BufReader::new(file));
+    decoder.set_ignore_text_chunk(true);
+    decoder.set_ignore_iccp_chunk(true);
+    decoder.set_transformations(png::Transformations::normalize_to_color8() | png::Transformations::ALPHA);
+    let header = decoder.read_header_info().map_err(decode_error)?;
+    let (width, height) = (header.width, header.height);
+    let side = 1..=crate::runtime::import_nodes::MAX_IMAGE_SIDE;
+    // The png crate limits its working storage separately from our output buffer.
+    let pixels = u64::from(width) * u64::from(height);
+    if !side.contains(&width) || !side.contains(&height) || pixels > (64 << 20) / 4 {
+        return Err(invalid(&format!("{width}x{height} exceeds the import image limits (16384 per side, 64 MiB RGBA)")));
+    }
+    let mut reader = decoder.read_info().map_err(decode_error)?;
+    if reader.info().animation_control.is_some() {
+        return Err(invalid("an image input requires a single static PNG"));
+    }
+    let mut rgba = vec![0; pixels as usize * 4];
+    let frame = reader.next_frame(&mut rgba).map_err(decode_error)?;
+    reader.finish().map_err(decode_error)?;
+    match (frame.color_type, frame.bit_depth) {
+        (png::ColorType::Rgba, png::BitDepth::Eight) => {}
+        (png::ColorType::GrayscaleAlpha, png::BitDepth::Eight) => {
+            // Expand backwards so the decoded gray/alpha pairs can share the RGBA buffer.
+            for i in (0..rgba.len() / 4).rev() {
+                let (gray, alpha) = (rgba[2 * i], rgba[2 * i + 1]);
+                rgba[4 * i..4 * i + 4].copy_from_slice(&[gray, gray, gray, alpha]);
+            }
+        }
+        _ => return Err(invalid("PNG could not be normalized to RGBA8")),
+    }
+    Ok(ImportValue::Image { width, height, rgba })
+}
+
 /// A relative path that stays inside its root.
 fn contained(root: &Path, relative: &str) -> Result<PathBuf, Box<Diagnostic>> {
     let path = Path::new(relative);
@@ -260,6 +297,10 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
                         other.importer.as_ref().and_then(|name| importers.get(name))
                             .zip(other.product.as_ref()).and_then(|(i, product)| i.definition.outputs.get(product))
                             .copied().unwrap_or(ImportPortType::Bytes)
+                    } else if *kind == ImportPortType::Image && target.kind == "texture2d"
+                        && Path::new(&target.source).extension().is_some_and(|ext| ext.eq_ignore_ascii_case("png"))
+                        && target.encoding.as_ref().is_none_or(|e| e.format.eq_ignore_ascii_case("png")) {
+                        ImportPortType::Image
                     } else { ImportPortType::Bytes }
                 }
             };
@@ -344,7 +385,11 @@ pub fn prepare_imports(project_root: &Path) -> Result<ImportReport, Box<Diagnost
                         None => {
                             let file = contained(&root, &by_id[other].source)?;
                             files.insert(file.clone(), file_stamp(&file));
-                            ImportValue::Bytes(std::fs::read(&file).map_err(|e| error("IMPORT_SOURCE_READ", format!("asset:{other}: {e}")))?)
+                            if importer.definition.inputs[port] == ImportPortType::Image {
+                                read_png_input(other, &file)?
+                            } else {
+                                ImportValue::Bytes(std::fs::read(&file).map_err(|e| error("IMPORT_SOURCE_READ", format!("asset:{other}: {e}")))?)
+                            }
                         }
                     };
                     records.insert(port.clone(), json!({"asset": other, "sha256": value_hash(&value)}));

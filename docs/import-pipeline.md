@@ -80,11 +80,18 @@ is where its file is written:
             "inputs": {"blocks": "original:data/BL320-C.DAT", "palette": "original:data/pal0-c.dat"}}}
 ```
 
-An input is `<root>:<path>` (a file under a declared root, as bytes) or
-`asset:<id>` (another asset: its import product with that product's type, or
-its file as bytes). Every importer input must be connected with a matching
-type; an `image` product needs a `texture2d` asset. Imports that read each
-other's products run in dependency order; a cycle fails.
+Use `<root>:<path>` to pass a root file as bytes. Use `asset:<id>` to pass
+another importer's product with its declared type, or to read a file-backed
+asset. A file-backed `texture2d` with a `.png` source and PNG or unspecified
+encoding can connect to an `image` input. The node receives `{width, height,
+rgba}` with straight RGBA8 pixels in top-down row order. A `bytes` input to
+the same asset receives the original PNG file bytes.
+
+The image input accepts static grayscale, RGB, indexed and alpha PNGs,
+including transparency and interlacing. It expands sub-byte samples and
+keeps the high byte of 16-bit samples. Each side is limited to 16,384 pixels
+and the decoded RGBA buffer to 64 MiB. An `image` product needs a `texture2d`
+asset. Imports run in dependency order and report cycles.
 
 ## Bundled importers
 

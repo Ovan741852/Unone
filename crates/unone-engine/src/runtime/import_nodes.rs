@@ -36,7 +36,7 @@ pub struct ImportNodeDefinition {
 
 /// Images and byte values are bounded so a faulty node fails instead of
 /// exhausting memory; 16384x16384 RGBA is the largest texture any host accepts.
-const MAX_IMAGE_SIDE: u32 = 16384;
+pub(crate) const MAX_IMAGE_SIDE: u32 = 16384;
 const VM_BYTES: usize = 2 << 30;
 
 fn invalid(message: impl std::fmt::Display) -> String { format!("IMPORT_NODE_INVALID: {message}") }
