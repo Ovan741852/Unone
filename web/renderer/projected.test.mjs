@@ -104,6 +104,24 @@ test('explicit material policy validates atomically and models encoded byte modu
  assert.equal(Math.round(projectedTransport.projectedModulate(value,value,'linear')*255),93);
 });
 
+test('a matching projected sampler borrows its source without invalidating other passes',()=>{
+ const texture=new FixtureTexture();
+ texture.minFilter=texture.magFilter=THREE.NearestFilter;
+ texture.generateMipmaps=false;
+ const version=texture.source.version;
+ let disposals=0;texture.addEventListener('dispose',()=>disposals++);
+ const adapter=createProjectedRenderer(THREE,()=>({state:'ready',texture}));
+ const specs=new Map([['t',{kind:'texture2d'}]]);
+ const entries=projectedEntries({projected_geometry:{tri:fixture()}});
+ adapter.prepare(entries,specs);
+ assert.equal(texture.source.version,version);
+ adapter.prepare([],specs);
+ adapter.prepare(entries,specs);
+ adapter.clear();
+ assert.equal(texture.source.version,version);
+ assert.equal(disposals,0);
+});
+
 test('different material samplers share image data without mutating the source texture',()=>{
  const texture=new FixtureTexture(),originalMin=texture.minFilter,adapter=createProjectedRenderer(THREE,()=>({state:'ready',texture}));
  const a={...fixture(),color_mode:'encoded',filter:'linear',alpha_cutoff:127/255},b=fixture();

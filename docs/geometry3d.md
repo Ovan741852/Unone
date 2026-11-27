@@ -69,10 +69,18 @@ material and revision, as instance batches are identified; the bytes never
 enter observations or their digest, so a large mesh costs no encoding or hashing
 per tick. Hosts receive the bytes on their wire: the official Web player gets
 memory views of the engine's immutable bytes, other hosts base64 encoded once
-per mesh generation. The player reads a mesh only when its revision changes;
-new bytes of the same shape (format, counts, texture and material) upload into
-the existing GPU buffers instead of rebuilding the mesh, and the worker backend
-transfers the bytes only on a new revision.
+per mesh generation. The worker backend transfers bytes on a new revision.
+
+The Web renderer initially allocates the submitted vertex and index counts.
+While layout and material stay compatible, the mesh can grow or shrink in
+place within its buffer capacity. The draw range follows the active index
+count. When a buffer needs more space, the renderer replaces the geometry,
+reserves extra capacity for the growing buffer and keeps the mesh and material.
+A vertex or index buffer can shrink after 30 seconds below one quarter of its
+capacity if shrinking releases at least 256 KiB. The renderer reclaims at most
+one mesh per second while drawing. Player metrics report mesh builds in
+`geometry3d_rebuilds`, capacity growth in `geometry3d_buffer_growths`, and
+bytes reclaimed by shrinking in `geometry3d_trimmed_bytes`.
 
 ## Camera curvature and rect
 

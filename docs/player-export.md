@@ -431,11 +431,10 @@ drives the emitted WASM through the player's own runtime core.
 
 The official Web renderer also accepts optional `"ui_text_atlas_size": 2048` in
 `player.presentation.json`. Supported values are powers of two from 256 through
-4096; omission retains the existing 4096-pixel page (capped by the GPU's maximum
-texture size). The renderer retains up to four RGBA atlas pages and uses dedicated
-textures for text that does not fit. A smaller page therefore saves 48 MiB per
-first page at 2048 instead of 4096, but additional pages and dedicated text can
-offset that saving. Text continues to rasterize at the drawing-buffer resolution;
+4096. When omitted, the renderer chooses 1024 or 2048 for new pages according
+to the visible text block sizes and the device limit. It retains up to four
+RGBA atlas pages and uses dedicated textures for text that does not fit.
+Text continues to rasterize at the drawing-buffer resolution;
 this setting does not change font size or UI scale. Text blocks larger than the
 device's maximum texture size remain subject to the renderer/device limit. Inspect the
 UI metrics `atlas_pages`, `atlas_page_size`, `atlas_reserved_bytes_estimate`,

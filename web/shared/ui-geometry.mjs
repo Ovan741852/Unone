@@ -11,7 +11,7 @@ export function uiBudget(tree) {
  return max;
 }
 export function validateImageBatch(node,imageBatches){return createImageBatchResolver().resolve(node,imageBatches).definition.quads;}
-export function uiUsage(tree,{imageBatches,imageBatchResolver=createImageBatchResolver()}={}){
+export function uiUsage(tree,{imageBatches,imageBatchResolver=createImageBatchResolver(),resolvedBatches}={}){
  const max=uiBudget(tree),out={logical_nodes:0,leaf_nodes:0,render_regions_upper_bound:0,max_nodes:max,host_max_nodes:UI_CONTRACT.host_max_nodes,limit_source:tree?.budget?'screen.budget':'contract.default',subtrees:[]};
  let bytes=0;const encoder=new TextEncoder();
  for(const v of Object.values(tree??{}))if(typeof v==='string')bytes+=encoder.encode(v).length;
@@ -25,7 +25,8 @@ export function uiUsage(tree,{imageBatches,imageBatchResolver=createImageBatchRe
   const before=out.logical_nodes;
   if(n.kind==='image_batch'){
    if(local)throw Error(`UI_IMAGE_BATCH_SPACE: ${n.id}; scroll content requires a supported transform`);
-   const data=imageBatchResolver.resolve(n,imageBatches).definition,quads=data.quads;
+   const batch=imageBatchResolver.resolve(n,imageBatches),data=batch.definition,quads=data.quads;
+   resolvedBatches?.set(n,batch);
    const firstExcess=max-out.logical_nodes;out.logical_nodes+=quads.length;
    if(out.logical_nodes>max)throw Error(`UI_NODE_LIMIT: path=${path}.quads[${firstExcess}], node=${n.id}, used=${max+1}, limit=${max}, host_max_nodes=${UI_CONTRACT.host_max_nodes}`);
    bytes+=data.stringBytes;if(bytes>UI_CONTRACT.max_string_bytes)throw Error(`UI_STRING_LIMIT: ${path}.quads; used=${bytes}, limit=${UI_CONTRACT.max_string_bytes}`);

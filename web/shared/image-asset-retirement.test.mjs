@@ -4,15 +4,16 @@ import {createAssetCatalog,createImageAssetBroker} from './asset-encoding.js';
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return{promise,resolve,reject};};
 const catalog=()=>createAssetCatalog({assets:[{id:'a',kind:'texture2d',source:'a.png'}]});
-function defaultFixture(t){
+function defaultFixture(t, { deferDecode = false, supportsDecode = true } = {}){
  const previous=globalThis.Image,instances=[],leases=[];
  class ControlledImage{
   naturalWidth=2;naturalHeight=2;removed=0;writes=0;decodeCalls=0;
-  constructor(){instances.push(this);}
+  constructor(){this.decoding=deferDecode?deferred():null;instances.push(this);}
   set src(value){this.url=value;this.writes++;}
   removeAttribute(name){assert.equal(name,'src');this.removed++;this.url=null;}
   decode(){this.decodeCalls++;return this.decoding?.promise??Promise.resolve();}
  }
+ if (!supportsDecode) delete ControlledImage.prototype.decode;
  globalThis.Image=ControlledImage;const broker=createImageAssetBroker(catalog(),{resolveAssetUrl:asset=>asset.source,unusedMaxBytes:0,unusedMaxEntries:0});
  t.after(()=>{for(const lease of leases)lease.release();broker.dispose();globalThis.Image=previous;});
  return{broker,instances,acquire(){const lease=broker.acquire('a');leases.push(lease);return lease;}};
@@ -29,19 +30,52 @@ test('explicit close remains exactly once for shared custom decoded-image owners
 });
 
 test('a truly pending default-image abort cancels src once, clears callbacks and ignores captured late events',async t=>{
- const f=defaultFixture(t),lease=f.acquire();await tick();const image=f.instances[0],lateLoad=image.onload,lateError=image.onerror;lease.release();await assert.rejects(lease.promise,/CANCELLED/);await tick();assert.equal(image.removed,1);assert.equal(image.onload,null);assert.equal(image.onerror,null);assert.equal(image.url,null);lateLoad();lateError();await tick();assert.equal(image.decodeCalls,0);assert.equal(image.removed,1);assert.equal(empty(f.broker).closed_images,0);assert.equal(f.broker.report().active_tasks,0);
+ const f=defaultFixture(t),lease=f.acquire();await tick();const image=f.instances[0],lateLoad=image.onload,lateError=image.onerror;lease.release();await assert.rejects(lease.promise,/CANCELLED/);await tick();assert.equal(image.removed,1);assert.equal(image.onload,null);assert.equal(image.onerror,null);assert.equal(image.url,null);lateLoad();lateError();await tick();assert.equal(image.decodeCalls,1);assert.equal(image.removed,1);assert.equal(empty(f.broker).closed_images,0);assert.equal(f.broker.report().active_tasks,0);
 });
 
 test('aborting after onload while decode is pending never resets completed src or adopts a late completion',async t=>{
- const f=defaultFixture(t),lease=f.acquire();await tick();const image=f.instances[0];image.decoding=deferred();const lateLoad=image.onload;image.onload();assert.equal(image.decodeCalls,1);lease.release();await assert.rejects(lease.promise,/CANCELLED/);assert.equal(image.removed,0);assert.equal(image.onload,null);assert.equal(image.onerror,null);image.decoding.resolve();lateLoad();await tick();assert.equal(image.decodeCalls,1);assert.equal(image.url,'a.png');assert.equal(image.removed,0);assert.equal(lease.image,null);assert.equal(empty(f.broker).closed_images,0);assert.equal(f.broker.report().active_tasks,0);
+ const f=defaultFixture(t,{deferDecode:true}),lease=f.acquire();await tick();const image=f.instances[0];const lateLoad=image.onload;image.onload();assert.equal(image.decodeCalls,1);lease.release();await assert.rejects(lease.promise,/CANCELLED/);assert.equal(image.removed,0);assert.equal(image.onload,null);assert.equal(image.onerror,null);image.decoding.resolve();lateLoad();await tick();assert.equal(image.decodeCalls,1);assert.equal(image.url,'a.png');assert.equal(image.removed,0);assert.equal(lease.image,null);assert.equal(empty(f.broker).closed_images,0);assert.equal(f.broker.report().active_tasks,0);
 });
 
 test('completed decode failures report the original error without resetting src',async t=>{
- const f=defaultFixture(t),lease=f.acquire();await tick();const image=f.instances[0];image.decoding=deferred();image.onload();image.decoding.reject(Error('decode-failed'));await assert.rejects(lease.promise,/decode-failed/);assert.equal(image.onload,null);assert.equal(image.onerror,null);assert.equal(image.removed,0);assert.equal(image.url,'a.png');lease.release();empty(f.broker);
+ const f=defaultFixture(t,{deferDecode:true}),lease=f.acquire();await tick();const image=f.instances[0];image.onload();image.decoding.reject(Error('decode-failed'));await assert.rejects(lease.promise,/decode-failed/);assert.equal(image.onload,null);assert.equal(image.onerror,null);assert.equal(image.removed,0);assert.equal(image.url,'a.png');lease.release();empty(f.broker);
 });
 
 test('invalid completed-image dimensions fail without changing its source',async t=>{
- const f=defaultFixture(t),lease=f.acquire();await tick();const image=f.instances[0];image.naturalWidth=0;image.onload();await assert.rejects(lease.promise,/DIMENSIONS/);assert.equal(image.decodeCalls,0);assert.equal(image.onload,null);assert.equal(image.onerror,null);assert.equal(image.removed,0);lease.release();empty(f.broker);
+ const f=defaultFixture(t),lease=f.acquire();await tick();const image=f.instances[0];image.naturalWidth=0;image.onload();await assert.rejects(lease.promise,/DIMENSIONS/);assert.equal(image.decodeCalls,1);assert.equal(image.onload,null);assert.equal(image.onerror,null);assert.equal(image.removed,0);lease.release();empty(f.broker);
+});
+
+test('decode starts with the request, and even an already decoded image waits for load validation',async t=>{
+ const f=defaultFixture(t),lease=f.acquire();
+ await tick();
+ const image=f.instances[0];
+ assert.equal(image.decodeCalls,1);
+ assert.equal(lease.state,'loading');
+ image.onload();
+ assert.equal(await lease.promise,image);
+ assert.equal(image.decodeCalls,1);
+});
+
+test('a decode rejection preceding a network error preserves the load error and clears callbacks',async t=>{
+ const f=defaultFixture(t,{deferDecode:true}),lease=f.acquire();
+ await tick();
+ const image=f.instances[0];
+ image.decoding.reject(Error('early decode rejection'));
+ await tick();
+ assert.equal(lease.state,'loading');
+ image.onerror();
+ await assert.rejects(lease.promise,/LOAD_FAILED/);
+ assert.equal(image.onload,null);
+ assert.equal(image.removed,0);
+});
+
+test('images without a decode method become ready on load and report no decode timing',async t=>{
+ const f=defaultFixture(t,{supportsDecode:false}),lease=f.acquire();
+ await tick();
+ const image=f.instances[0];
+ image.onload();
+ assert.equal(await lease.promise,image);
+ assert.equal(f.broker.report({includeTimings:true}).loading_metrics.recent[0].decode_ms,null);
 });
 
 test('a completed network error clears callbacks without a second source mutation',async t=>{

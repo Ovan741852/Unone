@@ -1,6 +1,6 @@
 // Retained world-space meshes (api.geometry3d). One instanced mesh per mesh,
-// touched only when its revision changes: new bytes of the same shape upload
-// into the existing buffers, anything else rebuilds. Placements and visibility
+// touched only when its content changes. Vertex and index buffers retain
+// capacity across topology changes. Placements and visibility
 // update in place. The camera places them on the GPU, so camera motion costs
 // nothing here. A mesh may name a scene shader material, which brings its own
 // vertex stage and declares extra per-vertex attributes after the color.
@@ -8,7 +8,21 @@ import {meshShaderLayout,createMeshShaderMaterial,applyMeshShaderValues} from '.
 import {worldFieldPublication} from '../shared/world-field-publication.mjs';
 const FORMATS={'f32le-p3-uv2-rgba4-u32-v1':{stride:9,billboard:false},'f32le-p3-o2-uv2-rgba4-u32-v1':{stride:11,billboard:true}};
 const ATTRIBUTE_FORMAT='f32le-p3-uv2-rgba4-attr-u32-v1';
+const MAX_VERTICES=262144,MAX_INDICES=1572864;
+const MIN_TRIM_BYTES=256*1024,TRIM_IDLE_MS=30000,TRIM_INTERVAL_MS=1000;
 const IDENTITY={position:{x:0,y:0,z:0},rotation:{x:0,y:0,z:0},scale:{x:1,y:1,z:1}};
+const AT_ORIGIN=[IDENTITY];
+function sameVector(a,b){return a.x===b.x&&a.y===b.y&&a.z===b.z;}
+// A new immutable placement publication can change just one mesh. Compare
+// only the matrix inputs when two different frozen arrays reach this mesh.
+function sameTransforms(a,b){
+  if(a.length!==b.length)return false;
+  for(let i=0;i<a.length;i++){
+    const left=a[i],right=b[i];
+    if(!sameVector(left.position,right.position)||!sameVector(left.rotation,right.rotation)||!sameVector(left.scale,right.scale))return false;
+  }
+  return true;
+}
 const invalid=message=>{throw Error(`GEOMETRY3D_INVALID: ${message}`);};
 function decodeBase64(text){const raw=atob(text),bytes=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);return bytes;}
 // Interleaved layout of one mesh: the declared attributes of its shader
@@ -24,7 +38,7 @@ function layoutOf(mesh,materials){
 function geometry3dViews(mesh,memory,materials){
   const layout=layoutOf(mesh,materials);
   const vc=mesh.vertex_count,ic=mesh.index_count;
-  if(!Number.isSafeInteger(vc)||vc<3||vc>262144||!Number.isSafeInteger(ic)||ic<3||ic>1572864||ic%3)invalid('counts');
+  if(!Number.isSafeInteger(vc)||vc<3||vc>MAX_VERTICES||!Number.isSafeInteger(ic)||ic<3||ic>MAX_INDICES||ic%3)invalid('counts');
   let vertices,indices,aliased=false;
   if(mesh.memory){
     const part=view=>{const buffer=memory?.({memory:view});
@@ -37,10 +51,29 @@ function geometry3dViews(mesh,memory,materials){
 }
 // Copies one mesh's bytes out of the Wasm heap, a transferred buffer or base64.
 export function geometry3dBytes(mesh,memory,materials){
-  const {vertices,indices,aliased,...layout}=geometry3dViews(mesh,memory,materials);
-  const own=bytes=>aliased?bytes.slice():bytes;
-  return {vertices:new Float32Array(own(vertices).buffer,0,mesh.vertex_count*layout.stride),
-    indices:new Uint32Array(own(indices).buffer,0,mesh.index_count),...layout};
+  return ownedArrays(geometry3dViews(mesh,memory,materials),mesh.vertex_count,mesh.index_count);
+}
+function ownedArrays({vertices,indices,aliased,...layout},vertexCapacity,indexCapacity){
+  function own(bytes,length){
+    if(!aliased&&bytes.byteLength===length)return bytes.buffer;
+    const result=new Uint8Array(length);result.set(bytes);return result.buffer;
+  }
+  return {vertices:new Float32Array(own(vertices,vertexCapacity*layout.stride*4)),
+    indices:new Uint32Array(own(indices,indexCapacity*4)),...layout};
+}
+function growCapacity(current,needed,limit){
+  return needed<=current?current:Math.min(limit,Math.ceil(needed*1.5));
+}
+function trimmedCapacity(elements,used,elementBytes){
+  return elements>4*used&&(elements-used)*elementBytes>=MIN_TRIM_BYTES?used:elements;
+}
+function markPrefix(attribute,count){
+  // More than one simulation publication can arrive before Three uploads.
+  // Keep the union so a shorter submission cannot hide pending suffix writes.
+  const pending=attribute.updateRanges[0];
+  if(pending)pending.count=Math.max(pending.count,count);
+  else attribute.addUpdateRange(0,count);
+  attribute.needsUpdate=true;
 }
 // Unaligned heap offsets are possible, so bytes are compared and copied as bytes.
 function sameBytes(a,b){
@@ -49,8 +82,9 @@ function sameBytes(a,b){
   return true;
 }
 
-export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvature,dataTextures}){
-  const records=new Map(),variants=new Map(),object=new THREE.Object3D();let rebuilds=0,updates=0,samplerBuilds=0,samplerDisposes=0;
+export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvature,dataTextures,now=()=>performance.now()}){
+  const records=new Map(),variants=new Map(),object=new THREE.Object3D();let rebuilds=0,updates=0,bufferGrowths=0,samplerBuilds=0,samplerDisposes=0;
+  const pendingTrims=new Map();let nextTrim=0,bufferTrims=0,trimmedBytes=0;
   // Engine values every mesh shader reads; materials share these objects.
   const shared={unone_time:{value:0},unone_frame:{value:0},unone_viewport:{value:[0,0,1,1]},unone_handedness:{value:new THREE.Matrix4()}};
   let white=null;const blank=()=>{if(!white){white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;}return white;};
@@ -124,13 +158,56 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
     }
     return ready;
   }
-  function update(record,mesh,materials){
-    const {vertices,indices}=geometry3dViews(mesh,memory,materials),geometry=record.mesh.geometry;
+  function update(id,record,mesh,materials){
+    const views=geometry3dViews(mesh,memory,materials),geometry=record.mesh.geometry;
     const interleaved=geometry.attributes.position.data,index=geometry.index;
-    new Uint8Array(interleaved.array.buffer,interleaved.array.byteOffset,interleaved.array.byteLength).set(vertices);interleaved.needsUpdate=true;
-    const current=new Uint8Array(index.array.buffer,index.array.byteOffset,index.array.byteLength);
-    if(!sameBytes(current,indices)){current.set(indices);index.needsUpdate=true;}
+    const vertexCapacity=interleaved.array.length/interleaved.stride,indexCapacity=index.array.length;
+    const topologyChanged=interleaved.count!==mesh.vertex_count||index.count!==mesh.index_count;
+    if(mesh.vertex_count>vertexCapacity||mesh.index_count>indexCapacity){
+      record.mesh.geometry=buildGeometry(mesh,views,growCapacity(vertexCapacity,mesh.vertex_count,MAX_VERTICES),
+        growCapacity(indexCapacity,mesh.index_count,MAX_INDICES));
+      geometry.dispose();bufferGrowths++;
+    }else{
+      const {vertices,indices}=views;
+      new Uint8Array(interleaved.array.buffer,interleaved.array.byteOffset,vertices.byteLength).set(vertices);
+      markPrefix(interleaved,mesh.vertex_count*interleaved.stride);
+      const current=new Uint8Array(index.array.buffer,index.array.byteOffset,indices.byteLength);
+      if(!sameBytes(current,indices)){current.set(indices);markPrefix(index,mesh.index_count);}
+      if(topologyChanged){
+        interleaved.count=mesh.vertex_count;index.count=mesh.index_count;
+        geometry.setDrawRange(0,mesh.index_count);geometry.boundingBox=null;geometry.computeBoundingSphere();
+      }
+    }
+    if(topologyChanged){
+      record.mesh.boundingSphere=null;record.mesh.boundingBox=null;
+      const active=record.mesh.geometry,position=active.attributes.position.data,index=active.index;
+      const vertexCapacity=position.array.length/position.stride;
+      const vertices=trimmedCapacity(vertexCapacity,position.count,position.stride*4)<vertexCapacity;
+      const indices=trimmedCapacity(index.array.length,index.count,4)<index.array.length;
+      if(vertices||indices){
+        const previous=pendingTrims.get(id);
+        if(!previous||previous.vertices!==vertices||previous.indices!==indices){
+          pendingTrims.delete(id);pendingTrims.set(id,{deadline:now()+TRIM_IDLE_MS,vertices,indices});
+        }
+      }else pendingTrims.delete(id);
+    }
     updates++;
+  }
+  // Only meshes that have fallen far below their high-water mark enter the
+  // queue. Repeated growth cancels retirement; stationary meshes need no scan.
+  function trimIdleBuffers(meshes,materials){
+    if(!pendingTrims.size)return;
+    const [id,{deadline}]=pendingTrims.entries().next().value,time=now();
+    if(time<deadline||time<nextTrim)return;
+    const record=records.get(id),geometry=record.mesh.geometry,v=geometry.attributes.position.data,index=geometry.index;
+    const vertexCapacity=trimmedCapacity(v.array.length/v.stride,v.count,v.stride*4);
+    const indexCapacity=trimmedCapacity(index.array.length,index.count,4);
+    const mesh=meshes[id],views={...layoutOf(mesh,materials),aliased:true,
+      vertices:new Uint8Array(v.array.buffer,v.array.byteOffset,v.count*v.stride*4),
+      indices:new Uint8Array(index.array.buffer,index.array.byteOffset,index.count*4)};
+    record.mesh.geometry=buildGeometry(mesh,views,vertexCapacity,indexCapacity,geometry);
+    trimmedBytes+=v.array.byteLength+index.array.byteLength-(vertexCapacity*v.stride+indexCapacity)*4;
+    bufferTrims++;pendingTrims.delete(id);nextTrim=time+TRIM_INTERVAL_MS;geometry.dispose();
   }
   function material(mesh,billboard,definition){
     const m=mesh.material??{},blend=m.blend??'opaque';
@@ -142,15 +219,24 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
     if(billboard)curvature.billboard(basic,m.depth_bias??0);
     return basic;
   }
-  function build(mesh,capacity,materials){
-    const {vertices,indices,stride,billboard,attributes}=geometry3dBytes(mesh,memory,materials),geometry=new THREE.BufferGeometry();
+  function buildGeometry(mesh,views,vertexCapacity,indexCapacity,previousBounds){
+    const {vertices,indices,stride,billboard,attributes}=ownedArrays(views,vertexCapacity,indexCapacity),geometry=new THREE.BufferGeometry();
     const interleaved=new THREE.InterleavedBuffer(vertices,stride),at=billboard?2:0;
+    interleaved.count=mesh.vertex_count;
     geometry.setAttribute('position',new THREE.InterleavedBufferAttribute(interleaved,3,0));
     if(billboard)geometry.setAttribute('unoneOffset',new THREE.InterleavedBufferAttribute(interleaved,2,3));
     geometry.setAttribute('uv',new THREE.InterleavedBufferAttribute(interleaved,2,3+at));
     geometry.setAttribute('color',new THREE.InterleavedBufferAttribute(interleaved,4,5+at));
     for(const a of attributes)geometry.setAttribute(a.name,new THREE.InterleavedBufferAttribute(interleaved,a.size,a.offset));
-    geometry.setIndex(new THREE.BufferAttribute(indices,1));geometry.computeBoundingSphere();
+    const index=new THREE.BufferAttribute(indices,1);index.count=mesh.index_count;
+    geometry.setIndex(index);geometry.setDrawRange(0,mesh.index_count);
+    if(previousBounds){geometry.boundingSphere=previousBounds.boundingSphere;geometry.boundingBox=previousBounds.boundingBox;}
+    else geometry.computeBoundingSphere();
+    return geometry;
+  }
+  function build(mesh,capacity,materials){
+    const views=geometry3dViews(mesh,memory,materials),geometry=buildGeometry(mesh,views,mesh.vertex_count,mesh.index_count);
+    const {billboard}=views;
     const m=mesh.material??{},instanced=new THREE.InstancedMesh(geometry,material(mesh,billboard,m.shader?materials[m.shader]:null),capacity);
     instanced.instanceMatrix.setUsage(THREE.DynamicDrawUsage);instanced.frustumCulled=false;
     instanced.renderOrder=(m.blend??'opaque')==='transparent'?(m.order??0):0;
@@ -161,16 +247,16 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
   // `world` supplies the scene's shader materials and the simulation clock.
   function draw(meshes,placements,specs,world={}){
     let pending=false;const alive=new Set(),materials=world.shader_materials;
-    const leasedMaterials=worldFieldPublication(materials);
+    const leasedMaterials=worldFieldPublication(materials),leasedPlacements=worldFieldPublication(placements);
     shared.unone_time.value=Number(world.time_seconds??0);shared.unone_frame.value=Number(world.frame??0);
     // Undo the host's left-handed root mirror (world3d scale z = -1) for game shaders.
     shared.unone_handedness.value.makeScale(1,1,world.camera3d?.handedness==='left'?-1:1);
     for(const [id,mesh]of Object.entries(meshes??{})){
-      alive.add(id);const placement=placements?.[id],transforms=placement?.transforms??[IDENTITY];
+      alive.add(id);const placement=placements?.[id],transforms=placement?.transforms??AT_ORIGIN;
       const shader=mesh.material?.shader,definition=materials?.[shader];
       const vertex=definition?.vertex??null,fragment=definition?.fragment??null;
       const layout=shaderInterface(definition,leasedMaterials);
-      const shape=JSON.stringify([mesh.format,mesh.vertex_count,mesh.index_count,mesh.texture??null,mesh.material??null]);
+      const shape=JSON.stringify([mesh.format,mesh.texture??null,mesh.material??null]);
       const revision=String(mesh.revision);
       let record=records.get(id);
       if(!record||record.capacity<transforms.length||record.shape!==shape||record.layout!==layout||
@@ -179,20 +265,24 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
         const previous=record;
         record={revision,capacity,shape,layout,vertex,fragment,mesh:build(mesh,capacity,materials),placement:null,sampler:null};
         if(previous){
+          pendingTrims.delete(id);
           if(mesh.texture){record.sampler=previous.sampler;previous.sampler=null;}
           dispose(previous);
         }
         records.set(id,record);scene.add(record.mesh);
-      }else if(record.revision!==revision){
-        update(record,mesh,materials);record.revision=revision;
+      }else if(record.revision!==revision||record.mesh.geometry.attributes.position.count!==mesh.vertex_count||record.mesh.geometry.index.count!==mesh.index_count){
+        update(id,record,mesh,materials);record.revision=revision;
       }
-      const instanced=record.mesh,key=JSON.stringify(transforms);
+      const instanced=record.mesh,key=leasedPlacements?transforms:JSON.stringify(transforms);
       let ready=true;
       if(shader){applyMeshShaderValues(instanced.material,materials[shader]);if(!bindSamplers(instanced.material,materials[shader],specs)){ready=false;pending=true;}}
       if(record.placement!==key){
-        transforms.forEach((t,i)=>{object.position.set(t.position.x,t.position.y,t.position.z);object.rotation.set(t.rotation.x,t.rotation.y,t.rotation.z);
-          object.scale.set(t.scale.x,t.scale.y,t.scale.z);object.updateMatrix();instanced.setMatrixAt(i,object.matrix);});
-        instanced.count=transforms.length;instanced.instanceMatrix.needsUpdate=true;record.placement=key;
+        if(!leasedPlacements||!Array.isArray(record.placement)||!sameTransforms(record.placement,transforms)){
+          transforms.forEach((t,i)=>{object.position.set(t.position.x,t.position.y,t.position.z);object.rotation.set(t.rotation.x,t.rotation.y,t.rotation.z);
+            object.scale.set(t.scale.x,t.scale.y,t.scale.z);object.updateMatrix();instanced.setMatrixAt(i,object.matrix);});
+          instanced.count=transforms.length;instanced.instanceMatrix.needsUpdate=true;
+        }
+        record.placement=key;
       }
       if(mesh.texture){
         const spec=specs.get(mesh.texture);if(spec?.kind!=='texture2d')throw Error(`GEOMETRY3D_TEXTURE_MISSING: ${mesh.texture}`);
@@ -206,7 +296,8 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
       // An untextured mesh draws at once; a textured one waits for its image.
       instanced.visible=placement?.visible!==false&&ready&&transforms.length>0;
     }
-    for(const [id,record]of records)if(!alive.has(id)){dispose(record);records.delete(id);}
+    for(const [id,record]of records)if(!alive.has(id)){dispose(record);records.delete(id);pendingTrims.delete(id);}
+    trimIdleBuffers(meshes,materials);
     return pending;
   }
   return {draw,
@@ -215,7 +306,8 @@ export function createGeometry3DRenderer(THREE,scene,{textureFor,memory,curvatur
     contextLost(retire){const samplers=new Set();
       for(const record of records.values()){retire(record.mesh.geometry);retire(record.mesh.material);if(record.sampler)samplers.add(record.sampler.texture);}
       for(const texture of samplers)retire(texture);if(white)retire(white);},
-    clear(){for(const record of records.values())dispose(record);records.clear();white?.dispose();white=null;},
-    metrics:()=>({geometry3d_meshes:records.size,geometry3d_rebuilds:rebuilds,geometry3d_updates:updates,
+    clear(){for(const record of records.values())dispose(record);records.clear();pendingTrims.clear();nextTrim=0;white?.dispose();white=null;},
+    metrics:()=>({geometry3d_meshes:records.size,geometry3d_rebuilds:rebuilds,geometry3d_updates:updates,geometry3d_buffer_growths:bufferGrowths,
+      geometry3d_pending_buffer_trims:pendingTrims.size,geometry3d_buffer_trims:bufferTrims,geometry3d_trimmed_bytes:trimmedBytes,
       geometry3d_sampler_variants:samplerBuilds-samplerDisposes,geometry3d_sampler_builds:samplerBuilds,geometry3d_sampler_disposes:samplerDisposes})};
 }

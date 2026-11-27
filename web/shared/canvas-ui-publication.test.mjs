@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createCanvasUi} from './canvas-ui.mjs';
+import {createCanvasUi,flattenUi} from './canvas-ui.mjs';
 import {projectScrollTree} from './ui-scroll.mjs';
 import {createUiTreePublication} from './ui-tree-publication.mjs';
 const rect={x:0,y:0,width:50,height:50};
@@ -30,4 +30,21 @@ test('new private generations cancel stale control capture and still validate fi
  ui.draw({ui:owned(tree('New'))});assert.deepEqual(state.actions.map(e=>[e.action,e.phase]),[['Old','down'],['Old','cancel']]);assert.equal(ui.hitTest(25,25).action,'New');
  const invalid=tree('Bad');invalid.children[0].rect={...rect,width:-1};assert.throws(()=>ui.draw({ui:owned(invalid)}),/UI_RECT_INVALID/);
  ui.draw({ui:owned(tree('Restored'))});assert.equal(ui.hitTest(25,25).action,'Restored');ui.dispose();
+});
+
+test('preparing an owned projection uses its leaves and validates each inline batch once',()=>{
+ const batch={kind:'image_batch',id:'hud',rect,quads:[{asset:'asset://icon',rect}]};
+ const project=quadBatch=>projectScrollTree(owned({...tree('Go'),children:[quadBatch]})).tree;
+ const projected=project(batch),stringify=JSON.stringify;
+ let definitions=0,leaves;
+ try{
+  JSON.stringify=(value,...args)=>{
+   if(Array.isArray(value)&&value[1]?.[0]?.asset==='asset://icon')definitions++;
+   return stringify(value,...args);
+  };
+  leaves=flattenUi(projected);
+ }finally{JSON.stringify=stringify;}
+ assert.equal(definitions,1);
+ assert.equal(leaves[0],projected.children[0]);
+ assert.throws(()=>flattenUi(project({...batch,quads:[]})),/UI_IMAGE_BATCH_EMPTY/);
 });

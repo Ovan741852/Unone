@@ -18,7 +18,10 @@ const sliderRatio=(drag,x,y)=>{
   const ratio=Math.max(0,Math.min(1,value));return drag.reverse?1-ratio:ratio;
 };
 function prepareUi(tree,imageBatches,resolver=createImageBatchResolver()){
-  const usage=uiUsage(tree,{imageBatches,imageBatchResolver:resolver});
+  // The scroll host has already clipped and flattened an owned projection.
+  // Its budget pass validates the same leaves that the renderer will consume.
+  const projected=!!uiProjectionGeneration(tree),batches=new Map();
+  const usage=uiUsage(tree,{imageBatches,imageBatchResolver:resolver,resolvedBatches:projected?batches:undefined});
   const leaves=[];
   function walk(nodes,depth){
     for(const n of nodes??[]){
@@ -36,8 +39,8 @@ function prepareUi(tree,imageBatches,resolver=createImageBatchResolver()){
       leaves.push(n);
     }
   }
-  walk(projectScrollTree(tree).tree?.children,0);const batches=new Map();
-  for(const node of leaves)if(node.kind==='image_batch')batches.set(node,resolver.resolve(node,imageBatches));
+  walk((projected?tree:projectScrollTree(tree).tree)?.children,0);
+  if(!projected)for(const node of leaves)if(node.kind==='image_batch')batches.set(node,resolver.resolve(node,imageBatches));
   return {nodes:leaves,usage,batches};
 }
 export function flattenUi(tree,imageBatches){return prepareUi(tree,imageBatches).nodes;}

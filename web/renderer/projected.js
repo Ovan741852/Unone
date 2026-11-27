@@ -8,10 +8,15 @@ export function createProjectedRenderer(THREE,textureFor,{raster='host'}={}){
  const freeGeometry=g=>{g.dispose();geometryDisposes++;},freeMaterial=m=>{m.dispose();materialDisposes++;};
  const dispose=r=>{scene.remove(r.mesh);freeGeometry(r.mesh.geometry);freeMaterial(r.material);};
  function filteredTexture(source,filter,address,created){
+  const mode=filter==='linear'?THREE.LinearFilter:THREE.NearestFilter;
+  const wrap=address==='repeat'?THREE.RepeatWrapping:THREE.ClampToEdgeWrapping;
+  // A matching sampler is already owned by the asset cache. Cloning it would
+  // also dirty its Three.Source and force other passes to upload it again.
+  if(source.minFilter===mode&&source.magFilter===mode&&source.wrapS===wrap&&source.wrapT===wrap&&!source.generateMipmaps)return source;
   let variants=textures.get(source);if(!variants){variants=new Map();textures.set(source,variants);}const key=filter+':'+address;
   if(!variants.has(key)){
-   let texture;try{texture=source.clone();const mode=filter==='linear'?THREE.LinearFilter:THREE.NearestFilter;
-    texture.wrapS=texture.wrapT=address==='repeat'?THREE.RepeatWrapping:THREE.ClampToEdgeWrapping;
+   let texture;try{texture=source.clone();
+    texture.wrapS=texture.wrapT=wrap;
     texture.minFilter=mode;texture.magFilter=mode;texture.generateMipmaps=false;texture.needsUpdate=true;variants.set(key,texture);created.push({source,key,texture});
    }catch(error){texture?.dispose();if(!variants.size)textures.delete(source);throw error;}
   }

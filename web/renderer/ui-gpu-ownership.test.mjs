@@ -26,13 +26,50 @@ async function fixture({maxTextureSize=8,uiTextAtlasSize,bufferSize=64,atlasNow}
 const sampler=mesh=>mesh.material.uniforms.uiTexture.value;
 function watch(texture){let count=0;texture.addEventListener('dispose',()=>count++);return ()=>count;}
 
-test('atlas policy defaults to 4096 and opt-in uses 2048 with accurately reported page bytes',async()=>{
- for(const [requested,expected] of [[undefined,4096],[2048,2048]]){
+test('small text starts with 1024 pages and explicit sizes are respected',async()=>{
+ for(const [requested,expected] of [[undefined,1024],[2048,2048],[4096,4096]]){
   const f=await fixture({maxTextureSize:4096,uiTextAtlasSize:requested});try{
    f.draw([f.text()]);const m=f.ui.metrics();assert.equal(m.atlas_page_size,expected);assert.equal(m.atlas_page_size_requested,expected);assert.equal(m.atlas_pages,1);assert.equal(m.atlas_reserved_bytes_estimate,expected*expected*4);
    assert.equal(m.dedicated_text_bytes_estimate,0);f.renderer.capabilities.maxTextureSize=1024;f.ui.contextLost();assert.equal(f.ui.metrics().atlas_reserved_bytes_estimate,0);f.draw([f.text()]);assert.equal(f.ui.metrics().atlas_page_size,1024);
   }finally{f.dispose();}
  }
+});
+
+test('new and restored atlas pages reserve storage and upload only the painted text block',async()=>{
+ const f=await fixture({maxTextureSize:4096,uiTextAtlasSize:4096});try{
+  const pages=[],blocks=[];
+  f.renderer.initTexture=texture=>pages.push(texture);
+  f.renderer.getContext().texSubImage2D=(_target,_level,_x,_y,w,h)=>blocks.push([w,h]);
+  for(let i=0;i<2;i++){
+   if(i)f.ui.contextLost();
+   f.draw([f.text()]);
+   const page=pages[i];
+   assert.deepEqual([page.image.width,page.image.height],[4096,4096]);
+   assert.equal(page.image.data,null);
+   assert.equal(page.source.dataReady,false);
+   assert.equal(sampler(f.meshes[0]),page);
+  }
+  assert.notEqual(pages[0],pages[1]);
+  assert.deepEqual(blocks,[[16,16],[16,16]]);
+ }finally{f.dispose();}
+});
+
+test('automatic pages keep existing glyph blocks when a wide label needs a larger page',async()=>{
+ const f=await fixture({maxTextureSize:4096,bufferSize:4096});try{
+  const label=(id,width)=>({kind:'text',id,text:id,rect:{x:0,y:0,width,height:2}});
+  const a=label('short',5),b=label('wide',33),c=label('oversized',75);
+  f.draw([a]);const original=sampler(f.meshes[0]),disposed=watch(original);
+  const uvs=()=>Array.from(f.meshes[0].geometry.getAttribute('uiUv').data.array.slice(4,8));
+  const before=uvs();
+  f.draw([a,b]);const mixed=f.ui.metrics();
+  assert.deepEqual(mixed.atlas_page_sizes,[1024,2048]);
+  assert.equal(mixed.atlas_reserved_bytes_estimate,20*1024*1024);
+  assert.equal(mixed.text_rasters,2);assert.equal(mixed.dedicated_text_textures,0);
+  assert.equal(sampler(f.meshes[0]),original);assert.deepEqual(uvs(),before);
+  f.draw([a,c]);const next=f.ui.metrics();
+  assert.equal(next.dedicated_text_textures,1);assert.equal(next.atlas_compactions,0);
+  assert.equal(next.text_rasters,3);assert.equal(disposed(),0);
+ }finally{f.dispose();}
 });
 
 test('bounded pages repack and oversized 4K text falls back to dedicated storage',async()=>{
@@ -43,6 +80,22 @@ test('bounded pages repack and oversized 4K text falls back to dedicated storage
   let m=f.ui.metrics();assert.equal(m.atlas_pages,4);assert.equal(m.dedicated_text_textures,1);assert(m.dedicated_text_bytes_estimate>0);
   f.draw([t('new',4.8,4.8)]);m=f.ui.metrics();assert(m.atlas_compactions>0);assert.equal(m.dedicated_text_textures,0);
   f.draw([t('wide-4k',75,3)]);m=f.ui.metrics();assert.equal(m.dedicated_text_textures,1);assert(m.dedicated_text_bytes_estimate>3000*100*4);
+ }finally{f.dispose();}
+});
+
+test('a static screen can batch spilled text after an idle page is reclaimed',async()=>{
+ let clock=0;
+ const f=await fixture({maxTextureSize:4096,bufferSize:4096,atlasNow:()=>clock});try{
+  const label=(id,width,height)=>({kind:'text',id,text:id,rect:{x:0,y:0,width,height}});
+  f.draw(Array.from({length:4},(_,i)=>label('old'+i,21,21)));
+  assert.deepEqual(f.ui.metrics().atlas_page_sizes,[1024,1024,1024,1024]);
+  const wide=Array.from({length:12},(_,i)=>label('wide'+i,44,3));
+  clock=10;f.draw(wide);assert.equal(f.ui.metrics().dedicated_text_textures,12);
+  clock=31000;f.draw(wide,false);f.draw(wide,false);
+  const m=f.ui.metrics();
+  assert.equal(m.dedicated_text_textures,0);assert.equal(m.draw_calls,1);
+  assert.ok(m.atlas_page_sizes.includes(2048));
+  f.draw(wide,false);assert.equal(f.ui.metrics().rebuilds,m.rebuilds);
  }finally{f.dispose();}
 });
 
@@ -65,6 +118,27 @@ test('multiple oversized 4K text blocks count separately and retire when removed
   assert.equal(m.dedicated_text_textures,2);assert.equal(m.dedicated_text_bytes_estimate,bytes*2/3);assert.equal(retired(),1);
   assert.equal(sampler(f.meshes[0]),first);assert.equal(sampler(f.meshes[1]),third);
   f.draw([]);assert.equal(f.ui.metrics().dedicated_text_bytes_estimate,0);
+ }finally{f.dispose();}
+});
+
+test('dedicated text within the GPU limit uploads the same RGBA pixel format as atlas slots',async()=>{
+ const f=await fixture({maxTextureSize:4096,uiTextAtlasSize:256,bufferSize:4096});try{
+  f.draw([{...f.text(),rect:{x:0,y:0,width:20,height:2}}]);
+  const texture=sampler(f.meshes[0]);
+  assert.equal(texture.isDataTexture,true);
+  assert.ok(texture.image.data instanceof Uint8ClampedArray);
+  assert.equal(texture.image.data.length,texture.image.width*texture.image.height*4);
+  assert.equal(texture.premultiplyAlpha,true);assert.equal(texture.flipY,false);
+  assert.equal(texture.colorSpace,THREE.NoColorSpace);
+ }finally{f.dispose();}
+});
+
+test('text beyond the device texture limit keeps a resizable canvas source',async()=>{
+ const f=await fixture({maxTextureSize:256,uiTextAtlasSize:256,bufferSize:4096});try{
+  f.draw([{...f.text(),rect:{x:0,y:0,width:20,height:2}}]);
+  const texture=sampler(f.meshes[0]);
+  assert.ok(texture.image.width>f.renderer.capabilities.maxTextureSize);
+  assert.ok(f.surfaces.includes(texture.image));
  }finally{f.dispose();}
 });
 
@@ -166,6 +240,20 @@ test('idle page disposal failure leaves the active page usable and fences reentr
   clock=30001;assert.throws(()=>f.draw([a],false),/TEXTURE_DISPOSE_FAILED/);
   assert.equal(f.ui.metrics().atlas_pages,1);assert.equal(sampler(f.meshes[0]),active);
   assert.equal(f.draw([a],false).skipped,false,'retirement guard is released after failure');
+ }finally{f.dispose();}
+});
+
+test('a label wider than a page uses dedicated storage without repacking smaller live labels',async()=>{
+ const f=await fixture({maxTextureSize:4096,uiTextAtlasSize:1024,bufferSize:2048});try{
+  const label=(id,width)=>({...f.text(id),id,rect:{x:0,y:25,width,height:3}});
+  const active=label('active',12),wide=label('wide',75);
+  f.draw([active,label('retired-a',12),label('retired-b',12)]);
+  const before=f.ui.metrics();
+  f.draw([active,wide]);
+  const after=f.ui.metrics();
+  assert.equal(after.dedicated_text_textures,1);
+  assert.equal(after.atlas_compactions,before.atlas_compactions);
+  assert.equal(after.text_rasters,before.text_rasters+1);
  }finally{f.dispose();}
 });
 

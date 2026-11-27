@@ -121,6 +121,35 @@ test('a pending mesh retains its sampler until the current source is ready',()=>
   renderer.clear();assert.equal(releases,1);assert.equal(renderer.metrics().geometry3d_sampler_variants,0);
 });
 
+test('immutable placements reuse matrices across draws and mutable placements still update in place',t=>{
+  const scene=new THREE.Scene(),renderer=createGeometry3DRenderer(THREE,scene,{});
+  const tiles=[structuredClone(placement),structuredClone(placement)],meshes={ground:mesh(1)},specs=new Map();
+  const publish=(visible=true)=>createWorldFieldPublication(JSON.stringify({ground:{visible,transforms:tiles}})).value;
+  const first=publish(),hidden=publish(false);
+  tiles[1].rotation.z=.5;tiles[1].scale.y=2;
+  const rotated=publish(),known=new Set([first,hidden,rotated].map(p=>p.ground.transforms));
+  const stringify=JSON.stringify;
+  t.mock.method(JSON,'stringify',function(value,...rest){
+    assert.equal(known.has(value),false,'a published transform array was re-encoded');
+    return stringify(value,...rest);
+  });
+  const draw=p=>renderer.draw(meshes,p,specs);
+  draw(first);
+  const [ground]=scene.children,version=ground.instanceMatrix.version;
+  draw(first);draw(hidden);
+  assert.equal(ground.instanceMatrix.version,version);assert.equal(ground.visible,false);
+  draw(rotated);
+  const matrix=new THREE.Matrix4(),expected=new THREE.Object3D();
+  expected.rotation.z=.5;expected.scale.y=2;expected.updateMatrix();ground.getMatrixAt(1,matrix);
+  assert.deepEqual(matrix.elements,Array.from(new Float32Array(expected.matrix.elements)));
+  assert.equal(ground.instanceMatrix.version,version+1);
+  const raw={ground:{transforms:tiles}};
+  draw(raw);tiles[1].position.x=9;draw(raw);ground.getMatrixAt(1,matrix);
+  assert.equal(matrix.elements[12],9);
+  draw(rotated);ground.getMatrixAt(1,matrix);assert.equal(matrix.elements[12],0);
+  renderer.clear();
+});
+
 test('placements draw as instances and screen billboards carry pixel offsets',()=>{
   const scene=new THREE.Scene(),curvature=createWorldCurvature(),renderer=createGeometry3DRenderer(THREE,scene,{textureFor:()=>null,curvature});
   const tiles=[-128,0,128].map(x=>({...placement,position:{x,y:0,z:0}}));
@@ -183,8 +212,95 @@ test('same-shape revisions upload heap bytes into the existing buffers without a
   renderer.draw({tri:viewed(3,3,[2,1,0],1500)},{},new Map());
   assert.deepEqual([...index.array],[2,1,0]);assert.ok(index.version>version);
   bytes.fill(0);assert.equal(tri.geometry.attributes.position.getY(2),3,'the geometry never aliases the heap');
-  assert.deepEqual(renderer.metrics(),{geometry3d_meshes:1,geometry3d_rebuilds:1,geometry3d_updates:2,
+  assert.deepEqual(renderer.metrics(),{geometry3d_meshes:1,geometry3d_rebuilds:1,geometry3d_updates:2,geometry3d_buffer_growths:0,
+    geometry3d_pending_buffer_trims:0,geometry3d_buffer_trims:0,geometry3d_trimmed_bytes:0,
     geometry3d_sampler_variants:0,geometry3d_sampler_builds:0,geometry3d_sampler_disposes:0});
+});
+
+test('retained topology reserves on growth and draws only the current vertices and indices',()=>{
+  const scene=new THREE.Scene(),renderer=createGeometry3DRenderer(THREE,scene,{});
+  function draw(xs,order,revision,placementX=0){
+    const vertices=new Float32Array(xs.length*9);
+    xs.forEach((x,i)=>vertices.set([x,i%3===2?1:0,0,0,0,1,1,1,1],i*9));
+    const tri={...mesh(revision),vertex_count:xs.length,index_count:order.length,
+      vertices:base64(new Uint8Array(vertices.buffer)),indices:base64(new Uint8Array(new Uint32Array(order).buffer))};
+    renderer.draw({tri},{tri:{transforms:[{...placement,position:{x:placementX,y:0,z:0}}]}},new Map());
+  }
+  draw([0,1,0],[0,1,2],1);
+  const [object]=scene.children,material=object.material,first=object.geometry;
+  assert.equal(first.attributes.position.data.array.length,3*9);assert.equal(first.index.array.length,3);
+  let disposals=0;first.addEventListener('dispose',()=>disposals++);
+  draw([0,1,0,100,101,100],[0,1,2,3,4,5,0,1,2],2);
+  const g=object.geometry,v=g.attributes.position.data,index=g.index;
+  assert.equal(scene.children[0],object);assert.equal(object.material,material);assert.notEqual(g,first);assert.equal(disposals,1);
+  assert.ok(v.array.length>6*9);assert.ok(index.array.length>9);
+  assert.equal(g.attributes.position.count,6);assert.equal(index.count,9);assert.equal(g.drawRange.count,9);
+  g.computeBoundingBox();object.computeBoundingSphere();object.computeBoundingBox();
+  // A raw caller can change counts while keeping the same revision.
+  draw([500,501,500],[0,1,2],2,10);
+  assert.equal(object.geometry,g);assert.equal(g.attributes.position.count,3);assert.equal(index.count,3);assert.equal(g.drawRange.count,3);
+  assert.equal(g.boundingBox,null);assert.equal(object.boundingSphere,null);assert.equal(object.boundingBox,null);
+  assert.equal(g.boundingSphere.center.x,500.5);assert.ok(g.boundingSphere.radius<1,'unused coordinates must not affect bounds');
+  object.updateMatrixWorld(true);
+  const ray=new THREE.Raycaster(new THREE.Vector3(510.25,.25,1),new THREE.Vector3(0,0,-1));
+  assert.equal(ray.intersectObject(object).length,1,'moved triangle stays pickable after shrinking');
+  draw([5,6,5,7],[2,1,0,0,1,3],3,10);
+  draw([8,9,8],[1,2,0],4);
+  assert.equal(g.index,index);assert.equal(g.attributes.position.data,v);
+  assert.equal(index.updateRanges.length,1);assert.equal(index.updateRanges[0].count,6,'shorter change preserves a pending index upload');
+  assert.equal(v.updateRanges.length,1);assert.equal(v.updateRanges[0].count,4*9);
+  draw([8,9,8],[1,2,0,2,1,0],5);
+  assert.equal(g.drawRange.count,6);assert.deepEqual(Array.from(index.array.subarray(0,index.count)),[1,2,0,2,1,0]);
+  assert.equal(renderer.metrics().geometry3d_rebuilds,1);assert.equal(renderer.metrics().geometry3d_buffer_growths,1);
+  renderer.clear();
+});
+
+test('vertex and index reservations stop at their published mesh limits',()=>{
+  const vc=175000,ic=1100001,vbytes=vc*9*4,ibytes=ic*4,heap=new ArrayBuffer(vbytes+ibytes);
+  const source={...mesh(2),vertex_count:vc,index_count:ic,memory:{vertices:{offset:0,byte_length:vbytes},indices:{offset:vbytes,byte_length:ibytes}}};
+  const scene=new THREE.Scene(),renderer=createGeometry3DRenderer(THREE,scene,{memory:()=>heap});
+  renderer.draw({tri:mesh(1)},{},new Map());renderer.draw({tri:source},{},new Map());
+  const g=scene.children[0].geometry;
+  assert.equal(g.attributes.position.data.array.length,262144*9);
+  assert.equal(g.index.array.length,1572864);
+  assert.equal(g.attributes.position.count,vc);assert.equal(g.index.count,ic);assert.equal(g.drawRange.count,ic);
+  assert.throws(()=>renderer.draw({tri:{...source,vertex_count:262145}},{},new Map()),/GEOMETRY3D_INVALID: counts/);
+  assert.throws(()=>renderer.draw({tri:{...source,index_count:1572867}},{},new Map()),/GEOMETRY3D_INVALID: counts/);
+  assert.equal(scene.children[0].geometry,g);renderer.clear();
+});
+
+test('large surplus buffers retire after sustained low use; oscillating, removed and cleared meshes leave no queued work',()=>{
+  let time=0;
+  const rendererScene=new THREE.Scene(),renderer=createGeometry3DRenderer(THREE,rendererScene,{now:()=>time});
+  const small=mesh(1),vertexCount=24000,vertices=new Float32Array(vertexCount*9);
+  vertices.set(new Float32Array(triangle(0).vertices.buffer));
+  const large={...small,revision:2,vertex_count:vertexCount,vertices:base64(new Uint8Array(vertices.buffer))};
+  const draw=value=>renderer.draw(value,{},new Map()),stats=()=>renderer.metrics();
+  draw({a:small,b:small,drop:small});draw({a:large,b:large,drop:large});
+  const [a,b]=rendererScene.children,original=a.geometry,capacity=original.attributes.position.data.array.length;
+  const material=a.material,matrices=a.instanceMatrix;
+  assert.equal(capacity,36000*9);
+  for(let i=0;i<40;i++){
+    time+=1000;draw({a:small,b:small,drop:small});assert.equal(stats().geometry3d_pending_buffer_trims,3);
+    time+=1000;draw({a:large,b:large,drop:large});assert.equal(stats().geometry3d_pending_buffer_trims,0);
+  }
+  assert.equal(a.geometry,original);assert.equal(stats().geometry3d_buffer_trims,0);
+  draw({a:small,b:small,drop:small});
+  draw({a:small,b:small});assert.equal(stats().geometry3d_pending_buffer_trims,2);
+  time+=29999;draw({a:small,b:small});assert.equal(a.geometry,original);
+  // Retirement must retain the last published bytes, even if a raw caller
+  // mutates its packet without advancing the revision.
+  const invalid={...small,vertices:'not bytes'};time++;draw({a:invalid,b:invalid});
+  assert.equal(a.material,material);assert.equal(a.instanceMatrix,matrices);
+  assert.equal(a.geometry.drawRange.count,3);assert.equal(a.geometry.attributes.position.data.array.length,27);
+  assert.deepEqual(new Uint8Array(a.geometry.attributes.position.data.array.buffer),triangle(0).vertices);
+  assert.equal(b.geometry.attributes.position.data.array.length,capacity);
+  assert.equal(stats().geometry3d_buffer_trims,1);assert.equal(stats().geometry3d_trimmed_bytes,(capacity-27)*4);
+  time+=999;draw({a:small,b:small});assert.equal(stats().geometry3d_buffer_trims,1);
+  time++;draw({a:small,b:small});assert.equal(stats().geometry3d_buffer_trims,2);
+  assert.equal(stats().geometry3d_trimmed_bytes,2*(capacity-27)*4);
+  draw({a:large});draw({a:small});assert.equal(stats().geometry3d_pending_buffer_trims,1);
+  renderer.clear();time+=60000;draw({});assert.equal(stats().geometry3d_pending_buffer_trims,0);assert.equal(stats().geometry3d_buffer_trims,2);
 });
 
 test('shader meshes read the layout and stages their scene material declares',()=>{

@@ -63,7 +63,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
  const runs=[],pages=[],slots=new Map(),dedicated=new Map(),imageTextures=new Map(),textureRuns=new Map();
  let data=new Float32Array(256*STRIDE),count=0,drawRuns=0,width=0,height=0,disposed=false,scratch=null,scratchContext=null,scratchTexture=null,atlasSize=0;
  let rebuilds=0,rasters=0,uploads=0,compactions=0,draws=0,lastRegions=0,lastMs=null,wasted=0,stale=true;
- const atlasIdleMs=30000,atlasSweepMs=1000;let nextAtlasSweep=0,atlasRetired=0;
+ const atlasIdleMs=30000,atlasSweepMs=1000;let nextAtlasSweep=0,atlasRetired=0,retryTextAfterRetirement=false;
  const sharedImages=!!(textureCache&&getImageAssets&&getAssetCatalog),imageOwners=new Map();
  let imageBroker=null,imageCatalog=null,imageSpecs=null,imageEpoch=0,retiring=false,drawing=false,imageActive=0,imageCached=0,imageBytes=0,imageBuilds=0,imageHits=0,imageIdleHits=0,imageRetired=0;
  function attemptAll(values,fn){let failure;for(const value of values)try{fn(value);}catch(error){failure??=error;}if(failure)throw failure;}
@@ -124,9 +124,12 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
  function surface(w,h){const canvas=createSurface();canvas.width=w;canvas.height=h;return canvas;}
  function configure(texture){texture.flipY=false;texture.premultiplyAlpha=true;texture.generateMipmaps=false;texture.minFilter=texture.magFilter=THREE.LinearFilter;texture.colorSpace=THREE.NoColorSpace;return texture;}
  function newPage(){
-  const blank=surface(atlasSize,atlasSize),texture=configure(new THREE.Texture(blank));texture.needsUpdate=true;
-  renderer.initTexture(texture);blank.width=blank.height=1;// GPU storage stays; the blank CPU canvas is released.
-  const page={texture,shelves:[],top:0,idleSince:null};pages.push(page);return page;
+  // WebGL initializes new texture storage to zero. Each occupied slot receives
+  // its own raster below, so a page needs dimensions but no CPU pixel buffer.
+  const texture=configure(new THREE.DataTexture(null,atlasSize,atlasSize));
+  texture.source.dataReady=false;texture.needsUpdate=true;
+  try{renderer.initTexture(texture);}catch(error){texture.dispose();throw error;}
+  const page={texture,size:atlasSize,shelves:[],top:0,idleSince:null};pages.push(page);return page;
  }
  // Keep cached slots for quick window toggles. Never repack or touch a page
  // used by the last successful composition; retire at most one wholly idle
@@ -142,12 +145,14 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    pages.splice(index,1);
    for(const [key,slot]of slots)if(slot.page===page)slots.delete(key);
    atlasRetired++;retireTexture(page.texture);
+   if(retryTextAfterRetirement){retryTextAfterRetirement=false;stale=true;}
   }finally{retiring=false;}
  }
  function fit(page,w,h){
-  for(const s of page.shelves)if(h<=s.height&&s.height<=h*1.5+8&&s.x+w<=atlasSize){const x=s.x;s.x+=w+1;return {page,x,y:s.y};}
-  const shelfHeight=Math.min(atlasSize,Math.ceil(h/4)*4);
-  if(w>atlasSize||page.top+shelfHeight>atlasSize)return null;
+  if(w>page.size||h>page.size)return null;
+  for(const s of page.shelves)if(h<=s.height&&s.height<=h*1.5+8&&s.x+w<=page.size){const x=s.x;s.x+=w+1;return {page,x,y:s.y};}
+  const shelfHeight=Math.min(page.size,Math.ceil(h/4)*4);
+  if(page.top+shelfHeight>page.size)return null;
   const shelf={y:page.top,height:shelfHeight,x:w+1};page.shelves.push(shelf);page.top+=shelfHeight+1;return {page,x:0,y:shelf.y};
  }
  function allocate(w,h){
@@ -155,9 +160,16 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
   for(const page of pages){const place=fit(page,w,h);if(place)return place;}
   return pages.length<MAX_PAGES?fit(newPage(),w,h):null;
  }
- function paint(request,canvas,context){
-  canvas.width=request.w;canvas.height=request.h;
+ function dedicatedTextTexture(request){
+  const {w,h}=request,canvas=surface(w,h),context=canvas.getContext('2d',{willReadFrequently:true});
+  if(!context)throw Error('UI_TEXT_RASTER_UNAVAILABLE');
   context.setTransform(1,0,0,1,-request.x0,-request.y0);request.paint(context);rasters++;
+  // Use the same raster and RGBA upload as an atlas slot. DOM canvas uploads
+  // can round translucent glyph colors differently. Above the device limit
+  // keep the canvas source so Three can downsample it before uploading.
+  const limit=renderer.capabilities?.maxTextureSize??Infinity;
+  const texture=w>limit||h>limit?new THREE.Texture(canvas):new THREE.DataTexture(context.getImageData(0,0,w,h).data,w,h);
+  configure(texture);texture.needsUpdate=true;return texture;
  }
  // Atlas uploads rasterize into one grow-only CPU-backed scratch canvas and
  // send just that block's pixels with one texSubImage2D. The texture is bound
@@ -178,6 +190,11 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
   finally{gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);}
  }
  function placeText(requests){
+  if(uiTextAtlasSize===undefined){
+   const largePage=Math.min(2048,renderer.capabilities?.maxTextureSize??2048);
+   const needsLargePage=requests.some(({w,h})=>(w>requestedAtlasSize||h>requestedAtlasSize)&&w<=largePage&&h<=largePage);
+   atlasSize=needsLargePage?largePage:Math.min(requestedAtlasSize,largePage);
+  }
   const live=new Set(requests.map(r=>r.key));
   const resolve=fresh=>{
    const missing=[];
@@ -189,22 +206,23 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
    return missing;
   };
   let missing=resolve(false);
-  if(missing.length&&(slots.size>live.size||wasted)){
+  if((slots.size>live.size||wasted)&&missing.some(request=>pages.some(page=>request.w<=page.size&&request.h<=page.size))){
    // Repack: drop every slot this composition does not use, re-raster the rest.
    compactions++;wasted=0;slots.clear();for(const page of pages){page.shelves=[];page.top=0;}missing=resolve(true);
   }
   for(const request of requests)if(request.slot&&!missing.includes(request)){
    if(request.slot.content!==request.content){upload(request.slot,request);request.slot.content=request.content;}
-   const s=request.slot;request.texture=s.page.texture;request.uv=[s.x/atlasSize,s.y/atlasSize,(s.x+request.w)/atlasSize,(s.y+request.h)/atlasSize];
+   const s=request.slot,size=s.page.size;request.texture=s.page.texture;request.uv=[s.x/size,s.y/size,(s.x+request.w)/size,(s.y+request.h)/size];
   }
   for(const request of missing){
    let own=dedicated.get(request.key);
-   if(!own||own.content!==request.content){const canvas=surface(request.w,request.h),context=canvas.getContext('2d');
-    if(!context)throw Error('UI_TEXT_RASTER_UNAVAILABLE');paint(request,canvas,context);
-    const previous=own;own={texture:configure(new THREE.Texture(canvas)),content:request.content,bytes:request.w*request.h*4};own.texture.needsUpdate=true;dedicated.set(request.key,own);if(previous)retireTexture(previous.texture);uploads++;}
+   if(!own||own.content!==request.content){
+    const previous=own;own={texture:dedicatedTextTexture(request),content:request.content,bytes:request.w*request.h*4};dedicated.set(request.key,own);if(previous)retireTexture(previous.texture);uploads++;}
    request.texture=own.texture;request.uv=FULL_UV;request.dedicated=true;
   }
   for(const [key,own]of dedicated)if(!missing.some(r=>r.key===key)){dedicated.delete(key);retireTexture(own.texture);}
+  // A static screen can outlive the old pages that forced its text to spill.
+  retryTextAfterRetirement=pages.length===MAX_PAGES&&missing.some(request=>request.w<=atlasSize&&request.h<=atlasSize);
  }
  function imageTexture(id,image,used,created,promoted){
   if(!sharedImages){used.add(image);let texture=imageTextures.get(image);if(!texture){texture=configure(new THREE.Texture(image));texture.needsUpdate=true;imageTextures.set(image,texture);}return texture;}
@@ -322,7 +340,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
   retiring=true;let failure;try{for(const r of oldRuns){bindRun(r,white);scene.remove(r.mesh);}textureRuns.clear();
    try{clearImageOwners();}catch(error){failure??=error;}
    for(const [values,fn]of [[oldRuns,r=>{try{r.geometry.dispose();}finally{r.mesh.material.dispose();}}],[oldPages,p=>retireTexture(p.texture)],[oldDedicated,p=>retireTexture(p.texture)],[oldImages,retireTexture]])try{attemptAll(values,fn);}catch(error){failure??=error;}
-  }finally{retiring=false;imageCatalog=imageBroker=imageSpecs=null;scratchTexture?.dispose();scratchTexture=null;count=drawRuns=wasted=0;width=height=atlasSize=0;nextAtlasSweep=0;stale=true;}if(failure)throw failure;
+  }finally{retiring=false;imageCatalog=imageBroker=imageSpecs=null;scratchTexture?.dispose();scratchTexture=null;count=drawRuns=wasted=0;width=height=atlasSize=0;nextAtlasSweep=0;retryTextAfterRetirement=false;stale=true;}if(failure)throw failure;
  }
  return {
   // Drawing-buffer pixels the UI lays out against, and the CSS->device scale.
@@ -354,7 +372,7 @@ export function createGpuUi(THREE,renderer,{available=()=>true,createSurface=()=
   clear,
    dispose(){if(disposed)return;if(retiring)throw Error('UI_IMAGE_RESOURCES_RETIRING');disposed=true;try{clear();}finally{white.dispose();}},
   metrics:()=>({backend:'three.js',quads:count,draw_calls:drawRuns,rebuilds,last_rebuild_ms:lastMs,text_rasters:rasters,atlas_uploads:uploads,atlas_compactions:compactions,
-    atlas_pages:pages.length,atlas_active_pages:pages.filter(page=>page.idleSince===null).length,atlas_retired_pages:atlasRetired,atlas_idle_grace_ms:atlasIdleMs,atlas_page_size:atlasSize,atlas_page_size_requested:requestedAtlasSize,atlas_reserved_bytes_estimate:pages.length*atlasSize*atlasSize*4,text_slots:slots.size,dedicated_text_textures:dedicated.size,dedicated_text_bytes_estimate:[...dedicated.values()].reduce((sum,own)=>sum+own.bytes,0),image_textures:sharedImages?imageOwners.size:imageTextures.size,submits:draws,
+    atlas_pages:pages.length,atlas_active_pages:pages.filter(page=>page.idleSince===null).length,atlas_retired_pages:atlasRetired,atlas_idle_grace_ms:atlasIdleMs,atlas_page_size:atlasSize,atlas_page_size_requested:requestedAtlasSize,atlas_page_sizes:pages.map(page=>page.size),atlas_reserved_bytes_estimate:pages.reduce((sum,page)=>sum+page.size*page.size*4,0),text_slots:slots.size,dedicated_text_textures:dedicated.size,dedicated_text_bytes_estimate:[...dedicated.values()].reduce((sum,own)=>sum+own.bytes,0),image_textures:sharedImages?imageOwners.size:imageTextures.size,submits:draws,
     image_cache_scope:sharedImages?'shared_texture_cache_with_broker_lease':'borrowed_immediate_no_shared_cache',image_active_owners:imageActive,image_cached_owners:imageCached,image_bytes_estimate:imageBytes,image_texture_builds:imageBuilds,image_cache_hits:imageHits,image_idle_hits:imageIdleHits,image_owners_retired:imageRetired,image_epoch:imageEpoch}),
  };
 }

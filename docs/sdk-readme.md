@@ -271,8 +271,9 @@ presentation optionally accepts boolean antialias as a construction request
 (omitted/false accepted, true rejected at preflight). The existing player READY
 console reports requested and effective context antialias separately.
 
-Optional official Web `ui_text_atlas_size` selects a text atlas page size;
-omission retains 4096 and `2048` can reduce a page from 64 MiB to 16 MiB.
+Optional official Web `ui_text_atlas_size` selects a fixed text atlas page size.
+By default, visible text block sizes determine whether new pages use 1024
+(4 MiB) or 2048 (16 MiB), subject to the GPU's texture size limit.
 Additional pages and oversized text textures count separately. See
 [UI text atlas](docs/ui-text-atlas.md) for supported sizes and UI metrics.
 

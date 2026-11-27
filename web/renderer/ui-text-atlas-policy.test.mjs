@@ -4,7 +4,7 @@ import {parseUiTextAtlasSize} from './ui-text-atlas-policy.js';
 import {createPlayerRenderer} from '../shared/renderer-selection.mjs';
 
 test('atlas setting accepts supported page sizes and rejects invalid declarations',()=>{
- assert.equal(parseUiTextAtlasSize(),4096);
+ assert.equal(parseUiTextAtlasSize(),1024);
  for(const size of [256,512,1024,2048,4096])assert.equal(parseUiTextAtlasSize(size),size);
  for(const size of [null,0,128,300,8192,2048.5,'2048',true])assert.throws(()=>parseUiTextAtlasSize(size),/UI_TEXT_ATLAS_SIZE_INVALID/);
 });

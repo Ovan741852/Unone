@@ -198,17 +198,35 @@ const imageClock = () => globalThis.performance?.now?.() ?? Date.now();
 function loadDecodedImage(url, { signal, onTiming } = {}) {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) { reject(abortImageError()); return; }
-    const image = new Image(),started=imageClock(); let settled = false, loaded = false;
+    const image = new Image(), started = imageClock(), hasDecode = typeof image.decode === 'function';
+    let settled = false, loaded = false, decoding = null;
     const cleanup = () => { image.onload = image.onerror = null; signal?.removeEventListener('abort', abort); };
     const fail = (error, cancelPending = false) => { if (settled) return; settled = true; cleanup(); if (cancelPending && !loaded) image.removeAttribute?.('src'); closeDecodedImage(image); reject(error); };
     const abort = () => fail(abortImageError(), true);
     image.onload = () => {
-      if (settled) return; loaded = true;const loadedAt=imageClock(),hasDecode=typeof image.decode==='function';
-      let decoded; try { imageDimensions(image); decoded = image.decode?.(); } catch (error) { fail(error); return; }
-      Promise.resolve(decoded).then(() => { if (settled) return; settled = true; cleanup();try{onTiming?.({load_event_ms:Math.max(0,loadedAt-started),decode_ms:hasDecode?Math.max(0,imageClock()-loadedAt):null});}catch{} resolve(image); }, fail);
+      if (settled || loaded) return;
+      loaded = true;
+      const loadedAt = imageClock();
+      try { imageDimensions(image); } catch (error) { fail(error); return; }
+      Promise.resolve().then(() => decoding).then(() => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        try { onTiming?.({ load_event_ms: Math.max(0, loadedAt - started), decode_ms: hasDecode ? Math.max(0, imageClock() - loadedAt) : null }); } catch {}
+        resolve(image);
+      }, fail);
     };
     image.onerror = () => fail(imageError('IMAGE_ASSET_LOAD_FAILED', String(url)));
-    signal?.addEventListener('abort', abort, { once: true }); image.src = String(url);
+    signal?.addEventListener('abort', abort, { once: true });
+    try { image.src = String(url); } catch (error) { fail(error); return; }
+    // Let the browser decode as bytes arrive. Waiting to request it until the load
+    // callback runs adds a main-thread turn to every batch on a busy game page.
+    if (hasDecode && !settled) {
+      try { decoding = Promise.resolve(image.decode()); } catch (error) { decoding = Promise.reject(error); }
+      // onload validates the size and propagates decode failures. A network
+      // error or release may settle the lease before that callback is delivered.
+      decoding.catch(() => {});
+    }
   });
 }
 async function readImageHeader(url,signal,limit) {
@@ -441,7 +459,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     report({includeTimings=false}={}) {
       let residentBytes = 0, activeBytes = 0, sceneBytes = 0, unusedBytes = 0, activeEntries = 0, sceneEntries = 0, unusedEntries = 0, loading = 0;
       for (const entry of entries.values()) { residentBytes += entry.bytes; if (entry.state === 'loading') loading++; if (entry.external) { activeEntries++; activeBytes += entry.bytes; } if (entry.scene) { sceneEntries++; sceneBytes += entry.bytes; } if (!entry.external && !entry.scene) { unusedEntries++; unusedBytes += entry.bytes; } }
-      return { catalog_generation: catalog.generation, disposed, limits, preload_plan: planSummary,groups:groups.snapshot(),loading_metrics:{visible_queue_supported:true,completed:completedLoads,failed:failedLoads,cancelled:cancelledLoads,total_elapsed_ms:loadingTotalMs,recent_capacity:128,...(includeTimings?{recent:loadTimings.slice()}:{}),scope:'Queue and image readiness wall time; load_event includes browser fetch/event wait. Resource Timing values are nullable, zero transfer is ambiguous. Decode duration only when supplied by the default HTML image loader.'}, resident_entries: entries.size, resident_bytes_estimate: residentBytes, active_entries: activeEntries, active_bytes_estimate: activeBytes, scene_entries: sceneEntries, scene_bytes_estimate: sceneBytes, unused_entries: unusedEntries, unused_bytes_estimate: unusedBytes, loading, active_tasks: running, queued_tasks: queue.length, loads, reuses, evictions, closed_images: closedImages, released_bytes_estimate: releasedBytes, pressure_bytes: Math.max(0, residentBytes - sceneMaxBytes - unusedMaxBytes), pressure_entries: Math.max(0, entries.size - sceneMaxEntries - unusedMaxEntries), preparation, scope: 'Decoded image RGBA estimate; scene, active and group sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation.' };
+      return { catalog_generation: catalog.generation, disposed, limits, preload_plan: planSummary,groups:groups.snapshot(),loading_metrics:{visible_queue_supported:true,completed:completedLoads,failed:failedLoads,cancelled:cancelledLoads,total_elapsed_ms:loadingTotalMs,recent_capacity:128,...(includeTimings?{recent:loadTimings.slice()}:{}),scope:'Queue and image readiness wall time; load_event includes browser fetch/event wait. Resource Timing values are nullable, zero transfer is ambiguous. The HTML image loader reports decode_ms as the remaining wait after the load event; decoding may overlap the fetch.'}, resident_entries: entries.size, resident_bytes_estimate: residentBytes, active_entries: activeEntries, active_bytes_estimate: activeBytes, scene_entries: sceneEntries, scene_bytes_estimate: sceneBytes, unused_entries: unusedEntries, unused_bytes_estimate: unusedBytes, loading, active_tasks: running, queued_tasks: queue.length, loads, reuses, evictions, closed_images: closedImages, released_bytes_estimate: releasedBytes, pressure_bytes: Math.max(0, residentBytes - sceneMaxBytes - unusedMaxBytes), pressure_entries: Math.max(0, entries.size - sceneMaxEntries - unusedMaxEntries), preparation, scope: 'Decoded image RGBA estimate; scene, active and group sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation.' };
     },
     dispose() { if (disposed) return; disposed = true;groups.dispose(); metadataInspector.dispose(); planEpoch++; planController?.abort(); for (const lease of sceneLeases.values()) lease.release(); sceneLeases.clear(); for (const entry of entries.values()) if (entry.state === 'loading') entry.controller.abort(); sweep(); },
   });
