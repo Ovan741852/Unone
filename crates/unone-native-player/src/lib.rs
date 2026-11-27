@@ -18,6 +18,9 @@ mod sprites;
 mod sprite_resources;
 mod startup;
 mod ui;
+mod host;
+#[cfg(target_os = "ios")]
+pub mod embed;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -26,10 +29,10 @@ use std::{
     io::Write,
     path::{Path, PathBuf},
     rc::Rc,
-    sync::Arc,
     time::{Duration, Instant},
 };
 use unone_engine::{EngineRuntime, HostProject, WindowsGpuMemory, WorldSnapshot};
+use host::{HostLoop, SharedWindow};
 #[cfg(target_os = "windows")]
 use winit::platform::windows::WindowAttributesExtWindows;
 use winit::{
@@ -607,7 +610,7 @@ struct App {
     snapshot: WorldSnapshot,
     settings: Settings,
     report: Option<PathBuf>,
-    window: Option<Arc<Window>>,
+    window: Option<SharedWindow>,
     renderer: Option<render::Renderer>,
     ready_emitted: bool,
     audio: audio::NativeAudio,
@@ -831,7 +834,7 @@ impl App {
         })
     }
     /// Takes over the window and renderer that a startup screen or `resumed` opened.
-    fn adopt(&mut self, window: Arc<Window>, mut renderer: render::Renderer) -> R<()> {
+    fn adopt(&mut self, window: SharedWindow, mut renderer: render::Renderer) -> R<()> {
         if renderer.memory_profile != self.gpu_memory {
             return Err("WINDOWS_GPU_MEMORY_MISMATCH: startup and game device settings differ".into());
         }
@@ -926,7 +929,7 @@ impl App {
         }
         emit(&value);
     }
-    fn fail(&mut self, e: String, event_loop: &ActiveEventLoop) {
+    fn fail(&mut self, e: String, event_loop: &dyn HostLoop) {
         // Interactive play keeps the window open on the error, like the Web
         // player; tool runs exit at once with it.
         if !tool_run(&self.settings) && self.renderer.is_some() && self.stopped.is_none() {
@@ -941,8 +944,9 @@ impl App {
         event_loop.exit();
     }
 }
-impl ApplicationHandler for App {
-    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+// The player's reactions to its host, shared by winit's event loop (below) and embed.rs.
+impl App {
+    pub(crate) fn on_resumed(&mut self, event_loop: &dyn HostLoop) {
         keep_awake();
         if self.window.is_some() {
             self.paused = false;
@@ -965,20 +969,23 @@ impl ApplicationHandler for App {
                     attributes = attributes.with_active(false);
                 }
             }
-            let window = Arc::new(
-                event_loop
-                    .create_window(attributes)
-                    .map_err(|e| e.to_string())?,
-            );
+            let window = event_loop.create_window(attributes)?;
             let renderer =
                 pollster::block_on(render::Renderer::new(window.clone(), &self.package, self.gpu_memory))?;
             Ok((window, renderer))
         })();
-        if let Err(e) = result.and_then(|(window, renderer)| self.adopt(window, renderer)) {
-            self.fail(e, event_loop);
+        match result.and_then(|(window, renderer)| self.adopt(window, renderer)) {
+            // Back from a suspend (the window was dropped): play on from now, without
+            // catching up the time spent in the background. Leaving paused set froze
+            // the game after the app returned to the foreground.
+            Ok(()) => {
+                self.paused = false;
+                self.last = None;
+            }
+            Err(e) => self.fail(e, event_loop),
         }
     }
-    fn suspended(&mut self, _: &ActiveEventLoop) {
+    pub(crate) fn on_suspended(&mut self) {
         self.reset_input();
         self.renderer = None;
         self.window = None;
@@ -987,7 +994,7 @@ impl ApplicationHandler for App {
         self.paused = true;
         self.audio.pause();
     }
-    fn window_event(&mut self, event_loop: &ActiveEventLoop, id: WindowId, event: WindowEvent) {
+    pub(crate) fn on_window_event(&mut self, event_loop: &dyn HostLoop, id: WindowId, event: WindowEvent) {
         if self.window.as_ref().is_none_or(|w| w.id() != id) {
             return;
         }
@@ -1241,12 +1248,26 @@ impl ApplicationHandler for App {
             _ => {}
         }
     }
-    fn about_to_wait(&mut self, _: &ActiveEventLoop) {
+    pub(crate) fn on_about_to_wait(&mut self) {
         if !self.paused && self.stopped.is_none() {
             if let Some(w) = &self.window {
                 w.request_redraw();
             }
         }
+    }
+}
+impl ApplicationHandler for App {
+    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+        self.on_resumed(event_loop)
+    }
+    fn suspended(&mut self, _: &ActiveEventLoop) {
+        self.on_suspended()
+    }
+    fn window_event(&mut self, event_loop: &ActiveEventLoop, id: WindowId, event: WindowEvent) {
+        self.on_window_event(event_loop, id, event)
+    }
+    fn about_to_wait(&mut self, _: &ActiveEventLoop) {
+        self.on_about_to_wait()
     }
 }
 pub fn desktop() -> R<()> {

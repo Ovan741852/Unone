@@ -13,6 +13,7 @@ use std::{path::PathBuf, sync::Arc, thread::JoinHandle, time::{Duration, Instant
 use unone_engine::{StartupTheme, WindowsGpuMemory, hex_color};
 #[cfg(target_os = "windows")]
 use winit::platform::windows::WindowAttributesExtWindows;
+use crate::host::{HostLoop, SharedWindow};
 use winit::{application::ApplicationHandler, event::WindowEvent, event_loop::ActiveEventLoop, window::{Window, WindowId}};
 
 /// The Unone mark and wordmark, drawn with paths so no font is needed. The
@@ -433,7 +434,7 @@ pub(crate) struct Launcher {
     fonts: Fonts,
     screen: Screen,
     stage: Stage,
-    window: Option<Arc<Window>>,
+    window: Option<SharedWindow>,
     gpu: Option<Gpu>,
     painter: Painter,
     package: Option<super::LoadedPackage>,
@@ -480,6 +481,10 @@ impl Launcher {
     /// The startup error, or the game's, once the event loop has ended.
     pub(crate) fn error(self) -> Option<String> {
         self.error.or_else(|| self.app.and_then(|app| app.error))
+    }
+    /// The same, while the player is still running (an embedded player keeps showing it).
+    pub(crate) fn current_error(&self) -> Option<String> {
+        self.error.clone().or_else(|| self.app.as_ref().and_then(|app| app.error.clone()))
     }
     fn draw(&mut self) {
         let Some(window) = &self.window else { return };
@@ -544,11 +549,12 @@ impl Launcher {
     }
 }
 
-impl ApplicationHandler for Launcher {
-    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+// The startup screen's reactions to its host, shared by winit's event loop (below) and embed.rs.
+impl Launcher {
+    pub(crate) fn on_resumed(&mut self, event_loop: &dyn HostLoop) {
         crate::keep_awake();
         if self.stage == Stage::Running {
-            if let Some(app) = &mut self.app { app.resumed(event_loop); }
+            if let Some(app) = &mut self.app { app.on_resumed(event_loop); }
             return;
         }
         if self.window.is_none() {
@@ -564,8 +570,8 @@ impl ApplicationHandler for Launcher {
             #[cfg(target_os = "windows")]
             { attributes = attributes.with_drag_and_drop(false); }
             match event_loop.create_window(attributes) {
-                Ok(window) => self.window = Some(Arc::new(window)),
-                Err(error) => { self.error = Some(error.to_string()); event_loop.exit(); return; }
+                Ok(window) => self.window = Some(window),
+                Err(error) => { self.error = Some(error); event_loop.exit(); return; }
             }
         }
         if self.gpu.is_none() && self.renderer.is_none() && let Some(window) = &self.window {
@@ -580,9 +586,9 @@ impl ApplicationHandler for Launcher {
             window.request_redraw();
         }
     }
-    fn suspended(&mut self, event_loop: &ActiveEventLoop) {
+    pub(crate) fn on_suspended(&mut self) {
         if self.stage == Stage::Running {
-            if let Some(app) = &mut self.app { app.suspended(event_loop); }
+            if let Some(app) = &mut self.app { app.on_suspended(); }
             return;
         }
         // The surface is gone until the next resume; a built renderer is rebuilt then.
@@ -591,9 +597,9 @@ impl ApplicationHandler for Launcher {
         self.painter.reset();
         self.window = None;
     }
-    fn window_event(&mut self, event_loop: &ActiveEventLoop, id: WindowId, event: WindowEvent) {
+    pub(crate) fn on_window_event(&mut self, event_loop: &dyn HostLoop, id: WindowId, event: WindowEvent) {
         if self.stage == Stage::Running {
-            if let Some(app) = &mut self.app { app.window_event(event_loop, id, event); }
+            if let Some(app) = &mut self.app { app.on_window_event(event_loop, id, event); }
             return;
         }
         if self.window.as_ref().is_none_or(|window| window.id() != id) { return; }
@@ -615,14 +621,28 @@ impl ApplicationHandler for Launcher {
             _ => {}
         }
     }
-    fn about_to_wait(&mut self, event_loop: &ActiveEventLoop) {
+    pub(crate) fn on_about_to_wait(&mut self) {
         if self.stage == Stage::Running {
-            if let Some(app) = &mut self.app { app.about_to_wait(event_loop); }
+            if let Some(app) = &mut self.app { app.on_about_to_wait(); }
             return;
         }
         // Keep the startup work going from here too, as App does: iOS drops a redraw
         // requested from inside RedrawRequested, which left the startup screen frozen.
         if self.stage != Stage::Failed && let Some(window) = &self.window { window.request_redraw(); }
+    }
+}
+impl ApplicationHandler for Launcher {
+    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+        self.on_resumed(event_loop)
+    }
+    fn suspended(&mut self, _: &ActiveEventLoop) {
+        self.on_suspended()
+    }
+    fn window_event(&mut self, event_loop: &ActiveEventLoop, id: WindowId, event: WindowEvent) {
+        self.on_window_event(event_loop, id, event)
+    }
+    fn about_to_wait(&mut self, _: &ActiveEventLoop) {
+        self.on_about_to_wait()
     }
 }
 

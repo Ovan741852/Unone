@@ -2,7 +2,7 @@ use crate::Package;
 use std::{collections::{BTreeMap, HashMap}, sync::Arc};
 use unone_engine::{WindowsGpuMemory, WorldSnapshot};
 use wgpu::util::DeviceExt;
-use winit::window::Window;
+use crate::host::SharedWindow;
 type R<T> = Result<T, String>;
 
 // Index once without changing manifest iteration/upload order. The SDK rejects
@@ -697,7 +697,7 @@ pub struct Gpu {
     memory_profile: WindowsGpuMemory,
 }
 impl Gpu {
-    pub async fn new(window: Arc<Window>, memory_profile: WindowsGpuMemory) -> R<Self> {
+    pub async fn new(window: SharedWindow, memory_profile: WindowsGpuMemory) -> R<Self> {
         let instance = wgpu::Instance::default();
         let surface = instance
             .create_surface(window.clone())
@@ -1367,7 +1367,7 @@ impl Renderer {
     pub fn target(&self) -> Target<'_> {
         Target { device: &self.device, queue: &self.queue, surface: &self.surface, config: &self.config }
     }
-    pub async fn new(window: Arc<Window>, package: &Package, memory_profile: WindowsGpuMemory) -> R<Self> {
+    pub async fn new(window: SharedWindow, package: &Package, memory_profile: WindowsGpuMemory) -> R<Self> {
         Self::with_gpu(Gpu::new(window, memory_profile).await?, package)
     }
     pub(crate) fn gpu_allocator_report(&self) -> Option<serde_json::Value> {
