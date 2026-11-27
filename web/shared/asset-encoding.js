@@ -252,7 +252,7 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
   let loads = 0, reuses = 0, evictions = 0, closedImages = 0, releasedBytes = 0;
   const loadTimings=[];let loadingTotalMs=0,completedLoads=0,failedLoads=0,cancelledLoads=0;
   function recordLoad(entry,state,error){
-    const end=imageClock(),row={id:entry.id,state,queued_at_ms:entry.queuedAt,started_at_ms:entry.startedAt,completed_at_ms:end,elapsed_ms:Math.max(0,end-entry.queuedAt),queue_ms:entry.startedAt===null?null:Math.max(0,entry.startedAt-entry.queuedAt),load_event_ms:entry.imageTiming?.load_event_ms??null,decode_ms:entry.imageTiming?.decode_ms??null,network_ms:null,transfer_bytes:null,encoded_body_bytes:null,error:error?String(error?.code??error?.name??'IMAGE_ASSET_ERROR'):null};
+    const end=imageClock(),row={id:entry.id,state,queued_at_ms:entry.queuedAt,started_at_ms:entry.startedAt,completed_at_ms:end,elapsed_ms:Math.max(0,end-entry.queuedAt),queue_ms:entry.startedAt===null?null:Math.max(0,entry.startedAt-entry.queuedAt),visible_queue_ms:entry.longestVisibleWait,load_event_ms:entry.imageTiming?.load_event_ms??null,decode_ms:entry.imageTiming?.decode_ms??null,network_ms:null,transfer_bytes:null,encoded_body_bytes:null,error:error?String(error?.code??error?.name??'IMAGE_ASSET_ERROR'):null};
     if(entry.url)try{const rows=globalThis.performance?.getEntriesByName?.(entry.url,'resource'),resource=rows?.[rows.length-1];if(resource&&resource.startTime>=entry.queuedAt){row.network_ms=Number.isFinite(resource.duration)?resource.duration:null;row.transfer_bytes=resource.transferSize>0?resource.transferSize:null;row.encoded_body_bytes=resource.encodedBodySize>0?resource.encodedBodySize:null;}}catch{}
     loadTimings.push(Object.freeze(row));if(loadTimings.length>128)loadTimings.shift();
     if(state==='ready'){completedLoads++;loadingTotalMs+=row.elapsed_ms;}else if(state==='cancelled')cancelledLoads++;else failedLoads++;
@@ -260,16 +260,35 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
   const limits = Object.freeze({ sceneMaxBytes, sceneMaxEntries, unusedMaxBytes, unusedMaxEntries, maxConcurrentTasks });
   const ownImage = image => imageOwners.set(image, (imageOwners.get(image) ?? 0) + 1);
   const dropImage = image => { const remaining = (imageOwners.get(image) ?? 1) - 1; if (remaining) imageOwners.set(image, remaining); else { imageOwners.delete(image); closeDecodedImage(image); closedImages++; } };
+  let foregroundBypasses = 0;
+  function endVisibleWait(entry) {
+    if (entry.visibleWaitSince === null) return;
+    entry.longestVisibleWait = Math.max(entry.longestVisibleWait ?? 0, imageClock() - entry.visibleWaitSince);
+    entry.visibleWaitSince = null;
+  }
+  function leaveQueue(entry) {
+    if (!entry) return; // Header preflights do not have image leases.
+    entry.awaitingSlot = false;
+    endVisibleWait(entry);
+  }
   function pump() {
     while (running < maxConcurrentTasks && queue.length) {
-      const task = queue.shift(); if (task.signal.aborted) { task.cleanup(); continue; } running++;
+      // A renderer can acquire a lease after a group already queued the same image.
+      // Read the live lease count so releasing that renderer also withdraws its priority.
+      const front = foregroundBypasses < maxConcurrentTasks
+        ? queue.findIndex(task => task.entry?.visibleLeases > 0) : -1;
+      const task = front > 0 ? queue.splice(front, 1)[0] : queue.shift();
+      leaveQueue(task.entry);
+      // After one wave of bypasses, give the oldest queued task a turn.
+      foregroundBypasses = front > 0 ? foregroundBypasses + 1 : 0;
+      if (task.signal.aborted) { task.cleanup(); continue; } running++;
       Promise.resolve().then(task.work).then(task.resolve, task.reject).finally(() => { running--; task.cleanup(); pump(); });
     }
   }
-  function schedule(work, signal) {
+  function schedule(work, signal, entry = null) {
     return new Promise((resolve, reject) => {
-      const abort = () => { const queued = queue.indexOf(task); if (queued >= 0) { queue.splice(queued, 1); task.cleanup(); } reject(abortImageError()); pump(); };
-      const task = { work: () => { if (signal.aborted) throw abortImageError(); return work(); }, signal, resolve, reject, cleanup: () => signal.removeEventListener('abort', abort) };
+      const abort = () => { const queued = queue.indexOf(task); if (queued >= 0) { queue.splice(queued, 1); leaveQueue(entry); task.cleanup(); } reject(abortImageError()); pump(); };
+      const task = { work: () => { if (signal.aborted) throw abortImageError(); return work(); }, signal, entry, resolve, reject, cleanup: () => signal.removeEventListener('abort', abort) };
       if (signal.aborted) { reject(abortImageError()); return; } signal.addEventListener('abort', abort, { once: true }); queue.push(task); pump();
     });
   }
@@ -306,7 +325,9 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
       }
       reuses++; return entry;
     }
-    entry = { id, asset, state: 'loading', image: null, error: null, bytes: 0, external: 0, scene: 0, stamp: ++stamp, retired: false, controller: new AbortController(), reservation,queuedAt:imageClock(),startedAt:null,url:null,imageTiming:null };
+    entry = { id, asset, state: 'loading', image: null, error: null, bytes: 0, external: 0, scene: 0, visibleLeases: 0,
+      awaitingSlot: true, visibleWaitSince: null, longestVisibleWait: null,
+      stamp: ++stamp, retired: false, controller: new AbortController(), reservation,queuedAt:imageClock(),startedAt:null,url:null,imageTiming:null };
     entries.set(id, entry); loads++;
     entry.promise = schedule(async () => {
       entry.startedAt=imageClock();const url = await resolveAssetUrl(asset);entry.url=String(url); if (entry.controller.signal.aborted) throw abortImageError();
@@ -317,18 +338,27 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
       let dimensions; try { dimensions = imageDimensions(image); } catch (error) { dropImage(image); throw error; }
       if (entry.reservation && (dimensions.width !== entry.reservation.width || dimensions.height !== entry.reservation.height)) { dropImage(image); throw imageError('IMAGE_ASSET_DIMENSIONS_CHANGED', id); }
       entry.image = image; entry.bytes = dimensions.bytes; entry.state = 'ready'; entry.stamp = ++stamp;recordLoad(entry,'ready'); sweep(); return image;
-    }, entry.controller.signal).catch(error => { if (!entry.image) { entry.state = 'error'; entry.error = error; }recordLoad(entry,error?.name==='AbortError'?'cancelled':'error',error); throw error; });
+    }, entry.controller.signal, entry).catch(error => { if (!entry.image) { entry.state = 'error'; entry.error = error; }recordLoad(entry,error?.name==='AbortError'?'cancelled':'error',error); throw error; });
     // Consumers own rejection handling; unused/released async work must never
     // manufacture an unhandled rejection during teardown.
     entry.promise.catch(() => {}); return entry;
   }
-  function leaseFor(id, role = 'external', reservation = null) {
+  function leaseFor(id, role = 'external', reservation = null, visible = false) {
     const entry = entryFor(id, reservation); entry[role]++; entry.stamp = ++stamp; let released = false;
+    if (visible) {
+      if (entry.awaitingSlot && entry.visibleLeases === 0) entry.visibleWaitSince = imageClock();
+      entry.visibleLeases++;
+    }
     const releasedError = imageError('IMAGE_ASSET_LEASE_RELEASED', id);
     return Object.freeze({
       get state() { return released ? 'error' : entry.state; }, get image() { return !released && entry.state === 'ready' ? entry.image : null; },
       get error() { return released ? releasedError : entry.error; }, promise: entry.promise,
-      release() { if (released) return; released = true; entry[role]--; entry.stamp = ++stamp; sweep(); },
+      release() {
+        if (released) return;
+        released = true; entry[role]--;
+        if (visible && --entry.visibleLeases === 0) endVisibleWait(entry);
+        entry.stamp = ++stamp; sweep();
+      },
     });
   }
   function freezePreparation(value) { for (const key of ['unsupported','budget_skipped','errors']) { value[key].forEach(Object.freeze); Object.freeze(value[key]); } return Object.freeze(value); }
@@ -388,12 +418,12 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
     maxEntries: Math.max(1, sceneMaxEntries, unusedMaxEntries)});
   const groups=createImageAssetGroups({catalog,plan,inspect:metadataInspector.inspect,acquire:leaseFor,isReady:id=>entries.get(id)?.state==='ready',evict:ids=>{for(const id of ids){const entry=entries.get(id);if(entry&&!entry.external&&!entry.scene)forget(entry);}}});
   return Object.freeze({
-    acquire: id => leaseFor(id), prepareScene, inspect: metadataInspector.inspect,
+    acquire: id => leaseFor(id, 'external', null, true), prepareScene, inspect: metadataInspector.inspect,
     groups,
     report({includeTimings=false}={}) {
       let residentBytes = 0, activeBytes = 0, sceneBytes = 0, unusedBytes = 0, activeEntries = 0, sceneEntries = 0, unusedEntries = 0, loading = 0;
       for (const entry of entries.values()) { residentBytes += entry.bytes; if (entry.state === 'loading') loading++; if (entry.external) { activeEntries++; activeBytes += entry.bytes; } if (entry.scene) { sceneEntries++; sceneBytes += entry.bytes; } if (!entry.external && !entry.scene) { unusedEntries++; unusedBytes += entry.bytes; } }
-      return { catalog_generation: catalog.generation, disposed, limits, preload_plan: planSummary,groups:groups.snapshot(),loading_metrics:{completed:completedLoads,failed:failedLoads,cancelled:cancelledLoads,total_elapsed_ms:loadingTotalMs,recent_capacity:128,...(includeTimings?{recent:loadTimings.slice()}:{}),scope:'Queue and image readiness wall time; load_event includes browser fetch/event wait. Resource Timing values are nullable, zero transfer is ambiguous. Decode duration only when supplied by the default HTML image loader.'}, resident_entries: entries.size, resident_bytes_estimate: residentBytes, active_entries: activeEntries, active_bytes_estimate: activeBytes, scene_entries: sceneEntries, scene_bytes_estimate: sceneBytes, unused_entries: unusedEntries, unused_bytes_estimate: unusedBytes, loading, active_tasks: running, queued_tasks: queue.length, loads, reuses, evictions, closed_images: closedImages, released_bytes_estimate: releasedBytes, pressure_bytes: Math.max(0, residentBytes - sceneMaxBytes - unusedMaxBytes), pressure_entries: Math.max(0, entries.size - sceneMaxEntries - unusedMaxEntries), preparation, scope: 'Decoded image RGBA estimate; scene, active and group sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation.' };
+      return { catalog_generation: catalog.generation, disposed, limits, preload_plan: planSummary,groups:groups.snapshot(),loading_metrics:{visible_queue_supported:true,completed:completedLoads,failed:failedLoads,cancelled:cancelledLoads,total_elapsed_ms:loadingTotalMs,recent_capacity:128,...(includeTimings?{recent:loadTimings.slice()}:{}),scope:'Queue and image readiness wall time; load_event includes browser fetch/event wait. Resource Timing values are nullable, zero transfer is ambiguous. Decode duration only when supplied by the default HTML image loader.'}, resident_entries: entries.size, resident_bytes_estimate: residentBytes, active_entries: activeEntries, active_bytes_estimate: activeBytes, scene_entries: sceneEntries, scene_bytes_estimate: sceneBytes, unused_entries: unusedEntries, unused_bytes_estimate: unusedBytes, loading, active_tasks: running, queued_tasks: queue.length, loads, reuses, evictions, closed_images: closedImages, released_bytes_estimate: releasedBytes, pressure_bytes: Math.max(0, residentBytes - sceneMaxBytes - unusedMaxBytes), pressure_entries: Math.max(0, entries.size - sceneMaxEntries - unusedMaxEntries), preparation, scope: 'Decoded image RGBA estimate; scene, active and group sets may overlap. GPU textures, encoded bytes, browser copies and render targets are separate. Active leases are never evicted. closed_images counts logical final image-ownership retirement; released_bytes_estimate is retired decoded payload, not native-memory reclamation.' };
     },
     dispose() { if (disposed) return; disposed = true;groups.dispose(); metadataInspector.dispose(); planEpoch++; planController?.abort(); for (const lease of sceneLeases.values()) lease.release(); sceneLeases.clear(); for (const entry of entries.values()) if (entry.state === 'loading') entry.controller.abort(); sweep(); },
   });
@@ -438,7 +468,37 @@ function createImageAssetGroups({catalog,plan,inspect,acquire,isReady,evict}) {
     })();r.promise.catch(()=>{});return r.promise;
   }
   function unload(name){nameOf(name);const r=records.get(name);if(r&&(r.state==='loading'||r.state==='ready'||r.state==='error')){r.cancelled=r.state==='loading';r.state='unloaded';r.completedAt=imageClock();r.controller.abort();release(r);}return row(name);}
-  const api={preload:name=>request(name,'preload'),load:name=>request(name,'load'),unload,status:name=>{nameOf(name);return row(name);},snapshot(){return Object.freeze({version:1,available:!!plan,catalog_generation:catalog.generation,disposed,budget,held_entries:reservations.size,held_bytes_estimate:heldBytes,groups:Object.freeze(Object.keys(specs).map(row)),scope:'Group-owned decoded RGBA estimates only; overlapping groups share one reservation and broker image. Scene/renderer owners can retain additional or overlapping pixels. Unload never closes another active owner; browser/OS and GPU reclamation are not measured.'});},dispose(){if(disposed)return;disposed=true;for(const name of records.keys())unload(name);}};
+  // Each client owns an idempotent claim; all claims for one name share the physical request.
+  const pageOwner=Symbol('page'),owners=new Map();
+  function strongestMode(claims){for(const claim of claims.values())if(claim.mode==='load')return 'load';return 'preload';}
+  function hold(name,mode,owner=pageOwner) {
+    nameOf(name);if(disposed)throw imageError('IMAGE_ASSET_BROKER_DISPOSED');
+    let claims=owners.get(name);if(!claims){claims=new Map();owners.set(name,claims);}
+    let claim=claims.get(owner);
+    if(!claim){claim={mode,request:null,promise:null,cancel:null};claims.set(owner,claim);}
+    if(mode==='load')claim.mode='load';
+    const pending=request(name,strongestMode(claims));
+    if(records.get(name).state!=='loading')return pending;
+    if(claim.request===pending)return claim.promise;
+    claim.request=pending;
+    claim.promise=new Promise((resolve,reject)=>{
+      claim.cancel=()=>reject(abortImageError());
+      pending.then(resolve,reject);
+    });
+    claim.promise.catch(()=>{});
+    return claim.promise;
+  }
+  function drop(name,owner=pageOwner) {
+    nameOf(name);
+    const claims=owners.get(name),claim=claims?.get(owner);
+    if(!claim)return row(name);
+    claim.cancel?.();claims.delete(owner);
+    if(!claims.size){owners.delete(name);return unload(name);}
+    records.get(name).mode=strongestMode(claims);
+    return row(name);
+  }
+  const forOwner=owner=>Object.freeze({preload:name=>hold(name,'preload',owner),load:name=>hold(name,'load',owner),unload:name=>drop(name,owner)});
+  const api={...forOwner(pageOwner),forOwner,status:name=>{nameOf(name);return row(name);},snapshot(){return Object.freeze({version:1,available:!!plan,catalog_generation:catalog.generation,disposed,budget,held_entries:reservations.size,held_bytes_estimate:heldBytes,groups:Object.freeze(Object.keys(specs).map(row)),scope:'Group-owned decoded RGBA estimates only; overlapping groups share one reservation and broker image. Scene/renderer owners can retain additional or overlapping pixels. Unload never closes another active owner; browser/OS and GPU reclamation are not measured.'});},dispose(){if(disposed)return;disposed=true;for(const claims of owners.values())for(const claim of claims.values())claim.cancel?.();owners.clear();for(const name of records.keys())unload(name);}};
   return Object.freeze(api);
 }
 

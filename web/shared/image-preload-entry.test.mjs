@@ -37,7 +37,7 @@ function host({metas=[meta('content/image-assets.json')],reply=response([encoder
     createAssetCatalog:value=>{counts.catalogs++;return images.createAssetCatalog(value);},
     createImageAssetBroker(){counts.brokers++;return {async prepareScene(){counts.preparations++;context.steps.push('prepare');return preparation;}};},
     async createRuntimeBackend(){counts.backends++;throw Error('Core must not be constructed for a rejected preload plan');},
-    configurePhysical(){},loadPresentationFonts:async()=>{},async finishStartup(){counts.ready++;},
+    configurePhysical(){},loadPresentationFonts:async()=>{},uiRenderer:{setDeferredFonts(){}},fail(error){throw error;},async finishStartup(){counts.ready++;},
     steps:[],warmStartup(presentation){context.steps.push('warm');},
   };
   vm.createContext(context);vm.runInContext(actualFunction('readImagePreloadPlan'),context);

@@ -57,6 +57,7 @@ $requiredFiles = @(
     "bin\luau-analyze.exe",
     "docs\ai-agent-game-handoff.md",
     "docs\ai-workflow.md",
+    "docs\profiling.md",
     "docs\asset-workflow.md",
     "docs\engine.d.luau",
     "docs\project.schema.json",
@@ -70,6 +71,16 @@ $requiredFiles = @(
     "scripts\compare-player.mjs",
     "scripts\measure-web-export.mjs",
     "scripts\measure-web-scenario.mjs",
+    "scripts\web-bundle-trace.mjs",
+    "scripts\compare-web-replay.mjs",
+    "scripts\audit-web-bundle.mjs",
+    "scripts\immutable-bytes-emitted-runtime.mjs",
+    "scripts\refresh-official-web.mjs",
+    "scripts\web-export-files.mjs",
+    "scripts\web-export-content.mjs",
+    "scripts\web-export-host.mjs",
+    "scripts\web-export-validate-worker.mjs",
+    "scripts\prepare-web-image-assets.mjs",
     "web\runner\index.html",
     "web\runner\main.js",
     "web\runner\save-store.js",
@@ -123,10 +134,27 @@ foreach ($helper in @(
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
     throw "Node.js is required for behavioral parity. Install Node.js 22+ and rerun this verifier."
 }
-foreach ($tool in @('profile-player.mjs','compare-player.mjs','measure-web-export.mjs','measure-web-scenario.mjs')) {
+foreach ($tool in @('profile-player.mjs','compare-player.mjs','measure-web-export.mjs','measure-web-scenario.mjs','web-bundle-trace.mjs')) {
     & node --check (Join-Path $packageRoot "scripts/$tool")
     if ($LASTEXITCODE -ne 0) { throw "Invalid packaged profiling tool: $tool" }
 }
-& node (Join-Path $packageRoot 'scripts/verify-host-parity.mjs') --cli (Join-Path $packageRoot 'bin/game.exe') --wasm (Join-Path $packageRoot 'web/runtime/unone_web_live_smoke.js') --fixture (Join-Path $packageRoot 'tests/host-parity-project')
-if ($LASTEXITCODE -ne 0) { throw 'CLI/WASM behavioral parity failed. Rebuild both artifacts and inspect the shared host payload.' }
+# Execute the entry point so Node also resolves its published imports.
+foreach ($entry in @('compare-web-replay.mjs','audit-web-bundle.mjs','measure-web-export.mjs')) {
+    & node (Join-Path $packageRoot "scripts/$entry") --help | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "Packaged entry point could not load: $entry" }
+}
+# The native test runner writes .unone/test-times.json beside the project.
+$tempRoot = (Resolve-Path -LiteralPath ([IO.Path]::GetTempPath())).Path.TrimEnd([IO.Path]::DirectorySeparatorChar)
+$fixturePath = Join-Path $tempRoot ('unone-ai-parity-' + [guid]::NewGuid().ToString('N'))
+try {
+    Copy-Item -LiteralPath (Join-Path $packageRoot 'tests/host-parity-project') -Destination $fixturePath -Recurse
+    & node (Join-Path $packageRoot 'scripts/verify-host-parity.mjs') --cli (Join-Path $packageRoot 'bin/game.exe') --wasm (Join-Path $packageRoot 'web/runtime/unone_web_live_smoke.js') --fixture $fixturePath
+    if ($LASTEXITCODE -ne 0) { throw 'CLI/WASM behavioral parity failed. Rebuild both artifacts and inspect the shared host payload.' }
+} finally {
+    if (Test-Path -LiteralPath $fixturePath -PathType Container) {
+        $resolvedFixture = (Resolve-Path -LiteralPath $fixturePath).Path
+        if ([IO.Path]::GetDirectoryName($resolvedFixture) -ne $tempRoot) { throw "Unexpected verification fixture path: $resolvedFixture" }
+        Remove-Item -LiteralPath $resolvedFixture -Recurse -Force
+    }
+}
 Write-Output "AI engine package verified: $packageRoot"

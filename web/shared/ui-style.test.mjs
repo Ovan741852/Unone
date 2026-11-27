@@ -5,6 +5,37 @@ import {createCanvasUi,createUiPointerRouter,loadPresentationFonts} from './canv
 function context(){
   const calls=[];return {calls,save(){},restore(){},beginPath(){},rect(...r){calls.push(['rect',...r]);},roundRect(...r){calls.push(['round',...r]);},clip(){},fill(){calls.push(['fill',this.fillStyle]);},stroke(){calls.push(['stroke',this.strokeStyle,this.lineWidth]);},fillText(text,x,y){calls.push(['text',text,x,y,this.font,this.fillStyle]);},measureText(text){const count=[...text].length;return {width:count*(10+Number.parseFloat(this.letterSpacing??0))};},setTransform(){},clearRect(){}};
 }
+test('a deferred Web face leaves startup and the first unrelated screen ready, then paints the requested text once ready',async t=>{
+  const eager=[],registered=[],requests=[],errors=[];
+  let finish,redraws=0;
+  const fonts={add:face=>registered.push(face),delete(){},check:()=>false,
+    load:query=>{requests.push(query);return new Promise(resolve=>{finish=resolve;});}};
+  const previousDocument=globalThis.document,previousFontFace=globalThis.FontFace;
+  globalThis.document={fonts};
+  globalThis.FontFace=class{constructor(family){this.family=family;}async load(){eager.push(this.family);}};
+  t.after(()=>{globalThis.document=previousDocument;globalThis.FontFace=previousFontFace;});
+  const faces=[{family:'Body',source:'body.ttf'},{family:'Names',source:'names.ttf',weight:600,on_demand:true}];
+  const progress=[];
+  await loadPresentationFonts({fonts:faces},x=>x,(done,total)=>progress.push([done,total]));
+  assert.deepEqual(eager,['Body']);assert.deepEqual(registered.map(f=>f.family),['Body','Names']);
+  assert.deepEqual(progress,[[1,1]]);
+  assert.throws(()=>presentationFontFaces({fonts:[{...faces[1],on_demand:1}]}),/UI_FONT_INVALID/);
+  const ctx=context(),ui=createCanvasUi({width:120,height:50,getContext:()=>ctx});
+  ui.setDeferredFonts(faces,()=>redraws++,e=>errors.push(e));
+  const draw=(family,text)=>ui.draw({ui:{children:[{id:'label',kind:'text',rect:{x:0,y:0,width:100,height:100},text,style:{font_family:family}}]}});
+  draw('Body','Title');assert.deepEqual(requests,[]);
+  draw('Names','李');draw('Names','李娜');assert.deepEqual(requests,['400 16px "Names"']);
+  assert(!ctx.calls.some(r=>r[0]==='text'&&r[1].includes('李')));
+  finish([registered[1]]);await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(redraws,1);draw('Names','李娜');assert(ctx.calls.some(r=>r[0]==='text'&&r[1]==='李娜'));
+  draw('Body','Title');draw('Names','李娜');assert.equal(requests.length,1);assert.deepEqual(errors,[]);
+  draw('Names, sans-serif','名');draw('Names, sans-serif','姓名');
+  assert.equal(requests.at(-1),'400 16px "Names", sans-serif');assert.equal(requests.length,2);
+  assert(!ctx.calls.some(r=>r[0]==='text'&&r[1]==='姓名'));
+  fonts.check=()=>true;finish([registered[1]]);await new Promise(resolve=>setImmediate(resolve));
+  draw('Names, sans-serif','姓名');assert(ctx.calls.some(r=>r[0]==='text'&&r[1]==='姓名'));
+  ui.dispose();
+});
 const bounds={x:10,y:20,width:100,height:100,viewportHeight:1000};
 test('styled font sizes use viewport height, never shrink to fit the rectangle',()=>{
   const ctx=context(),node={text:'Wide text',style:{font_family:'Fixture UI',font_size:3,font_weight:700,color:[.1,.5,.9,.8]}};
@@ -67,6 +98,38 @@ test('font catalogs preserve legacy faces and distinguish weights with actionabl
   globalThis.FontFace=class {constructor(family,source,descriptors){Object.assign(this,{family,source,descriptors});}async load(){if(this.family==='Broken')throw Error('bad font');return this;}};
   try{
     await assert.rejects(loadPresentationFonts({fonts:[{family:'UI',source:'ui.ttf',weight:700},{family:'Broken',source:'broken.ttf'}]},s=>`content/${s}`),/UI_FONT_LOAD_FAILED: Broken 400/);
-    assert.equal(added[0].descriptors.weight,'700');assert.equal(added[0].source,'url("content/ui.ttf")');assert.deepEqual(removed,added);
+    assert.deepEqual(added,[]);assert.deepEqual(removed,[]);
   }finally{globalThis.FontFace=oldFontFace;globalThis.document=oldDocument;}
+});
+
+test('startup requests every font before waiting, installs in catalog order and leaves no late face after a failure',async()=>{
+  const oldFace=globalThis.FontFace,oldDocument=globalThis.document;
+  const pending=[],added=[],progress=[];
+  globalThis.document={fonts:{add:font=>added.push(font),delete:font=>added.splice(added.indexOf(font),1)}};
+  globalThis.FontFace=class {
+    constructor(family,source,descriptors){Object.assign(this,{family,source,descriptors});}
+    load(){return new Promise((resolve,reject)=>pending.push({resolve,reject}));}
+  };
+  const load=()=>loadPresentationFonts({fonts:[{family:'UI',source:'ui.ttf',weight:700},{family:'Labels',source:'labels.ttf'}]},
+    source=>'content/'+source,(done,total)=>progress.push([done,total]));
+  try{
+    const loaded=load();
+    assert.equal(pending.length,2);
+    pending[1].resolve();pending[0].resolve();
+    assert.deepEqual(await loaded,added);
+    assert.deepEqual(added.map(font=>font.family),['UI','Labels']);
+    assert.equal(added[0].descriptors.weight,'700');assert.equal(added[0].source,'url("content/ui.ttf")');
+    assert.deepEqual(progress,[[1,2],[2,2]]);
+    const failed=load();
+    pending[3].reject(Error('bad face'));
+    await assert.rejects(failed,/UI_FONT_LOAD_FAILED: Labels 400/);
+    pending[2].resolve();await new Promise(resolve=>setImmediate(resolve));
+    assert.equal(added.length,2);assert.equal(progress.length,2);
+    const previous=added.slice();
+    globalThis.document.fonts.add=font=>{if(font.family==='Labels')throw Error('cannot install');added.push(font);};
+    const installFailure=load();
+    pending[4].resolve();pending[5].resolve();
+    await assert.rejects(installFailure,/UI_FONT_LOAD_FAILED: Labels 400: cannot install/);
+    assert.deepEqual(added,previous);
+  }finally{globalThis.FontFace=oldFace;globalThis.document=oldDocument;}
 });

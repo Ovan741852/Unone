@@ -13,6 +13,59 @@ function fixture(ids=['a','b','c'],options={}){
 }
 const scene=ids=>({entities:ids.map(asset=>({sprite:{asset,visible:false}}))});
 
+test('visible queue timing measures only continuous renderer demand while a decode slot is unavailable',async t=>{
+ let clock=0; t.mock.method(performance,'now',()=>clock);
+ const ids=['running','shared','background'],block=deferred();
+ const preloadPlan={version:1,groups:{warm:ids},startup:[],budget:{max_bytes:128,max_entries:3},
+   dimensions:Object.fromEntries(ids.map(id=>[id,{format:'png',width:2,height:2}]))};
+ const {broker}=fixture([...ids,'cancel'],{maxConcurrentTasks:1,preloadPlan,loadImage:async(_url,{asset})=>{
+   if(asset.id==='running')await block.promise;
+   return image(asset.id);
+ }});
+ t.after(()=>broker.dispose());
+ const warming=broker.groups.preload('warm'); await tick();
+ clock=10; const alreadyRunning=broker.acquire('running'),first=broker.acquire('shared');
+ clock=16; const second=broker.acquire('shared');
+ clock=19; first.release();
+ clock=24; second.release(); // Two overlapping leases held the image for 14 ms.
+ clock=30; const cancelled=broker.acquire('cancel');
+ clock=32; cancelled.release(); await assert.rejects(cancelled.promise);
+ clock=90; const last=broker.acquire('shared');
+ clock=98; block.resolve(); await warming; // The second visible interval lasted 8 ms.
+ const report=broker.report({includeTimings:true}).loading_metrics;
+ assert.equal(report.visible_queue_supported,true);
+ const waits=Object.fromEntries(report.recent.map(r=>[r.id,r.visible_queue_ms]));
+ assert.deepEqual(waits,{cancel:2,running:null,shared:14,background:null});
+ assert.equal(report.recent.find(r=>r.id==='shared').queue_ms,98);
+ last.release(); alreadyRunning.release();
+});
+
+test('visible leases promote queued group images while an older preload still gets a turn',async t=>{
+ const ids=['active','old','withdrawn','visible-a','visible-b'];
+ const plan={version:1,groups:{all:ids},startup:[],
+   dimensions:Object.fromEntries(ids.map(id=>[id,{format:'png',width:2,height:2}])),
+   budget:{max_bytes:1024,max_entries:ids.length}};
+ const first=deferred(),order=[];
+ const {broker}=fixture(ids,{maxConcurrentTasks:1,preloadPlan:plan,loadImage:async(_url,{asset})=>{
+   order.push(asset.id);
+   if(asset.id==='active') await first.promise;
+   return image(asset.id);
+ }});
+ t.after(()=>broker.dispose());
+ const background=broker.groups.preload('all');
+ await tick();
+ assert.deepEqual(order,['active']);
+ const transient=broker.acquire('withdrawn');
+ const visible=broker.acquire('visible-a'),alsoVisible=broker.acquire('visible-b');
+ transient.release();
+ first.resolve();
+ await Promise.all([background,visible.promise,alsoVisible.promise]);
+ assert.deepEqual(order,['active','visible-a','old','visible-b','withdrawn']);
+ assert.equal(broker.groups.status('all').ready,ids.length);
+ assert.equal(broker.report().loads,ids.length);
+ visible.release();alsoVisible.release();
+});
+
 test('requires private catalog, declared image assets, supported encoding and integer budgets',()=>{
  assert.throws(()=>createImageAssetBroker({assets:[]},{resolveAssetUrl:()=>''}),/ASSET_CATALOG_REQUIRED/);
  const catalog=createAssetCatalog({assets:[spec('a'),{id:'sound',kind:'audio',source:'a.wav'},{...spec('wrong'),encoding:{decoder:'image',format:'bmp',mime:'image/bmp'}}]});

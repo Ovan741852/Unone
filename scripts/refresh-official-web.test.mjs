@@ -66,6 +66,9 @@ test('fresh presentation/fonts/extensions are copied; unknown fields and unsuppo
  const subset=assembleContent(dir,b);assert.equal(subset.font_subset_skipped,true,'the refresh reports that it ships marked faces whole');
  assert.deepEqual(JSON.parse(subset.files.get('content/presentation.json').data).ui,{font_source:null,font_family:null,fonts:[{family:'A',source:'fonts/a.ttf',weight:400}]},'build-only subset settings never reach players');
  write(dir,'player.presentation.json',{ui:{fonts:[{family:'A',source:'fonts/a.ttf',subset:'yes'}]}});assert.throws(()=>assembleContent(dir,b),/WEB_REFRESH_FONT_INVALID/);
+ write(dir,'player.presentation.json',{ui:{fonts:[{family:'A',source:'fonts/a.ttf',on_demand:true}]}});
+ assert.equal(JSON.parse(assembleContent(dir,b).files.get('content/presentation.json').data).ui.fonts[0].on_demand,true);
+ write(dir,'player.presentation.json',{ui:{fonts:[{family:'A',source:'fonts/a.ttf',on_demand:'yes'}]}});assert.throws(()=>assembleContent(dir,b),/WEB_REFRESH_FONT_INVALID/);
  write(dir,'player.presentation.json',{postprocessing:{}});assert.throws(()=>assembleContent(dir,b),/PRESENTATION_INVALID/);write(dir,'player.presentation.json',{renderer_mode:'custom'});assert.throws(()=>assembleContent(dir,b),/OFFICIAL_ONLY/);
 });
 test('official web refresh carries the declared UI text atlas page size into presentation',t=>{

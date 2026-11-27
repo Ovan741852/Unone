@@ -88,6 +88,46 @@ fn image_groups(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         })?)?;
     }
     let registry = Rc::clone(&state.image_groups);
+    let view = Rc::clone(&state.pure_view);
+    groups.set("setOwner", lua.create_function(move |_, (owner, desired): (String, Table)| {
+        super::ensure_not_view(&view, "assets.imageGroups.setOwner")?;
+        let mut demands = std::collections::BTreeMap::new();
+        for pair in desired.pairs::<Value, Value>() {
+            let (Value::String(name), Value::String(mode)) = pair? else {
+                return Err(mlua::Error::runtime("IMAGE_GROUP_OWNER_INVALID: expected a table of group names to preload or load"));
+            };
+            let demand = match mode.to_str()?.as_ref() {
+                "load" => ImageGroupRequest::Load, "preload" => ImageGroupRequest::Preload,
+                _ => return Err(mlua::Error::runtime("IMAGE_GROUP_OWNER_INVALID: use preload or load; omit a group to release it")),
+            };
+            demands.insert(name.to_str()?.to_owned(), demand);
+            if demands.len() > crate::image_groups::MAX_IMAGE_GROUPS {
+                return Err(mlua::Error::runtime("IMAGE_GROUP_OWNER_INVALID: too many image groups"));
+            }
+        }
+        registry.borrow_mut().set_owner(&owner, demands).map_err(mlua::Error::RuntimeError)
+    })?)?;
+    let registry = Rc::clone(&state.image_groups);
+    let view = Rc::clone(&state.pure_view);
+    groups.set("retry", lua.create_function(move |_, name: String| {
+        super::ensure_not_view(&view, "assets.imageGroups.retry")?;
+        registry.borrow_mut().retry(&name).map_err(mlua::Error::RuntimeError)
+    })?)?;
+    let registry = Rc::clone(&state.image_groups);
+    let view = Rc::clone(&state.pure_view);
+    groups.set("releaseOwner", lua.create_function(move |_, owner: String| {
+        super::ensure_not_view(&view, "assets.imageGroups.releaseOwner")?;
+        registry.borrow_mut().set_owner(&owner, Default::default()).map_err(mlua::Error::RuntimeError)
+    })?)?;
+    let registry = Rc::clone(&state.image_groups);
+    groups.set("owners", lua.create_function(move |lua, group: String| {
+        let result = lua.create_table()?;
+        for (owner, request) in registry.borrow().owners(&group).map_err(mlua::Error::RuntimeError)? {
+            result.raw_set(owner, request.as_str())?;
+        }
+        Ok(result)
+    })?)?;
+    let registry = Rc::clone(&state.image_groups);
     groups.set("status", lua.create_function(move |lua, name: String| {
         let registry = registry.borrow();
         let status = registry.status(&name).map_err(mlua::Error::RuntimeError)?;

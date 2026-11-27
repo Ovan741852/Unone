@@ -16,9 +16,10 @@ export function encodeJson(value){requireThat(typeof JSON.rawJSON==='function','
 export function text(file,max=256*1024*1024){requireThat(fs.statSync(file).size<=max,'WEB_REFRESH_SOURCE_LIMIT',file);return new TextDecoder('utf-8',{fatal:true}).decode(fs.readFileSync(file));}
 export function put(files,record){portablePath(record.path);const old=files.get(record.path);requireThat(!old||old.sha256===record.sha256&&old.bytes===record.bytes,'WEB_REFRESH_CONTENT_CONFLICT',record.path);files.set(record.path,record);}
 function inventory(root){const result=[],pending=[''];while(pending.length){const dir=pending.pop();for(const item of fs.readdirSync(path.join(root,dir),{withFileTypes:true})){const name=dir?dir+'/'+item.name:item.name;portablePath(name);const actual=checkedRoot(path.join(root,name));requireThat(inside(root,actual),'WEB_REFRESH_PATH_ESCAPE',name);if(item.isDirectory())pending.push(name);else{requireThat(item.isFile(),'WEB_REFRESH_FILE_TYPE',name);result.push(name);}}}return result;}
-export function verifiedExport(directory){
+export function verifiedExport(directory,{allowCustomRenderer=false}={}){
  const root=checkedRoot(directory),manifestFile=sourceFile(root,'export.json'),manifest=json(manifestFile),files=new Map(),folded=new Set();let total=0;
- requireThat(manifest.version===1&&manifest.renderer_mode==='official'&&Array.isArray(manifest.files)&&/^releases\/[a-f0-9]{64}\/$/.test(manifest.release_root),'WEB_REFRESH_BASE_INVALID');
+ const renderer=manifest.renderer_mode;
+ requireThat(manifest.version===1&&(renderer==='official'||allowCustomRenderer&&renderer==='custom')&&Array.isArray(manifest.files)&&/^releases\/[a-f0-9]{64}\/$/.test(manifest.release_root),'WEB_REFRESH_BASE_INVALID');
  for(const declared of manifest.files){portablePath(declared.path);requireThat(declared.path!=='export.json'&&!folded.has(declared.path.toLowerCase()),'WEB_REFRESH_BASE_DUPLICATE',declared.path);folded.add(declared.path.toLowerCase());const actual=fileRecord(sourceFile(root,declared.path),declared.path);requireThat(actual.bytes===declared.bytes&&actual.sha256===declared.sha256,'WEB_REFRESH_BASE_HASH',declared.path);files.set(declared.path,actual);total+=actual.bytes;}
  requireThat(total===manifest.total_bytes&&files.has('index.html'),'WEB_REFRESH_BASE_INDEX');const disk=inventory(root);requireThat(disk.length===files.size+1&&disk.every(name=>name==='export.json'||files.has(name)),'WEB_REFRESH_BASE_UNINDEXED');
  const logical=new Map([...files].filter(([name])=>name!=='index.html'&&!name.startsWith('releases/')));

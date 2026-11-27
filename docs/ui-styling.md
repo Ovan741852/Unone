@@ -123,13 +123,24 @@ explicit family list on text styles, such as `font_family="Reading UI, CJK UI"`.
 Register the fallback's required weights in the same catalog. A family list is
 not a network download and does not guarantee an installed host font exists.
 Export verifies project-relative paths and copies the declared files
-into the content package. Web waits for FontFace loading before starting the
+into the content package. Web waits for eager FontFace loading before starting the
 player; native registers the same aliases and weights in its font database.
 Malformed fonts fail explicitly. Font rights and character coverage remain the
 project's responsibility; keep the font license beside the source asset.
 Export copies the declared font faces. Include their accompanying license
 notices in the distribution too; neighboring source files are not copied
 automatically.
+
+### Loading a Web face on first use
+
+For a large face reserved for a later screen, set `"on_demand": true` on
+its `ui.fonts` entry. The official Web player registers the face at startup
+and downloads it when a visible text node or text input first needs the matching
+family and weight. Other faces keep their startup behavior. While the request
+is pending, the Canvas and GPU text painters wait for the correct glyphs and
+continue painting the rest of the screen. A later visit reuses the loaded face.
+The font file, glyph coverage and text input value stay intact. Native font
+packaging continues to include the declared face.
 
 ### Subset faces in Web exports
 

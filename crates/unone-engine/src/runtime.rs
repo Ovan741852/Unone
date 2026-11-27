@@ -296,7 +296,7 @@ struct ApiState {
     input: Rc<RefCell<InputState>>,
     random: Rc<RefCell<DeterministicRng>>,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
-    observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
+    observations: Rc<RefCell<crate::ObservationFields>>,
     ui: Rc<RefCell<Option<Arc<UiTree>>>>,
     viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<SaveState>>,
@@ -366,7 +366,7 @@ struct ReloadRollbackState {
     input: InputState,
     random: DeterministicRng,
     trace: Vec<TraceEvent>,
-    observations: BTreeMap<String, serde_json::Value>,
+    observations: crate::ObservationFields,
     ui: Option<Arc<UiTree>>,
     viewport_aspect: f64,
     save_payload: SaveState,
@@ -397,7 +397,7 @@ pub struct EngineRuntime {
     /// Game.saveState and Game.loadState, when the game defines them.
     state_hooks: Option<(Function, Function)>,
     trace: Rc<RefCell<Vec<TraceEvent>>>,
-    observations: Rc<RefCell<BTreeMap<String, serde_json::Value>>>,
+    observations: Rc<RefCell<crate::ObservationFields>>,
     ui: Rc<RefCell<Option<Arc<UiTree>>>>,
     viewport_aspect: Rc<RefCell<f64>>,
     save_payload: Rc<RefCell<SaveState>>,
@@ -828,7 +828,7 @@ impl EngineRuntime {
         let input = Rc::new(RefCell::new(InputState::default()));
         let random = Rc::new(RefCell::new(DeterministicRng::new(seed)));
         let trace = Rc::new(RefCell::new(Vec::new()));
-        let observations = Rc::new(RefCell::new(BTreeMap::new()));
+        let observations = Rc::new(RefCell::new(crate::ObservationFields::default()));
         let ui = Rc::new(RefCell::new(None));
         // The declared design shape until a host says what it draws into.
         let viewport_aspect = Rc::new(RefCell::new(config.display.map_or(crate::ui::UI_REFERENCE_ASPECT, |display| display.aspect_ratio())));
@@ -1667,7 +1667,7 @@ impl EngineRuntime {
     /// Unlike `observe`, this avoids cloning the complete world snapshot
     /// (entities, particles, UI, and jobs) for frequent polling requests.
     pub fn semantic_observations(&self) -> BTreeMap<String, serde_json::Value> {
-        self.observations.borrow().clone()
+        self.observations.borrow().to_owned_map()
     }
 
     /// Current simulation frame without constructing a world snapshot.

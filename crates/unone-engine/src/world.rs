@@ -1018,7 +1018,7 @@ pub struct WorldSnapshot {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub camera3d: Option<Camera3DData>,
     pub entities: BTreeMap<String, EntitySnapshot>,
-    pub observations: BTreeMap<String, serde_json::Value>,
+    pub observations: crate::ObservationFields,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     /// Validated immutable publication. Clones retain this generation; mutating
     /// candidate UI uses copy-on-write instead of changing existing snapshots.
@@ -1546,7 +1546,7 @@ impl World {
             camera,
             camera3d,
             entities,
-            observations: BTreeMap::new(),
+            observations: crate::ObservationFields::default(),
             ui: None,
             ui_cursor:self.ui_cursor.clone(),
             particle_effects: self.particles.definitions.clone(),

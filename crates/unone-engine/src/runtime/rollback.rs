@@ -9,7 +9,7 @@
 //! game's to give: `Game.saveState(api)` returns plain data and
 //! `Game.loadState(api, state)` takes it back. Spatial batches and jobs carry
 //! asynchronous work between ticks and are not checkpointed yet.
-use std::{cell::RefCell, collections::BTreeMap, sync::Arc};
+use std::{cell::RefCell, sync::Arc};
 
 use super::{DeterministicRng, EngineRuntime, InputState, SaveState, bindings, script_diagnostic, sprite_resources};
 use crate::{diagnostics::Diagnostic, ui::UiTree, world::World};
@@ -20,7 +20,7 @@ pub struct Checkpoint {
     world: World,
     input: InputState,
     random: DeterministicRng,
-    observations: BTreeMap<String, serde_json::Value>,
+    observations: crate::ObservationFields,
     ui: Option<Arc<UiTree>>,
     save_payload: SaveState,
     sprite_resources: sprite_resources::Registry,

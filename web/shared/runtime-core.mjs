@@ -39,7 +39,8 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
   const pointer=module._unone_web_observation_ptr(),length=module._unone_web_observation_len();
   if(!Number.isSafeInteger(pointer)||pointer<0||!Number.isSafeInteger(length)||length<1||length>1024*1024||pointer+length>module.HEAPU8.byteLength)throw Error('IMAGE_GROUP_PLAN_INVALID');
   const plan=JSON.parse(controlDecoder.decode(module.HEAPU8.subarray(pointer,pointer+length)));
-  if(!plan||!Number.isSafeInteger(plan.revision)||plan.revision<0||Object.keys(plan).some(key=>!['revision','groups'].includes(key))||Object.hasOwn(plan,'groups')&&(!plan.groups||typeof plan.groups!=='object'||Array.isArray(plan.groups)))throw Error('IMAGE_GROUP_PLAN_INVALID');
+  if(!plan||!Number.isSafeInteger(plan.revision)||plan.revision<0||Object.keys(plan).some(key=>!['revision','groups','retries'].includes(key))||Object.hasOwn(plan,'groups')&&(!plan.groups||typeof plan.groups!=='object'||Array.isArray(plan.groups)))throw Error('IMAGE_GROUP_PLAN_INVALID');
+  if(Object.hasOwn(plan,'retries')&&(!Array.isArray(plan.retries)||plan.retries.length>128||plan.retries.some(name=>typeof name!=='string'||!Object.hasOwn(plan.groups??{},name))))throw Error('IMAGE_GROUP_PLAN_INVALID');
   imageGroupRevision=plan.revision;
   if(Object.hasOwn(plan,'groups'))value.image_group_plan=plan;
   return value;

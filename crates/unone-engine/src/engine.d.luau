@@ -1047,6 +1047,14 @@ export type ImageGroupStatus = {
     error: string?,
 }
 export type ImageGroupsApi = {
+    -- Request another attempt after a held group reports an error.
+    retry: (name: string) -> (),
+    -- Atomically replace a named screen/system's holds. Shared groups keep the strongest demand.
+    setOwner: (owner: string, desired: {[string]: "preload" | "load"}) -> (),
+    -- Idempotent. Drops only this owner's holds, leaving other owners and direct requests intact.
+    releaseOwner: (owner: string) -> (),
+    -- Diagnostic snapshot of named owners holding this group; direct requests are separate.
+    owners: (group: string) -> {[string]: "preload" | "load"},
     -- Decode in the background and hold until unload.
     preload: (name: string) -> (),
     -- Hold as the current working set (promotes a preload without decoding again).

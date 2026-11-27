@@ -24,7 +24,7 @@ pub(super) fn observation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             let values = observation_array(lua, values)?;
             let value = observation_value_to_json(lua, Value::Table(values))
                 .map_err(mlua::Error::RuntimeError)?;
-            array_observations.borrow_mut().insert(key, value);
+            array_observations.borrow_mut().set(key, value);
             Ok(())
         })?,
     )?;
@@ -40,7 +40,7 @@ pub(super) fn observation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
                 ));
             }
             let value = observation_value_to_json(lua, value).map_err(mlua::Error::RuntimeError)?;
-            observation_state.borrow_mut().insert(key, value);
+            observation_state.borrow_mut().set(key, value);
             Ok(())
         })?,
     )?;

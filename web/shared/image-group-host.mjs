@@ -10,22 +10,27 @@ const count=value=>Number.isSafeInteger(value)&&value>=0?value:0;
 
 export function createImageGroupHost({getGroups}={}){
  if(typeof getGroups!=='function')throw Error('IMAGE_GROUP_HOST_INVALID');
- let revision=-1,closed=false;
+ let revision=-1,closed=false,issued=0;
  // held: what this host asked the manager to hold for the game. Groups that
  // page code holds through window.unonePlayerAssets are never unloaded here.
- const held=new Map(),failures=new Map(),reported=new Set(),admitted=new Map();
+ const owner=Symbol('game'),held=new Map(),failures=new Map(),reported=new Map(),admitted=new Map();
+ function claims(){const groups=getGroups();return groups?.forOwner?.(owner)??groups;}
  function acceptPlan(plan){
   if(closed||plan===undefined)return;
-  if(!plan||typeof plan!=='object'||!Number.isSafeInteger(plan.revision)||plan.revision<0||Object.keys(plan).some(key=>!['revision','groups'].includes(key))
+  if(!plan||typeof plan!=='object'||!Number.isSafeInteger(plan.revision)||plan.revision<0||Object.keys(plan).some(key=>!['revision','groups','retries'].includes(key))
    ||!plan.groups||typeof plan.groups!=='object'||Array.isArray(plan.groups))throw Error('IMAGE_GROUP_PLAN_INVALID');
   const wanted=Object.entries(plan.groups);
+  const retries=plan.retries===undefined?[]:plan.retries;
+  if(!Array.isArray(retries)||retries.length>MAX_GROUPS||retries.some(name=>!validName(name)||!Object.hasOwn(plan.groups,name)))throw Error('IMAGE_GROUP_PLAN_INVALID');
   if(wanted.length>MAX_GROUPS||wanted.some(([name,mode])=>!validName(name)||(mode!=='preload'&&mode!=='load')))throw Error('IMAGE_GROUP_PLAN_INVALID');
   if(plan.revision<=revision)return;
   revision=plan.revision;
-  const groups=getGroups();
+  const groups=claims();
   for(const [name,mode]of wanted){
-   reported.add(name);
-   if(held.get(name)===mode)continue;
+   const retry=retries.includes(name);
+   if(held.get(name)===mode&&!retry)continue;
+   reported.set(name,{});
+   if(retry)admitted.delete(name);
    held.set(name,mode);failures.delete(name);
    try{
     if(!groups)throw Error('IMAGE_ASSET_GROUPS_NOT_READY');
@@ -35,7 +40,10 @@ export function createImageGroupHost({getGroups}={}){
   }
   for(const name of [...held.keys()])if(!Object.hasOwn(plan.groups,name)){
    held.delete(name);failures.delete(name);
-   try{groups?.unload(name);}catch{}
+   let total=admitted.get(name)?.total??0;
+   try{total=groups?.unload(name)?.total??total;}catch{}
+   // The physical group can stay ready for another owner. Only our own release is recorded in Core input.
+   reported.set(name,{released:{name,state:'unloaded',total:count(total),ready:0,bytes:0}});
   }
  }
  function receipt(name){
@@ -52,20 +60,30 @@ export function createImageGroupHost({getGroups}={}){
  // Reports go out only while live browser input owns the tick; a manual or
  // replayed frame stays authoritative.
  function leaseInput(frame,{live=true}={}){
-  if(closed||!live||!reported.size)return {frame,token:null};
+  if(closed||!live)return {frame,token:null};
   if(frame.presentation_resources?.image_groups!==undefined)throw Error('IMAGE_GROUP_INPUT_OWNERSHIP');
+  if(!reported.size)return {frame,token:null};
   const changed=[];
-  for(const name of reported){
-   const value=receipt(name);if(!value)continue;
-   const key=JSON.stringify(value);if(admitted.get(name)===key)continue;
-   changed.push({name,key,value});if(changed.length===MAX_GROUPS)break;
+  for(const [name,change] of reported){
+   const value=change.released??receipt(name);if(!value)continue;
+   const previous=admitted.get(name);
+   if(!change.released&&previous&&previous.state===value.state&&previous.total===value.total&&previous.ready===value.ready&&previous.bytes===value.bytes&&previous.error===value.error)continue;
+   changed.push({name,change,value,order:++issued});if(changed.length===MAX_GROUPS)break;
   }
   if(!changed.length)return {frame,token:null};
   return {frame:{...frame,presentation_resources:{...frame.presentation_resources,image_groups:changed.map(entry=>entry.value)}},token:changed};
  }
- function commitInput(token){if(!token||closed)return;for(const {name,key}of token)admitted.set(name,key);}
+ function commitInput(token){
+  if(!token||closed)return;
+  for(const {name,change,value,order} of token){
+   if(reported.get(name)!==change||order<=(change.acked??0))continue;
+   change.acked=order;
+   if(change.released){reported.delete(name);admitted.delete(name);}
+   else admitted.set(name,value);
+  }
+ }
  function reset(){
-  const groups=getGroups();
+  const groups=claims();
   for(const name of held.keys())try{groups?.unload(name);}catch{}
   held.clear();failures.clear();reported.clear();admitted.clear();revision=-1;
  }

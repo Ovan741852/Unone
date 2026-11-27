@@ -67,6 +67,82 @@ no `milestones` and the measurement tool below reports the milestone as null.
 
 ## Measuring a production Web export
 
+### Auditing the published bundle
+
+`audit-web-bundle.mjs` verifies the complete indexed Web export before reading its
+project, asset catalog and image plan. It runs offline with Node.js 22+.
+
+```sh
+node scripts/audit-web-bundle.mjs --export dist/player --out bundle.json
+node scripts/audit-web-bundle.mjs --export dist/next --hold inventory --baseline bundle.json --max-logical-bytes 80000000 --out next.json
+```
+
+The logical byte count covers one generation. The inventory also reports the
+top-level aliases, index, manifest and local filesystem identities. Separate
+alias files can cost additional disk space. A hard link outside the export can
+keep storage allocated after removing one directory. The operating system and
+compression determine allocated disk blocks. Compare actual browser requests
+to establish transfer and cache reuse.
+
+The report lists eager data IDs, including authored bytecode, and counts each
+staged source URL once. It lists on-demand data separately. The catalog shows
+the unique font sources and which ones block startup. A file shared by an eager
+and deferred face counts once in `eager_font_bytes`. The asset catalog shows
+which IDs share a source, and `duplicate_content` lists different logical URLs
+with the same SHA-256. Each image-group estimate counts reservations per unique
+asset ID. Its encoded size counts URLs once. `--hold` can be repeated to model
+simultaneous groups alongside startup. Scene dependencies also cover hidden
+sprites and particle emitters. Their estimated size describes the candidate set
+before the host admits it to its preparation budget. An unknown image size
+remains explicitly unknown. GPU residency and screen use require a runtime trace.
+
+Review `findings[].code` to see the evidence behind each advisory.
+
+| Finding code | What to inspect |
+| --- | --- |
+| `GENERATION_NAME_MISMATCH` | All indexed bytes verify, but resealing them produces a different generation name. |
+| `ALIAS_SEPARATE_FILES` | The alias and immutable path are distinct local file objects. Check deployment storage and URL requirements. |
+| `DUPLICATE_CONTENT_URLS` | Different generation paths have identical bytes. Check whether the URLs could share an asset. |
+| `ASSET_IDS_SHARE_SOURCE` | Multiple IDs resolve to one URL. Review per-ID reservations and actual host loads. |
+| `IMAGE_HEADER_INSPECTION` | A group or scene source has readable raster dimensions but no authored dimensions record. Check range requests in the target deployment. |
+| `IMAGE_COLD_DIMENSIONS_UNKNOWN` | Bounded header inspection could not establish the decoded size. Check cold group admission before relying on a preload. |
+| `IMAGE_GROUP_LIMIT_NEAR` / `IMAGE_GROUP_LIMIT_EXCEEDED` | A single group or the selected union approaches or exceeds its declared entry or byte budget. |
+| `CATALOG_GROUP_COUNT_NEAR` | The plan approaches the publisher's limit of 128 named groups. |
+
+`--near-ratio` sets the advisory threshold (default 0.9). To gate CI, repeat
+`--fail-on CODE` or set `--max-logical-bytes`, `--max-duplicate-bytes`,
+`--max-eager-data-bytes`, `--max-eager-font-bytes` or `--max-image-rgba-bytes`. A selected image with
+unknown dimensions fails a requested RGBA limit. `--baseline` shows signed
+metric deltas and the previous group selection. Use matching selections for a
+like-for-like comparison. A valid report exits 0, a failed gate exits 1, and
+an invalid input exits 2. `--out` requires a fresh filename outside the export.
+
+### Comparing production replays
+
+To compare two finalized production Web players on a deterministic input route, run
+
+```sh
+node scripts/compare-web-replay.mjs --before export-a --after export-b --input-sequence route.json --scope full --frames 500 --warmup 180 --seed 42 --out comparison.json
+```
+
+The tool verifies both release inventories and clean production runtimes. It loads two WASM
+instances, compares the initial state and runs each input through both official JS hosts,
+alternating which goes first on every tick. `--scope core` gives both runtimes the
+before export's host and game content. Each scope measures the headless command through
+observation restoration. The input file contains an array of `InputFrame` objects.
+The report records every matched frame, source and input hashes, both timing distributions
+and the distribution of per-frame differences. Warmup frames still undergo comparison.
+A digest difference stops the run with a nonzero exit status and records the failing tick.
+Use a fresh output filename outside the exports for each run.
+
+For games that sample `api.hostTime`, pass `--host-time-tape tape.json`.
+Save the `host_time` field from the matching SDK recording as this file. The
+tool loads both games with the same replay clock before startup and verifies
+that both consumed the entire recording. Match the seed, inputs and frame count
+to that recording. The report identifies the tape by its SHA-256 and records
+each side's clock mode. A live clock can produce different observations even
+with identical inputs and seeds.
+
 `scripts/measure-web-export.mjs` loads one production export in headless Edge
 or Chrome, the same way every time, and writes one JSON report: every raw sample
 beside its median and p95. Node 22+ and no dependencies.
@@ -397,6 +473,32 @@ How to read it:
   browser or OS took back; read the `os.*` rows for that.
 - `presented_after_input_ms` includes DevTools input delivery and is measured
   on the page clock; it is a screen-change cost, not a frame-time measurement.
+
+### Trace image bundles across scenario phases
+
+Add `"bundle_trace": {"sample_ms": 100, "expect_released": ["battle-palm"]}` to a scenario. Replace `battle-palm` with a group declared by the measured game, or omit the list to collect evidence only. Run the existing `measure-web-export.mjs --export <export> --scenario <scenario.json> --output <report.json>` command. The trace starts when the scenario takes control of the running player. It samples in the browser and takes an immediate sample at each round, frame phase, presented `wait_mark` and final settle. Run frame benchmarks separately when comparing small changes in frame time.
+
+Each `scenario.runs[].bundle_trace` has schema `unone.web-bundle-trace.v1`. Phase indices in `group_events`, `loads`, `resources` and `findings` refer to `phases[]`. An image request can begin in one phase and end in another. A start index of -1 identifies a request already underway at trace start. `draws` records actual increments of the player's skip reasons and errors in each phase. `final_held` lists the image groups holding leases. Ownership snapshots cover the public image-group broker and can miss transitions completed between samples.
+
+To gate image scheduling, set `"bundle_trace": {"max_visible_queue_ms": 16.7}` in the scenario. The optional limit accepts finite milliseconds from 0 to 600000. Each load records its longest continuous wait for a load slot while the renderer needed the image. The phase in which the load finishes receives the sample, including failed and cancelled loads. `phases[].visible_queue` reports the sample count, worst asset ID and duration, and counts of over-budget loads and distinct asset IDs. A phase without observed waits reports a null worst ID and duration. A sample equal to the limit passes. In-flight loads produce a timing row when they finish.
+
+| Finding code | Evidence |
+| --- | --- |
+| `BUNDLE_REPEATED_IMAGE_DECODE` | Multiple successful loads of the same asset ID each reported a measured decode duration. |
+| `BUNDLE_REPEATED_NETWORK_TRANSFER` | Multiple Resource Timing entries for the same exact image URL each reported positive transfer bytes, including headers. Zero and hidden transfer sizes provide no evidence of retransmission. Output URLs omit query strings and fragments. |
+| `BUNDLE_GROUP_ERROR`, `BUNDLE_DRAW_ERROR`, `BUNDLE_UI_DIAGNOSTIC_DRAWS` | A group entered the error state, the player counted draw errors, or it skipped draws for UI diagnostics. |
+| `BUNDLE_EXPECTED_RELEASE_MISSING`, `BUNDLE_EXPECTED_GROUP_UNKNOWN` | An explicitly expected group still held leases or had an active/error state at the end, or the group was absent from the player's declared groups. These assertions fail the run. |
+| `BUNDLE_VISIBLE_QUEUE_BUDGET_EXCEEDED` | A completed timing record exceeded the configured renderer wait budget. Each failing phase reports its worst asset and both counts. |
+| `BUNDLE_VISIBLE_QUEUE_UNAVAILABLE`, `BUNDLE_VISIBLE_QUEUE_INCOMPLETE` | The requested queue gate fails if the player lacks the metric, records were overwritten between samples, or a supported reporter supplied an invalid duration. An older player can still run a trace without this gate. |
+| `BUNDLE_TRACE_UNAVAILABLE`, `BUNDLE_TRACE_INCOMPLETE`, `BUNDLE_CATALOG_CHANGED` | A required observer was unavailable, timing history exceeded its capacity, or the player replaced its asset catalog. Missing observations stay explicit. |
+
+The collector also works with an existing browser acceptance test. Import `createBundleTrace` from the SDK's `scripts/web-bundle-trace.mjs`, run its source in the player frame, call `mark(label)` after reaching each scene or before triggering its transition, then call `finish()` and write the returned JSON. The collector reads the official player APIs and Resource Timing. The JYRogue project includes a playable field battle, retreat, replay and return example. It also checks that returning to character selection releases the battle, school and nearby town groups. Run this command from that game's checkout.
+
+```sh
+node game/tools/battle-bundle-roundtrip.qa.mjs http://127.0.0.1:8279/ ../Unone battle-bundles.json
+```
+
+Pass the URL of the running official player and the path to its SDK or Unone checkout. The example uses Chrome and Playwright, and seeds only its own fresh browser context.
 
 ### Frame time under load: frame windows
 

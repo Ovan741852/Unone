@@ -225,6 +225,31 @@ Game code chooses its groups from Luau. `api.assets.imageGroups` drives the
 same group manager, validated plan, budget, rollback and epoch rules as
 `window.unonePlayerAssets`; it adds no second decoder or cache.
 
+Give independently closing screens and overlays stable owner names. Use
+`setOwner` when a screen's required set changes. Omitting a name from its next
+set releases that owner's interest, including across a direct switch between
+two characters. `load` takes precedence over `preload` across all game owners.
+
+```luau
+local groups = api.assets.imageGroups
+groups.setOwner("conversation", {["dialogue-base"]="load", ["merchant"]="preload"})
+groups.setOwner("story", {["dialogue-base"]="preload"})
+groups.releaseOwner("conversation")
+local remaining = groups.owners("dialogue-base") -- {story = "preload"}
+if groups.status("dialogue-base").state == "error" then
+    groups.retry("dialogue-base") -- on a user's retry action
+end
+groups.releaseOwner("story")
+```
+
+Each replacement validates the entire table before changing any holds. An empty
+set releases the owner. The registry supports 128 active named owners, each
+with a name of 1–128 UTF-8 bytes. Repeated declarations of the same effective
+working set leave the host plan unchanged. `owners(group)` returns a detached
+table of named Luau consumers. Direct game requests have an independent hold.
+Use `status(group)` for the last host receipt and the official player's asset
+snapshot for decoded estimates and renderer activity.
+
 ```luau
 local groups = api.assets.imageGroups
 if nearTown then groups.preload("town-3") end   -- approaching: decode in the background
@@ -244,6 +269,10 @@ export type ImageGroupStatus = {
     total: number, ready: number, bytes: number, error: string?,
 }
 export type ImageGroupsApi = {
+    setOwner: (owner: string, desired: {[string]: "preload" | "load"}) -> (),
+    releaseOwner: (owner: string) -> (),
+    owners: (group: string) -> {[string]: "preload" | "load"},
+    retry: (name: string) -> (),
     preload: (name: string) -> (),
     load: (name: string) -> (),
     unload: (name: string) -> (),
@@ -257,12 +286,14 @@ export type ImageGroupsApi = {
 return at once. They never wait for decoding or pause the simulation. Repeating
 a request changes nothing, so a game may call them every update.
 
-The host holds every group whose latest request is preload or load. A load after
+The host holds every group with an effective preload or load. A load after
 a preload promotes the same images without decoding again; a preload after a
 load does not demote the group. Requests within one tick collapse to the last,
-so an unload followed by a load in the same tick never reaches the host. A group
-in `error` (over budget, say) is tried again when its request changes: unload it
-or move it from preload to load. The requests are refused inside `renderItem`
+so an unload followed by a load in the same tick never reaches the host.
+After an error, `retry(name)` requests a new attempt while preserving all
+owners and their other ready images. Call it once per explicit retry and
+read the next host receipt. A group with no demand or no reported failure
+has nothing to retry. The requests are refused inside `renderItem`
 (`UI_PURE_VIEW`).
 
 ### Names
@@ -345,6 +376,16 @@ just network service. decode_ms is measured around the default Image.decode
 wait; injected decoders without timing return null. Missing or zero restricted
 transfer sizes are null, not evidence of a free cache hit. Times use the main
 host performance clock; none are GPU, physical presentation or OS-memory values.
+
+`loading_metrics.visible_queue_supported` identifies a broker that measures
+`visible_queue_ms`. The public player exposes this flag in
+`unonePlayerAssets.snapshot().loading`. Each completed, failed or cancelled
+image load records the longest uninterrupted interval with a renderer lease
+while it was still queued for a load slot. Acquiring a second renderer lease
+continues the same interval. Releasing the last one or admitting the task ends
+it. Reacquiring a queued image starts another interval. A background load or
+an immediately admitted image records `null`. Browser fetch and decode occur
+after slot admission and have their own timing fields.
 
 The existing `window.unonePlayerPerformance.snapshot()` includes image_assets
 with the current group/broker/loading summary. For startup, retain the existing

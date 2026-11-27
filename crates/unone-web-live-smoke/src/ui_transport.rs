@@ -162,7 +162,7 @@ pub(super) fn has_byte_transport(snapshot:&WorldSnapshot)->bool{
 type Spans=Vec<(&'static str,usize,usize)>;
 fn span(spans:&Spans,key:&str)->Option<(usize,usize)>{spans.iter().find(|(k,..)|*k==key).map(|&(_,start,end)|(start,end))}
 #[derive(Clone,Copy)]
-struct Capture<'a>{position:&'a Cell<usize>,spans:&'a RefCell<Spans>}
+struct Capture<'a>{position:&'a Cell<usize>,spans:&'a RefCell<Spans>,observations:&'a unone_engine::ObservationFields}
 #[derive(Clone,Copy)]
 struct Fields<'a>{hide_registry:bool,hide_ui:bool,capture:Option<Capture<'a>>,instances:Option<&'a WorldSnapshot>,leased:Option<&'a super::world_transport::Prepared>}
 impl Fields<'_>{fn skips(self,key:&str)->bool{(self.hide_registry&&key=="ui_image_batches")||(self.hide_ui&&key=="ui")||self.leased.is_some_and(|l|l.leases(key))}}
@@ -181,7 +181,11 @@ impl<S:serde::ser::SerializeStruct> serde::ser::SerializeStruct for FilterStruct
     type Ok=S::Ok;type Error=S::Error;
     fn serialize_field<T:Serialize+?Sized>(&mut self,key:&'static str,value:&T)->Result<(),Self::Error>{
         if self.fields.skips(key){Ok(())}
-        else if let Some(capture)=self.fields.capture{self.serializer.serialize_field(key,&CapturedValue{key,value,capture})}
+        else if let Some(capture)=self.fields.capture{
+            if key=="observations"{
+                self.serializer.serialize_field(key,&CapturedValue{key,value:&capture.observations.compact_json(),capture})
+            }else{self.serializer.serialize_field(key,&CapturedValue{key,value,capture})}
+        }
         else if key=="instances3d"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&InstanceTransport(world))}
         else if key=="geometry3d"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&Geometry3DTransport(world))}
         else if key=="data_textures"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&DataTextureTransport(world))}
@@ -229,10 +233,10 @@ impl std::io::Write for CountingWriter<'_>{
     fn write(&mut self,bytes:&[u8])->std::io::Result<usize>{self.bytes.extend_from_slice(bytes);self.position.set(self.bytes.len());Ok(bytes.len())}
     fn flush(&mut self)->std::io::Result<()>{Ok(())}
 }
-fn canonical<T:Serialize+?Sized>(bytes:&mut Vec<u8>,snapshot:&T)->Result<Spans,String>{
+fn canonical(bytes:&mut Vec<u8>,snapshot:&WorldSnapshot)->Result<Spans,String>{
     bytes.clear();let position=Cell::new(0);let spans=RefCell::new(Vec::with_capacity(40));
     let mut serializer=serde_json::Serializer::new(CountingWriter{bytes,position:&position});
-    snapshot.serialize(WorldSerializer{serializer:&mut serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:Some(Capture{position:&position,spans:&spans}),instances:None,leased:None},field_count:0}).map_err(|e|e.to_string())?;
+    snapshot.serialize(WorldSerializer{serializer:&mut serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:Some(Capture{position:&position,spans:&spans,observations:&snapshot.observations}),instances:None,leased:None},field_count:0}).map_err(|e|e.to_string())?;
     Ok(spans.into_inner())
 }
 fn finish_ui_publication(ui_tree:super::ui_tree_transport::Prepared,oversized:bool){

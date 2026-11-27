@@ -123,6 +123,8 @@ pub use image_groups::image_group_names;
 #[cfg(feature = "dev-tools")]
 mod verify;
 mod world;
+mod observation_fields;
+pub use observation_fields::ObservationFields;
 
 #[cfg(feature = "dev-tools")]
 pub use api::{

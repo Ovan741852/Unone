@@ -47,12 +47,13 @@ function assetRecord(project,base,raw,files,reused){
  const encoding=encodingFor(asset);if(encoding!==undefined)asset.encoding=encoding;for(const r of records)put(files,r);return asset;
 }
 function validateFont(project,files,face,seen){
- closed(face,['family','source','weight','subset'],'WEB_REFRESH_FONT_INVALID');const weight=face.weight??400;
+ closed(face,['family','source','weight','subset','on_demand'],'WEB_REFRESH_FONT_INVALID');const weight=face.weight??400;
  requireThat(face.subset===undefined||typeof face.subset==='boolean','WEB_REFRESH_FONT_INVALID');
+ requireThat(face.on_demand===undefined||typeof face.on_demand==='boolean','WEB_REFRESH_FONT_INVALID');
  requireThat(typeof face.family==='string'&&Buffer.byteLength(face.family)>0&&Buffer.byteLength(face.family)<=128&&!/[\x00-\x1f\x7f]/.test(face.family)&&Number.isInteger(weight)&&weight>=100&&weight<=900&&typeof face.source==='string'&&/\.(ttf|otf)$/i.test(face.source),'WEB_REFRESH_FONT_INVALID');
  urlPath(face.source,'UI_FONT_PATH_INVALID');
  const key=JSON.stringify([face.family,weight]);requireThat(!seen.has(key),'UI_FONT_DUPLICATE');seen.add(key);put(files,fileRecord(sourceFile(project,face.source),'content/'+face.source));
- return{family:face.family,source:face.source,weight};
+ return{family:face.family,source:face.source,weight,...(face.on_demand?{on_demand:true}:{})};
 }
 // The refreshed player is a production player: like `game export web`, write the
 // policy it runs. Undeclared means recover; declared fields default to strict.

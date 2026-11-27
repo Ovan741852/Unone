@@ -72,6 +72,8 @@ pub struct ImageGroupPlanUpdate {
     pub revision: u64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub groups: Option<BTreeMap<String, ImageGroupRequest>>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub retries: Vec<String>,
 }
 
 pub(crate) fn validate_names(names: &[String]) -> Result<(), String> {
@@ -157,7 +159,10 @@ pub(crate) struct Registry {
     names: Rc<BTreeSet<String>>,
     /// The host applies requests and reports; otherwise status reads unsupported.
     host: bool,
+    direct: Rc<BTreeMap<String, ImageGroupRequest>>,
+    owners: Rc<BTreeMap<String, Rc<BTreeMap<String, ImageGroupRequest>>>>,
     requests: Rc<BTreeMap<String, ImageGroupRequest>>,
+    retries: Rc<BTreeMap<String, u64>>,
     reports: Rc<BTreeMap<String, ImageGroupReceipt>>,
     revision: u64,
 }
@@ -165,7 +170,8 @@ pub(crate) struct Registry {
 impl Registry {
     pub fn new(names: Vec<String>, host: bool) -> Result<Self, String> {
         validate_names(&names)?;
-        Ok(Self { names: Rc::new(names.into_iter().collect()), host, requests: Rc::default(), reports: Rc::default(), revision: 0 })
+        Ok(Self { names: Rc::new(names.into_iter().collect()), host, direct: Rc::default(), owners: Rc::default(),
+            requests: Rc::default(), retries: Rc::default(), reports: Rc::default(), revision: 0 })
     }
 
     fn known(&self, name: &str) -> Result<(), String> {
@@ -182,14 +188,80 @@ impl Registry {
     /// game may call it every update.
     pub fn request(&mut self, name: &str, request: ImageGroupRequest) -> Result<(), String> {
         self.known(name)?;
-        let previous = self.requests.get(name).copied();
-        if previous == Some(request) { return Ok(()); }
-        let held = |r: Option<ImageGroupRequest>| r.filter(|r| *r != ImageGroupRequest::Unload);
-        Rc::make_mut(&mut self.requests).insert(name.to_owned(), request);
-        if held(previous) != held(Some(request)) {
-            self.revision = (self.revision + 1).min(crate::MAX_PRESENTATION_INTEGER);
+        if self.direct.get(name) == Some(&request) { return Ok(()); }
+        Rc::make_mut(&mut self.direct).insert(name.to_owned(), request);
+        if self.reconcile(name) { self.bump_revision(); }
+        Ok(())
+    }
+
+    fn bump_revision(&mut self) {
+        self.revision = (self.revision + 1).min(crate::MAX_PRESENTATION_INTEGER);
+    }
+
+    /// Retry only a held group for which the host reported a failure. Keep all owners.
+    pub fn retry(&mut self, name: &str) -> Result<(), String> {
+        self.known(name)?;
+        if matches!(self.requests.get(name), Some(ImageGroupRequest::Preload | ImageGroupRequest::Load))
+            && self.reports.get(name).is_some_and(|r| r.state == ImageGroupState::Error)
+        {
+            self.bump_revision();
+            Rc::make_mut(&mut self.retries).insert(name.to_owned(), self.revision);
         }
         Ok(())
+    }
+
+    // Only an effective demand change reaches the image broker. In particular an
+    // owner handoff with identical holds cannot release and decode a shared group.
+    fn reconcile(&mut self, name: &str) -> bool {
+        use ImageGroupRequest::{Load, Preload, Unload};
+        let mut effective = self.direct.get(name).copied().unwrap_or(Unload);
+        if effective != Load {
+            for groups in self.owners.values() {
+                match groups.get(name) {
+                    Some(Load) => { effective = Load; break; }
+                    Some(Preload) => effective = Preload,
+                    _ => {}
+                }
+            }
+        }
+        let old = self.requests.get(name).copied();
+        if old == Some(effective) { return false; }
+        Rc::make_mut(&mut self.requests).insert(name.to_owned(), effective);
+        if effective == Unload && self.retries.contains_key(name) { Rc::make_mut(&mut self.retries).remove(name); }
+        old.unwrap_or(Unload) != effective
+    }
+
+    /// Atomically replace one screen, overlay or subsystem's complete working set.
+    pub fn set_owner(&mut self, owner: &str, desired: BTreeMap<String, ImageGroupRequest>) -> Result<(), String> {
+        if owner.is_empty() || owner.len() > MAX_IMAGE_GROUP_NAME_BYTES {
+            return Err("IMAGE_GROUP_OWNER_INVALID: owner names must be 1..128 UTF-8 bytes".into());
+        }
+        let previous = self.owners.get(owner).cloned();
+        if desired.is_empty() && previous.is_none() { return Ok(()); }
+        if previous.as_deref() == Some(&desired) { return Ok(()); }
+        for (name, request) in &desired {
+            self.known(name)?;
+            if *request == ImageGroupRequest::Unload {
+                return Err("IMAGE_GROUP_OWNER_INVALID: omit a group to release it".into());
+            }
+        }
+        if previous.is_none() && self.owners.len() >= MAX_IMAGE_GROUPS {
+            return Err(format!("IMAGE_GROUP_OWNER_LIMIT: at most {MAX_IMAGE_GROUPS} active owners; release unused owners"));
+        }
+        let affected: BTreeSet<String> = previous.iter().flat_map(|groups| groups.keys()).chain(desired.keys()).cloned().collect();
+        let owners = Rc::make_mut(&mut self.owners);
+        if desired.is_empty() { owners.remove(owner); } else { owners.insert(owner.to_owned(), Rc::new(desired)); }
+        let mut changed = false;
+        for name in affected { changed |= self.reconcile(&name); }
+        if changed { self.bump_revision(); }
+        Ok(())
+    }
+
+    /// Copy-free view for an explicit diagnostics query. No owner data is sent on every frame.
+    pub fn owners(&self, name: &str) -> Result<impl Iterator<Item = (&str, ImageGroupRequest)> + '_, String> {
+        self.known(name)?;
+        let name = self.names.get(name).expect("validated group");
+        Ok(self.owners.iter().filter_map(move |(owner, groups)| groups.get(name).map(|demand| (owner.as_str(), *demand))))
     }
 
     pub fn status<'a>(&'a self, name: &'a str) -> Result<GroupStatus<'a>, String> {
@@ -222,6 +294,10 @@ impl Registry {
     pub fn plan_since(&self, after: Option<u64>) -> ImageGroupPlanUpdate {
         ImageGroupPlanUpdate {
             revision: self.revision,
+            retries: if after == Some(self.revision) { Vec::new() } else {
+                self.retries.iter().filter(|(_, rev)| after.is_some_and(|seen| seen < **rev))
+                    .map(|(name, _)| name.clone()).collect()
+            },
             groups: (after != Some(self.revision)).then(|| self.requests.iter()
                 .filter(|(_, request)| **request != ImageGroupRequest::Unload)
                 .map(|(name, request)| (name.clone(), *request)).collect()),
@@ -274,7 +350,7 @@ mod tests {
     #[test]
     fn the_plan_holds_preloaded_and_loaded_groups_and_moves_only_when_it_changes() {
         let mut groups = registry(true);
-        assert_eq!(groups.plan_since(None), ImageGroupPlanUpdate { revision: 0, groups: Some(BTreeMap::new()) });
+        assert_eq!(groups.plan_since(None), ImageGroupPlanUpdate { revision: 0, groups: Some(BTreeMap::new()), retries: vec![] });
         groups.request("map", ImageGroupRequest::Unload).unwrap();
         assert_eq!(groups.plan_since(Some(0)).groups, None, "unloading a group nobody held changes nothing");
         groups.request("town", ImageGroupRequest::Preload).unwrap();

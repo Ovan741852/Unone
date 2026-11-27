@@ -145,6 +145,7 @@ export function presentationFontFaces(ui={}){
   if(fonts.length>32)throw Error('UI_FONT_LIMIT: at most 32 font faces may be packaged, including font_source');
   const seen=new Set();
   return fonts.map(face=>{const weight=face.weight??400,key=JSON.stringify([face.family,weight]);
+    if(face.on_demand!==undefined&&typeof face.on_demand!=='boolean')throw Error('UI_FONT_INVALID: on_demand must be boolean');
     if(typeof face.family!=='string'||!face.family.trim()||new TextEncoder().encode(face.family).length>128||/[\u0000-\u001f\u007f]/.test(face.family)||typeof face.source!=='string'||!face.source.trim()||!Number.isInteger(weight)||weight<100||weight>900)throw Error('UI_FONT_INVALID: family, source and weight 100..900 are required');
     if(seen.has(key))throw Error(`UI_FONT_DUPLICATE: ${face.family} ${weight}`);seen.add(key);return {...face,weight};});
 }

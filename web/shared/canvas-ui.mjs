@@ -6,7 +6,7 @@ import {uiTreeGeneration} from './ui-tree-publication.mjs';
 import {createImageBatchResolver,imageBatchCanvasTransform,imageBatchSnappedRect} from './ui-image-batch.mjs';
 import {DRAW_COMPLETED,DRAW_SKIPPED} from './player-completion.mjs';
 import {textPaintBounds,validateInputRegion,validateTextShadow} from './ui-presentation.mjs';
-import {paintUiBox,paintUiText,paintUiImage,clipUiBox,createUiOpacityPainter,presentationFontFaces,layoutUiText,measureUiText} from './ui-style.mjs';
+import {paintUiBox,paintUiText,paintUiImage,clipUiBox,createUiOpacityPainter,presentationFontFaces,layoutUiText,measureUiText,uiFont} from './ui-style.mjs';
 const actionNode=n=>n.kind==='button'||n.kind==='combobox'||n.kind==='input_region';
 const dragNode=n=>n.kind==='slider'&&n.drag;
 const inputNode=n=>actionNode(n)||dragNode(n)||n.kind==='text_input';
@@ -86,15 +86,38 @@ function pointerRouter({onAction=()=>{},onSlider=()=>{}}={}){
 }
 export function createUiPointerRouter(options={}){return pointerRouter(options).api;}
 function imageLoad(url){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(Error(`UI_IMAGE_LOAD_FAILED: ${url}`));image.src=url;});}
-export async function loadCanvasFont(family,url,weight=400){
-  try{const font=new FontFace(family,`url(${JSON.stringify(String(url))})`,{weight:String(weight)});await font.load();document.fonts.add(font);return font;}
+async function requestCanvasFont(family,url,weight,onDemand=false){
+  try{const font=new FontFace(family,`url(${JSON.stringify(String(url))})`,{weight:String(weight)});if(!onDemand)await font.load();return font;}
   catch(error){throw Error(`UI_FONT_LOAD_FAILED: ${family} ${weight}: ${String(error?.message??error)}`);}
+}
+function installCanvasFont(font,family,weight){
+  try{document.fonts.add(font);return font;}
+  catch(error){throw Error(`UI_FONT_LOAD_FAILED: ${family} ${weight}: ${String(error?.message??error)}`);}
+}
+export async function loadCanvasFont(family,url,weight=400){
+  return installCanvasFont(await requestCanvasFont(family,url,weight),family,weight);
 }
 // onProgress(loaded,total) after each face, for the player's startup screen.
 export async function loadPresentationFonts(ui={},resolveSource=source=>source,onProgress=null){
-  const loaded=[],faces=presentationFontFaces(ui);
-  try{for(const face of faces){loaded.push(await loadCanvasFont(face.family,resolveSource(face.source),face.weight));onProgress?.(loaded.length,faces.length);}return loaded;}
-  catch(error){for(const font of loaded)document.fonts.delete(font);throw error;}
+  const faces=presentationFontFaces(ui),installed=[];
+  let completed=0,active=true;
+  try{
+    // Only eager faces participate in the startup barrier. Register all faces
+    // in catalog order so download timing cannot affect CSS face selection.
+    const eager=faces.filter(face=>!face.on_demand).length;
+    const fonts=await Promise.all(faces.map(async face=>{
+      const font=await requestCanvasFont(face.family,resolveSource(face.source),face.weight,face.on_demand);
+      if(active&&!face.on_demand)onProgress?.(++completed,eager);
+      return font;
+    }));
+    for(const [i,font] of fonts.entries())
+      installed.push(installCanvasFont(font,faces[i].family,faces[i].weight));
+    return installed;
+  }catch(error){
+    active=false;
+    for(const font of installed)document.fonts.delete(font);
+    throw error;
+  }
 }
 // Pass a 2D canvas to paint with Canvas2D (tools, previews), or null with
 // getPresenter to hand painting to the game renderer's GPU UI pass. Layout,
@@ -106,6 +129,30 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
   const routing=pointerRouter({onAction,onSlider}),router=routing.api,assets=new Map(),batchResolver=createImageBatchResolver(),prefixContext={width:0,height:0,images:assets,acquireAsset};
   const readyWaiters=new Set();let requiredAssets=new Set();
   let previous=null,paintKey=null,paintDefinitions=[],dirty=true,disposed=false,nodes=[],generation=0,batches=new Map(),prefix=[],references=[],gpuPrefix=0,loadingAssets=0;
+  let demandFonts=null;
+  function fontReady(node){
+    if(!demandFonts)return true;
+    const family=node.style?.font_family??fontFamily,weights=demandFonts.families.get(family.toLowerCase());
+    // A family list or quoted name uses the same CSS parser as the paint path.
+    if(!weights&&!/[,"']/.test(family))return true;
+    const weight=node.style?.font_weight??400;
+    if(weights?.has(weight))return weights.get(weight);
+    const query=uiFont(family,16,weight);
+    // Let the browser match the nearest declared weight, including eager
+    // siblings. Never rasterize fallback glyphs into the retained GPU atlas.
+    if(document.fonts.check(query)){weights?.set(weight,true);return true;}
+    const owner=demandFonts;
+    if(owner.pending.has(query))return false;
+    owner.pending.add(query);weights?.set(weight,false);
+    document.fonts.load(query).then(matches=>{
+      if(disposed||demandFonts!==owner)return;
+      if(!matches.length)throw Error('No matching registered face');
+      owner.pending.delete(query);weights?.set(weight,true);dirty=true;owner.redraw();
+    }).catch(error=>{
+      if(!disposed&&demandFonts===owner)owner.fail(Error('UI_FONT_LOAD_FAILED: '+family+' '+weight+': '+error.message));
+    });
+    return false;
+  }
   let assetTrace=null,assetTraceEpoch=0;
   function setAssetObserver(observer){
     if(observer!==null&&typeof observer!=='function')throw Error('UI_ASSET_OBSERVER_INVALID');
@@ -266,7 +313,7 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
   }
   // Text the GPU presenter rasterizes into its atlas: the same painters and
   // node rules as the Canvas2D loop below.
-  const hasText=node=>node.kind==='text_input'||(Boolean(node.text)&&node.kind!=='panel'&&node.kind!=='image'&&(Boolean(node.style)||!['slider','combobox'].includes(node.kind)));
+  const hasText=node=>(node.kind==='text_input'||(Boolean(node.text)&&node.kind!=='panel'&&node.kind!=='image'&&(Boolean(node.style)||!['slider','combobox'].includes(node.kind))))&&fontReady(node);
   function paintText(target,node,bounds,scale){
     if(node.kind==='text_input')textInput(target,node,bounds);
     else if(node.style)paintUiText(target,node,{...bounds,fontFamily,textColor});
@@ -373,14 +420,14 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
               if(!node.style.text_shadow)clipUiBox(target,node.style,x,y,w,h,bh/100);
               boxPhase(target,node,{x,y,width:w,height:h,viewportHeight:bh},'background');
               if(node.kind==='image')image(node,x,y,w,h,target);
-              else {if(node.kind==='text_input')textInput(target,node,{x,y,width:w,height:h,viewportHeight:bh});else if(node.kind!=='panel')paintUiText(target,node,{x,y,width:w,height:h,viewportHeight:bh,fontFamily,textColor});renderRegions+=1+Number(!!node.style.text_shadow);}
+              else {if(hasText(node))paintText(target,node,{x,y,width:w,height:h,viewportHeight:bh},scale);renderRegions+=1+Number(!!node.style.text_shadow);}
               boxPhase(target,node,{x,y,width:w,height:h,viewportHeight:bh},'border');
             }finally{target.restore();}
           });}
           else if(node.kind==='image')image(node,x,y,w,h);
-          else if(node.kind==='text_input'){textInput(ctx,node,{x,y,width:w,height:h,viewportHeight:bh});renderRegions++;}
+          else if(node.kind==='text_input'){if(fontReady(node))textInput(ctx,node,{x,y,width:w,height:h,viewportHeight:bh});renderRegions++;}
           else if(['panel','slider','combobox'].includes(node.kind)){renderRegions++;}
-          else {text(ctx,node,x,y,w,h,scale);renderRegions++;}
+          else {if(node.text&&fontReady(node))text(ctx,node,x,y,w,h,scale);renderRegions++;}
         }finally{if(c)ctx.restore();}}
       for(const image of [...tinted.keys()])releaseTinted(image,true);
       renderMs=performance.now()-started;
@@ -389,6 +436,11 @@ export function createCanvasUi(canvas,{resolveAsset,loadImage=imageLoad,acquireA
     },
     pointer:router.pointer,hitTest:router.hitTest,releaseAll:router.releaseAll,ready,setAssetObserver,assetDiagnostics,
     setFont(family){fontFamily=family;dirty=true;},
+    setDeferredFonts(faces,redraw,fail){
+      const families=new Map();
+      for(const face of faces)if(face.on_demand)families.set(face.family.toLowerCase(),new Map());
+      demandFonts=families.size?{families,pending:new Set(),redraw,fail}:null;
+    },
     invalidateAssets(){retireGpu();generation++;for(const [id,e]of assets)releaseAsset(e,id,'invalidate');assets.clear();for(const image of [...tinted.keys()])releaseTinted(image);loadingAssets=0;diagnostics.clear();quadDiagnosticKeys.clear();dirty=true;for(const id of requiredAssets)ensureAsset(id);notifyReady();},
     report(){const gpu=canvas?null:getPresenter();return {backend:canvas?'canvas2d':'three.js',...(gpu?{gpu:gpu.metrics()}:{}),nodes:nodes.length,usage,render_regions:renderRegions,cpu_render_ms:renderMs,gpu_render_ms:null,decoded_rgba_bytes_estimate:[...assets.values()].reduce((sum,e)=>sum+(e.image?(e.image.naturalWidth??e.image.width)*(e.image.naturalHeight??e.image.height)*4:0),0),assets:[...assets].map(([id,e])=>({id,state:e.state})),diagnostics:[...diagnostics.values()],fontFamily,limitations:['CPU timing is last redraw only, not GPU time. Decoded RGBA estimate excludes browser/GPU copies.','System font fallback depends on device; package licensed ui.fonts for reproducible family and weight coverage.','Rectangular hit testing, not per-pixel alpha. Text selection/caret uses UTF-16 browser selection offsets; Web/native shaping parity is not guaranteed.']};},
     dispose(){if(disposed)return;try{retireGpu();router.dispose();disposed=true;generation++;for(const [id,e]of assets)releaseAsset(e,id,'dispose');assets.clear();loadingAssets=0;requiredAssets.clear();diagnostics.clear();quadDiagnosticKeys.clear();nodes=[];batches.clear();prefix=[];references=[];paintDefinitions=[];paintNodeKeys=null;nodeKeys=[];batchResolver.clear();previous=paintKey=null;usage=null;renderMs=null;renderRegions=0;opacityPainter.dispose();for(const image of [...tinted.keys()])releaseTinted(image);notifyReady();}finally{assetTrace=null;}},

@@ -44,6 +44,7 @@ Copy-PackageFile $cliPath "bin\game.exe"
 Copy-PackageFile $analyzerPath "bin\luau-analyze.exe"
 Copy-PackageFile (Join-Path $engineRoot "docs\ai-agent-game-handoff.md") "docs\ai-agent-game-handoff.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\ai-workflow.md") "docs\ai-workflow.md"
+Copy-PackageFile (Join-Path $engineRoot "docs\profiling.md") "docs\profiling.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\plugin-protocol.md") "docs\plugin-protocol.md"
 Copy-PackageFile (Join-Path $engineRoot "docs\asset-workflow.md") "docs\asset-workflow.md"
 & $cliPath api typings --output (Join-Path $outputRoot "docs\engine.d.luau") | Out-Null
@@ -97,13 +98,21 @@ foreach ($webFile in @(
     Copy-PackageFile (Join-Path $engineRoot $webFile) $webFile
 }
 # Keep each host's transitive renderer and shared imports in the package.
+$parityCache = (Join-Path $engineRoot 'tests/host-parity-project/.unone') + [IO.Path]::DirectorySeparatorChar
 foreach ($directory in @('web/shared','web/renderer','web/vendor/three','tests/host-parity-project')) {
     foreach ($file in Get-ChildItem -LiteralPath (Join-Path $engineRoot $directory) -File -Recurse) {
+        if ($file.FullName.StartsWith($parityCache, [StringComparison]::OrdinalIgnoreCase)) { continue }
         Copy-PackageFile $file.FullName $file.FullName.Substring($engineRoot.Length + 1)
     }
 }
 Copy-PackageFile (Join-Path $engineRoot 'scripts/verify-host-parity.mjs') 'scripts/verify-host-parity.mjs'
-foreach ($tool in @('profile-player.mjs','compare-player.mjs','measure-web-export.mjs','measure-web-scenario.mjs')) {
+foreach ($tool in @(
+    'profile-player.mjs','compare-player.mjs','measure-web-export.mjs','measure-web-scenario.mjs','web-bundle-trace.mjs',
+    'audit-web-bundle.mjs','compare-web-replay.mjs','immutable-bytes-emitted-runtime.mjs',
+    # The comparison shares the official export inventory and runtime verifier.
+    'refresh-official-web.mjs','web-export-files.mjs','web-export-content.mjs','web-export-host.mjs',
+    'web-export-validate-worker.mjs','prepare-web-image-assets.mjs'
+)) {
     Copy-PackageFile (Join-Path $engineRoot "scripts/$tool") "scripts/$tool"
 }
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.js") "web\runtime\unone_web_live_smoke.js"
@@ -140,6 +149,9 @@ Profiling: scripts/profile-player.mjs and scripts/compare-player.mjs
 (Node.js 22+; supply an exported development game with --export or --before/--after)
 Load measurement: scripts/measure-web-export.mjs --export <production export> --output <report.json> [--scenario <scenario.json>]
 (Node.js 22+ and Edge or Chrome; see docs/profiling.md)
+Paired production replay: node scripts/compare-web-replay.mjs --before <export> --after <export> --input-sequence <route.json> --out <fresh-report.json>
+Static Web bundle audit: node scripts/audit-web-bundle.mjs --export <finished export> --out <fresh-report.json> (see docs/profiling.md for CI gates)
+(Node.js 22+; --scope full compares both players, --scope core uses the before host and content on both sides. For recorded clock input use --host-time-tape.)
 Luau analyzer: bin/luau-analyze.exe (game check --types finds it automatically)
 Optional AI plugins: docs/plugin-protocol.md and plugins/
 Web runner: web/runner/index.html

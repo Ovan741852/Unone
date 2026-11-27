@@ -1,6 +1,6 @@
 import {retainImageResource} from './retained-image-generation.mjs';
 import {createSavePublication,attachSavePublication} from './save-publication.mjs';
-import {createUiTreePublication,UI_TREE_MAX_ENCODED_BYTES} from './ui-tree-publication.mjs';
+import {decodeUiTreePublication,UI_TREE_MAX_ENCODED_BYTES} from './ui-tree-publication.mjs';
 import {createWorldFieldPublication,WORLD_FIELD_MAX_ENCODED_BYTES} from './world-field-publication.mjs';
 // Session selection belongs to the host load boundary; deterministic callers
 // continue passing their explicit seeds directly to loadProject.
@@ -102,7 +102,7 @@ function restoreUiTree(module,value,staged){
  let entry=uiTrees.get(module);
  if(!entry||entry.epoch!==wire.epoch||entry.revision!==wire.revision||entry.bytes!==memory.byte_length){
   let publication;
-  try{publication=createUiTreePublication(uiTreeDecoder.decode(module.HEAPU8.subarray(memory.offset,memory.offset+memory.byte_length)));}catch{invalid();}
+  try{publication=decodeUiTreePublication(module.HEAPU8.subarray(memory.offset,memory.offset+memory.byte_length),entry?.epoch===wire.epoch?entry.publication:null);}catch{invalid();}
   entry={epoch:wire.epoch,revision:wire.revision,bytes:memory.byte_length,publication};
  }
  // This is the reader's fresh private JSON envelope. Restoring its one field

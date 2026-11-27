@@ -107,6 +107,57 @@ fn an_unknown_group_fails_where_the_game_asks_for_it() {
 }
 
 #[test]
+fn named_owners_replace_atomically_share_promote_and_release_independently() {
+    let script = r#"return {start=function(api)
+        local g=api.assets.imageGroups
+        g.preload("town")
+        g.setOwner("npc",{town="load",map="preload"})
+        g.setOwner("story",{town="preload"})
+        assert(g.status("town").requested=="load")
+        assert(not pcall(function() g.setOwner("npc",{town="preload",typo="load"}) end))
+        assert(not pcall(function() g.setOwner("npc",{town="unload"}) end))
+        assert(not pcall(function() g.setOwner("",{}) end))
+        assert(g.owners("town").npc=="load" and g.owners("map").npc=="preload")
+        local copy=g.owners("town"); copy.npc=nil
+        assert(g.owners("town").npc=="load")
+        g.unload("town")
+    end,update=function(api)
+        local g=api.assets.imageGroups
+        if api.input.isDown("Retry") then g.retry("town") end
+        if api.input.isDown("Close") then
+            g.releaseOwner("npc");g.releaseOwner("npc")
+            assert(g.owners("town").story=="preload" and g.owners("map").npc==nil)
+        end
+        if api.input.isDown("End") then g.setOwner("story",{}) end
+        if api.input.isDown("Fault") then g.setOwner("broken",{map="load"});error("rollback") end
+    end}"#;
+    let mut game = load(script, &["town","map"], true).unwrap();
+    let plan = game.image_group_plan_since(None);
+    assert_eq!(plan.revision, 2);
+    assert_eq!(plan.groups.unwrap()["town"], ImageGroupRequest::Load);
+    let mut failed = report("error", 0, Some("transient"));
+    failed.actions.insert("Retry".into(), true);
+    game.tick_with_input(&failed).unwrap();
+    let retried = game.image_group_plan_since(Some(2));
+    assert_eq!(retried.retries, vec!["town"]);
+    assert_eq!(retried.groups.unwrap()["town"], ImageGroupRequest::Load);
+    game.set_input("Retry", false);
+    game.set_input("Close", true);
+    game.tick().unwrap();
+    let closed = game.image_group_plan_since(Some(retried.revision));
+    assert!(closed.retries.is_empty());
+    assert_eq!(closed.groups.unwrap(), [("town".into(),ImageGroupRequest::Preload)].into());
+    game.set_input("Close", false);
+    game.set_input("Fault", true);
+    assert!(game.tick().is_err());
+    assert_eq!(game.image_group_plan_since(None).groups.unwrap().len(), 1);
+    game.set_input("Fault", false);
+    game.set_input("End", true);
+    game.tick().unwrap();
+    assert!(game.image_group_plan_since(None).groups.unwrap().is_empty());
+}
+
+#[test]
 fn malformed_reports_are_refused_before_the_tick() {
     let mut game = load(TOWN, &["town"], true).unwrap();
     let mut bad = report("ready", 3, None);

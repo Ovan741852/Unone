@@ -72,6 +72,10 @@ export const USAGE=`Usage: node scripts/measure-web-export.mjs --export <product
   [--attach http://HOST:PORT|ws://... [--attach-target TEXT]] [--device-label TEXT]
   [--adb-socket auto|package:NAME|SOCKET [--adb-serial SERIAL] [--adb PATH]]
   With --scenario, cold, warm and profiler pairs default to 0 unless given.
+  A scenario may set bundle_trace to sample group holds/releases, broker image timings, actual image
+  transfers and skipped draws by phase. Its expect_released list checks end-of-run ownership.
+  bundle_trace.max_visible_queue_ms (0..600000) fails a run when a renderer waits longer for an
+  image load slot, or when the player cannot report that timing.
   --url opens a page you serve instead of serving --export: the player may sit in an iframe of it, also a
   sandboxed (opaque-origin) one. --export still names the export that page serves, for the report's hashes.
   The page must pass ?unone_profile and ?unone_profile_limit on to the player frame for profiler runs.
@@ -1117,10 +1121,15 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
 const FRAME_CONSOLE=['host_cpu_busy','submission_interval.p50_ms','submission_interval.p95_ms','submission_interval.p99_ms','submission_interval.over_50ms','submission_interval.over_100ms','raf_interval.p95_ms','raf_interval.over_50ms','new_snapshot_interval.p95_ms','dropped_steps','input_latency.p50_ms','input_latency.p95_ms','input_delivery.p50_ms','long_tasks.count','long_tasks.max_ms','long_tasks.max_tick_ms','tick.p95_ms','tick.max_ms','completed_submissions'];
 const CONSOLE_METRICS=['images.decoded.resident.entries','images.decoded.resident.bytes','gpu.textures.entries','gpu.geometries.entries','luau.heap.bytes','js_heap.used_bytes','os.largest_renderer.private_bytes','os.gpu_process.gpu_dedicated_bytes'];
 export function scenarioConsole(scenario){
- const run=scenario.runs.find(r=>r.ok&&!r.profiling);if(!run)return {ok:0,runs:scenario.runs.length};
+ const traces=scenario.runs.filter(r=>r.bundle_trace).map(r=>{
+  const counts={};for(const finding of r.bundle_trace.findings)counts[finding.code]=(counts[finding.code]??0)+1;
+  return {run:r.index,ok:r.bundle_trace.ok,findings:counts};
+ });
+ const traced=traces.length?{bundle_traces:traces}:{};
+ const run=scenario.runs.find(r=>r.ok&&!r.profiling);if(!run)return {ok:0,runs:scenario.runs.length,...traced};
  const median=name=>scenario.summary?.[name]?.median??null;
  const frames=prefix=>Object.fromEntries(FRAME_CONSOLE.map(name=>[name,median(`${prefix}.${name}`)]).filter(([,v])=>v!==null));
- return {ok:scenario.runs.filter(r=>r.ok&&!r.profiling).length,runs:scenario.runs.length,
+ return {ok:scenario.runs.filter(r=>r.ok&&!r.profiling).length,runs:scenario.runs.length,...traced,
   ...(run.blank_control?{blank_control_median:frames('blank_control')}:{}),
   phases:Object.fromEntries(run.phases.map(phase=>phase.kind==='frames'?[phase.name,{median_across_runs:frames(`${phase.name}.frames`)}]:[phase.name,{rounds:phase.trend.rounds,
   round_end:Object.fromEntries(CONSOLE_METRICS.filter(name=>phase.trend.end[name]?.n).map(name=>{const t=phase.trend.end[name];return [name,{first:t.first,last:t.last,max:t.max,second_half_not_higher:t.second_half_not_higher}];}))}])),

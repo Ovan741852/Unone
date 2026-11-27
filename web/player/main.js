@@ -349,6 +349,7 @@ async function start(){
  configurePhysical();
  startupScreen.start('fonts');
  await loadPresentationFonts(presentation.ui,source=>new URL('content/'+source,document.baseURI),(loaded,total)=>startupScreen.progress('fonts',loaded,total));
+ uiRenderer.setDeferredFonts(presentation.ui?.fonts??[],()=>{if(snapshot&&renderer)draw();},fail);
  if(startupAbort.signal.aborted)throw startupCancelled();
  startupScreen.complete('fonts');
  if(presentation.ui?.font_family??presentation.ui?.fonts?.[0]?.family)uiRenderer.setFont(presentation.ui.font_family??presentation.ui.fonts[0].family);

@@ -826,7 +826,9 @@ pub(crate) fn llms_txt() -> String {
          - `game find \"<need>\"`: existing engine APIs, render passes, systems, official packages, local plugins and marketplace plugins, in the order to prefer them.\n\
          - `game api search \"<meaning>\"`, then `game api describe <name>`: the exact API, its errors and an example.\n\
          - `game systems list`: which engine systems this project runs.\n\
-         - `game verify`: types, assets, layouts, tests and declared performance targets in one verdict.\n\n## Guides\n\n",
+         - `game verify`: types, assets, layouts, tests and declared performance targets in one verdict.\n\
+         - `node scripts/audit-web-bundle.mjs --export <export>`: inspect bundle sizes, overlapping groups and duplicate content.\n\
+         - `node scripts/measure-web-export.mjs --export <export> --scenario <scenario.json> --output <report.json>`: trace loaded and released groups across real player transitions with bundle_trace.\n\n## Guides\n\n",
     );
     let packages = unone_engine::runtime_package_files();
     let guides = authoring_files().into_iter().chain(packages).filter(|(path, _)| path.ends_with(".md"));
@@ -843,7 +845,7 @@ pub(crate) fn llms_txt() -> String {
 // Keep the public entry guide and its preview/validation tools together. They
 // come from the CLI's compiled authoring contract, like the package guides, so a
 // different template checkout cannot silently replace the documented tools.
-fn authoring_files() -> [(&'static str, &'static str); 32] {
+fn authoring_files() -> [(&'static str, &'static str); 43] {
     [
         ("README.md", include_str!("../../../docs/sdk-readme.md")),
         ("docs/profiling.md", include_str!("../../../docs/profiling.md")),
@@ -871,6 +873,17 @@ fn authoring_files() -> [(&'static str, &'static str); 32] {
         ("scripts/serve-player.py", include_str!("../../../scripts/serve-player.py")),
         ("scripts/verify-ui-example-browser.mjs", include_str!("../../../scripts/verify-ui-example-browser.mjs")),
         ("scripts/audit-ui-fonts.py", include_str!("../../../scripts/audit-ui-fonts.py")),
+        ("scripts/audit-web-bundle.mjs", include_str!("../../../scripts/audit-web-bundle.mjs")),
+        ("scripts/web-export-files.mjs", include_str!("../../../scripts/web-export-files.mjs")),
+        ("scripts/compare-web-replay.mjs", include_str!("../../../scripts/compare-web-replay.mjs")),
+        ("scripts/immutable-bytes-emitted-runtime.mjs", include_str!("../../../scripts/immutable-bytes-emitted-runtime.mjs")),
+        ("scripts/refresh-official-web.mjs", include_str!("../../../scripts/refresh-official-web.mjs")),
+        ("scripts/web-export-host.mjs", include_str!("../../../scripts/web-export-host.mjs")),
+        ("scripts/web-export-content.mjs", include_str!("../../../scripts/web-export-content.mjs")),
+        ("scripts/web-export-validate-worker.mjs", include_str!("../../../scripts/web-export-validate-worker.mjs")),
+        ("scripts/measure-web-export.mjs", include_str!("../../../scripts/measure-web-export.mjs")),
+        ("scripts/measure-web-scenario.mjs", include_str!("../../../scripts/measure-web-scenario.mjs")),
+        ("scripts/web-bundle-trace.mjs", include_str!("../../../scripts/web-bundle-trace.mjs")),
         // Publishes player.image-assets.json into a Web export; it verifies
         // itself and the asset template against this SDK's sdk.json.
         ("scripts/prepare-web-image-assets.mjs", include_str!("../../../scripts/prepare-web-image-assets.mjs")),
@@ -1310,6 +1323,10 @@ mod tests {
         let mut manifest = load(&output).unwrap();
         let added = ["README.md", "llms.txt", "docs/spatial-batches.md", "docs/projected-geometry.md", "scripts/serve-player.py", "scripts/verify-ui-example-browser.mjs", "scripts/audit-ui-fonts.py",
             "scripts/prepare-web-image-assets.mjs", "docs/web-image-assets.md",
+            "scripts/audit-web-bundle.mjs", "scripts/web-export-files.mjs", "scripts/compare-web-replay.mjs",
+            "scripts/immutable-bytes-emitted-runtime.mjs", "scripts/refresh-official-web.mjs",
+            "scripts/web-export-host.mjs", "scripts/web-export-content.mjs", "scripts/web-export-validate-worker.mjs",
+            "scripts/measure-web-export.mjs", "scripts/measure-web-scenario.mjs", "scripts/web-bundle-trace.mjs",
             "examples/spatial-diagnostics/README.md", "examples/spatial-diagnostics/project.unone.json", "examples/spatial-diagnostics/scene.json", "examples/spatial-diagnostics/main.luau", "tools/benchmark-spatial.mjs"];
         for name in added {
             assert!(manifest.files.iter().any(|file| file.path == name), "missing documented SDK entry: {name}");

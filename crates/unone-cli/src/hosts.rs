@@ -441,6 +441,9 @@ pub struct PresentationFontFace {
     pub source: String,
     #[serde(default = "default_font_weight")]
     pub weight: u16,
+    /// Register this Web face at startup and fetch it when the UI first uses it.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub on_demand: bool,
     /// Web exports cut this face down to the characters the game shows
     /// (`crate::font_subset`). Every face naming the same source must agree.
     #[serde(default, skip_serializing)]
