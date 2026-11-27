@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {createBundleTrace} from './web-bundle-trace.mjs';
 import {parseScenario} from './measure-web-scenario.mjs';
 import {scenarioConsole} from './measure-web-export.mjs';
+import {createAssetCatalog,createImageAssetBroker,installPlayerAssetGroups} from '../web/shared/asset-encoding.js';
 
 function runtime() {
   let now=10,timer;
@@ -58,6 +59,43 @@ test('missing broker, overrun load history, hidden size and absent decode timing
  available.load(null);available.load(null);available.loading.recent.shift();
  const result=trace.finish();assert.deepEqual(result.findings.map(f=>f.code),['BUNDLE_TRACE_INCOMPLETE']);
  assert.equal(result.findings[0].missed_load_timings,1);
+});
+
+test('a live broker without a group plan can measure image loads and reports its queue capability',async t=>{
+ const r=runtime();delete r.host.unonePlayerAssets;
+ let broker;
+ const uninstall=installPlayerAssetGroups(r.host,()=>broker);
+ t.after(()=>{uninstall();broker?.dispose();});
+ const pending=createBundleTrace({},r.host).finish();
+ assert.equal(pending.ok,false);
+ assert.deepEqual(pending.findings.map(f=>f.code),['BUNDLE_TRACE_UNAVAILABLE']);
+ const trace=createBundleTrace({},r.host);
+ const catalog=createAssetCatalog({assets:[{id:'icon',kind:'texture2d',source:'icon.png'}]});
+ broker=createImageAssetBroker(catalog,{resolveAssetUrl:a=>a.source,loadImage:async()=>({width:1,height:1})});
+ r.tick();
+ const lease=broker.acquire('icon');await lease.promise;lease.release();
+ const report=trace.finish();
+ assert.equal(report.ok,true);assert.deepEqual(report.findings,[]);
+ assert.equal(report.methods.groups,false);assert.equal(report.methods.load_timings,true);
+ const supportsQueue=broker.report().loading_metrics.visible_queue_supported===true;
+ assert.equal(report.methods.visible_queue,supportsQueue);assert.deepEqual(report.loads.map(l=>l.id),['icon']);
+ const gated=createBundleTrace({max_visible_queue_ms:0},r.host).finish();
+ assert.equal(gated.ok,supportsQueue);
+ assert.deepEqual(gated.findings.map(f=>f.code),supportsQueue?[]:['BUNDLE_VISIBLE_QUEUE_UNAVAILABLE']);
+ assert.equal(createBundleTrace({},r.host).finish().ok,true);
+ const required=createBundleTrace({expect_released:['arena']},r.host).finish();
+ assert.equal(required.ok,false);
+ assert.deepEqual(required.findings.map(f=>f.code),['BUNDLE_TRACE_UNAVAILABLE']);
+ delete r.host.unonePlayerPerformance;
+ assert.equal(createBundleTrace({},r.host).finish().ok,false);
+});
+
+test('a final release assertion needs a group snapshot at the end of the trace',()=>{
+ const r=runtime(),trace=createBundleTrace({expect_released:['arena']},r.host);
+ delete r.host.unonePlayerAssets;
+ const result=trace.finish();
+ assert.equal(result.ok,false);
+ assert.deepEqual(result.findings.map(f=>f.code),['BUNDLE_TRACE_UNAVAILABLE']);
 });
 
 test('scenario parser validates trace fields and preserves existing definitions',()=>{

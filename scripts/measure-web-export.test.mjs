@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import {mkdtemp,mkdir,rm,writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import {runInNewContext} from 'node:vm';
 import {parseArgs,quantiles,summarize,pairDeltas,resourceRow,joinNetwork,startupSteps,normalizeLoad,readExport,startServer,cacheControlFor,browserArgs,probeSource,collectSource,buildReport,shiftInput,profileMissing,pageWithoutQuery,measuredUrl,SCHEMA,
  parseAttach,listTargets,pickPageTarget,findAdb,parseDevtoolsSockets,chooseSocket,parseGetprop,parseWebViewProvider,deviceInfo,adbConnect,attachedOsMemory,touchCondition} from './measure-web-export.mjs';
 
@@ -179,6 +180,22 @@ test('page instrumentation parses, returns what WebAssembly returns and records 
  const result=await W.instantiateStreaming({},{env:{}});
  assert.equal(result.instance,instance);assert.equal(result.module,module);assert.deepEqual(calls,['compileStreaming','instantiate(module)'],'split does exactly compileStreaming then instantiate');
  const row=sandbox.__unoneMeasure.wasm[0];assert.equal(row.api,'instantiateStreaming');assert.equal(row.status,'ok');assert(row.compiled_ms>row.start_ms&&row.end_ms>row.compiled_ms);
+});
+
+test('bundle tracing reserves bounded resource history before the measured document requests its modules',()=>{
+ function capacities(options,iframe=false){
+  const calls=[];
+  const page={performance:{setResourceTimingBufferSize:size=>calls.push(size),now:()=>0},
+   document:{visibilityState:'visible',hasFocus:()=>true,addEventListener(){}},addEventListener(){}};
+  page.window=page;page.top=iframe?{}:page;
+  const source=probeSource(options);
+  runInNewContext(source,page);runInNewContext(source,page);
+  return calls;
+ }
+ assert.deepEqual(capacities({}),[]);
+ assert.deepEqual(capacities({bundleTrace:true}),[20000]);
+ assert.deepEqual(capacities({bundleTrace:true},true),[]);
+ assert.deepEqual(capacities({bundleTrace:true,embedded:true},true),[20000]);
 });
 
 test('the server serves the blank control page beside the export, uncached, without touching the export',async()=>{

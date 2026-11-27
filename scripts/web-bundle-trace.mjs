@@ -7,6 +7,7 @@ export function createBundleTrace(options = {}, host = globalThis) {
   const requests = new Map(), groupErrors = new Set(), dropped = {group_events:0, loads:0, resources:0};
   const groupEvents = [], loads = [], resources = [], limit = 20000;
   let phase, observer, stopped = false, previousCounts, previousLoads, session, catalog;
+  let hasGroupSnapshot = false;
   const methods = {groups:false, load_timings:false, visible_queue:false, submissions:false, resource_timing:false};
   let hadResourceObserver = false, bufferMissed = 0, lostLoads = 0;
   const expected = options.expect_released ?? [];
@@ -18,7 +19,8 @@ export function createBundleTrace(options = {}, host = globalThis) {
   const push = (array, key, row) => { if (array.length < limit) array.push(row); else dropped[key]++; };
   const warn = (code, evidence, severity = 'warning') => findings.push({code, severity, ...evidence});
   function groupChanges(asset, at) {
-    if (!asset?.available || !Array.isArray(asset.groups)) return;
+    hasGroupSnapshot = asset?.available === true && Array.isArray(asset.groups);
+    if (!hasGroupSnapshot) return;
     methods.groups = true;
     for (const g of asset.groups) {
       const prev = lastGroups.get(g.name);
@@ -151,12 +153,14 @@ export function createBundleTrace(options = {}, host = globalThis) {
     }
     for (const r of timings.values()) if (r.count>1) warn('BUNDLE_REPEATED_IMAGE_DECODE',r);
     for (const r of requests.values()) if (r.count>1) warn('BUNDLE_REPEATED_NETWORK_TRANSFER',r);
-    if (methods.groups) for (const group of expected) {
+    if (hasGroupSnapshot) for (const group of expected) {
       const g=lastGroups.get(group);
       if (!g) warn('BUNDLE_EXPECTED_GROUP_UNKNOWN',{group},'error');
       else if (g.held>0 || !['idle','unloaded'].includes(g.state)) warn('BUNDLE_EXPECTED_RELEASE_MISSING',{group,...g},'error');
     }
-    if (!methods.groups || !methods.submissions) warn('BUNDLE_TRACE_UNAVAILABLE',{methods},'error');
+    // The broker reports load timings even when the project has no image group plan.
+    const assetTraceAvailable = expected.length ? hasGroupSnapshot : methods.groups || methods.load_timings;
+    if (!assetTraceAvailable || !methods.submissions) warn('BUNDLE_TRACE_UNAVAILABLE',{methods},'error');
     if (queueBudget !== null && (!methods.visible_queue || unsupportedQueue))
       warn('BUNDLE_VISIBLE_QUEUE_UNAVAILABLE',{budget_ms:queueBudget},'error');
     if (queueBudget !== null && (lostLoads || invalidQueueRows))

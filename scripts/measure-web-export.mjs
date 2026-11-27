@@ -668,10 +668,13 @@ export async function adbConnect(options,{serverPort=null,run=runProcess,freePor
 // Instrumentation added to every document before its own scripts. Timing only: every wrapper
 // returns what the original returns, and a 'split' instantiateStreaming does exactly the two steps
 // instantiateStreaming is specified as (compileStreaming, then instantiate).
-export function probeSource({wasmTiming='split',embedded=false}={}){
+const BUNDLE_RESOURCE_TIMING_ENTRIES=20000;
+
+export function probeSource({wasmTiming='split',embedded=false,bundleTrace=false}={}){
  // A page that embeds the player (--url) is instrumented in every frame: which one runs the player
  // is only known once its document has parsed.
  return `(()=>{if((!${embedded===true}&&window.top!==window)||window.__unoneMeasure)return;
+${bundleTrace?`performance.setResourceTimingBufferSize?.(${BUNDLE_RESOURCE_TIMING_ENTRIES});`:''}
 const now=()=>performance.now(),split=${JSON.stringify(wasmTiming==='split')};
 const probe={version:1,wasm:[],fonts:[],long_tasks:[],visibility:[{state:document.visibilityState,at_ms:now()}],focus:[],focused_at_start:document.hasFocus()};
 Object.defineProperty(window,'__unoneMeasure',{value:probe});
@@ -996,7 +999,8 @@ export async function measure(options,log=message=>process.stderr.write(message+
   for(let i=0;i<scenarioTotal;i++){
    const profiling=i===options.scenarioRuns;
    const milestones=[...new Set([...options.milestones,...(scenario.definition.start_mark?[scenario.definition.start_mark]:[])])];
-   const {browser,page,close}=await session({...options,touch});
+   // The bundle observer subscribes after startup. Retain early resource entries from navigation.
+   const {browser,page,close}=await session({...options,touch,bundleTrace:Boolean(scenario.definition.bundle_trace)});
    try{
     // The browser's own cadence on an empty page, same browser and viewport, before the game loads.
     let blank=null;
@@ -1108,6 +1112,7 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
   coverage,
   summary:{cold:summarize(ok('cold')),warm:summarize(ok('warm')),profiler_pairs:pairDeltas(okPairs)},
   ...(scenario?{scenario:{file:scenario.file,definition:scenario.definition,conditions:{browser:attached?'the attached browser and page (--attach/--adb-socket) for every run: nothing restarts between runs, and a touch scenario first checks that a DevTools tap reaches the blank page (scenario.runs[].touch.probe)':'a new browser process and profile per run',profiler:options.scenarioProfile?'off for acceptance runs; one extra diagnostic run with ?unone_profile=1&unone_profile_limit=2048':false,sample_ms:scenario.definition.sample_ms,settle_ms:scenario.definition.settle_ms,
+   ...(scenario.definition.bundle_trace?{resource_timing_buffer_entries_requested:BUNDLE_RESOURCE_TIMING_ENTRIES}:{}),
    touch_emulation:usesTouch(scenario.definition)?touchCondition(scenarioRuns,attached):false,
    frame_windows:{poll_ms:1000,source:'unonePlayerPerformance.snapshot({includeRafSamples:true,includeRafTicks:true}) draw and input rows (without includeRafTicks from an older player), stitched by sequence; the memory sampler pauses during a window',blank_control:options.blankControl?'empty page recording requestAnimationFrame timestamps, same browser and viewport, before the game loads':false},
    os_memory:attached?'not read: the attached browser\'s processes are its device\'s, not this machine\'s':process.platform==='win32'?'per process at checkpoints: working set, peak working set, private bytes, GPU dedicated/shared (Windows GPU counters)':process.platform==='linux'?'per process at checkpoints: VmRSS, VmHWM, RssAnon; no GPU memory':'not read on this platform'},
