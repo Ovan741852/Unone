@@ -19,6 +19,7 @@ test('extracts the existing official player ABI, conditional particle ABI and li
  const production=officialPlayerContract(ps),diagnostic=officialPlayerContract(ps,{diagnostic:true});
  assert(production.exports.includes('sprite_resources_request'));
  assert(production.exports.includes('image_groups_request'));
+ for(const name of ['data_requests','deferred_reserve'])assert(officialPlayerContract(ps,{particle:false}).exports.includes(name));
  assert(production.exports.includes('profile_marks_revision')&&production.exports.includes('profile_marks_request'));
  assert(production.exports.includes('luau_heap_bytes'),'the player reads the Luau heap beside the world');
  assert(production.exports.includes('set_ui_transport'));
@@ -30,6 +31,7 @@ test('extracts the existing official player ABI, conditional particle ABI and li
 });
 test('contract extraction rejects ambiguous future arrays rather than silently building an old ABI',()=>{
  assert.throws(()=>officialPlayerContract(ps+"\n$exports = @('typo')"),/one official/);
+ assert.throws(()=>officialPlayerContract(ps+"\nif ($unknown) { $exports += @('typo') }"),/Unexpected conditional/);
  assert.throws(()=>officialPlayerContract(ps.replace("'init','alloc'","'init','init'")),/Duplicate official/);
  assert.throws(()=>officialPlayerContract(ps.replace('-sENVIRONMENT=web','-sENVIRONMENT=node')),/Web environment/);
 });

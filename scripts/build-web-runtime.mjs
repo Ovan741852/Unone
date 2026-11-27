@@ -36,12 +36,19 @@ function quotedList(value){
 }
 export function officialPlayerContract(source,{diagnostic=false,particle=true}={}){
  const base=[...source.matchAll(/\$exports\s*=\s*@\(([^)]*)\)/g)];
- const extra=[...source.matchAll(/\$exports\s*\+=\s*@\(([^)]*)\)/g)];
  assert.equal(base.length,1,'Expected one official player ABI list');
- assert.equal(extra.length,1,'Expected one official particle ABI list');
+ const particleRows=[...source.matchAll(/if\s*\(\$compiledSystems\s+-contains\s+'particle'\)\s*\{\s*\$exports\s*\+=\s*@\(([^)]*)\)\s*\}/g)];
+ assert.equal(particleRows.length,1,'Expected one official particle ABI list');
+ // Contiguous additions immediately after the base declaration are unconditional.
+ const afterBase=source.slice(base[0].index+base[0][0].length);
+ const additions=/^(?:\s*\$exports\s*\+=\s*@\([^)]*\))*/.exec(afterBase)[0];
+ const arrays=text=>[...text.matchAll(/\$exports\s*\+=\s*@\(([^)]*)\)/g)];
+ const unconditional=arrays(additions);
+ assert.equal(arrays(source).length,unconditional.length+1,'Unexpected conditional official ABI list');
  const diagnosticRows=[...source.matchAll(/if\s*\(\$diagnosticPlayer\)\s*\{\s*\$exports\s*\+=\s*'([a-z_]+)'\s*\}/g)];
  assert.equal(diagnosticRows.length,1,'Missing official diagnostic ABI addition');
- const exports=[...quotedList(base[0][1]),...(diagnostic?[diagnosticRows[0][1]]:[]),...(particle?quotedList(extra[0][1]):[])];
+ const exports=[...quotedList(base[0][1]),...unconditional.flatMap(row=>quotedList(row[1])),
+  ...(diagnostic?[diagnosticRows[0][1]]:[]),...(particle?quotedList(particleRows[0][1]):[])];
  assert.equal(new Set(exports).size,exports.length,'Duplicate official ABI');
  const settings=[...source.matchAll(/'((?: -C link-arg=-s[A-Z_]+=[A-Za-z0-9]+)+)'/g)];
  assert.equal(settings.length,1,'Expected one official player linker setting list');
