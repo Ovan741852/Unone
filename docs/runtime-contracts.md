@@ -90,6 +90,11 @@ Spine/Effekseer rendering. Device and WASM acceptance remain explicit work.
 Error responses share `ok`, `value`, `diagnostics`, `effects`; legacy `diagnostic`,
 `error` and `message` aliases remain during migration. Success envelopes retain
 host-specific lifecycle/surface data; compare `world` and `observation_digest`.
+The official Web player only presents, so it publishes without `observation_digest`
+(`createRuntimeCore`/`createRuntimeBackend` option `observationDigest: false`, ABI
+`unone_web_set_observation_digest(0)`): hashing the complete canonical world on every tick cost
+about as much as encoding it. Open the player with `?digest=1` to compare digests; every
+other host, and the replay, parity and export tools, keep digests on by default.
 `platform capabilities` reports core/binary information and `renderer_probe:
 not_probed`; it cannot certify a separately running renderer from target OS alone.
 

@@ -40,7 +40,8 @@ struct Transport {format:&'static str,epoch:String,resources:BTreeMap<String,Res
 #[derive(Serialize)]
 struct Observation<'a,W:Serialize+?Sized>{
     compiled_systems:&'static [String],project:&'a str,world:&'a W,
-    observation_digest:&'a str,
+    #[serde(skip_serializing_if="Option::is_none")]
+    observation_digest:Option<&'a str>,
     #[serde(flatten)]
     save:&'a super::save_transport::Prepared<'a>,
     #[serde(skip_serializing_if="Option::is_none")]
@@ -249,7 +250,7 @@ fn finish_ui_publication(ui_tree:super::ui_tree_transport::Prepared,oversized:bo
         else{false}});
     if released_ui||shrunk{CANONICAL_HASHER.with(|v|*v.borrow_mut()=unone_engine::CanonicalHasher::default());}
 }
-fn envelope<W:Serialize+?Sized>(project:&str,world:&W,digest:&str,save:&super::save_transport::Prepared<'_>,resources:BTreeMap<String,Resource>,ui_tree:&super::ui_tree_transport::Prepared,world_fields:&super::world_transport::Prepared)->Result<(),String>{
+fn envelope<W:Serialize+?Sized>(project:&str,world:&W,digest:Option<&str>,save:&super::save_transport::Prepared<'_>,resources:BTreeMap<String,Resource>,ui_tree:&super::ui_tree_transport::Prepared,world_fields:&super::world_transport::Prepared)->Result<(),String>{
     let observation=Observation{compiled_systems:unone_engine::compiled_systems(),project,world,
         observation_digest:digest,save,
         instance_transport:INSTANCE_MEMORY.with(|m|m.get().then_some("wasm-memory-v1")),
@@ -267,7 +268,8 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
         let mut bytes=cache.borrow_mut();let spans=canonical(&mut bytes,snapshot)?;
         let encode_ms=started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
         let started=measuring.then(std::time::Instant::now);
-        let (digest,work)=CANONICAL_HASHER.with(|h|h.borrow_mut().hash(&bytes));
+        let (digest,work)=if observation_digest_enabled(){let (digest,work)=CANONICAL_HASHER.with(|h|h.borrow_mut().hash(&bytes));(Some(digest),work)}
+            else{(None,unone_engine::CanonicalHashWork::default())};
         let hash_ms=started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
         let oversized=span(&spans,"ui").is_some_and(|(start,end)|end-start>super::ui_tree_transport::MAX_ENCODED_BYTES);
         Ok::<_,String>((digest,work,encode_ms,hash_ms,spans,oversized))
@@ -286,7 +288,7 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
     let instances=instance_leases(snapshot);
     let _presentation_ms=presentation_started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
     let envelope_started=measuring.then(std::time::Instant::now);
-    envelope(project,&Presentation(snapshot,ui_tree.has_lease(),&world_fields),&digest,save,resources,&ui_tree,&world_fields)?;
+    envelope(project,&Presentation(snapshot,ui_tree.has_lease(),&world_fields),digest.as_deref(),save,resources,&ui_tree,&world_fields)?;
     let _envelope_ms=envelope_started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
     // Retire previous leases only after the complete envelope was written.
     INSTANCE_BUFFERS.with(|out|*out.borrow_mut()=instances);
@@ -550,7 +552,7 @@ mod tests{
   struct Fails;impl Serialize for Fails{fn serialize<S:serde::Serializer>(&self,_:S)->Result<S::Ok,S::Error>{Err(serde::ser::Error::custom("injected envelope failure"))}}
   let save=super::super::save_transport::prepare(None,true,epoch).unwrap();
   let fields=super::super::world_transport::prepare(std::iter::empty(),epoch).unwrap();
-  assert!(envelope("failed",&Fails,"digest",&save,BTreeMap::new(),&candidate,&fields).is_err());drop(candidate);
+  assert!(envelope("failed",&Fails,Some("digest"),&save,BTreeMap::new(),&candidate,&fields).is_err());drop(candidate);
   assert_eq!(ui(&first),old);
   let snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());write("transaction",&snapshot,None).unwrap();let retry=output();assert_eq!(retry["ui_tree_transport"]["memory"]["offset"],old_pointer);assert_eq!(retry["ui_tree_transport"]["revision"],first["ui_tree_transport"]["revision"]);
   let revision=first["ui_tree_transport"]["revision"].as_str().unwrap().parse::<u64>().unwrap();

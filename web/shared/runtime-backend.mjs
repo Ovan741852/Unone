@@ -1,6 +1,6 @@
 import {createRuntimeCore,loadRuntime} from './runtime-core.mjs';
 import {InstanceReceiver} from './instance-transfer.mjs';
-export async function createRuntimeBackend({kind='main',url,timeoutMs=30000,jobPolicy={},spatialBackend='cpu',requirePhysicalViewport=true,device={cores:globalThis.navigator?.hardwareConcurrency,memoryGB:globalThis.navigator?.deviceMemory},WorkerClass=globalThis.Worker,profiler=null}){
+export async function createRuntimeBackend({kind='main',url,timeoutMs=30000,jobPolicy={},spatialBackend='cpu',requirePhysicalViewport=true,observationDigest=true,device={cores:globalThis.navigator?.hardwareConcurrency,memoryGB:globalThis.navigator?.deviceMemory},WorkerClass=globalThis.Worker,profiler=null}){
  if(!['main','worker'].includes(kind))throw Error('RUNTIME_BACKEND_INVALID');
  let closed=false,pending=0,tail=Promise.resolve(),metrics={backend:kind},serial=0,current=null;
  const receiver=new InstanceReceiver();let worker,core;
@@ -19,7 +19,7 @@ export async function createRuntimeBackend({kind='main',url,timeoutMs=30000,jobP
    catch(error){shutdown(error);return;}
    metrics=data.metrics??metrics;current=null;clearTimeout(request.timer);request.resolve(value);
   };
- }else core=createRuntimeCore(await loadRuntime(url),{url,jobPolicy,device,spatialBackend,requirePhysicalViewport,...(profiler?{profile:true}:{})});
+ }else core=createRuntimeCore(await loadRuntime(url),{url,jobPolicy,device,spatialBackend,requirePhysicalViewport,observationDigest,...(profiler?{profile:true}:{})});
  async function dispatch(command,event=null){if(closed)throw Error('RUNTIME_CLOSED');if(core){const at=performance.now();if(event)profiler.span(event,'queue_wait',event.start_ms,at);let value;try{value=await core.execute(command);}finally{if(event)coreSpans(event,at,profiler.now());}metrics={backend:'main',jobs:core.report(),viewport:core.report().viewport,execute_ms:performance.now()-at,...core.memory()};return value;}
   return new Promise((resolve,reject)=>{
    const id=++serial,recycled=receiver.takeRecycled();
@@ -61,6 +61,6 @@ export async function createRuntimeBackend({kind='main',url,timeoutMs=30000,jobP
  }
  // `owner` is the caller's profile identity; it is ignored when profiling is disabled.
  function request(command,owner){if(profiler)return profiledRequest(command,owner);if(closed)return Promise.reject(Error('RUNTIME_CLOSED'));if(pending>=32)return Promise.reject(Error('RUNTIME_QUEUE_FULL'));pending++;const result=tail.then(()=>dispatch(command));tail=result.catch(()=>{});return result.finally(()=>pending--);}
- if(worker){try{await request({kind:'init',url,jobPolicy,device,spatialBackend,requirePhysicalViewport,...(profiler?{profile:true}:{})});}catch(error){shutdown(error);throw error;}}
+ if(worker){try{await request({kind:'init',url,jobPolicy,device,spatialBackend,requirePhysicalViewport,...(observationDigest?{}:{observationDigest:false}),...(profiler?{profile:true}:{})});}catch(error){shutdown(error);throw error;}}
  return {kind,request,close:shutdown,report:()=>({...metrics,pending,closed}),memory:batch=>core?core.module.HEAPU8.buffer:receiver.memory(batch)};
 }

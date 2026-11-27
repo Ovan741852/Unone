@@ -24,6 +24,8 @@ thread_local! {
     static STAGED_DATA: RefCell<std::collections::BTreeMap<String, Vec<u8>>> = const { RefCell::new(std::collections::BTreeMap::new()) };
     static PROJECT_NAME: RefCell<String> = const { RefCell::new(String::new()) };
     static CANONICAL_HASHER: RefCell<unone_engine::CanonicalHasher> = RefCell::new(unone_engine::CanonicalHasher::default());
+    // Whether publications carry observation_digest (unone_web_set_observation_digest); on unless the host turns it off.
+    static OBSERVATION_DIGEST: std::cell::Cell<bool> = const { std::cell::Cell::new(true) };
     static INSTANCE_MEMORY: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
     // Pointers remain valid until the next successful world publication.
     static INSTANCE_BUFFERS: RefCell<Vec<std::sync::Arc<[u8]>>> = const { RefCell::new(Vec::new()) };
@@ -108,7 +110,8 @@ struct ProjectObservation<'a> {
     compiled_systems: &'static [String],
     project: &'a str,
     world: &'a serde_json::value::RawValue,
-    observation_digest: &'a str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    observation_digest: Option<&'a str>,
     #[serde(flatten)]
     save: &'a save_transport::Prepared<'a>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -144,8 +147,12 @@ fn write_snapshot_prepared(project:&str,snapshot:&WorldSnapshot,save:&save_trans
         .unwrap_or(0.);
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     let hash_started = measuring.then(std::time::Instant::now);
-    let (observation_digest, _hash_work) =
-        CANONICAL_HASHER.with(|h| h.borrow_mut().hash(world.get().as_bytes()));
+    let (observation_digest, _hash_work) = if observation_digest_enabled() {
+        let (digest, work) = CANONICAL_HASHER.with(|h| h.borrow_mut().hash(world.get().as_bytes()));
+        (Some(digest), work)
+    } else {
+        (None, unone_engine::CanonicalHashWork::default())
+    };
     #[cfg(any(feature = "dev-tools", feature = "preview-tools"))]
     let encoding_times = [
         encode_ms,
@@ -169,7 +176,7 @@ fn write_snapshot_prepared(project:&str,snapshot:&WorldSnapshot,save:&save_trans
         compiled_systems: unone_engine::compiled_systems(),
         project,
         world: &world,
-        observation_digest: &observation_digest,
+        observation_digest: observation_digest.as_deref(),
         save,
         instance_transport: INSTANCE_MEMORY.with(|m| {
             if m.get() {
@@ -234,10 +241,11 @@ fn write_direct_snapshot(project: &str, snapshot: &WorldSnapshot,
         let end=bytes.len();
         let encode_ms=encode_started.map_or(0., |s| s.elapsed().as_secs_f64()*1000.);
         let hash_started=measuring.then(std::time::Instant::now);
-        let (digest,work)=CANONICAL_HASHER.with(|h| h.borrow_mut().hash(&bytes[start..end]));
+        let (digest,work)=if observation_digest_enabled(){let (digest,work)=CANONICAL_HASHER.with(|h| h.borrow_mut().hash(&bytes[start..end]));(Some(digest),work)}
+            else{(None,unone_engine::CanonicalHashWork::default())};
         let hash_ms=hash_started.map_or(0., |s| s.elapsed().as_secs_f64()*1000.);
         let suffix_started=measuring.then(std::time::Instant::now);
-        bytes.extend_from_slice(b",\"observation_digest\":");append_json(&mut bytes, &digest)?;
+        if let Some(digest)=&digest{bytes.extend_from_slice(b",\"observation_digest\":");append_json(&mut bytes, digest)?;}
         save.append_fields(&mut bytes)?;
         if INSTANCE_MEMORY.with(|mode| mode.get()) {
             bytes.extend_from_slice(b",\"instance_transport\":");append_json(&mut bytes, "wasm-memory-v1")?;
@@ -284,7 +292,7 @@ mod direct_publication_tests {
                 let cached=runtime.serialized_save_payload();
                 let prepared=save_transport::prepare(cached.as_deref(),false,1).unwrap();
                 let typed=serde_json::to_vec(&ProjectObservation {compiled_systems:unone_engine::compiled_systems(),project,
-                    world:&world,observation_digest:&digest,save:&prepared,instance_transport:memory.then_some("wasm-memory-v1")}).unwrap();
+                    world:&world,observation_digest:Some(&digest),save:&prepared,instance_transport:memory.then_some("wasm-memory-v1")}).unwrap();
                 assert_eq!(expected,typed,"cached raw values and the typed envelope preserve the previous wire contract");
                 write_snapshot(project,&snapshot,cached.as_deref()).unwrap();
                 OUTPUT.with(|out|assert_eq!(*out.borrow(),expected));
@@ -1079,6 +1087,21 @@ pub unsafe extern "C" fn unone_web_spatial_request(pointer: *const u8, length: u
         },
         Err(error) => { write_error(error); -1 },
     }
+}
+
+fn observation_digest_enabled() -> bool { OBSERVATION_DIGEST.with(std::cell::Cell::get) }
+
+/// Whether publications carry `observation_digest`, the SHA-256 of the complete canonical world: on by default, 0
+/// turns it off and anything else back on, from the next publication. Hashing every publication costs about as much as
+/// encoding the world; a host that only presents (the official player) turns it off. Replay, parity and export checks
+/// compare digests and leave it on.
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_set_observation_digest(enabled: i32) -> i32 {
+    let enabled = enabled != 0;
+    OBSERVATION_DIGEST.with(|digest| digest.set(enabled));
+    // Without digests the hash prefix cache only holds memory.
+    if !enabled { CANONICAL_HASHER.with(|h| *h.borrow_mut() = unone_engine::CanonicalHasher::default()); }
+    0
 }
 
 /// Whether the next tick's output can reach the screen (api.application.presenting).
@@ -1914,4 +1937,48 @@ fn host_time_abi_is_readonly_owned_bounded_and_never_ticks() {
     assert_eq!(RUNTIME.with(|r|r.borrow().as_ref().unwrap().current_frame()),0);
     assert_eq!(unsafe { unone_web_host_time_request(pointer,request.len()) },0);
     assert_eq!(OUTPUT.with(|o|serde_json::from_slice::<serde_json::Value>(&o.borrow()).unwrap()),report);
+}
+
+#[cfg(test)]
+mod observation_digest_switch_tests {
+    use super::*;
+    fn output() -> serde_json::Value { OUTPUT.with(|o| serde_json::from_slice(&o.borrow()).unwrap()) }
+    fn current_digest() -> serde_json::Value {
+        RUNTIME.with(|r| unone_engine::observation_digest(&r.borrow().as_ref().unwrap().observe()).unwrap()).into()
+    }
+    #[test]
+    fn a_host_can_publish_without_the_digest_on_every_wire_and_get_the_exact_digest_back() {
+        // Even frames carry an instance batch (its bytes ride the wire), odd frames do not (direct publication).
+        let payload = serde_json::to_vec(&serde_json::json!({"config":{"name":"digest","entry_script":"main.luau"},"script":r#"
+local n=0
+local function publish(api)
+ api.observation.set('n',n)
+ if n%2==0 then
+  local b=buffer.create(40);buffer.writef32(b,0,n);buffer.writef32(b,24,1)
+  buffer.writef32(b,28,1);buffer.writef32(b,32,1);buffer.writef32(b,36,1)
+  api.instances3d.set('crowd','mesh://unit',b)
+ else api.instances3d.remove('crowd') end
+end
+return {start=publish,update=function(api)n+=1;publish(api)end}
+"#})).unwrap();
+        assert_eq!(unsafe { unone_web_load_project(payload.as_ptr(), payload.len(), 42) }, 0);
+        assert_eq!(output()["observation_digest"], current_digest(), "digests are on by default");
+        for ui in [0, 1] {
+            assert_eq!(ui_transport::unone_web_set_ui_transport(ui), 0);
+            for round in 0..2 {
+                // Shift by one frame so each setting meets both publication paths.
+                if round == 1 { assert_eq!(unone_web_tick(), 0); }
+                assert_eq!(unone_web_set_observation_digest(0), 0);
+                assert_eq!(unone_web_tick(), 0);
+                let off = output();
+                assert!(off.get("observation_digest").is_none(), "ui transport {ui}: no digest while it is off");
+                assert_eq!(unone_web_set_observation_digest(1), 0);
+                assert_eq!(unone_web_tick(), 0);
+                let on = output();
+                assert_eq!(on["observation_digest"], current_digest(), "ui transport {ui}: the exact digest once it is back on");
+                assert_eq!(on["world"]["frame"].as_u64(), off["world"]["frame"].as_u64().map(|f| f + 1), "the world still advances and publishes");
+            }
+        }
+        assert_eq!(ui_transport::unone_web_set_ui_transport(0), 0);
+    }
 }

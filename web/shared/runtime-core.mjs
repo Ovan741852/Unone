@@ -4,8 +4,14 @@ import {loadProject,readObservation,releaseObservationResources} from './load-pr
 import {createSpatialHost} from './spatial-host.mjs';
 import {createDeferredDataHost} from './deferred-data-host.mjs';
 const commandEncoder=new TextEncoder(),controlDecoder=new TextDecoder('utf-8',{fatal:true});
-export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBackend='cpu',createSpatialExecutor,requirePhysicalViewport=true,profile=false,readDeferredSource}={}){
+export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBackend='cpu',createSpatialExecutor,requirePhysicalViewport=true,profile=false,readDeferredSource,observationDigest=true}={}){
  if(typeof requirePhysicalViewport!=='boolean')throw Error('VIEWPORT_POLICY_INVALID');
+ if(typeof observationDigest!=='boolean')throw Error('OBSERVATION_DIGEST_POLICY_INVALID');
+ // Publications carry observation_digest (SHA-256 of the canonical world) unless the host only presents: hashing every
+ // tick costs about as much as encoding the world. A runtime without the switch keeps publishing digests.
+ const digestSwitch=typeof module._unone_web_set_observation_digest==='function';
+ if(!observationDigest&&digestSwitch&&module._unone_web_set_observation_digest(0)!==0)throw Error('OBSERVATION_DIGEST_UNAVAILABLE');
+ const observationDigestMode=observationDigest||!digestSwitch?'on':'off';
  if(typeof profile!=='boolean')throw Error('RUNTIME_PROFILE_POLICY_INVALID');
  // Opt-in profiling: consecutive host-clock marks of the last executed command. The tick ABI
  // runs game update and observation serialization in one WASM call; it is reported unsplit.
@@ -79,7 +85,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
 
  return {module,trace:()=>lastTrace,close(){if(closed)return;closed=true;loaded=false;latest=undefined;pending=[];deferred?.close();deferred=null;pool?.close();pool=null;spatial.close();releaseObservationResources(module);module._unone_web_unload_project?.();},// Memory beside the world: linear capacity (only grows) and the Luau VM in use, garbage included.
  // Reading either never collects; a runtime without the export reports null, never a guess.
- memory(){const heap=typeof module._unone_web_luau_heap_bytes==='function'?module._unone_web_luau_heap_bytes():-1;return {wasm_linear_bytes:module.HEAPU8.buffer.byteLength,luau_heap_bytes:Number.isFinite(heap)&&heap>=0?heap:null};},report(){return {closed,policy,pool:pool?.report()??null,binary_transport:binary.report(),spatial:spatial.report(),viewport:viewportReport(),fault:fault?String(fault):null};},async execute(command){
+ memory(){const heap=typeof module._unone_web_luau_heap_bytes==='function'?module._unone_web_luau_heap_bytes():-1;return {wasm_linear_bytes:module.HEAPU8.buffer.byteLength,luau_heap_bytes:Number.isFinite(heap)&&heap>=0?heap:null};},report(){return {closed,policy,pool:pool?.report()??null,binary_transport:binary.report(),spatial:spatial.report(),viewport:viewportReport(),observation_digest:observationDigestMode,fault:fault?String(fault):null};},async execute(command){
   if(closed)throw Error('RUNTIME_CLOSED');
   if(profile)lastTrace={kind:String(command?.kind),start_ms:performance.now(),marks:[]};
   const allowed={load:['payload','seed','data','contentBaseURL'],tick:['input','presenting'],aspect:['value'],viewport:['width','height'],transport:['mode'],developer:['request'],ui:['request'],hostTime:['request']};

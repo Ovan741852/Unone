@@ -357,7 +357,9 @@ async function start(){
  const kind=new URLSearchParams(location.search).get('backend')??presentation.runtime_backend??'main';
  const requirePhysicalViewport=presentation.physical_input!==undefined||presentation.projected_raster==='upper_left_checked'||presentation.projected_material_profile!==undefined;
  startupScreen.start('runtime');
- backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy,spatialBackend:presentation.spatial_backend??'cpu',requirePhysicalViewport,...(profiler?{profiler}:{})});
+ backend=await createRuntimeBackend({kind,url:runtimeURL,jobPolicy:presentation.job_policy,spatialBackend:presentation.spatial_backend??'cpu',requirePhysicalViewport,
+  // The player only presents: it skips the per-tick observation digest (?digest=1 keeps it for comparisons).
+  observationDigest:new URLSearchParams(location.search).get('digest')==='1',...(profiler?{profiler}:{})});
  if(startupAbort.signal.aborted){backend.close();throw startupCancelled();}
  startupScreen.complete('runtime');
  metrics.runtime_ready_ms=performance.now()-window.playerBoot;metrics.error_policy=errorPolicy??'strict';

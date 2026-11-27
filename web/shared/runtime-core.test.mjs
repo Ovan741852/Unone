@@ -67,3 +67,14 @@ test('developer inspection restores packed instances without ticking or changing
  }
  assert.equal(ticks,0);
 });
+test('a presenting host can turn off the observation digest; it stays on by default and on runtimes without the switch',async()=>{
+ const make=withSwitch=>{let length=0;const calls=[];const m={HEAPU8:new Uint8Array(8192),_unone_web_alloc:()=>0,_unone_web_observation_ptr:()=>4096,_unone_web_observation_len:()=>length};
+  const publish=v=>{const b=new TextEncoder().encode(JSON.stringify(v));m.HEAPU8.set(b,4096);length=b.length;return 0;};
+  m._unone_web_load_project=()=>publish({world:{frame:0,instances3d:{}}});m._unone_web_set_instance_transport=()=>publish({world:{frame:0,instances3d:{}}});
+  if(withSwitch)m._unone_web_set_observation_digest=enabled=>{calls.push(enabled);return 0;};return {m,calls};};
+ {const {m,calls}=make(true);const core=createRuntimeCore(m);await core.execute({kind:'load',payload:{config:{}}});assert.deepEqual(calls,[],'tools keep digests without asking');assert.equal(core.report().observation_digest,'on');}
+ {const {m,calls}=make(true);const core=createRuntimeCore(m,{observationDigest:false});await core.execute({kind:'load',payload:{config:{}}});assert.deepEqual(calls,[0],'turned off once, before any tick');assert.equal(core.report().observation_digest,'off');}
+ {const {m}=make(false);const core=createRuntimeCore(m,{observationDigest:false});await core.execute({kind:'load',payload:{config:{}}});assert.equal(core.report().observation_digest,'on','an older runtime keeps publishing digests');}
+ {const {m}=make(true);m._unone_web_set_observation_digest=()=>-1;assert.throws(()=>createRuntimeCore(m,{observationDigest:false}),/OBSERVATION_DIGEST_UNAVAILABLE/);}
+ assert.throws(()=>createRuntimeCore(make(true).m,{observationDigest:'no'}),/OBSERVATION_DIGEST_POLICY_INVALID/);
+});
