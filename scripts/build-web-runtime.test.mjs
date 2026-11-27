@@ -11,8 +11,11 @@ const ps=fs.readFileSync(path.join(root,'scripts/build-web-live.ps1'),'utf8');
 test('runtime inventory includes the input-owned gestures package without requiring UI',()=>{
  const gesture=JSON.parse(fs.readFileSync(path.join(root,'packages/unone-gestures/package.unone.json'),'utf8'));
  const ui=JSON.parse(fs.readFileSync(path.join(root,'packages/unone-ui/package.unone.json'),'utf8'));
- assert.deepEqual(bundledRuntimePackages(root,['world','input']),{[gesture.name]:gesture.version});
- assert.deepEqual(bundledRuntimePackages(root,['world','input','ui']),{[gesture.name]:gesture.version,[ui.name]:ui.version});
+ assert.deepEqual(bundledRuntimePackages(root,['world','input'],ps),{[gesture.name]:gesture.version});
+ assert.deepEqual(bundledRuntimePackages(root,['world','input','ui'],ps),{[gesture.name]:gesture.version,[ui.name]:ui.version});
+ const legacyContract="Join-Path $repoRoot 'packages/unone-ui/package.unone.json'";
+ assert.deepEqual(bundledRuntimePackages(root,['world','input','ui'],legacyContract),{[ui.name]:ui.version});
+ assert.deepEqual(bundledRuntimePackages(root,['world','input'],legacyContract),{});
 });
 
 test('extracts the existing official player ABI, conditional particle ABI and linker policy',()=>{

@@ -11,9 +11,13 @@ import {fileURLToPath} from 'node:url';
 export const EMSDK_COMMIT='e8b64774ff1a3ddb6a013203ced27a34e70c2d8b';
 export const VARIANTS=['production','phase-profile','sampling-profile'];
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
-export function bundledRuntimePackages(repo,systems){
+export function bundledRuntimePackages(repo,systems,buildContract){
  const result={};
- for(const folder of ['unone-gestures',...(systems.includes('ui')?['unone-ui']:[])]){
+ const folders=new Set([...buildContract.matchAll(/'packages\/(unone-[a-z0-9-]+)\/package\.unone\.json'/g)].map(match=>match[1]));
+ if(systems.includes('ui'))assert(folders.has('unone-ui'),'Missing official UI runtime package declaration');
+ for(const folder of folders){
+  if(folder==='unone-ui'&&!systems.includes('ui'))continue;
+  assert(['unone-ui','unone-gestures'].includes(folder),'Unknown official runtime package policy: '+folder);
   const pkg=JSON.parse(fs.readFileSync(path.join(repo,'packages',folder,'package.unone.json'),'utf8'));
   assert.equal(pkg.name,folder==='unone-ui'?'@unone/ui':'@unone/gestures');
   assert(typeof pkg.version==='string'&&pkg.version,'Missing runtime package version');
@@ -147,7 +151,7 @@ export async function main(argv=process.argv.slice(2),platform=process.platform)
  const features=['all-systems',...(diagnostic?[variant]:[])];
  const built=run('cargo','cargo',['build','--locked','--manifest-path',path.join(repo,'crates/unone-player/Cargo.toml'),'--target-dir',targetDir,'--release','--target',target,'--no-default-features','--features',features.join(','),'--message-format=json-render-diagnostics'],env);
  const files=emittedFiles(built),wasm=fs.readFileSync(files.wasm),javascript=fs.readFileSync(files.javascript);
- const actual=checkWasm(wasm,contract,diagnostic),runtimePackages=bundledRuntimePackages(repo,systems);
+ const actual=checkWasm(wasm,contract,diagnostic),runtimePackages=bundledRuntimePackages(repo,systems,ps.toString('utf8'));
  assert.equal(run('source-clean-after','git',['status','--porcelain']),'','Source changed during compilation');
  assert.equal(run('source-commit-after','git',['rev-parse','HEAD']),commit,'Source commit changed during compilation');
  const manifest={compiled_systems:systems,runtime_packages:runtimePackages,cargo_features:features,profile:'release',dev_tools:false,preview_tools:diagnostic,phase_profile:variant==='phase-profile',sampling_profile:variant==='sampling-profile',bytecode_optimization_level:2,profile_mode:variant==='phase-profile'?'phase-only':variant==='sampling-profile'?'opt2-sampling':'none',javascript:path.basename(files.javascript),wasm:path.basename(files.wasm),wasm_bytes:wasm.length,wasm_sha256:sha(wasm),javascript_sha256:sha(javascript),exports:contract.exports,source_commit:commit,source_dirty:false};
