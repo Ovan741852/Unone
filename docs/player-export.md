@@ -9,6 +9,17 @@ The default export is production. Use `-Player -Development` when building and
 See [development player and native tools](development-player.md) for the variant
 contract, Lua registrations and native companion panel.
 
+The official Web player uses the fixed shared presentation policy in
+`web/shared/presentation-policy.mjs`: authored animation and startup transitions
+remain enabled regardless of Windows/browser system motion preferences. It does
+not replace `matchMedia` or change the operating system's settings. WebGPU,
+WebGL and the optional precreated desynchronized WebGL context all request
+`powerPreference: "high-performance"`. This is a GPU selection hint; the browser,
+driver and OS still control the adapter and scheduling. The policy does not raise
+DPR or worker/memory budgets, change visibility pause behavior, enable authored
+effects that were disabled, or override the platform's audio controls. Refresh
+the official Web host/export to include this policy; the change needs no new WASM.
+
 The player is a separate Cargo workspace at `crates/unone-player` to prevent
 workspace feature unification with the CLI. It depends on `unone-engine` with
 default features disabled. A compile-time assertion rejects an engine built with

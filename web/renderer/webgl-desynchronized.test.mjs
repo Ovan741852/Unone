@@ -19,7 +19,7 @@ test('opt-in preserves Three context attributes and Three reacquires the identic
   const prepared=prepareDesynchronizedWebGL(canvas,false,true);
   assert.deepEqual(prepared,{requested:true,attempted:true,precreated:true});
   const threeAttributes={alpha:true,depth:true,stencil:false,antialias:false,premultipliedAlpha:true,
-    preserveDrawingBuffer:false,powerPreference:'default',failIfMajorPerformanceCaveat:false};
+    preserveDrawingBuffer:false,powerPreference:'high-performance',failIfMajorPerformanceCaveat:false};
   assert.deepEqual(calls[0],{kind:'webgl2',attributes:{...threeAttributes,desynchronized:true}});
   assert.equal(canvas.getContext('webgl2',threeAttributes),context);
   assert.deepEqual(webglDesynchronizedMetrics({getContext:()=>context},prepared,'webgl'),

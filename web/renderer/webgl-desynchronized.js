@@ -1,15 +1,16 @@
 // Opt in before Three constructs its renderer, then let Three reacquire the
 // same context. Passing the context to Three changes Three's internal alpha
 // handling even when its renderer option is alpha:false.
+import {PRESENTATION_POLICY} from '../shared/presentation-policy.mjs';
 export function prepareDesynchronizedWebGL(canvas, antialias, requested) {
   if (!requested) return {requested:false, attempted:false, precreated:false};
   try {
     // These are Three's WebGLRenderer defaults with its internal alpha:true
-    // request. Do not change depth, stencil, antialias, alpha, premultiplication,
-    // preservation or GPU preference when adding the low-latency hint.
+    // request, with the shared GPU selection policy. The low-latency hint must
+    // not change depth, stencil, antialias, alpha, premultiplication or preservation.
     const gl=canvas.getContext('webgl2',{
       alpha:true,depth:true,stencil:false,antialias,premultipliedAlpha:true,
-      preserveDrawingBuffer:false,powerPreference:'default',
+      preserveDrawingBuffer:false,powerPreference:PRESENTATION_POLICY.powerPreference,
       failIfMajorPerformanceCaveat:false,desynchronized:true,
     });
     if (!gl || typeof gl.getContextAttributes!=='function' || !gl.getContextAttributes())

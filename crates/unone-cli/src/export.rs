@@ -107,6 +107,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/instance-transfer.mjs",
         "shared/presentation-interpolation.mjs",
         "shared/renderer-selection.mjs",
+        "shared/presentation-policy.mjs",
         "shared/raster-diagnostics.mjs",
         "shared/profile-window.js",
         "vendor/three/three.player.min.js",

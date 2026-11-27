@@ -38,6 +38,7 @@ import {RASTER_PROFILE,validateRasterTarget} from './projected-raster-validator.
 import {installContextClearRecovery} from './renderer-clear-lifecycle.js';
 import {createStartupPresentationState} from './startup-presentation-state.js';
 import {assetCatalogSpecs} from '../shared/asset-encoding.js';
+import {PRESENTATION_POLICY} from '../shared/presentation-policy.mjs';
 
 const LOCAL_THREE_URL = new URL("../vendor/three/three.module.js", import.meta.url).href;
 const LOCAL_THREE_WEBGPU_URL = new URL("../vendor/three/three.webgpu.js", import.meta.url).href;
@@ -105,10 +106,12 @@ export async function createThreeRenderer(canvas, options = {}) {
   let renderer;
   if (useWebGpu && THREE.WebGPURenderer) {
     try {
-      renderer = new THREE.WebGPURenderer({ canvas, antialias, alpha: false });
+      renderer = new THREE.WebGPURenderer({ canvas, antialias, alpha: false, powerPreference: PRESENTATION_POLICY.powerPreference });
       await renderer.init();
     } catch (error) {
       if (forceWebGpu) throw error;
+      try { renderer?.dispose?.(); } catch { /* initialization may be incomplete */ }
+      renderer = null;
       // A browser can expose navigator.gpu but still reject adapter/device
       // creation. Three.js WebGL is the safe host fallback.
       THREE = await loadThree(options.threeModuleUrl ?? LOCAL_THREE_URL);
@@ -117,7 +120,7 @@ export async function createThreeRenderer(canvas, options = {}) {
   }
   if (!renderer) {
     desynchronizedPreparation=prepareDesynchronizedWebGL(canvas,antialias,desynchronized);
-    renderer = new THREE.WebGLRenderer({ canvas, antialias, alpha: false });
+    renderer = new THREE.WebGLRenderer({ canvas, antialias, alpha: false, powerPreference: PRESENTATION_POLICY.powerPreference });
   }
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
