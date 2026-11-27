@@ -52,7 +52,7 @@ impl EngineRuntime {
         let (decls, data) = crate::data_assets::read_from_project(&paths)?;
         let data_assets = crate::data_assets::DataAssets::new(decls, data)?;
         let catalog = crate::sprite_resources::read_catalog(&paths)?;
-        let image_groups = crate::image_groups::image_group_names(&paths.root)?;
+        let image_groups = crate::image_preload_declarations(&paths.root)?;
         Self::with_world(config, paths, world, None, None, None, seed, None, None, None, data_assets, catalog, crate::ErrorPolicy::strict(), (image_groups, false))
     }
 }

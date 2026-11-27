@@ -8,6 +8,7 @@ export function createBundleTrace(options = {}, host = globalThis) {
   const groupEvents = [], loads = [], resources = [], limit = 20000;
   let phase, observer, stopped = false, previousCounts, previousLoads, session, catalog;
   let hasGroupSnapshot = false;
+  let previousStreams = new Set();
   const methods = {groups:false, load_timings:false, visible_queue:false, submissions:false, resource_timing:false};
   let hadResourceObserver = false, bufferMissed = 0, lostLoads = 0;
   const expected = options.expect_released ?? [];
@@ -22,7 +23,15 @@ export function createBundleTrace(options = {}, host = globalThis) {
     hasGroupSnapshot = asset?.available === true && Array.isArray(asset.groups);
     if (!hasGroupSnapshot) return;
     methods.groups = true;
-    for (const g of asset.groups) {
+    const streams = asset.streams ?? [];
+    const currentStreams = new Set(streams.map(s=>s.name));
+    const released = [];
+    for (const id of previousStreams) if (!currentStreams.has(id)) {
+      const g=host.unonePlayerAssets.status(id);
+      released.push(g);
+    }
+    previousStreams = currentStreams;
+    for (const g of [...asset.groups,...streams,...released]) {
       const prev = lastGroups.get(g.name);
       const next = {state:g.state, mode:g.mode, held:g.held, ready:g.ready, total:g.total};
       lastGroups.set(g.name, next);
@@ -78,7 +87,7 @@ export function createBundleTrace(options = {}, host = globalThis) {
     catch {asset = host.unonePlayerAssets?.status?.();}
     const perf = host.unonePlayerPerformance?.snapshot();
     if (asset && catalog !== undefined && asset.catalog_generation !== catalog) {
-      warn('BUNDLE_CATALOG_CHANGED', {phase:phase.index}); previousLoads=undefined; lastGroups.clear(); groupErrors.clear();
+      warn('BUNDLE_CATALOG_CHANGED', {phase:phase.index}); previousLoads=undefined; lastGroups.clear(); groupErrors.clear(); previousStreams.clear();
     }
     if (asset) catalog = asset.catalog_generation;
     groupChanges(asset, at);
@@ -154,7 +163,11 @@ export function createBundleTrace(options = {}, host = globalThis) {
     for (const r of timings.values()) if (r.count>1) warn('BUNDLE_REPEATED_IMAGE_DECODE',r);
     for (const r of requests.values()) if (r.count>1) warn('BUNDLE_REPEATED_NETWORK_TRANSFER',r);
     if (hasGroupSnapshot) for (const group of expected) {
-      const g=lastGroups.get(group);
+      let g=lastGroups.get(group);
+      if(!g){
+        // A declared individual image can remain idle for the whole scenario.
+        try{const row=host.unonePlayerAssets.status(group);if(row?.name===group)g=row;}catch{}
+      }
       if (!g) warn('BUNDLE_EXPECTED_GROUP_UNKNOWN',{group},'error');
       else if (g.held>0 || !['idle','unloaded'].includes(g.state)) warn('BUNDLE_EXPECTED_RELEASE_MISSING',{group,...g},'error');
     }

@@ -107,6 +107,46 @@ fn an_unknown_group_fails_where_the_game_asks_for_it() {
 }
 
 #[test]
+fn individual_texture_selectors_share_both_api_names_and_validate_the_manifest() {
+    let id = "竹".repeat(682) + "ab";
+    let script = r#"return {start=function(api)
+        local old, new = api.assets.imageGroups, api.assets.imagePreloads
+        assert(old == new)
+        local art = string.rep("竹", 682) .. "ab"
+        new.setOwner("scene", {town="preload", [art]="load"})
+        assert(old.owners(art).scene == "load")
+        assert(not pcall(function() new.setOwner("scene", {unknown="load"}) end))
+        assert(old.status(art).requested == "load")
+    end, update=function(api)
+        local art = string.rep("竹", 682) .. "ab"
+        local old, new = api.assets.imageGroups, api.assets.imagePreloads
+        local s = new.status(art)
+        api.observation.set("state", s.state)
+        if s.state == "error" then old.retry(art) end
+        if s.state == "ready" then old.releaseOwner("scene") end
+    end}"#;
+    let mut payload = json!({"config":{"name":"streams","entry_script":"main.luau"},"script":script,
+        "image_groups":["town"],"image_streams":[id],"image_group_host":true,"asset_catalog":[{"id":id,"kind":"texture2d"}]});
+    let run = |payload: &Value| HostProject::parse(&serde_json::to_vec(payload).unwrap()).unwrap().into_runtime(42);
+    let mut runtime = run(&payload).unwrap();
+    let plan = runtime.image_group_plan_since(None);
+    assert_eq!(plan.groups.unwrap(), [("town".into(), ImageGroupRequest::Preload), (id.clone(), ImageGroupRequest::Load)].into());
+    let frame = |state: &str, ready| serde_json::from_value(json!({"presentation_resources":{"image_groups":[
+        {"name":id,"state":state,"total":1,"ready":ready,"bytes":4}
+    ]}})).unwrap();
+    runtime.tick_with_input(&frame("error", 0)).unwrap();
+    assert_eq!(runtime.image_group_plan_since(Some(plan.revision)).retries, vec![id.clone()]);
+    runtime.tick_with_input(&frame("ready", 1)).unwrap();
+    assert_eq!(observed(&runtime, "state"), json!("ready"));
+    assert!(runtime.image_group_plan_since(None).groups.unwrap().is_empty());
+    payload["image_streams"] = json!(["art"]);
+    for catalog in [json!([]), json!([{"id":"art","kind":"audio"}]), json!([{"id":"different","kind":"texture2d"}])] {
+        payload["asset_catalog"] = catalog;
+        assert_eq!(run(&payload).err().unwrap().code, "IMAGE_PLAN_INVALID");
+    }
+}
+
+#[test]
 fn named_owners_replace_atomically_share_promote_and_release_independently() {
     let script = r#"return {start=function(api)
         local g=api.assets.imageGroups
@@ -169,6 +209,28 @@ fn malformed_reports_are_refused_before_the_tick() {
     let stray: InputFrame = serde_json::from_value(json!({"presentation_resources":{"image_groups":[{"name":"elsewhere","state":"ready","total":1,"ready":1,"bytes":4}]}})).unwrap();
     game.tick_with_input(&stray).unwrap();
     assert_eq!(observed(&game, "state"), "idle");
+}
+
+#[test]
+fn owners_can_select_more_than_128_individual_textures_but_only_128_owners_can_hold_them() {
+    let ids: Vec<_> = (1..=129).map(|i| format!("art-{i}")).collect();
+    let catalog: Vec<_> = ids.iter().map(|id| json!({"id":id,"kind":"texture2d"})).collect();
+    let script = r#"return {start=function(api)
+        local g, desired = api.assets.imagePreloads, {}
+        for i=1,129 do desired["art-" .. i] = "preload" end
+        g.setOwner("large", desired)
+        for i=1,127 do g.setOwner("owner-"..i, {["art-1"]="load"}) end
+        local ok, err = pcall(function() g.setOwner("one-too-many", {["art-2"]="load"}) end)
+        assert(not ok and string.find(tostring(err), "IMAGE_GROUP_OWNER_LIMIT"))
+        assert(g.owners("art-2")["one-too-many"] == nil)
+        g.releaseOwner("owner-127")
+        g.setOwner("replacement", {["art-2"]="load"})
+    end, update=function(api) end}"#;
+    let payload = json!({"config":{"name":"owners","entry_script":"main.luau"},"script":script,"image_streams":ids,"asset_catalog":catalog});
+    let game = HostProject::parse(&serde_json::to_vec(&payload).unwrap()).unwrap().into_runtime(42).unwrap();
+    let held = game.image_group_plan_since(None).groups.unwrap();
+    assert_eq!(held.len(), 129);
+    assert_eq!(held["art-2"], ImageGroupRequest::Load);
 }
 
 #[test]

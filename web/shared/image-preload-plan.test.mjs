@@ -5,6 +5,19 @@ const asset=id=>({id,kind:'texture2d',source:id+'.png'});
 const catalog=(ids=['a','b','c'])=>createAssetCatalog({assets:ids.map(asset)});
 const plan=()=>({version:1,groups:{boot:['a','b'],later:['c']},startup:['boot']});
 const fake=id=>({id,width:2,height:2,closed:0,close(){this.closed++;}});
+
+test('individual admission and dimensions are independent of named groups',()=>{
+ const ids=Array.from({length:140},(_,i)=>'tile-'+i), assets=catalog([...ids,'metadata']);
+ const dimensions={metadata:{format:'png',width:2,height:3}};
+ const raw={version:1,groups:{},streamable:ids,startup:[],dimensions};
+ const parsed=validateImagePreloadPlan(raw,assets);
+ assert.equal(Object.keys(parsed.groups).length,0);
+ assert.equal(parsed.streamable.length,140);assert(Object.isFrozen(parsed.streamable));
+ assert.deepEqual(parsed.dimensions,dimensions);
+ for(const bad of [{streamable:['missing']},{streamable:[ids[0],ids[0]]},
+   {groups:{[ids[0]]:[]}},{startup:[ids[0]]},{dimensions:{missing:dimensions.metadata}}])
+   assert.throws(()=>validateImagePreloadPlan({...raw,...bad},assets),/IMAGE_PRELOAD_PLAN_INVALID/);
+});
 function broker(raw,options={}){const loaded=[],images=new Map();const result=createImageAssetBroker(catalog(),{resolveAssetUrl:a=>a.source,loadImage:async(url,{asset:a})=>{loaded.push(a.id);const image=fake(a.id);images.set(a.id,image);return image;},inspectImage:async()=>({format:'png',width:2,height:2}),preloadPlan:raw,...options});return{result,loaded,images};}
 
 test('canonical preload plan is detached and deeply frozen with independent default budget fields',()=>{

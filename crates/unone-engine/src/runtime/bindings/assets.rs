@@ -69,7 +69,9 @@ pub(super) fn bind(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         }
         Ok(())
     })?)?;
-    api.set("imageGroups", image_groups(lua, state)?)?;
+    let preloads = image_groups(lua, state)?;
+    api.set("imageGroups", preloads.clone())?;
+    api.set("imagePreloads", preloads)?;
     Ok(api)
 }
 
@@ -101,8 +103,8 @@ fn image_groups(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
                 _ => return Err(mlua::Error::runtime("IMAGE_GROUP_OWNER_INVALID: use preload or load; omit a group to release it")),
             };
             demands.insert(name.to_str()?.to_owned(), demand);
-            if demands.len() > crate::image_groups::MAX_IMAGE_GROUPS {
-                return Err(mlua::Error::runtime("IMAGE_GROUP_OWNER_INVALID: too many image groups"));
+            if demands.len() > crate::image_groups::MAX_ACTIVE_SELECTORS {
+                return Err(mlua::Error::runtime("IMAGE_PRELOAD_ACTIVE_LIMIT: at most 4096 selectors per owner"));
             }
         }
         registry.borrow_mut().set_owner(&owner, demands).map_err(mlua::Error::RuntimeError)

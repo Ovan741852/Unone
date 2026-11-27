@@ -14,7 +14,7 @@ const {payloadDataSources} = await import(new URL('load-project.js', shared));
 
 const schema = 'unone.web-bundle-audit.v1';
 const usage = `node scripts/audit-web-bundle.mjs --export <finished Web export> [--out <fresh report.json>]
-  [--hold <image group>]... [--baseline <previous audit.json>] [--near-ratio <0..1>]
+  [--hold <named group or streamable image ID>]... [--baseline <previous audit.json>] [--near-ratio <0..1>]
   [--max-logical-bytes N] [--max-eager-data-bytes N] [--max-eager-font-bytes N] [--max-image-rgba-bytes N]
   [--max-duplicate-bytes N] [--fail-on <finding code>]...
 Verifies both published copies. JSON reports sealed bytes, file identities, staged data and
@@ -32,7 +32,7 @@ const advisories = {
   IMAGE_COLD_DIMENSIONS_UNKNOWN:'Verify cold preload admission for these IDs before depending on group readiness.',
   IMAGE_GROUP_LIMIT_NEAR:'Check this selected group lifetime against the declared byte and entry limits.',
   IMAGE_GROUP_LIMIT_EXCEEDED:'Reduce the simultaneous image set or review the declared budget.',
-  CATALOG_GROUP_COUNT_NEAR:'Check available group slots before adding more named image groups.',
+  CATALOG_GROUP_COUNT_NEAR:'Review single-image groups. Individually streamed textures can use catalog IDs and do not need named groups.',
 };
 
 function collect(map, key, value) {
@@ -90,7 +90,8 @@ export function audit(directory, {hold = [], nearRatio = .9} = {}) {
   const plan = logical.has('content/image-assets.json') ?
     validateImagePreloadPlan(read('content/image-assets.json'), createAssetCatalog(catalog)) : null;
   const groups = plan?.groups ?? {};
-  for (const name of hold) if (!Object.hasOwn(groups, name)) throw Error('Unknown --hold group: ' + name);
+  const streamable = new Set(plan?.streamable);
+  for (const name of hold) if (!Object.hasOwn(groups, name) && !streamable.has(name)) throw Error('Unknown --hold group or streamable image: ' + name);
   const findings = [];
   const finding = (code, subject, evidence) => findings.push({code, severity:'advisory', subject, evidence, guidance:advisories[code]});
   if (!player.generation_matches) finding('GENERATION_NAME_MISMATCH', manifest.release_root, {manifest_hashes_verified:true});
@@ -148,7 +149,7 @@ export function audit(directory, {hold = [], nearRatio = .9} = {}) {
     ...Object.values(scene.particle_effects ?? {}).flatMap(e => (e.emitters ?? []).map(v => v.texture))].filter(id => typeof id==='string' && id));
   const hidden = unique(entities.filter(e => e.sprite?.visible===false).map(e => e.sprite.asset).filter(Boolean));
   const images = new Map(), headers = new Map(), needInspection = [], coldUnknown = [];
-  for (const id of unique([...Object.values(groups).flat(), ...sceneIds])) {
+  for (const id of unique([...Object.values(groups).flat(), ...streamable, ...sceneIds])) {
     const asset = assets.get(id);
     if (!asset || asset.kind!=='texture2d') throw Error('Unknown image dependency: '+id);
     const name = 'content/'+asset.source, file = record(name);
@@ -169,7 +170,7 @@ export function audit(directory, {hold = [], nearRatio = .9} = {}) {
       unknown_rgba_ids:selected.filter(id => images.get(id).rgba===null)};
   }
   const startup = plan?.startup ?? [], selected = unique([...startup,...hold]);
-  const selection = imageSet(selected.flatMap(g => groups[g]));
+  const selection = imageSet(selected.flatMap(name => streamable.has(name) ? [name] : groups[name]));
   function checkBudget(subject, set) {
     if (!plan) return;
     const ratios = {bytes:set.known_rgba_bytes/plan.budget.max_bytes, entries:set.entries/plan.budget.max_entries};
@@ -182,7 +183,8 @@ export function audit(directory, {hold = [], nearRatio = .9} = {}) {
     return {name,...estimate};
   });
   checkBudget('selected groups', selection);
-  if (imageGroups.length/128>=nearRatio) finding('CATALOG_GROUP_COUNT_NEAR','image plan',{groups:imageGroups.length,limit:128});
+  if (imageGroups.length/128>=nearRatio) finding('CATALOG_GROUP_COUNT_NEAR','image plan',{groups:imageGroups.length,limit:128,
+    single_image_groups:imageGroups.filter(group=>group.entries===1).map(group=>group.name)});
   const total = bytesOf([...logical.values()]), metrics = {logical_bytes:total, eager_data_bytes:fileSummary(dataUrls), eager_font_bytes:bytesOf(fonts.filter(f=>!f.on_demand)),
     image_rgba_bytes:selection.known_rgba_bytes, duplicate_bytes:duplicateBytes};
   return {schema, export:{project:manifest.project, variant:manifest.variant, renderer:manifest.renderer_mode,
@@ -196,7 +198,7 @@ export function audit(directory, {hold = [], nearRatio = .9} = {}) {
       shared_source_ids:sameSources}, duplicate_content:duplicates,
     payload:{project_json_bytes:record('content/project.json').bytes, asset_manifest_bytes:record('content/assets.json').bytes,
       image_plan_bytes:logical.get('content/image-assets.json')?.bytes ?? 0, staged, on_demand:lazy, ui_font_sources:fonts},
-    images:{groups:imageGroups, max_group_count:128, startup, selected, budget:plan?.budget ?? null, selected_union:selection,
+    images:{groups:imageGroups, max_group_count:128, streamable_count:streamable.size, startup, selected, budget:plan?.budget ?? null, selected_union:selection,
       hidden_sprite_asset_ids:hidden, scene_dependencies:imageSet(sceneIds), scene_plus_startup:imageSet([...sceneIds,...startup.flatMap(g=>groups[g])])},
     findings};
 }

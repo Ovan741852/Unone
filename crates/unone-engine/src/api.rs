@@ -993,9 +993,9 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["assets.load"],
         ),
         descriptor(
-            "assets.imageGroups.retry", "assets", "Retry a failed held image group while preserving every owner's demand.",
-            "Respond to an explicit retry after status reports an error.", "Group names must be declared.",
-            vec![parameter("name", "string", "Name of the failed image group")], "()",
+            "assets.imageGroups.retry", "assets", "Retry a failed held image selector while preserving every owner's demand.",
+            "Respond to an explicit retry after status reports an error.", "The selector must be a named group or an individual texture ID listed in streamable.",
+            vec![parameter("name", "string", "Failed group name or streamable texture ID")], "()",
             vec!["Starts another host attempt for a held group with an error receipt"],
             "Idle, released, ready or loading groups have no work to retry. Poll status for the new receipt.",
             vec!["IMAGE_GROUP_UNKNOWN", "UI_PURE_VIEW"], "api.assets.imageGroups.retry(\"town\")",
@@ -1003,15 +1003,15 @@ fn descriptors() -> Vec<ApiDescriptor> {
         ),
         descriptor(
             "assets.imageGroups.setOwner", "assets",
-            "Atomically replace a screen or feature's image bundle working set (shared image group leases, 預載與釋放).",
+            "Atomically replace a screen or feature's working set of named image groups and individual streamable textures (shared image leases, 單張圖片預載與釋放).",
             "Declare the images an approaching or visible scene needs when another scene, overlay or dialogue can use the same group.",
-            "Group names come from player.image-assets.json. Use stable owner names; at most 128 owners can hold images concurrently.",
+            "player.image-assets.json declares groups and streamable texture IDs. Up to 128 stable owners can hold 4096 distinct selectors across owners and direct holds.",
             vec![parameter("owner", "string", "Stable screen or subsystem name (1..128 UTF-8 bytes)"),
-                 parameter("desired", "{[string]: \"preload\" | \"load\"}", "Complete set for this owner; omit a previous group to release it")],
+                 parameter("desired", "{[string]: \"preload\" | \"load\"}", "Complete set for this owner; omit a previous selector to release it")],
             "(): the host sees the effective set after this tick.",
             vec!["A load outranks a preload; other owners and the direct preload/load API keep their holds"],
             "Validates the entire set first. An unchanged effective set issues no new host plan. The host reports actual readiness through status.",
-            vec!["IMAGE_GROUP_UNKNOWN for an undeclared group", "IMAGE_GROUP_OWNER_INVALID for an invalid name or mode", "IMAGE_GROUP_OWNER_LIMIT for too many live owners", "UI_PURE_VIEW inside renderItem"],
+            vec!["IMAGE_GROUP_UNKNOWN for an undeclared selector", "IMAGE_GROUP_OWNER_INVALID for an invalid name or mode", "IMAGE_GROUP_OWNER_LIMIT for too many live owners", "IMAGE_PRELOAD_ACTIVE_LIMIT above 4096 held selectors", "UI_PURE_VIEW inside renderItem"],
             "api.assets.imageGroups.setOwner(\"dialogue\", {[\"dialogue-base\"]=\"load\", [\"next-speaker\"]=\"preload\"})",
             vec!["assets.imageGroups.releaseOwner", "assets.imageGroups.owners", "assets.imageGroups.status"],
         ),
@@ -1030,28 +1030,28 @@ fn descriptors() -> Vec<ApiDescriptor> {
         ),
         descriptor(
             "assets.imageGroups.owners", "assets",
-            "Inspect which named scenes or subsystems still hold a declared image bundle and at what priority.",
+            "Inspect which named scenes or subsystems still hold a named image group or streamable texture ID and at what priority.",
             "Diagnose a shared group that stays resident after a transition, or verify the outgoing owner has released its leases.",
             "Returns named owner demand. Check status and host diagnostics separately for actual decoded readiness and direct/manual consumers.",
-            vec![parameter("group", "string", "A declared image group name")],
+            vec![parameter("group", "string", "A named group or individual texture ID declared in streamable")],
             "{[string]: \"preload\" | \"load\"}: detached owner-to-demand table, empty if no named owner holds this group.",
             vec![], "Read-only query with no host request and no World snapshot change.",
-            vec!["IMAGE_GROUP_UNKNOWN for an undeclared group"],
+            vec!["IMAGE_GROUP_UNKNOWN for an undeclared selector"],
             "local owners = api.assets.imageGroups.owners(\"dialogue-base\")",
             vec!["assets.imageGroups.setOwner", "assets.imageGroups.releaseOwner", "assets.imageGroups.status"],
         ),
         descriptor(
             "assets.imageGroups.preload", "assets",
-            "Ask the official Web player to decode a declared image group in the background and hold it (warm the next screen, 預載圖片群組).",
+            "Ask the official Web player to preload and decode a named group or individual streamable texture ID in the background and hold it (warm the next screen, 預載圖片群組).",
             "When the player approaches a place whose large art (town ground, buildings) should be ready before it is shown, so entering does not pop in.",
-            "Groups come only from player.image-assets.json. Do not preload the whole catalog: the plan's budget (default 64 MiB / 128 images) bounds what all held groups reserve. Not a way to load data or audio.",
-            vec![parameter("name", "string", "A group name from player.image-assets.json")],
+            "Declare selectors in player.image-assets.json using groups or streamable. Do not preload the whole catalog: the plan's budget (default 64 MiB / 128 images) bounds what all held groups reserve. Not a way to load data or audio.",
+            vec![parameter("name", "string", "A named group or texture ID listed in streamable in player.image-assets.json")],
             "(): the request is recorded; it never waits for decoding.",
             vec!["Asks the host to hold the group's images until unload; nothing in World changes"],
             "Idempotent: calling it every update is free. The host sees the request after this tick and reports progress through status from a later tick. Outside the official Web player (CLI, previews, native) it is validated and does nothing; status reads unsupported.",
             vec![
-                "IMAGE_GROUP_UNKNOWN when the name is not a group in player.image-assets.json",
-                "IMAGE_GROUP_NAME_INVALID for an empty name or one over 128 bytes",
+                "IMAGE_GROUP_UNKNOWN for a selector absent from the plan",
+                "IMAGE_GROUP_NAME_INVALID for an invalid selector length (group 1..128, texture ID 1..2048 UTF-8 bytes)",
                 "UI_PURE_VIEW inside renderItem",
             ],
             "if nearTown then api.assets.imageGroups.preload(\"town-\" .. town.id) end",
@@ -1059,16 +1059,16 @@ fn descriptors() -> Vec<ApiDescriptor> {
         ),
         descriptor(
             "assets.imageGroups.load", "assets",
-            "Ask the official Web player to hold a declared image group as the current working set (載入圖片群組).",
+            "Ask the official Web player to hold a named group or individual streamable texture as the current working set (載入圖片群組).",
             "When the screen that draws the group is entered. A group already preloaded is promoted without decoding again.",
             "Loading is asynchronous and never pauses the simulation; read status to show a loading cue. Unload groups the game no longer needs, or later requests fail the budget.",
-            vec![parameter("name", "string", "A group name from player.image-assets.json")],
+            vec![parameter("name", "string", "A named group or texture ID listed in streamable in player.image-assets.json")],
             "(): the request is recorded; it never waits for decoding.",
             vec!["Asks the host to hold the group's images until unload; nothing in World changes"],
-            "Idempotent; the host applies it after this tick. Preload after load does not demote the group. Outside the official Web player it is validated and does nothing.",
+            "Idempotent; the host applies it after this tick. Direct calls replace the previous direct demand. Shared owners keep the strongest demand. Outside the official Web player it is validated and does nothing.",
             vec![
-                "IMAGE_GROUP_UNKNOWN when the name is not a group in player.image-assets.json",
-                "IMAGE_GROUP_NAME_INVALID for an empty name or one over 128 bytes",
+                "IMAGE_GROUP_UNKNOWN for a selector absent from the plan",
+                "IMAGE_GROUP_NAME_INVALID for an invalid selector length (group 1..128, texture ID 1..2048 UTF-8 bytes)",
                 "UI_PURE_VIEW inside renderItem",
             ],
             "api.assets.imageGroups.load(\"town-\" .. town.id)",
@@ -1076,16 +1076,16 @@ fn descriptors() -> Vec<ApiDescriptor> {
         ),
         descriptor(
             "assets.imageGroups.unload", "assets",
-            "Release a held image group so the official Web player can free its decoded images (卸載圖片群組).",
+            "Release a named group or a held streamable texture so the official Web player can free its decoded images (卸載圖片群組).",
             "When the player is far from the place, or a screen will not come back soon.",
             "Unload never breaks what is on screen: an image still used by another held group, the scene or a drawn sprite or UI stays. Unloading a group that was never requested does nothing.",
-            vec![parameter("name", "string", "A group name from player.image-assets.json")],
+            vec![parameter("name", "string", "A named group or texture ID listed in streamable in player.image-assets.json")],
             "(): the request is recorded.",
             vec!["Asks the host to cancel the group's pending work and drop its hold; nothing in World changes"],
             "Idempotent; the host applies it after this tick. A load in the same tick replaces it, so the host never sees the pair. Outside the official Web player it is validated and does nothing.",
             vec![
-                "IMAGE_GROUP_UNKNOWN when the name is not a group in player.image-assets.json",
-                "IMAGE_GROUP_NAME_INVALID for an empty name or one over 128 bytes",
+                "IMAGE_GROUP_UNKNOWN for a selector absent from the plan",
+                "IMAGE_GROUP_NAME_INVALID for an invalid selector length (group 1..128, texture ID 1..2048 UTF-8 bytes)",
                 "UI_PURE_VIEW inside renderItem",
             ],
             "if farFromTown then api.assets.imageGroups.unload(\"town-\" .. town.id) end",
@@ -1093,16 +1093,16 @@ fn descriptors() -> Vec<ApiDescriptor> {
         ),
         descriptor(
             "assets.imageGroups.status", "assets",
-            "Read the state the host last reported for an image group (idle, loading, ready, error, unloaded) and the game's latest request.",
+            "Read the state the host last reported for a named group or individual streamable texture (idle, loading, ready, error, unloaded) and the game's latest request.",
             "To show a loading cue, or to wait for a group before revealing a screen when the art must not pop in.",
             "Do not make game rules depend on it: it describes presentation, and it reads unsupported wherever no host holds groups, so treat unsupported like ready.",
-            vec![parameter("name", "string", "A group name from player.image-assets.json")],
+            vec![parameter("name", "string", "A named group or texture ID listed in streamable in player.image-assets.json")],
             "ImageGroupStatus: {name, state, requested?, total, ready, bytes, error?}. state is unsupported outside the official Web player with a published image plan.",
             vec!["Read-only"],
             "Reports arrive as recorded presentation input at the start of a tick, so state lags a new request by at least one tick and a replay reproduces it. bytes is the decoded RGBA estimate (width * height * 4) the group reserves; images shared with another held group count in both.",
             vec![
-                "IMAGE_GROUP_UNKNOWN when the name is not a group in player.image-assets.json",
-                "IMAGE_GROUP_NAME_INVALID for an empty name or one over 128 bytes",
+                "IMAGE_GROUP_UNKNOWN for a selector absent from the plan",
+                "IMAGE_GROUP_NAME_INVALID for an invalid selector length (group 1..128, texture ID 1..2048 UTF-8 bytes)",
             ],
             "local s = api.assets.imageGroups.status(\"town-3\"); local shown = s.state == \"ready\" or s.state == \"unsupported\"",
             vec!["assets.imageGroups.preload", "assets.imageGroups.load", "assets.imageGroups.unload"],
@@ -3000,6 +3000,15 @@ fn descriptors() -> Vec<ApiDescriptor> {
             vec!["camera3d.getTransform", "camera3d.setPosition"],
         ),
     ];
+    // Both Luau names expose the same table. Keep their descriptions and examples in sync.
+    let neutral_preloads: Vec<_> = result.iter().filter(|entry| entry.name.starts_with("assets.imageGroups."))
+        .cloned().map(|mut entry| {
+            entry.name = entry.name.replace("imageGroups.", "imagePreloads.");
+            entry.example = entry.example.replace("imageGroups.", "imagePreloads.");
+            for name in &mut entry.related_apis { *name = name.replace("imageGroups.", "imagePreloads."); }
+            entry
+        }).collect();
+    result.extend(neutral_preloads);
     result.extend(ui_component_descriptors());
     result.extend(byte_view_descriptors());
     result.extend(sprite_resource_descriptors());
@@ -3546,6 +3555,18 @@ mod tests {
     use std::path::Path;
 
     use super::{api_search_result, describe, descriptors, search, typings};
+
+    #[test]
+    fn image_preloads_search_describes_each_shared_binding() {
+        for method in ["preload", "load", "unload", "retry", "status", "owners", "setOwner", "releaseOwner"] {
+            let name = format!("assets.imagePreloads.{method}");
+            let found = search(&name);
+            assert_eq!(found.len(), 1);
+            assert_eq!(found[0].name, name);
+            assert!(found[0].example.contains(&name));
+        }
+        assert!(search("streamable texture").iter().any(|api| api.name == "assets.imagePreloads.preload"));
+    }
 
     #[test]
     fn generic_batch_collision_search_discovers_spatial_contract_and_bundled_guide() {
@@ -4230,6 +4251,7 @@ function Game.start(api)
             if type(child) == "function" then table.insert(found, path)
             elseif type(child) == "table" then walk(path, child) end
         end
+        seen[value] = nil -- Distinct public paths may share the same table.
     end
     walk("", api)
     api.observation.set("surface", found)

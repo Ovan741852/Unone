@@ -1016,12 +1016,17 @@ export type BytesApi = {
 -- (deep-frozen tables), or one registered at runtime.
 export type AssetLoader = (data: buffer, id: string) -> any
 export type AssetsApi = {
+    request: (id: string) -> (),
+    status: (id: string) -> {state: "idle" | "loading" | "ready" | "failed", error: string?},
+    release: (id: string) -> (),
     -- Decode once with the manifest's loader; later calls return the same
     -- frozen value.
     load: (id: string) -> any,
     -- Add or replace a loader; values it decoded are decoded again on next load.
     registerLoader: (name: string, loader: AssetLoader) -> (),
-    -- Groups declared in player.image-assets.json, held by the official Web player.
+    -- Named groups and individual texture IDs listed in the image plan's streamable array.
+    imagePreloads: ImageGroupsApi,
+    -- Compatibility alias sharing the same requests and owners.
     imageGroups: ImageGroupsApi,
 }
 
@@ -1046,12 +1051,12 @@ export type ImageGroupStatus = {
 export type ImageGroupsApi = {
     -- Request another attempt after a held group reports an error.
     retry: (name: string) -> (),
-    -- Atomically replace a named screen/system's holds. Shared groups keep the strongest demand.
+    -- Atomically replace a named screen/system's holds. Shared selectors keep the strongest demand. Up to 4096 distinct selectors can be held.
     setOwner: (owner: string, desired: {[string]: "preload" | "load"}) -> (),
     -- Idempotent. Drops only this owner's holds, leaving other owners and direct requests intact.
     releaseOwner: (owner: string) -> (),
     -- Diagnostic snapshot of named owners holding this group; direct requests are separate.
-    owners: (group: string) -> {[string]: "preload" | "load"},
+    owners: (selector: string) -> {[string]: "preload" | "load"},
     -- Decode in the background and hold until unload.
     preload: (name: string) -> (),
     -- Hold as the current working set (promotes a preload without decoding again).

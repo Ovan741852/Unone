@@ -825,7 +825,26 @@ mod tests {
         let project = &files.iter().find(|(path, _)| path == "content/project.json").unwrap().1;
         let payload: Value = serde_json::from_slice(project).unwrap();
         assert_eq!(payload["image_groups"], json!(["map", "town"]));
+        assert!(payload.get("image_streams").is_none());
         assert!(payload.get("image_group_host").is_none(), "only a host that holds the images sets it");
+    }
+
+    #[test]
+    fn exports_carry_individual_image_streams_separately_and_validate_the_texture_catalog() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path();
+        let write = |name: &str, value: Value| fs::write(root.join(name), serde_json::to_vec(&value).unwrap()).unwrap();
+        write("project.unone.json", json!({"name":"streams","entry_script":"main.luau","asset_manifest":"assets.json"}));
+        fs::write(root.join("main.luau"), "return {start=function(api) api.assets.imagePreloads.preload('art') end,update=function(api) end}").unwrap();
+        write("assets.json", json!({"version":1,"assets":[{"id":"art","kind":"texture2d","source":"art.png"}]}));
+        fs::write(root.join("art.png"), b"image fixture").unwrap();
+        write("player.image-assets.json", json!({"version":1,"groups":{},"streamable":["art"]}));
+        let (_, _, _, files) = content(root).unwrap();
+        let payload: Value = serde_json::from_slice(&files.iter().find(|(path, _)| path == "content/project.json").unwrap().1).unwrap();
+        assert!(payload.get("image_groups").is_none());
+        assert_eq!(payload["image_streams"], json!(["art"]));
+        write("player.image-assets.json", json!({"version":1,"groups":{},"streamable":["typo"]}));
+        assert!(content(root).err().unwrap().to_string().contains("must name a texture2d"));
     }
 
     #[test]
@@ -1304,8 +1323,9 @@ pub(crate) fn content(project:&Path)->Result<ExportContent>{
     if !script_modules.is_empty() { payload["script_modules"] = json!(script_modules); }
     // Every player validates api.assets.imageGroups names against the plan the
     // project declares, whether or not its host holds the images.
-    let image_groups = unone_engine::image_group_names(project).map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?;
-    if !image_groups.is_empty() { payload["image_groups"] = json!(image_groups); }
+    let preloads = unone_engine::image_preload_declarations(project).map_err(|e| anyhow::anyhow!("{}: {}", e.code, e.explanation))?;
+    if !preloads.groups.is_empty() { payload["image_groups"] = json!(preloads.groups); }
+    if !preloads.streams.is_empty() { payload["image_streams"] = json!(preloads.streams); }
     // Data assets travel as content files; the payload only declares them.
     let mut asset_catalog = Vec::new();
     let mut data_assets: Vec<unone_engine::DataAssetDecl> = match &config.asset_manifest {

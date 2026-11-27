@@ -561,12 +561,18 @@ mod tests{
  }
  #[test]
  fn escaped_oversized_ui_falls_back_inline_and_releases_duplicate_scratch_after_success(){
-  #[derive(Serialize)]struct Fixture<'a>{before:u32,ui:&'a str,after:u32}
-  let text="\u{1}".repeat(super::super::ui_tree_transport::MAX_ENCODED_BYTES/6+1);let fixture=Fixture{before:1,ui:&text,after:2};
-  let prepared=CANONICAL.with(|cache|{let mut bytes=cache.borrow_mut();let (start,end)=span(&canonical(&mut bytes,&fixture).unwrap(),"ui").unwrap();assert!(end-start>super::super::ui_tree_transport::MAX_ENCODED_BYTES);super::super::ui_tree_transport::prepare(Some(&bytes[start..end]),epoch()).unwrap()});assert!(!prepared.has_lease());
-  let save=super::super::save_transport::prepare(None,true,epoch()).unwrap();let fields=super::super::world_transport::prepare(std::iter::empty(),epoch()).unwrap();envelope("oversized",&fixture,"digest",&save,BTreeMap::new(),&prepared,&fields).unwrap();
-  finish_ui_publication(prepared,true);CANONICAL.with(|v|assert_eq!(v.borrow().capacity(),0));
-  let value=output();assert!(value.get("ui_tree_transport").is_none());assert_eq!(value["world"]["ui"].as_str().unwrap().len(),text.len());assert_eq!(value["world"]["before"],1);assert_eq!(value["world"]["after"],2);
+  load("texture://oversized");
+  assert_eq!(unone_web_set_ui_transport(1),0);
+  assert!(output().get("ui_tree_transport").is_some());
+  let mut snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());
+  let size=super::super::ui_tree_transport::MAX_ENCODED_BYTES/6+1;
+  std::sync::Arc::make_mut(snapshot.ui.as_mut().unwrap()).id="\u{1}".repeat(size);
+  write("oversized",&snapshot,None).unwrap();
+  CANONICAL.with(|v|assert_eq!(v.borrow().capacity(),0));
+  let value=output();assert!(value.get("ui_tree_transport").is_none());
+  assert_eq!(value["world"]["ui"]["id"].as_str().unwrap().len(),size);
+  assert_eq!(value["world"]["ui"]["children"][0]["id"],"i");
+  assert_eq!(value["world"]["frame"],snapshot.frame);
   // Test-only large output is not a runtime lease after the test ends.
   OUTPUT.with(|v|*v.borrow_mut()=Vec::new());
  }

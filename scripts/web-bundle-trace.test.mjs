@@ -24,6 +24,25 @@ function runtime() {
   return {host,groups,submission,loading,resources,load,tick(){now+=10;timer();}};
 }
 
+test('a sparse individual stream is observed until release; idle declared and unknown IDs stay distinct',()=>{
+ const r=runtime(), snapshot=r.host.unonePlayerAssets.snapshot;
+ let streams=[];
+ const row=(name,state,held)=>({name,state,mode:held?'load':null,held,ready:held,total:1});
+ r.host.unonePlayerAssets.snapshot=()=>({...snapshot(),streams});
+ r.host.unonePlayerAssets.status=id=>{
+   if(id==='a')return streams[0]??row('a','unloaded',0);
+   if(id==='never')return row('never','idle',0);
+   throw Error('undeclared');
+ };
+ const trace=createBundleTrace({expect_released:['a','never','unknown']},r.host);
+ trace.mark('open');streams=[row('a','ready',1)];r.tick();
+ trace.mark('close');streams=[];r.tick();
+ const result=trace.finish();
+ assert.deepEqual(result.final_held,[]);
+ assert.deepEqual(result.group_events.filter(e=>e.group==='a').map(e=>e.state),['ready','unloaded']);
+ assert.deepEqual(result.findings.map(f=>[f.code,f.group]),[['BUNDLE_EXPECTED_GROUP_UNKNOWN','unknown']]);
+});
+
 test('bundle trace correlates releases, pending draws, actual decodes and transmitted requests',()=>{
   const r=runtime(),report=createBundleTrace({expect_released:['arena']},r.host);
   report.mark('battle');Object.assign(r.groups[0],{state:'ready',mode:'load',held:1,ready:1});

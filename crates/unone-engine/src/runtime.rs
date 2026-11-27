@@ -110,6 +110,8 @@ pub struct SourceProject {
     pub error_policy: crate::ErrorPolicy,
     /// Group names from the project's image plan; empty without one.
     pub image_groups: Vec<String>,
+    /// Texture selectors that may be held separately from named groups.
+    pub image_streams: Vec<String>,
     /// The host applies api.assets.imageGroups requests and reports their state.
     pub image_group_host: bool,
 }
@@ -623,7 +625,7 @@ impl EngineRuntime {
             let (decls, data) = crate::data_assets::read_from_project(&paths)?;
             let data_assets = crate::data_assets::DataAssets::new(decls, data)?;
             let catalog = crate::sprite_resources::read_catalog(&paths)?;
-            let image_groups = crate::image_groups::image_group_names(&paths.root)?;
+            let image_groups = crate::image_preload_declarations(&paths.root)?;
             Ok::<_, Box<Diagnostic>>((config, paths, world, data_assets, catalog, image_groups))
         })?;
         // Tools validate requests against the plan, but no host holds the images.
@@ -737,6 +739,7 @@ impl EngineRuntime {
             asset_catalog,
             error_policy,
             image_groups,
+            image_streams,
             image_group_host,
         } = project;
         let module_count = script_modules.len().max(script_module_bytecode.len());
@@ -788,7 +791,7 @@ impl EngineRuntime {
             data_assets,
             asset_catalog,
             error_policy,
-            (image_groups, image_group_host),
+            (crate::ImagePreloadDeclarations { groups: image_groups, streams: image_streams }, image_group_host),
         )
     }
 
@@ -807,11 +810,9 @@ impl EngineRuntime {
         data_assets: crate::data_assets::DataAssets,
         asset_catalog: Vec<crate::AssetCatalogEntry>,
         error_policy: crate::ErrorPolicy,
-        (image_groups, image_group_host): (Vec<String>, bool),
+        (image_groups, image_group_host): (crate::ImagePreloadDeclarations, bool),
     ) -> Result<Self, Box<Diagnostic>> {
         let errors = Rc::new(RefCell::new(crate::error_policy::ErrorState::new(error_policy)));
-        let image_groups = Rc::new(RefCell::new(crate::image_groups::Registry::new(image_groups, image_group_host)
-            .map_err(|e| Box::new(Diagnostic::error("IMAGE_PLAN_INVALID", "Invalid image group names", e)))?));
         let data_assets = Rc::new(RefCell::new(data_assets));
         #[cfg(feature="dev-tools")]
         if script_source.is_none() && !data_assets.borrow().deferred.is_empty() {
@@ -823,6 +824,8 @@ impl EngineRuntime {
         }
         let sprite_resources = Rc::new(RefCell::new(sprite_resources::Registry::new(asset_catalog)
             .map_err(|e| Box::new(script_diagnostic(&paths, e)))?));
+        let image_groups = Rc::new(RefCell::new(crate::image_groups::Registry::new(image_groups, image_group_host, sprite_resources.borrow().textures())
+            .map_err(|e| Box::new(Diagnostic::error("IMAGE_PLAN_INVALID", "Invalid image preload declarations", e)))?));
         let host_time = Rc::new(RefCell::new(crate::host_time::HostTime::new(config.host_time.clone())
             .map_err(|e| Box::new(script_diagnostic(&paths, e)))?));
         let input = Rc::new(RefCell::new(InputState::default()));

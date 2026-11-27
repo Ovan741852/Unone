@@ -78,6 +78,7 @@ Create `player.image-assets.json` in the project root:
     "map": ["image://terrain"],
     "ui": ["image://inventory"]
   },
+  "streamable": ["image://north-tile", "image://south-tile"],
   "startup": ["map", "ui"],
   "budget": {"max_bytes": 67108864, "max_entries": 128}
 }
@@ -93,6 +94,29 @@ contain 1–2048. The plan allows at most 128 groups, 4096 references per group
 and 16384 references in total. Raw and canonical JSON are each limited to
 1 MiB. Unknown fields fail explicitly.
 
+Use a named group for a set that the game loads and releases together. Put
+independently visible tiles, characters or portraits in the optional `streamable`
+list. It admits up to 16,384 distinct image IDs; each must be a declared
+image and must differ from every group name. Listing an ID costs no decoded
+memory and schedules no request. It can also occur inside a named group.
+A direct hold and a group hold share the same pixels and budget reservation.
+
+```luau
+local preloads = api.assets.imagePreloads
+preloads.setOwner("viewport", {["map"]="load", ["image://north-tile"]="load"})
+local tile = preloads.status("image://north-tile")
+if tile.state == "error" then preloads.retry("image://north-tile") end -- on explicit retry
+preloads.releaseOwner("viewport")
+```
+
+`imagePreloads` and the existing `imageGroups` API use the same registry.
+The 128 group names, 128 simultaneous owners, 4,096 active selectors and
+per-plan decoded-image budget are independent limits. Each tick carries at
+most 128 changed receipts. Larger changes continue in later ticks.
+In the browser, query an individual image with `unonePlayerAssets.status(id)`.
+The snapshot lists named sets in `groups`, currently tracked individual
+images in `streams`, and the full declaration count in `streamable_count`.
+
 The optional `dimensions` record avoids runtime HTTP header inspection:
 
 ```json
@@ -101,7 +125,8 @@ The optional `dimensions` record avoids runtime HTTP header inspection:
 }
 ```
 
-Only group-member IDs are accepted, with positive integer dimensions up to
+Any declared raster texture can supply dimensions, including images used only
+by the renderer. These metadata entries never establish ownership. Use positive integer dimensions up to
 65536 per axis, and `png`/`jpeg`/`webp` formats matching the declared encoding.
 The trusted publisher checks these values against bounded prefixes of the
 sealed image files. The browser still validates the actual decoded dimensions;

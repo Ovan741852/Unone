@@ -116,10 +116,10 @@ pub use startup_theme::{STARTUP_DARK, StartupTheme, hex_color, parse_hex_color};
 mod windows_gpu_memory;
 pub use windows_gpu_memory::WindowsGpuMemory;
 mod image_groups;
-pub use image_groups::{ImageGroupPlanUpdate, ImageGroupReceipt, ImageGroupRequest, ImageGroupState,
+pub use image_groups::{ImageGroupPlanUpdate, ImageGroupReceipt, ImageGroupRequest, ImageGroupState, ImagePreloadDeclarations,
     IMAGE_PLAN_FILE, MAX_IMAGE_GROUPS, MAX_IMAGE_GROUP_NAME_BYTES};
 #[cfg(feature = "dev-tools")]
-pub use image_groups::image_group_names;
+pub use image_groups::{image_group_names, image_preload_declarations};
 #[cfg(feature = "dev-tools")]
 mod verify;
 mod world;

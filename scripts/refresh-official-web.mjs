@@ -5,6 +5,7 @@ import path from 'node:path';
 import {pathToFileURL,fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
 import {Worker} from 'node:worker_threads';
+import {requiredBudgetPreflight,validateAuthoredDimensions} from './prepare-web-image-assets.mjs';
 import {checkedRoot,sourceFile,fileRecord,dataRecord,sha,json,put,requireThat,inside,verifiedExport,writePublication} from './web-export-files.mjs';
 import {inspectHostSnapshot,resolveSystems,assembleHost,validateDependencies,applyStartupScreen} from './web-export-host.mjs';
 import {assembleContent} from './web-export-content.mjs';
@@ -34,9 +35,12 @@ async function validatePresentation(hostRoot,presentation,assets){
 function addPreload(project,content,encoding,html){
  const file=path.join(project,'player.image-assets.json');if(!fs.existsSync(file))return{html,plan:null};
  const raw=json(sourceFile(project,'player.image-assets.json'),encoding.IMAGE_PRELOAD_PLAN_MAX_BYTES),plan=encoding.validateImagePreloadPlan(raw,encoding.createAssetCatalog(content.assets)),bytes=Buffer.from(JSON.stringify(plan));
- requireThat(bytes.length<=encoding.IMAGE_PRELOAD_PLAN_MAX_BYTES,'IMAGE_PRELOAD_PLAN_LIMIT');const required=new Set(plan.startup.flatMap(id=>plan.groups[id]));requireThat(required.size<=plan.budget.max_entries,'IMAGE_PRELOAD_STARTUP_BUDGET');let total=0;
- for(const id of required){const asset=content.assets.assets.find(a=>a.id===id),file=content.files.get('content/'+asset.source);const header=Buffer.alloc(24),fd=fs.openSync(file.source,'r');let count;try{count=fs.readSync(fd,header,0,24,0);}finally{fs.closeSync(fd);}requireThat(count===24&&header.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))&&header.readUInt32BE(8)===13&&header.toString('ascii',12,16)==='IHDR','IMAGE_PRELOAD_STARTUP_DIMENSIONS_UNSUPPORTED',id);const width=header.readUInt32BE(16),height=header.readUInt32BE(20);requireThat(width>0&&height>0&&Number.isSafeInteger(width*height*4),'IMAGE_PRELOAD_PNG_HEADER_INVALID');total+=width*height*4;}
- requireThat(Number.isSafeInteger(total)&&total<=plan.budget.max_bytes,'IMAGE_PRELOAD_STARTUP_BUDGET');put(content.files,dataRecord('content/image-assets.json',bytes));return{html:html.replace('<head>','<head><meta name="unone-image-assets" content="content/image-assets.json">'),plan:{sha256:sha(bytes),required_entries:required.size,required_rgba_estimate:total}};
+ requireThat(bytes.length<=encoding.IMAGE_PRELOAD_PLAN_MAX_BYTES,'IMAGE_PRELOAD_PLAN_LIMIT');
+ validateAuthoredDimensions(plan,content.assets,content.files,encoding);
+ const preflight=requiredBudgetPreflight(plan,content.assets,content.files);
+ put(content.files,dataRecord('content/image-assets.json',bytes));
+ return {html:html.replace('<head>','<head><meta name="unone-image-assets" content="content/image-assets.json">'),
+  plan:{sha256:sha(bytes),required_entries:preflight.required_entries,required_rgba_estimate:preflight.known_rgba_bytes_estimate}};
 }
 function validateCore({runtime,hostRoot,content,timeout}){
  return new Promise((resolve,reject)=>{const worker=new Worker(new URL('./web-export-validate-worker.mjs',import.meta.url),{workerData:{javascript:runtime.files.get('runtime/'+runtime.metadata.javascript).source,wasm:runtime.files.get('runtime/'+runtime.metadata.wasm).source,expected:{javascript:runtime.metadata.javascript_sha256,wasm:runtime.metadata.wasm_sha256},payload:{...content.payload,asset_catalog:content.assets.assets.filter(a=>a.kind==='texture2d').map(a=>({id:a.id,kind:a.kind}))},data:content.data},resourceLimits:{maxOldGenerationSizeMb:512}});let settled=false;

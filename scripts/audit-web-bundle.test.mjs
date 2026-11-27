@@ -6,7 +6,7 @@ import test from 'node:test';
 import {audit, main} from './audit-web-bundle.mjs';
 import {dataRecord, writePublication} from './web-export-files.mjs';
 
-function fixture(t) {
+function fixture(t,{stream=false}={}) {
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'unone-audit-'));
   t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
   const root=path.join(dir,'player'), files=new Map();
@@ -21,7 +21,8 @@ function fixture(t) {
   const assets=[['a','one.png'],['b','two.png'],['c','one.png'],['svg','icon.svg']].map(([id,source])=>({id,kind:'texture2d',source,bundle:'art'}));
   assets.push({id:'fx',kind:'effekseer',source:'effect.efk',files:['side.bin'],bundle:'effects'});
   json('assets.json',{assets});
-  json('image-assets.json',{version:1,groups:{start:['a'],more:['a','b'],aliases:['a','c'],icon:['svg']},startup:['start'],
+  json('image-assets.json',{version:1,groups:{start:['a'],more:['a','b'],aliases:stream?['a']:['a','c'],icon:['svg']},startup:['start'],
+    ...(stream?{streamable:['a','c']}:{}),
     budget:{max_bytes:32,max_entries:3},dimensions:{a:{format:'png',width:2,height:2}}});
   json('project.json',{script_bytecode:{source:'entry.luaubc'},data_assets:[
     {id:'one',source:'data.bin'},{id:'two',source:'data.bin'},{id:'late',source:'lazy.bin',on_demand:true}],
@@ -29,6 +30,15 @@ function fixture(t) {
   writePublication(root,'<head></head>',files,{project:'fixture',variant:'production',renderer_mode:'official'});
   return {root,dir};
 }
+
+test('holding catalog IDs counts a stream outside groups and deduplicates a stream also in startup',t=>{
+  const {root}=fixture(t,{stream:true});
+  const r=audit(root,{hold:['a','c']});
+  assert.equal(r.images.streamable_count,2);
+  assert.equal(r.images.selected_union.entries,2);
+  assert.equal(r.images.selected_union.known_rgba_bytes,32);
+  assert.equal(r.images.selected_union.unique_urls,1);
+});
 
 test('sealed bytes, distinct URLs, shared IDs, eager inputs and preparation estimates stay separate',t=>{
   const {root}=fixture(t), report=audit(root,{hold:['more']});

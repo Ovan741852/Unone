@@ -29,6 +29,61 @@
       },
       "type": "object"
     },
+    "DataAssetReceipt": {
+      "description": "The receipt is input. Downloading or copying bytes alone cannot change game state.",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "request": {
+              "format": "uint32",
+              "minimum": 0,
+              "type": "integer"
+            },
+            "sha256": {
+              "type": "string"
+            },
+            "state": {
+              "const": "ready",
+              "type": "string"
+            }
+          },
+          "required": [
+            "state",
+            "id",
+            "request",
+            "sha256"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "request": {
+              "format": "uint32",
+              "minimum": 0,
+              "type": "integer"
+            },
+            "state": {
+              "const": "failed",
+              "type": "string"
+            }
+          },
+          "required": [
+            "state",
+            "id",
+            "request"
+          ],
+          "type": "object"
+        }
+      ]
+    },
     "EffectsAssertion": {
       "additionalProperties": false,
       "description": "Full equality against the live effect list a host would be playing.",
@@ -221,6 +276,16 @@
           },
           "default": {},
           "type": "object"
+        },
+        "data_assets": {
+          "description": "Omit for live host timing. An explicit list (including an empty list)\nfixes the on-demand data completions observed on this tick.",
+          "items": {
+            "$ref": "#/$defs/DataAssetReceipt"
+          },
+          "type": [
+            "array",
+            "null"
+          ]
         },
         "gamepads": {
           "description": "Sticks and triggers of each connected gamepad (docs/input-gamepad.md).\nButtons arrive as actions: Gamepad_A for any pad, Gamepad1_A for slot 1.",

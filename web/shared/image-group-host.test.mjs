@@ -14,6 +14,24 @@ function fixture({budget={max_bytes:48,max_entries:3},load}={}){
  return{broker,images,host:createImageGroupHost({getGroups:()=>broker.groups})};
 }
 const settle=()=>new Promise(resolve=>setTimeout(resolve,0));
+
+test('hundreds of streamed image receipts cross bounded ticks and retire after acknowledgement',()=>{
+ const ids=Array.from({length:300},(_,i)=>'texture://'+'level/'.repeat(24)+i);
+ const row=id=>({state:'ready',total:1,ready:1,held:1,reserved_bytes_estimate:16});
+ const groups={load:row,unload:row,status:row};
+ const host=createImageGroupHost({getGroups:()=>groups,streamable:ids});
+ host.acceptSnapshot(plan(1,Object.fromEntries(ids.map(id=>[id,'load']))));
+ const drain=()=>{
+   const all=[];
+   for(let i=0;i<3;i++){const rows=exchange(host);assert(rows.length<=128);all.push(...rows);}
+   assert.deepEqual(all.map(r=>r.name).sort(),[...ids].sort());
+   assert.equal(exchange(host),undefined);return all;
+ };
+ assert(drain().every(r=>r.state==='ready'));
+ host.acceptSnapshot(plan(2,{}));
+ assert(drain().every(r=>r.state==='unloaded'));
+ assert.equal(host.report().reported,0);
+});
 const plan=(revision,groups)=>({world:{frame:revision},image_group_plan:{revision,groups}});
 // One round trip: lease the frame, "tick", commit, as the player loop does.
 function exchange(host,frame={actions:{}}){const leased=host.leaseInput(frame);host.commitInput(leased.token);return leased.frame.presentation_resources?.image_groups;}

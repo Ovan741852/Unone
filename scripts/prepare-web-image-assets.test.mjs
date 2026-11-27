@@ -99,6 +99,19 @@ test('the plan must still hold every group the export recorded for scripts',asyn
  await rejectsBeforeOutput(withGroups('map'),/IMAGE_PRELOAD_EXPORT_INVALID.*image_groups/);
  assert.equal((await prepareWebImageAssets(withGroups(['map','ui']).args())).image_assets.startup_preflight.required_entries,1);
 });
+test('individual image declarations must match the Core export independently of group membership',async t=>{
+ const make=declared=>{
+  const f=fixture(t),id='image://fixture/b';
+  write(f.project,'player.image-assets.json',JSON.stringify({...f.plan,streamable:[id]}));
+  const payload=JSON.parse(f.logical.get('content/project.json'));payload.image_streams=declared;
+  f.logical.set('content/project.json',Buffer.from(JSON.stringify(payload)));f.seal();return f;
+ };
+ for(const list of [[],['image://fixture/a'],['image://fixture/b','image://fixture/b']])
+  await rejectsBeforeOutput(make(list),/IMAGE_PRELOAD_STREAMS_STALE/);
+ const f=make(['image://fixture/b']);await prepareWebImageAssets(f.args());
+ assert.deepEqual(JSON.parse(fs.readFileSync(path.join(f.output,'content/image-assets.json'))).streamable,['image://fixture/b']);
+});
+
 test('scene values must match while object key order and tool-only save fixtures do not matter',async t=>{
  const stale=fixture(t);write(stale.project,'scenes/main.scene.json','{"entities":[{"id":"changed"}],"version":1}');await rejectsBeforeOutput(stale,/PROJECT_STALE.*main scene/);
  const f=fixture(t);write(f.project,'scenes/main.scene.json','{"entities":[],"version":1}');

@@ -158,7 +158,7 @@ function validateProject(project,payload,assets,logical,checks,manifest){
  }
  return{config_sha256:sha(fs.readFileSync(configFile)),script_sha256:typeof payload.script==='string'?sha(Buffer.from(payload.script,'utf8')):manifest.script_sources.entry_sha256};
 }
-function requiredBudgetPreflight(plan,assets,logical){
+export function requiredBudgetPreflight(plan,assets,logical){
  const byId=new Map(assets.assets.map(asset=>[asset.id,asset])),required=new Set(plan.startup.flatMap(group=>plan.groups[group]));
  requireThat(required.size<=plan.budget.max_entries,'IMAGE_PRELOAD_STARTUP_BUDGET','required unique entries exceed max_entries');
  let knownBytes=0;const unknown=[];
@@ -177,7 +177,7 @@ function requiredBudgetPreflight(plan,assets,logical){
  return{required_entries:required.size,known_rgba_bytes_estimate:knownBytes,unknown_dimension_assets:unknown,scope:'authored dimensions (checked against each file header) or the 24-byte PNG IHDR; the official browser still validates decoding and admission before READY'};
 }
 
-function validateAuthoredDimensions(plan,assets,logical,validator){
+export function validateAuthoredDimensions(plan,assets,logical,validator){
  const byId=new Map(assets.assets.map(asset=>[asset.id,asset]));
  for(const [id,expected]of Object.entries(plan.dimensions??{})){
   const asset=byId.get(id),file=logical.get('content/'+asset.source);requireThat(file,'IMAGE_PRELOAD_DIMENSION_SOURCE_MISSING',id);
@@ -217,6 +217,10 @@ export async function prepareWebImageAssets({project,inputExport,output,plan}){
  // a published plan without one of them would fail those requests at run time.
  requireThat(payload.image_groups===undefined||Array.isArray(payload.image_groups),'IMAGE_PRELOAD_EXPORT_INVALID','image_groups');
  for(const name of payload.image_groups??[])requireThat(Object.hasOwn(canonicalPlan.groups,name),'IMAGE_PRELOAD_GROUPS_STALE',name);
+ const declaredStreams=payload.image_streams??[],planStreams=new Set(canonicalPlan.streamable);
+ requireThat(Array.isArray(declaredStreams)&&declaredStreams.length===planStreams.size&&
+  new Set(declaredStreams).size===declaredStreams.length&&declaredStreams.every(id=>planStreams.has(id)),
+  'IMAGE_PRELOAD_STREAMS_STALE','export the project again after changing individually streamable IDs');
  validateAuthoredDimensions(canonicalPlan,assets,logical,validator);
  requireThat(planBytes.length<=validator.IMAGE_PRELOAD_PLAN_MAX_BYTES,'IMAGE_PRELOAD_PLAN_LIMIT');
  const preflight=requiredBudgetPreflight(canonicalPlan,assets,logical);

@@ -2,14 +2,15 @@
 // image group manager (the same broker, plan, budget and epochs as
 // window.unonePlayerAssets) and reports each requested group's state back as
 // recorded presentation input. Only names and scalar rows cross into Core.
-const MAX_GROUPS=128,MAX_NAME_BYTES=128,MAX_ERROR_CHARS=1024;
+const MAX_GROUPS=128,MAX_HELD_SELECTORS=4096,MAX_RECEIPTS=128,MAX_NAME_BYTES=128,MAX_ERROR_CHARS=1024;
 const encoder=new TextEncoder();
 const validName=name=>typeof name==='string'&&name.length>0&&encoder.encode(name).length<=MAX_NAME_BYTES;
 const message=error=>String(error?.message??error).slice(0,MAX_ERROR_CHARS)||'IMAGE_ASSET_GROUP_FAILED';
 const count=value=>Number.isSafeInteger(value)&&value>=0?value:0;
 
-export function createImageGroupHost({getGroups}={}){
+export function createImageGroupHost({getGroups,streamable=[]}={}){
  if(typeof getGroups!=='function')throw Error('IMAGE_GROUP_HOST_INVALID');
+ const streamIds=new Set(streamable);
  let revision=-1,closed=false,issued=0;
  // held: what this host asked the manager to hold for the game. Groups that
  // page code holds through window.unonePlayerAssets are never unloaded here.
@@ -21,13 +22,16 @@ export function createImageGroupHost({getGroups}={}){
    ||!plan.groups||typeof plan.groups!=='object'||Array.isArray(plan.groups))throw Error('IMAGE_GROUP_PLAN_INVALID');
   const wanted=Object.entries(plan.groups);
   const retries=plan.retries===undefined?[]:plan.retries;
-  if(!Array.isArray(retries)||retries.length>MAX_GROUPS||retries.some(name=>!validName(name)||!Object.hasOwn(plan.groups,name)))throw Error('IMAGE_GROUP_PLAN_INVALID');
-  if(wanted.length>MAX_GROUPS||wanted.some(([name,mode])=>!validName(name)||(mode!=='preload'&&mode!=='load')))throw Error('IMAGE_GROUP_PLAN_INVALID');
+  if(!Array.isArray(retries)||retries.length>wanted.length||retries.some(name=>typeof name!=='string'||!Object.hasOwn(plan.groups,name)))throw Error('IMAGE_GROUP_PLAN_INVALID');
+  const retrySet=new Set(retries);
+  if(retrySet.size!==retries.length||wanted.length>MAX_HELD_SELECTORS||
+     wanted.filter(([name])=>!streamIds.has(name)).length>MAX_GROUPS||
+     wanted.some(([name,mode])=>(!streamIds.has(name)&&!validName(name))||(mode!=='preload'&&mode!=='load')))throw Error('IMAGE_GROUP_PLAN_INVALID');
   if(plan.revision<=revision)return;
   revision=plan.revision;
   const groups=claims();
   for(const [name,mode]of wanted){
-   const retry=retries.includes(name);
+   const retry=retrySet.has(name);
    if(held.get(name)===mode&&!retry)continue;
    reported.set(name,{});
    if(retry)admitted.delete(name);
@@ -68,7 +72,7 @@ export function createImageGroupHost({getGroups}={}){
    const value=change.released??receipt(name);if(!value)continue;
    const previous=admitted.get(name);
    if(!change.released&&previous&&previous.state===value.state&&previous.total===value.total&&previous.ready===value.ready&&previous.bytes===value.bytes&&previous.error===value.error)continue;
-   changed.push({name,change,value,order:++issued});if(changed.length===MAX_GROUPS)break;
+   changed.push({name,change,value,order:++issued});if(changed.length===MAX_RECEIPTS)break;
   }
   if(!changed.length)return {frame,token:null};
   return {frame:{...frame,presentation_resources:{...frame.presentation_resources,image_groups:changed.map(entry=>entry.value)}},token:changed};
@@ -79,7 +83,11 @@ export function createImageGroupHost({getGroups}={}){
    if(reported.get(name)!==change||order<=(change.acked??0))continue;
    change.acked=order;
    if(change.released){reported.delete(name);admitted.delete(name);}
-   else admitted.set(name,value);
+   else {
+    admitted.set(name,value);
+    // A full batch can span ticks. Put acknowledged entries behind pending ones.
+    if(reported.size>MAX_RECEIPTS){reported.delete(name);reported.set(name,change);}
+   }
   }
  }
  function reset(){

@@ -337,7 +337,7 @@ async function start(){
  imagePreloadPlan=preloadPlan;
  imageAssets=createImageAssetBroker(assetCatalog,{resolveAssetUrl:asset=>new URL('content/'+asset.source,document.baseURI).href,preloadPlan});
  // Game requests (api.assets.imageGroups) need a published plan; without one Core reports unsupported.
- if(preloadPlan)imageGroupHost=createImageGroupHost({getGroups:()=>imageAssets?.groups});
+ if(preloadPlan)imageGroupHost=createImageGroupHost({getGroups:()=>imageAssets?.groups,streamable:preloadPlan.streamable});
  // Scene declarations own future render dependencies, including hidden sprites.
  // Prepare an explicitly bounded plan before simulation and the READY barrier.
  const preparation=await imageAssets.prepareScene(project.scene,{onProgress:({done,total})=>startupScreen.progress('images',done,total)});

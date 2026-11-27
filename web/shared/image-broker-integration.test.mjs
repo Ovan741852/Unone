@@ -124,7 +124,7 @@ test('actual player start cannot create a late image broker after pagehide while
 
 test('actual failure cleanup accepts the exported UI-disabled stub and retires the broker/backend',()=>{
   const trace=[],retire=name=>({dispose:()=>trace.push(name)}),error=Error('intentional failure');
-  const context={profiler:null,performanceFeed:retire('feed'),startupAbort:new AbortController(),cursorHost:retire('cursor'),textInputs:retire('text'),
+  const context={errors:{fatal:value=>assert.equal(value,error)},profiler:null,performanceFeed:retire('feed'),startupAbort:new AbortController(),cursorHost:retire('cursor'),textInputs:retire('text'),
     uiScroll:retire('scroll'),uiRenderer:null,orderedQueue:null,orderedRouter:null,publishPhysical:()=>trace.push('physical'),
     scheduler:{stop:()=>trace.push('scheduler')},resourceHost:{close:()=>trace.push('resources')},imageGroupHost:null,renderer:{},disposeRenderer:()=>trace.push('renderer'),
     imageAssets:retire('images'),audio:retire('audio'),backend:{close:()=>trace.push('backend')},

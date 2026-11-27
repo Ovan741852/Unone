@@ -125,6 +125,10 @@ export function assembleContent(project,base){
   const plan=json(sourceFile(project,'player.image-assets.json'));
   requireThat(plan&&plan.groups&&typeof plan.groups==='object'&&!Array.isArray(plan.groups),'WEB_REFRESH_IMAGE_PLAN_INVALID','groups');
   const names=Object.keys(plan.groups).sort(order);if(names.length)payload.image_groups=names;
+  if(plan.streamable!==undefined){
+   requireThat(Array.isArray(plan.streamable),'WEB_REFRESH_IMAGE_PLAN_INVALID','streamable');
+   if(plan.streamable.length)payload.image_streams=plan.streamable;
+  }
  }
  const dataSources=new Map();
  const data=assets.assets.filter(asset=>asset.kind==='data').map(asset=>{

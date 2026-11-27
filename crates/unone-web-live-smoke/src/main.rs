@@ -1812,8 +1812,13 @@ fn actual_publication_phase_windows_cover_all_paths_preserve_digest_and_freeze()
 #[cfg(test)]
 #[test]
 fn image_group_abi_returns_the_held_groups_only_when_they_change() {
-    let script="return {start=function(api) api.assets.imageGroups.preload('town') end,update=function(api) if api.input.isDown('Enter') then api.assets.imageGroups.load('town') end api.observation.set('state',api.assets.imageGroups.status('town').state) end}";
-    let payload=serde_json::to_vec(&serde_json::json!({"config":{"name":"groups","entry_script":"main.luau"},"script":script,"image_groups":["town"],"image_group_host":true})).unwrap();
+    let script=r#"return {start=function(api) api.assets.imageGroups.preload('town') end,update=function(api)
+        if api.input.isDown('Enter') then api.assets.imagePreloads.setOwner('scene', {town='load', portrait='preload'}) end
+        api.observation.set('state',api.assets.imageGroups.status('town').state)
+        api.observation.set('portrait',api.assets.imagePreloads.status('portrait').state)
+    end}"#;
+    let payload=serde_json::to_vec(&serde_json::json!({"config":{"name":"groups","entry_script":"main.luau"},"script":script,"image_groups":["town"],
+        "image_group_host":true,"image_streams":["portrait"],"asset_catalog":[{"id":"portrait","kind":"texture2d"}]})).unwrap();
     assert_eq!(unsafe { unone_web_load_project(payload.as_ptr(),payload.len(),42) },0);
     let plan=|after:serde_json::Value|{
         let request=serde_json::to_vec(&serde_json::json!({"kind":"plan","after":after})).unwrap();
@@ -1824,13 +1829,16 @@ fn image_group_abi_returns_the_held_groups_only_when_they_change() {
     };
     assert_eq!(plan(serde_json::Value::Null),serde_json::json!({"revision":1,"groups":{"town":"preload"}}));
     assert_eq!(plan(serde_json::json!(1)),serde_json::json!({"revision":1}));
-    let frame=serde_json::to_vec(&serde_json::json!({"actions":{"Enter":true},"presentation_resources":{"image_groups":[{"name":"town","state":"loading","total":2,"ready":1,"bytes":64}]}})).unwrap();
+    let frame=serde_json::to_vec(&serde_json::json!({"actions":{"Enter":true},"presentation_resources":{"image_groups":[
+        {"name":"town","state":"loading","total":2,"ready":1,"bytes":64},{"name":"portrait","state":"ready","total":1,"ready":1,"bytes":4}
+    ]}})).unwrap();
     assert_eq!(unsafe { unone_web_set_input_frame(frame.as_ptr(),frame.len()) },0);
     assert_eq!(unone_web_tick(),0);
     let world=OUTPUT.with(|o|serde_json::from_slice::<serde_json::Value>(&o.borrow()).unwrap())["world"].clone();
     assert_eq!(world["observations"]["state"],"loading");
+    assert_eq!(world["observations"]["portrait"],"ready");
     assert!(world.get("image_groups").is_none(),"requests never enter the World snapshot");
-    assert_eq!(plan(serde_json::json!(1)),serde_json::json!({"revision":2,"groups":{"town":"load"}}));
+    assert_eq!(plan(serde_json::json!(1)),serde_json::json!({"revision":2,"groups":{"town":"load","portrait":"preload"}}));
     let request=br#"{"kind":"plan","after":null}"#;
     assert_eq!(unsafe { unone_web_image_groups_request(request.as_ptr(),request.len()) },-1,"only the owned allocation is read");
     assert_eq!(RUNTIME.with(|r|r.borrow().as_ref().unwrap().current_frame()),1);

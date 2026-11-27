@@ -336,6 +336,9 @@
           "description": "The manifest's `encoding.decoder`, or \"bytes\" without an encoding.",
           "type": "string"
         },
+        "on_demand": {
+          "type": "boolean"
+        },
         "source": {
           "description": "Project-relative path; exports serve it under `content/`.",
           "type": "string"
@@ -2614,7 +2617,14 @@
       "type": "boolean"
     },
     "image_groups": {
-      "description": "Group names from the project's image plan (player.image-assets.json),\nwritten by the export; api.assets.imageGroups accepts only these.",
+      "description": "Named bundles in the project's image plan (player.image-assets.json).",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "image_streams": {
+      "description": "Texture IDs that may be requested individually through api.assets.imagePreloads.",
       "items": {
         "type": "string"
       },

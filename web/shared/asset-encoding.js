@@ -131,7 +131,14 @@ function quotedUtf8Length(text) {
   return bytes;
 }
 export function validateImagePreloadPlan(value, catalog) {
-  const specs = assetCatalogSpecs(catalog); preloadRecord(value, 'plan', ['version','groups','startup','budget','dimensions']);
+  const specs = assetCatalogSpecs(catalog); preloadRecord(value, 'plan', ['version','groups','startup','budget','dimensions','streamable']);
+  function imageSpec(id) {
+    preloadString(id, 'asset ID', 2048);
+    const asset = specs.get(id);
+    if (!asset || asset.kind !== 'texture2d') preloadInvalid(`image must be a declared texture2d: ${id}`);
+    requireAssetEncoding(asset, 'image');
+    return asset;
+  }
   if (!Object.hasOwn(value, 'version') || !Object.hasOwn(value, 'groups') || !Object.hasOwn(value, 'startup') || value.version !== IMAGE_PRELOAD_PLAN_VERSION) preloadInvalid('version1, groups and startup are required');
   const budget = Object.hasOwn(value, 'budget') ? value.budget : null;
   if (Object.hasOwn(value, 'budget')) preloadRecord(budget, 'budget', ['max_bytes','max_entries']);
@@ -144,16 +151,27 @@ export function validateImagePreloadPlan(value, catalog) {
   const groups = {}; let references = 0, groupIndex = 0;
   for (const name of names) { preloadString(name, 'group name', 128); const authored = value.groups[name]; preloadArray(authored, 'group references', 4096); references += authored.length; if (references > 16384) preloadInvalid('total references exceeds16384');
     reserve(quotedUtf8Length(name) + 3 + (groupIndex++ ? 1 : 0)); const ids = [];
-    for (const id of authored) { preloadString(id, 'asset ID', 2048); reserve(quotedUtf8Length(id) + (ids.length ? 1 : 0)); const asset = specs.get(id); if (!asset || asset.kind !== 'texture2d') preloadInvalid(`group asset must be a declared texture2d: ${id}`); requireAssetEncoding(asset, 'image'); ids.push(id); }
+    for (const id of authored) { imageSpec(id); reserve(quotedUtf8Length(id) + (ids.length ? 1 : 0)); ids.push(id); }
     Object.defineProperty(groups, name, { value: Object.freeze(ids), enumerable: true });
   }
   preloadArray(value.startup, 'startup', 128); const startup = [], seen = new Set();
   for (const name of value.startup) { preloadString(name, 'startup group', 128); if (!Object.hasOwn(groups, name) || seen.has(name)) preloadInvalid('startup groups must exist and be unique'); reserve(quotedUtf8Length(name) + (startup.length ? 1 : 0)); seen.add(name); startup.push(name); }
   const canonical = { version: IMAGE_PRELOAD_PLAN_VERSION, groups: Object.freeze(groups), startup: Object.freeze(startup), budget: canonicalBudget };
+  if (Object.hasOwn(value, 'streamable')) {
+    preloadArray(value.streamable, 'streamable', 16384);
+    const ids = new Set();
+    for (const id of value.streamable) {
+      imageSpec(id);
+      if (ids.has(id) || Object.hasOwn(groups, id)) preloadInvalid('duplicate image preload selector: '+id);
+      reserve(quotedUtf8Length(id) + (ids.size ? 1 : 0));
+      ids.add(id);
+    }
+    canonical.streamable = Object.freeze([...ids]);
+  }
   if(Object.hasOwn(value,'dimensions')){
-    preloadRecord(value.dimensions,'dimensions');const referenced=new Set(Object.values(groups).flat()),dimensions={};
+    preloadRecord(value.dimensions,'dimensions');const dimensions={};
     if(Object.keys(value.dimensions).length>16384)preloadInvalid('dimensions exceeds16384');
-    for(const [id,d]of Object.entries(value.dimensions)){if(!referenced.has(id))preloadInvalid('dimension asset must belong to a group: '+id);preloadRecord(d,'dimensions entry',['format','width','height']);
+    for(const [id,d]of Object.entries(value.dimensions)){imageSpec(id);preloadRecord(d,'dimensions entry',['format','width','height']);
       if(!['png','jpeg','webp'].includes(d.format)||!Number.isSafeInteger(d.width)||!Number.isSafeInteger(d.height)||d.width<=0||d.height<=0||d.width>65536||d.height>65536||!Number.isSafeInteger(d.width*d.height*4))preloadInvalid('dimensions must be bounded raster sizes');
       if(specs.get(id).encoding&&specs.get(id).encoding.format!==d.format)preloadInvalid('dimensions format disagrees with manifest: '+id);
       Object.defineProperty(dimensions,id,{value:Object.freeze({format:d.format,width:d.width,height:d.height}),enumerable:true});
@@ -433,13 +451,27 @@ export function createImageAssetBroker(catalog, { resolveAssetUrl, loadImage = l
 // decoder/cache. Membership is authorized only by the validated image plan.
 function createImageAssetGroups({catalog,plan,inspect,acquire,isReady,evict}) {
   const specs=plan?.groups??Object.freeze({}),records=new Map(),reservations=new Map();let disposed=false,epoch=0,admission=Promise.resolve(),heldBytes=0;
+  const streamable = new Set(plan?.streamable), retiredStreams = new Set();
+  const groupIds = new Map(Object.entries(specs).map(([name, ids]) => [name, [...new Set(ids)]]));
   const budget=Object.freeze({max_bytes:plan?.budget.max_bytes??64*1024*1024,max_entries:plan?.budget.max_entries??128});
-  function nameOf(name){if(typeof name!=='string'||!Object.hasOwn(specs,name))throw imageError('IMAGE_ASSET_GROUP_MISSING',String(name));return name;}
-  function row(name){const r=records.get(name);return Object.freeze({name,catalog_generation:catalog.generation,state:r?.state??'idle',mode:r?.mode??null,total:new Set(specs[name]).size,ready:r?.ready??0,held:r?.leases.size??0,reserved_bytes_estimate:r?.reservedBytes??0,cache_hits:r?.cacheHits??0,cancelled:r?.cancelled??false,elapsed_ms:r?Math.max(0,(r.completedAt??imageClock())-r.startedAt):0,error:r?.error??null});}
+  function nameOf(name){if(!groupIds.has(name)&&!streamable.has(name))throw imageError('IMAGE_ASSET_GROUP_MISSING',String(name));return name;}
+  function row(name){const r=records.get(name);return Object.freeze({name,catalog_generation:catalog.generation,state:r?.state??(retiredStreams.has(name)?'unloaded':'idle'),mode:r?.mode??null,total:groupIds.get(name)?.length??1,ready:r?.ready??0,held:r?.leases.size??0,reserved_bytes_estimate:r?.reservedBytes??0,cache_hits:r?.cacheHits??0,cancelled:r?.cancelled??false,elapsed_ms:r?Math.max(0,(r.completedAt??imageClock())-r.startedAt):0,error:r?.error??null});}
   function release(r){
     const ids=[...r.leases.keys()];for(const lease of r.leases.values())lease.release();r.leases.clear();
     for(const id of r.reservedIds){const value=reservations.get(id);if(!value)continue;value.owners.delete(r);if(!value.owners.size){heldBytes-=value.bytes;reservations.delete(id);}}
     r.reservedIds=[];r.reservedBytes=0;evict(ids);
+  }
+  function retain(r,id,metadata){
+    const hit=isReady(id);
+    const lease=acquire(id,'external',metadata);
+    let reservation=reservations.get(id);
+    if(!reservation){
+      reservation={bytes:metadata.bytes,owners:new Set()};
+      reservations.set(id,reservation);heldBytes+=reservation.bytes;
+    }
+    reservation.owners.add(r);r.reservedIds.push(id);r.reservedBytes+=reservation.bytes;
+    r.leases.set(id,lease);
+    if(hit)r.cacheHits++;
   }
   function request(name,mode){
     nameOf(name);if(disposed)throw imageError('IMAGE_ASSET_BROKER_DISPOSED');
@@ -449,15 +481,17 @@ function createImageAssetGroups({catalog,plan,inspect,acquire,isReady,evict}) {
     const live=()=>!disposed&&!r.controller.signal.aborted&&records.get(name)===r;
     r.promise=(async()=>{
       try{
-        const ids=[...new Set(specs[name])];
+        const ids=groupIds.get(name)??[name];
         if(ids.length>budget.max_entries)throw imageError('IMAGE_ASSET_GROUP_BUDGET',name);
+        // Another selector already admitted these exact pixels. Take its shared
+        // reservation before yielding so a same-tick handoff cannot evict them.
+        for(const id of ids)if(reservations.has(id))retain(r,id,null);
         const metadata=await Promise.all(ids.map(id=>inspect(id,{signal:r.controller.signal})));
         const reserve=admission.then(()=>{
           if(!live())throw abortImageError();
           let bytes=0,count=0;for(let i=0;i<ids.length;i++)if(!reservations.has(ids[i])){bytes+=metadata[i].bytes;count++;}
           if(heldBytes+bytes>budget.max_bytes||reservations.size+count>budget.max_entries)throw imageError('IMAGE_ASSET_GROUP_BUDGET',name);
-          for(let i=0;i<ids.length;i++){const id=ids[i];let value=reservations.get(id);if(!value){value={bytes:metadata[i].bytes,owners:new Set()};reservations.set(id,value);heldBytes+=value.bytes;}value.owners.add(r);r.reservedIds.push(id);r.reservedBytes+=value.bytes;
-            if(isReady(id))r.cacheHits++;r.leases.set(id,acquire(id,'external',metadata[i]));}
+          for(let i=0;i<ids.length;i++)if(!r.leases.has(ids[i]))retain(r,ids[i],metadata[i]);
         });admission=reserve.catch(()=>{});await reserve;
         await Promise.all([...r.leases.values()].map(lease=>lease.promise.then(()=>{if(live()&&lease.state==='ready')r.ready++;})));
         if(!live())throw abortImageError();r.state='ready';r.completedAt=imageClock();return row(name);
@@ -467,7 +501,15 @@ function createImageAssetGroups({catalog,plan,inspect,acquire,isReady,evict}) {
       }
     })();r.promise.catch(()=>{});return r.promise;
   }
-  function unload(name){nameOf(name);const r=records.get(name);if(r&&(r.state==='loading'||r.state==='ready'||r.state==='error')){r.cancelled=r.state==='loading';r.state='unloaded';r.completedAt=imageClock();r.controller.abort();release(r);}return row(name);}
+  function unload(name){
+    nameOf(name);
+    const r=records.get(name);
+    if(r&&(r.state==='loading'||r.state==='ready'||r.state==='error')){
+      r.cancelled=r.state==='loading';r.state='unloaded';r.completedAt=imageClock();r.controller.abort();release(r);
+      if(streamable.has(name)){retiredStreams.add(name);records.delete(name);}
+    }
+    return row(name);
+  }
   // Each client owns an idempotent claim; all claims for one name share the physical request.
   const pageOwner=Symbol('page'),owners=new Map();
   function strongestMode(claims){for(const claim of claims.values())if(claim.mode==='load')return 'load';return 'preload';}
@@ -498,7 +540,7 @@ function createImageAssetGroups({catalog,plan,inspect,acquire,isReady,evict}) {
     return row(name);
   }
   const forOwner=owner=>Object.freeze({preload:name=>hold(name,'preload',owner),load:name=>hold(name,'load',owner),unload:name=>drop(name,owner)});
-  const api={...forOwner(pageOwner),forOwner,status:name=>{nameOf(name);return row(name);},snapshot(){return Object.freeze({version:1,available:!!plan,catalog_generation:catalog.generation,disposed,budget,held_entries:reservations.size,held_bytes_estimate:heldBytes,groups:Object.freeze(Object.keys(specs).map(row)),scope:'Group-owned decoded RGBA estimates only; overlapping groups share one reservation and broker image. Scene/renderer owners can retain additional or overlapping pixels. Unload never closes another active owner; browser/OS and GPU reclamation are not measured.'});},dispose(){if(disposed)return;disposed=true;for(const claims of owners.values())for(const claim of claims.values())claim.cancel?.();owners.clear();for(const name of records.keys())unload(name);}};
+  const api={...forOwner(pageOwner),forOwner,status:name=>{nameOf(name);return row(name);},snapshot(){return Object.freeze({version:1,available:!!plan,catalog_generation:catalog.generation,disposed,budget,held_entries:reservations.size,held_bytes_estimate:heldBytes,groups:Object.freeze([...groupIds.keys()].map(row)),streamable_count:streamable.size,streams:Object.freeze([...records.keys()].filter(id=>streamable.has(id)).map(row)),scope:'Group-owned decoded RGBA estimates only; overlapping groups share one reservation and broker image. Scene/renderer owners can retain additional or overlapping pixels. Unload never closes another active owner; browser/OS and GPU reclamation are not measured.'});},dispose(){if(disposed)return;disposed=true;for(const claims of owners.values())for(const claim of claims.values())claim.cancel?.();owners.clear();for(const name of records.keys())unload(name);}};
   return Object.freeze(api);
 }
 

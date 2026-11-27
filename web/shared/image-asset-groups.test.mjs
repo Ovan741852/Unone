@@ -11,6 +11,47 @@ function fixture(options={}){
  return{broker,groups:broker.groups,loaded,images,inspected:()=>inspected,catalog,raw};
 }
 const flush=()=>new Promise(r=>setImmediate(r));
+
+test('switching between a named set and its individually held image keeps the existing decode',async t=>{
+ const f=fixture({plan:{groups:{portrait:['a']},streamable:['a']},broker:{unusedMaxEntries:0}});
+ t.after(()=>f.broker.dispose());
+ await f.groups.load('portrait');
+ const individual=f.groups.load('a');
+ f.groups.unload('portrait');
+ await individual;
+ const group=f.groups.load('portrait');
+ f.groups.unload('a');
+ await group;
+ assert.deepEqual(f.loaded,['a']);
+ f.groups.unload('portrait');
+ assert.equal(f.images.get('a').closed,1);
+});
+
+test('individual image and named group share admission, independent release and eviction',async t=>{
+ const f=fixture({plan:{groups:{party:['a','b']},streamable:['a','c'],budget:{max_bytes:32,max_entries:2}}});
+ t.after(()=>f.broker.dispose());
+ const viewport=f.groups.forOwner(Symbol('viewport'));
+ assert.deepEqual(f.groups.snapshot().streams,[]);
+ await Promise.all([viewport.load('a'), f.groups.preload('party')]);
+ assert.equal(f.groups.snapshot().streamable_count,2);
+ assert.deepEqual(f.groups.snapshot().groups.map(r=>r.name),['party']);
+ assert.deepEqual(f.groups.snapshot().streams.map(r=>r.name),['a']);
+ assert.deepEqual(f.loaded.sort(),['a','b']);
+ assert.equal(f.groups.snapshot().held_entries,2);
+ await assert.rejects(viewport.load('c'),/GROUP_BUDGET/);
+ assert.equal(f.groups.status('a').state,'ready');
+ f.groups.unload('party');
+ assert.equal(f.images.get('a').closed,0);
+ assert.equal(f.groups.snapshot().held_entries,1);
+ await viewport.load('c');
+ viewport.unload('a');viewport.unload('c');
+ assert.equal(f.groups.status('a').state,'unloaded');
+ assert.equal(f.images.get('a').closed,1);
+ assert.deepEqual(f.groups.snapshot().streams,[]);
+ assert.equal(f.groups.snapshot().held_entries,0);
+ await viewport.load('a');
+ assert.equal(f.loaded.filter(id=>id==='a').length,2);
+});
 test('group preload coalesces, load promotes and overlapping groups share decode and budget',async()=>{
  const f=fixture();const a=f.groups.preload('one'),b=f.groups.preload('one');assert.equal(a,b);const c=f.groups.load('one');assert.equal(a,c);const ready=await a;assert.equal(ready.mode,'load');assert.equal(ready.ready,2);assert(Object.isFrozen(ready));assert.equal(f.inspected(),0,'authored dimensions avoid all header requests');
  await f.groups.load('two');assert.deepEqual(f.loaded,['a','b','c']);assert.equal(f.groups.snapshot().held_bytes_estimate,48);assert.equal(f.groups.snapshot().held_entries,3);assert.equal(f.groups.status('two').cache_hits,1);

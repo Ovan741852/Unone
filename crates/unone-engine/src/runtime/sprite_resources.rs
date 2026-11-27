@@ -41,7 +41,8 @@ impl Registry {
     pub fn new(catalog: Vec<AssetCatalogEntry>) -> Result<Self, String> {
         let mut textures = BTreeSet::new();
         for entry in catalog {
-            if entry.id.trim().is_empty() || entry.id.len() > 1024 || entry.kind.is_empty() || entry.kind.len() > 64 {
+            let id_limit = if entry.kind == "texture2d" { MAX_TEXTURE_ID_BYTES } else { 1024 };
+            if entry.id.trim().is_empty() || entry.id.len() > id_limit || entry.kind.is_empty() || entry.kind.len() > 64 {
                 return Err("SPRITE_CATALOG_INVALID: invalid asset id/kind".into());
             }
             if entry.kind == "texture2d" && !textures.insert(entry.id) {
@@ -50,6 +51,8 @@ impl Registry {
         }
         Ok(Self { catalog: Rc::new(textures), records: Rc::default(), commits: Rc::default(), owners: Rc::default(), next_id: 0, next_revision: 0, plan_revision: 0, undo: None })
     }
+
+    pub(super) fn textures(&self) -> &BTreeSet<String> { &self.catalog }
 
     pub fn reconcile(&mut self, world: &World) {
         let before = (self.owners.len(), self.records.len());

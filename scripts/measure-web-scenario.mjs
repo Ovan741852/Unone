@@ -93,8 +93,8 @@ export function parseScenario(text){
   if(!spec||typeof spec!=='object'||Array.isArray(spec)||Object.keys(spec).some(k=>!['sample_ms','expect_released','max_visible_queue_ms'].includes(k)))
    fail('bundle_trace','an object with optional sample_ms, expect_released and max_visible_queue_ms');
   const expected=spec.expect_released===undefined?[]:spec.expect_released;
-  if(!Array.isArray(expected)||expected.length>512||expected.some(n=>!printable(n,128))||new Set(expected).size!==expected.length)
-   fail('bundle_trace.expect_released','up to 512 unique image group names');
+  if(!Array.isArray(expected)||expected.length>512||expected.some(n=>!printable(n,2048))||new Set(expected).size!==expected.length)
+   fail('bundle_trace.expect_released','up to 512 unique named groups or streamable image IDs');
   const maxWait=spec.max_visible_queue_ms;
   if(maxWait!==undefined&&(!Number.isFinite(maxWait)||maxWait<0||maxWait>600000))
    fail('bundle_trace.max_visible_queue_ms','a finite duration of 0..600000 milliseconds');

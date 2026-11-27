@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::{ShaderMaterialDefinition, ShaderUniform, SpriteSheet, Transform2DData, Vec2};
 
 pub const MAX_SPRITE_RESOURCES: usize = 4096;
+pub(crate) const MAX_TEXTURE_ID_BYTES: usize = 2048;
 pub const MAX_PRESENTATION_RECEIPTS: usize = 256;
 pub const MAX_SPRITE_RESOURCE_BYTES: u64 = 1024 * 1024 * 1024;
 pub const MAX_PRESENTATION_INTEGER: u64 = (1u64 << 53) - 1;
