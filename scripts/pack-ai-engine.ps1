@@ -103,7 +103,7 @@ foreach ($directory in @('web/shared','web/renderer','web/vendor/three','tests/h
     }
 }
 Copy-PackageFile (Join-Path $engineRoot 'scripts/verify-host-parity.mjs') 'scripts/verify-host-parity.mjs'
-foreach ($tool in @('profile-player.mjs','compare-player.mjs','measure-web-export.mjs','measure-web-scenario.mjs')) {
+foreach ($tool in @('profile-player.mjs','compare-player.mjs','measure-web-export.mjs','measure-web-scenario.mjs','web-bundle-trace.mjs')) {
     Copy-PackageFile (Join-Path $engineRoot "scripts/$tool") "scripts/$tool"
 }
 Copy-PackageFile (Join-Path $webBuildRoot "unone_web_live_smoke.js") "web\runtime\unone_web_live_smoke.js"

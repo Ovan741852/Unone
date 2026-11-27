@@ -72,6 +72,10 @@ export const USAGE=`Usage: node scripts/measure-web-export.mjs --export <product
   [--attach http://HOST:PORT|ws://... [--attach-target TEXT]] [--device-label TEXT]
   [--adb-socket auto|package:NAME|SOCKET [--adb-serial SERIAL] [--adb PATH]]
   With --scenario, cold, warm and profiler pairs default to 0 unless given.
+  A scenario may set bundle_trace to sample group holds/releases, broker image timings, actual image
+  transfers and skipped draws by phase. Its expect_released list checks end-of-run ownership.
+  bundle_trace.max_visible_queue_ms (0..600000) fails a run when a renderer waits longer for an
+  image load slot, or when the player cannot report that timing.
   --url opens a page you serve instead of serving --export: the player may sit in an iframe of it, also a
   sandboxed (opaque-origin) one. --export still names the export that page serves, for the report's hashes.
   The page must pass ?unone_profile and ?unone_profile_limit on to the player frame for profiler runs.
@@ -664,10 +668,13 @@ export async function adbConnect(options,{serverPort=null,run=runProcess,freePor
 // Instrumentation added to every document before its own scripts. Timing only: every wrapper
 // returns what the original returns, and a 'split' instantiateStreaming does exactly the two steps
 // instantiateStreaming is specified as (compileStreaming, then instantiate).
-export function probeSource({wasmTiming='split',embedded=false}={}){
+const BUNDLE_RESOURCE_TIMING_ENTRIES=20000;
+
+export function probeSource({wasmTiming='split',embedded=false,bundleTrace=false}={}){
  // A page that embeds the player (--url) is instrumented in every frame: which one runs the player
  // is only known once its document has parsed.
  return `(()=>{if((!${embedded===true}&&window.top!==window)||window.__unoneMeasure)return;
+${bundleTrace?`performance.setResourceTimingBufferSize?.(${BUNDLE_RESOURCE_TIMING_ENTRIES});`:''}
 const now=()=>performance.now(),split=${JSON.stringify(wasmTiming==='split')};
 const probe={version:1,wasm:[],fonts:[],long_tasks:[],visibility:[{state:document.visibilityState,at_ms:now()}],focus:[],focused_at_start:document.hasFocus()};
 Object.defineProperty(window,'__unoneMeasure',{value:probe});
@@ -992,7 +999,8 @@ export async function measure(options,log=message=>process.stderr.write(message+
   for(let i=0;i<scenarioTotal;i++){
    const profiling=i===options.scenarioRuns;
    const milestones=[...new Set([...options.milestones,...(scenario.definition.start_mark?[scenario.definition.start_mark]:[])])];
-   const {browser,page,close}=await session({...options,touch});
+   // The bundle observer subscribes after startup. Retain early resource entries from navigation.
+   const {browser,page,close}=await session({...options,touch,bundleTrace:Boolean(scenario.definition.bundle_trace)});
    try{
     // The browser's own cadence on an empty page, same browser and viewport, before the game loads.
     let blank=null;
@@ -1104,6 +1112,7 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
   coverage,
   summary:{cold:summarize(ok('cold')),warm:summarize(ok('warm')),profiler_pairs:pairDeltas(okPairs)},
   ...(scenario?{scenario:{file:scenario.file,definition:scenario.definition,conditions:{browser:attached?'the attached browser and page (--attach/--adb-socket) for every run: nothing restarts between runs, and a touch scenario first checks that a DevTools tap reaches the blank page (scenario.runs[].touch.probe)':'a new browser process and profile per run',profiler:options.scenarioProfile?'off for acceptance runs; one extra diagnostic run with ?unone_profile=1&unone_profile_limit=2048':false,sample_ms:scenario.definition.sample_ms,settle_ms:scenario.definition.settle_ms,
+   ...(scenario.definition.bundle_trace?{resource_timing_buffer_entries_requested:BUNDLE_RESOURCE_TIMING_ENTRIES}:{}),
    touch_emulation:usesTouch(scenario.definition)?touchCondition(scenarioRuns,attached):false,
    frame_windows:{poll_ms:1000,source:'unonePlayerPerformance.snapshot({includeRafSamples:true,includeRafTicks:true}) draw and input rows (without includeRafTicks from an older player), stitched by sequence; the memory sampler pauses during a window',blank_control:options.blankControl?'empty page recording requestAnimationFrame timestamps, same browser and viewport, before the game loads':false},
    os_memory:attached?'not read: the attached browser\'s processes are its device\'s, not this machine\'s':process.platform==='win32'?'per process at checkpoints: working set, peak working set, private bytes, GPU dedicated/shared (Windows GPU counters)':process.platform==='linux'?'per process at checkpoints: VmRSS, VmHWM, RssAnon; no GPU memory':'not read on this platform'},
@@ -1117,10 +1126,15 @@ export function buildReport({options,exported,runs,pairs,browserInfo,scenario=nu
 const FRAME_CONSOLE=['host_cpu_busy','submission_interval.p50_ms','submission_interval.p95_ms','submission_interval.p99_ms','submission_interval.over_50ms','submission_interval.over_100ms','raf_interval.p95_ms','raf_interval.over_50ms','new_snapshot_interval.p95_ms','dropped_steps','input_latency.p50_ms','input_latency.p95_ms','input_delivery.p50_ms','long_tasks.count','long_tasks.max_ms','long_tasks.max_tick_ms','tick.p95_ms','tick.max_ms','completed_submissions'];
 const CONSOLE_METRICS=['images.decoded.resident.entries','images.decoded.resident.bytes','gpu.textures.entries','gpu.geometries.entries','luau.heap.bytes','js_heap.used_bytes','os.largest_renderer.private_bytes','os.gpu_process.gpu_dedicated_bytes'];
 export function scenarioConsole(scenario){
- const run=scenario.runs.find(r=>r.ok&&!r.profiling);if(!run)return {ok:0,runs:scenario.runs.length};
+ const traces=scenario.runs.filter(r=>r.bundle_trace).map(r=>{
+  const counts={};for(const finding of r.bundle_trace.findings)counts[finding.code]=(counts[finding.code]??0)+1;
+  return {run:r.index,ok:r.bundle_trace.ok,findings:counts};
+ });
+ const traced=traces.length?{bundle_traces:traces}:{};
+ const run=scenario.runs.find(r=>r.ok&&!r.profiling);if(!run)return {ok:0,runs:scenario.runs.length,...traced};
  const median=name=>scenario.summary?.[name]?.median??null;
  const frames=prefix=>Object.fromEntries(FRAME_CONSOLE.map(name=>[name,median(`${prefix}.${name}`)]).filter(([,v])=>v!==null));
- return {ok:scenario.runs.filter(r=>r.ok&&!r.profiling).length,runs:scenario.runs.length,
+ return {ok:scenario.runs.filter(r=>r.ok&&!r.profiling).length,runs:scenario.runs.length,...traced,
   ...(run.blank_control?{blank_control_median:frames('blank_control')}:{}),
   phases:Object.fromEntries(run.phases.map(phase=>phase.kind==='frames'?[phase.name,{median_across_runs:frames(`${phase.name}.frames`)}]:[phase.name,{rounds:phase.trend.rounds,
   round_end:Object.fromEntries(CONSOLE_METRICS.filter(name=>phase.trend.end[name]?.n).map(name=>{const t=phase.trend.end[name];return [name,{first:t.first,last:t.last,max:t.max,second_half_not_higher:t.second_half_not_higher}];}))}])),

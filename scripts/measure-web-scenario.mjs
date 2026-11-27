@@ -19,6 +19,7 @@
 import {spawn} from 'node:child_process';
 import {readFile} from 'node:fs/promises';
 import os from 'node:os';
+import {createBundleTrace} from './web-bundle-trace.mjs';
 
 export const SCENARIO_SCHEMA='unone.web-scenario.v1';
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
@@ -63,7 +64,7 @@ export function keyFields(code){
 
 // ---------------------------------------------------------------- scenario file
 
-const TOP_KEYS=['schema','name','description','start_mark','phases','settle_ms','sample_ms','step_timeout_ms'];
+const TOP_KEYS=['schema','name','description','start_mark','phases','settle_ms','sample_ms','step_timeout_ms','bundle_trace'];
 const ROUND_KEYS=['name','warmup_rounds','rounds','steps'];
 const FRAME_KEYS=['name','setup','loop','warmup_ms','window_ms'];
 const STEP_KINDS=['key','tap','drag','pinch','wheel','wait_mark','wait_ms'];
@@ -86,6 +87,20 @@ export function parseScenario(text){
  if(s.start_mark!==undefined&&!printable(s.start_mark))fail('start_mark','the name the game passes to api.profile.mark');
  const whole=(value,where,min,max,fallback)=>{if(value===undefined)return fallback;if(!Number.isInteger(value)||value<min||value>max)fail(where,`whole number ${min}..${max}`);return value;};
  const settleMs=whole(s.settle_ms,'settle_ms',0,600000,10000),sampleMs=whole(s.sample_ms,'sample_ms',50,60000,250),stepTimeoutMs=whole(s.step_timeout_ms,'step_timeout_ms',100,600000,15000);
+ let bundleTrace;
+ if(s.bundle_trace!==undefined){
+  const spec=s.bundle_trace;
+  if(!spec||typeof spec!=='object'||Array.isArray(spec)||Object.keys(spec).some(k=>!['sample_ms','expect_released','max_visible_queue_ms'].includes(k)))
+   fail('bundle_trace','an object with optional sample_ms, expect_released and max_visible_queue_ms');
+  const expected=spec.expect_released===undefined?[]:spec.expect_released;
+  if(!Array.isArray(expected)||expected.length>512||expected.some(n=>!printable(n,128))||new Set(expected).size!==expected.length)
+   fail('bundle_trace.expect_released','up to 512 unique image group names');
+  const maxWait=spec.max_visible_queue_ms;
+  if(maxWait!==undefined&&(!Number.isFinite(maxWait)||maxWait<0||maxWait>600000))
+   fail('bundle_trace.max_visible_queue_ms','a finite duration of 0..600000 milliseconds');
+  bundleTrace=Object.freeze({sample_ms:whole(spec.sample_ms,'bundle_trace.sample_ms',50,60000,sampleMs),expect_released:Object.freeze([...expected]),
+   ...(maxWait===undefined?{}:{max_visible_queue_ms:maxWait})});
+ }
  if(!Array.isArray(s.phases)||s.phases.length<1||s.phases.length>16)fail('phases','1-16 phases');
  const names=new Set();let markWaits=0;
  const parseStep=(step,where,{marks,repeats})=>{
@@ -150,7 +165,7 @@ export function parseScenario(text){
  });
  // The engine keeps a run's first 256 marks and the player's milestone table holds 256 rows.
  if(markWaits+(s.start_mark?1:0)>256)fail('phases',`waits for ${markWaits} milestones across all rounds; a run records at most 256 api.profile.mark calls, so use fewer rounds or fewer waits`);
- return Object.freeze({schema:SCENARIO_SCHEMA,name:s.name,...(s.description!==undefined?{description:s.description}:{}),start_mark:s.start_mark??null,phases:Object.freeze(phases),settle_ms:settleMs,sample_ms:sampleMs,step_timeout_ms:stepTimeoutMs});
+ return Object.freeze({schema:SCENARIO_SCHEMA,name:s.name,...(s.description!==undefined?{description:s.description}:{}),start_mark:s.start_mark??null,phases:Object.freeze(phases),settle_ms:settleMs,sample_ms:sampleMs,step_timeout_ms:stepTimeoutMs,...(bundleTrace?{bundle_trace:bundleTrace}:{})});
 }
 
 /** Whether any step touches the screen: such a scenario needs touch emulation from the first load. */
@@ -481,6 +496,9 @@ const maxMetrics=samples=>{const out={};for(const s of samples)for(const [name,v
  */
 export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()=>performance.now(),pollMs=50,framePollMs=1000,profiling=false}={}){
  const t0=clock(),at=()=>round(clock()-t0),samples=[];
+ const traceKey='globalThis[Symbol.for("unone.measure.scenario.bundle.trace")]';
+ let traceStarted=false;
+ const traceMark=label=>page.evaluate(`${traceKey}.mark(${JSON.stringify(label)})`,5000);
  // The memory sampler pauses during frame windows: its player reads would land in the frames measured.
  let where={phase:null,round:null},seen=0,stop=false,samplerError=null,samplerPaused=false;
  // A page that left the player (navigated or reloaded) is not a player without milestones.
@@ -505,7 +523,7 @@ export async function runScenario(page,scenario,{readOs=null,log=()=>{},clock=()
    const state=JSON.parse(await page.evaluate(MARK_SOURCE,5000)),milestones=markState(state);
    if(!milestones)throw Error('MEASURE_SCENARIO_NO_MILESTONES: this player publishes no milestones; rebuild the runtime and export with an engine that has api.profile.mark');
    const row=milestones.rows.find(r=>r[0]===name&&r[1]>after&&r[3]!==null);
-   if(row){seen=Math.max(seen,row[1]);return {sequence:row[1],accepted_at_ms:row[2],presented_at_ms:row[3]};}
+   if(row){seen=Math.max(seen,row[1]);if(traceStarted)await traceMark('mark:'+name);return {sequence:row[1],accepted_at_ms:row[2],presented_at_ms:row[3]};}
    if(clock()-began>timeoutMs){const full=milestones.rows.length>=256||milestones.host_dropped>0||milestones.engine_dropped>0;
     throw Error(`MEASURE_SCENARIO_MARK_TIMEOUT: ${name} was not presented within ${timeoutMs} ms${full?' (the run already recorded 256 marks; later marks are dropped)':''}`);}
    await sleep(pollMs);
@@ -613,16 +631,21 @@ return m.long_tasks.filter(t=>t.start_ms+t.duration_ms>=${first.now}&&t.start_ms
  }
  const result={ok:true,error:null,started_after_mark:scenario.start_mark,profiling,phases:[],settled:null,os_supported:null};
  try{
+  if(scenario.bundle_trace){
+   await page.evaluate(`void (${traceKey}=(${createBundleTrace.toString()})(${JSON.stringify(scenario.bundle_trace)}))`,5000);
+   traceStarted=true;
+  }
   if(readOs){const warm=await readOs();result.os_supported=warm?.supported??false;}
   if(scenario.start_mark)await waitMark(scenario.start_mark,scenario.step_timeout_ms,0);
   seen=highestSequence(markState(JSON.parse(await page.evaluate(MARK_SOURCE,5000))));
   const baseline=await checkpoint();result.baseline={at_ms:baseline.row.t_ms,metrics:baseline.row.metrics,os:baseline.os};
   for(const phase of scenario.phases){
-   if(phase.kind==='frames'){const window=await framePhase(phase);result.phases.push(window);if(window.error)throw Error(window.error);continue;}
+   if(phase.kind==='frames'){if(traceStarted)await traceMark(phase.name);const window=await framePhase(phase);result.phases.push(window);if(window.error)throw Error(window.error);continue;}
    const rounds=[];result.phases.push({name:phase.name,kind:'rounds',rounds});
    for(let r=1;r<=phase.warmup_rounds+phase.rounds;r++){
     const warmup=r<=phase.warmup_rounds,index=warmup?r:r-phase.warmup_rounds;
     where={phase:warmup?`${phase.name}:warmup`:phase.name,round:index};
+    if(traceStarted)await traceMark(`${where.phase}/${index}`);
     const started=at(),from=samples.length,steps=[];
     for(const s of phase.steps)steps.push(await step(s));
     // Milestone presentation relative to the input that preceded it, both on the page clock.
@@ -635,12 +658,20 @@ return m.long_tasks.filter(t=>t.start_ms+t.duration_ms>=${first.now}&&t.start_ms
    }
   }
   where={phase:'settle',round:null};
+  if(traceStarted)await traceMark('settle');
   const settleFrom=samples.length;
   await sleep(scenario.settle_ms);
   const {row,os}=await checkpoint();
   result.settled={after_ms:scenario.settle_ms,metrics:row.metrics,peak:maxMetrics(samples.slice(settleFrom).filter(s=>s.phase==='settle')),os};
  }catch(error){result.ok=false;result.error=String(error.message??error);}
- finally{stop=true;await sampler;}
+ finally{
+  stop=true;
+  if(traceStarted)try{
+   result.bundle_trace=JSON.parse(await page.evaluate(`JSON.stringify(${traceKey}.finish())`,30000));
+   if(!result.bundle_trace.ok){result.ok=false;result.error??='MEASURE_BUNDLE_TRACE_FAILED: '+result.bundle_trace.findings.filter(f=>f.severity==='error').map(f=>f.code).join(', ');}
+  }catch(error){result.ok=false;result.error??='MEASURE_BUNDLE_TRACE_FAILED: '+String(error.message??error);}
+  await sampler;
+ }
  for(const phase of result.phases)if(phase.kind==='rounds')phase.trend=phaseTrends(phase.rounds);
  result.sampler_error=samplerError;
  result.samples=columns(samples);

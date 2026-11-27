@@ -398,6 +398,28 @@ How to read it:
 - `presented_after_input_ms` includes DevTools input delivery and is measured
   on the page clock; it is a screen-change cost, not a frame-time measurement.
 
+### Trace image bundles across scenario phases
+
+Add `"bundle_trace": {"sample_ms": 100, "expect_released": ["battle-palm"]}` to a scenario. Replace `battle-palm` with a group declared by the measured game, or omit the list to collect evidence only. Run the existing `measure-web-export.mjs --export <export> --scenario <scenario.json> --output <report.json>` command. The trace starts when the scenario takes control of the running player. It samples in the browser and takes an immediate sample at each round, frame phase, presented `wait_mark` and final settle. Run frame benchmarks separately when comparing small changes in frame time.
+
+For a trace-enabled scenario the measurement requests a 20,000-entry Resource Timing buffer before navigation. A player with a running broker can report image loads without a group plan. Checking expected releases requires a group ownership snapshot at the end of the run.
+
+Each `scenario.runs[].bundle_trace` has schema `unone.web-bundle-trace.v1`. Phase indices in `group_events`, `loads`, `resources` and `findings` refer to `phases[]`. An image request can begin in one phase and end in another. A start index of -1 identifies a request already underway at trace start. `draws` records actual increments of the player's skip reasons and errors in each phase. `final_held` lists the image groups holding leases. Ownership snapshots cover the public image-group broker and can miss transitions completed between samples.
+
+To gate image scheduling, set `"bundle_trace": {"max_visible_queue_ms": 16.7}` in the scenario. The optional limit accepts finite milliseconds from 0 to 600000. Each load records its longest continuous wait for a load slot while the renderer needed the image. The phase in which the load finishes receives the sample, including failed and cancelled loads. `phases[].visible_queue` reports the sample count, worst asset ID and duration, and counts of over-budget loads and distinct asset IDs. A phase without observed waits reports a null worst ID and duration. A sample equal to the limit passes. In-flight loads produce a timing row when they finish.
+
+| Finding code | Evidence |
+| --- | --- |
+| `BUNDLE_REPEATED_IMAGE_DECODE` | Multiple successful loads of the same asset ID each reported a measured decode duration. |
+| `BUNDLE_REPEATED_NETWORK_TRANSFER` | Multiple Resource Timing entries for the same exact image URL each reported positive transfer bytes, including headers. Zero and hidden transfer sizes provide no evidence of retransmission. Output URLs omit query strings and fragments. |
+| `BUNDLE_GROUP_ERROR`, `BUNDLE_DRAW_ERROR`, `BUNDLE_UI_DIAGNOSTIC_DRAWS` | A group entered the error state, the player counted draw errors, or it skipped draws for UI diagnostics. |
+| `BUNDLE_EXPECTED_RELEASE_MISSING`, `BUNDLE_EXPECTED_GROUP_UNKNOWN` | An explicitly expected group still held leases or had an active/error state at the end, or the group was absent from the player's declared groups. These assertions fail the run. |
+| `BUNDLE_VISIBLE_QUEUE_BUDGET_EXCEEDED` | A completed timing record exceeded the configured renderer wait budget. Each failing phase reports its worst asset and both counts. |
+| `BUNDLE_VISIBLE_QUEUE_UNAVAILABLE`, `BUNDLE_VISIBLE_QUEUE_INCOMPLETE` | The requested queue gate fails if the player lacks the metric, records were overwritten between samples, or a supported reporter supplied an invalid duration. An older player can still run a trace without this gate. |
+| `BUNDLE_TRACE_UNAVAILABLE`, `BUNDLE_TRACE_INCOMPLETE`, `BUNDLE_CATALOG_CHANGED` | A required observer was unavailable, timing history exceeded its capacity, or the player replaced its asset catalog. Missing observations stay explicit. |
+
+The collector also works with an existing browser acceptance test. Import `createBundleTrace` from the SDK's `scripts/web-bundle-trace.mjs`, run its source in the player frame, call `mark(label)` after reaching each scene or before triggering its transition, then call `finish()` and write the returned JSON. The collector reads the official player APIs and Resource Timing.
+
 ### Frame time under load: frame windows
 
 A phase with `window_ms` instead of `rounds` measures frame time while the game
