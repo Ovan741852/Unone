@@ -969,6 +969,10 @@ pub struct RigidBodySnapshot {
     pub restitution: f64,
 }
 
+fn particle_registry_is_empty(registry: &std::sync::Arc<BTreeMap<String, crate::ParticleDefinition>>) -> bool {
+    registry.is_empty()
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct WorldSnapshot {
     // Static immutable artwork precedes receipt/application/frame metadata so
@@ -1008,8 +1012,10 @@ pub struct WorldSnapshot {
     pub instances3d: BTreeMap<String, crate::instances3d::InstanceBatch3D>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub physics3d: Option<crate::rigid3d::Snapshot3D>,
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
-    pub particle_effects: BTreeMap<String, crate::ParticleDefinition>,
+    /// The world's particle registry, shared with the world (not copied per snapshot) until a scene load or a
+    /// developer patch replaces it; the same Arc means the same definitions.
+    #[serde(default, skip_serializing_if = "particle_registry_is_empty")]
+    pub particle_effects: std::sync::Arc<BTreeMap<String, crate::ParticleDefinition>>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub particles: Vec<crate::ParticleSnapshot>,
     pub frame: u64,
@@ -1208,7 +1214,7 @@ impl World {
         self.instances3d.clear();
         #[cfg(feature = "physics3d")]
         let physics3d = scene.physics3d;
-        self.particles.definitions = scene.particle_effects;
+        self.particles.definitions = std::sync::Arc::new(scene.particle_effects);
         self.shader_materials = scene.shader_materials;
         self.physics = scene.physics;
         self.lighting = scene.lighting;

@@ -272,7 +272,9 @@ impl Instance {
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct ParticleWorld {
-    pub definitions: BTreeMap<String, ParticleDefinition>,
+    /// Shared with every WorldSnapshot rather than copied into it: it changes only when a scene loads or a developer
+    /// patch edits it (through Arc::make_mut), so a publisher can tell an unchanged registry by the Arc alone.
+    pub definitions: std::sync::Arc<BTreeMap<String, ParticleDefinition>>,
     live: BTreeMap<String, Instance>,
     next: u64,
 }
@@ -906,7 +908,7 @@ mod tests {
     #[test]
     fn batch_origins_are_bounded_atomic_and_share_a_handle() {
         let mut world = ParticleWorld::default();
-        world.definitions.insert("spark".into(), definition());
+        std::sync::Arc::make_mut(&mut world.definitions).insert("spark".into(), definition());
         let h = world
             .play_batch(
                 "spark",
@@ -1226,7 +1228,7 @@ mod tests {
         e.velocity_max = Vec3::default();
         e.gravity = Vec3::default();
         let mut world = ParticleWorld::default();
-        world.definitions.insert("trail".into(), d);
+        std::sync::Arc::make_mut(&mut world.definitions).insert("trail".into(), d);
         let h = world.play("trail", Vec3::default(), 42, 0).unwrap();
         assert!(
             world
@@ -1273,7 +1275,7 @@ mod tests {
     #[test]
     fn stop_and_expiry_release_world_budget() {
         let mut world = ParticleWorld::default();
-        world.definitions.insert("spark".into(), definition());
+        std::sync::Arc::make_mut(&mut world.definitions).insert("spark".into(), definition());
         let id = world.play("spark", Vec3::default(), 1, 0).unwrap();
         assert!(!world.snapshot(0).is_empty());
         assert!(world.stop(&id));

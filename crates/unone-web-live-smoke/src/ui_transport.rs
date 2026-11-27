@@ -13,6 +13,7 @@ pub(super) fn epoch()->u64 { EPOCH.with(Cell::get) }
 pub(super) fn retire(){
     let had_ui=super::ui_tree_transport::clear();
     let had_fields=super::world_transport::clear();
+    PARTICLE_EFFECTS.with(|v|*v.borrow_mut()=None);
     let had_cache=CANONICAL.with(|v|{let mut bytes=v.borrow_mut();let retained=bytes.capacity()>0;*bytes=Vec::new();retained});
     let had_leases=LEASES.with(|v|{let mut leases=v.borrow_mut();let retained=!leases.is_empty();*leases=Vec::new();retained});
     // Only the retained-wire retirement boundary drops the hash prefix too.
@@ -21,6 +22,7 @@ pub(super) fn retire(){
 }
 pub(super) fn unload(){
     super::save_transport::clear();
+    PARTICLE_EFFECTS.with(|v|*v.borrow_mut()=None);
     super::ui_tree_transport::clear();
     super::world_transport::clear();
     LEASES.with(|v|*v.borrow_mut()=Vec::new());
@@ -163,7 +165,7 @@ pub(super) fn has_byte_transport(snapshot:&WorldSnapshot)->bool{
 type Spans=Vec<(&'static str,usize,usize)>;
 fn span(spans:&Spans,key:&str)->Option<(usize,usize)>{spans.iter().find(|(k,..)|*k==key).map(|&(_,start,end)|(start,end))}
 #[derive(Clone,Copy)]
-struct Capture<'a>{position:&'a Cell<usize>,spans:&'a RefCell<Spans>,observations:&'a unone_engine::ObservationFields}
+struct Capture<'a>{position:&'a Cell<usize>,spans:&'a RefCell<Spans>,observations:&'a unone_engine::ObservationFields,particle_effects:Option<&'a serde_json::value::RawValue>}
 #[derive(Clone,Copy)]
 struct Fields<'a>{hide_registry:bool,hide_ui:bool,capture:Option<Capture<'a>>,instances:Option<&'a WorldSnapshot>,leased:Option<&'a super::world_transport::Prepared>}
 impl Fields<'_>{fn skips(self,key:&str)->bool{(self.hide_registry&&key=="ui_image_batches")||(self.hide_ui&&key=="ui")||self.leased.is_some_and(|l|l.leases(key))}}
@@ -185,6 +187,8 @@ impl<S:serde::ser::SerializeStruct> serde::ser::SerializeStruct for FilterStruct
         else if let Some(capture)=self.fields.capture{
             if key=="observations"{
                 self.serializer.serialize_field(key,&CapturedValue{key,value:&capture.observations.compact_json(),capture})
+            }else if key=="particle_effects"&&let Some(raw)=capture.particle_effects{
+                self.serializer.serialize_field(key,&CapturedValue{key,value:raw,capture})
             }else{self.serializer.serialize_field(key,&CapturedValue{key,value,capture})}
         }
         else if key=="instances3d"&&let Some(world)=self.fields.instances{self.serializer.serialize_field(key,&InstanceTransport(world))}
@@ -234,10 +238,34 @@ impl std::io::Write for CountingWriter<'_>{
     fn write(&mut self,bytes:&[u8])->std::io::Result<usize>{self.bytes.extend_from_slice(bytes);self.position.set(self.bytes.len());Ok(bytes.len())}
     fn flush(&mut self)->std::io::Result<()>{Ok(())}
 }
-fn canonical(bytes:&mut Vec<u8>,snapshot:&WorldSnapshot)->Result<Spans,String>{
+// The particle registry is most of a typical canonical world (74 of 95 KB in stair-buddies) and changes only when a
+// scene loads or a developer patch edits it. While a snapshot shares the registry encoded last time (the same Arc),
+// its exact canonical bytes are written again instead of re-encoding every definition; a new registry is encoded
+// once and kept. Canonical bytes, spans and the digest are identical either way.
+type ParticleRegistry=std::sync::Arc<BTreeMap<String,unone_engine::ParticleDefinition>>;
+thread_local! { static PARTICLE_EFFECTS: RefCell<Option<(ParticleRegistry,Box<serde_json::value::RawValue>)>> = const { RefCell::new(None) }; }
+fn canonical_reusing_particles(bytes:&mut Vec<u8>,snapshot:&WorldSnapshot)->Result<Spans,String>{
+    PARTICLE_EFFECTS.with(|cell|{
+        let mut cached=cell.borrow_mut();
+        let reuse=cached.as_ref().filter(|(registry,_)|std::sync::Arc::ptr_eq(registry,&snapshot.particle_effects)).map(|(_,raw)|&**raw);
+        let hit=reuse.is_some();
+        let spans=canonical(bytes,snapshot,reuse)?;
+        if !hit{
+            *cached=match span(&spans,"particle_effects"){
+                Some((start,end))=>{
+                    let text=std::str::from_utf8(&bytes[start..end]).map_err(|e|e.to_string())?.to_owned();
+                    Some((snapshot.particle_effects.clone(),serde_json::value::RawValue::from_string(text).map_err(|e|e.to_string())?))
+                }
+                None=>None,
+            };
+        }
+        Ok(spans)
+    })
+}
+fn canonical(bytes:&mut Vec<u8>,snapshot:&WorldSnapshot,particle_effects:Option<&serde_json::value::RawValue>)->Result<Spans,String>{
     bytes.clear();let position=Cell::new(0);let spans=RefCell::new(Vec::with_capacity(40));
     let mut serializer=serde_json::Serializer::new(CountingWriter{bytes,position:&position});
-    snapshot.serialize(WorldSerializer{serializer:&mut serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:Some(Capture{position:&position,spans:&spans,observations:&snapshot.observations}),instances:None,leased:None},field_count:0}).map_err(|e|e.to_string())?;
+    snapshot.serialize(WorldSerializer{serializer:&mut serializer,fields:Fields{hide_registry:false,hide_ui:false,capture:Some(Capture{position:&position,spans:&spans,observations:&snapshot.observations,particle_effects}),instances:None,leased:None},field_count:0}).map_err(|e|e.to_string())?;
     Ok(spans.into_inner())
 }
 fn finish_ui_publication(ui_tree:super::ui_tree_transport::Prepared,oversized:bool){
@@ -265,7 +293,7 @@ pub(super) fn write(project:&str,snapshot:&WorldSnapshot,save:&super::save_trans
     let measuring=false;
     let (digest,_work,_encode_ms,_hash_ms,spans,oversized)=CANONICAL.with(|cache|{
         let started=measuring.then(std::time::Instant::now);
-        let mut bytes=cache.borrow_mut();let spans=canonical(&mut bytes,snapshot)?;
+        let mut bytes=cache.borrow_mut();let spans=canonical_reusing_particles(&mut bytes,snapshot)?;
         let encode_ms=started.map_or(0.,|t|t.elapsed().as_secs_f64()*1000.);
         let started=measuring.then(std::time::Instant::now);
         let (digest,work)=if observation_digest_enabled(){let (digest,work)=CANONICAL_HASHER.with(|h|h.borrow_mut().hash(&bytes));(Some(digest),work)}
@@ -436,6 +464,33 @@ mod tests{
   }
  }
  #[test]
+ fn the_particle_registry_keeps_its_canonical_bytes_while_snapshots_share_it(){
+  load("texture://particles");assert_eq!(unone_web_set_ui_transport(1),0);
+  let mut snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());
+  let spark:unone_engine::ParticleDefinition=serde_json::from_value(serde_json::json!({"version":1,"duration_frames":1,"emitters":[{"id":"sparks",
+   "count":3,"interval_frames":1,"lifetime_frames":10,"size_start":1.5,"size_end":-0.0,"color_start":[1,1,1,1],"color_end":[1,1,1,0]}]})).unwrap();
+  std::sync::Arc::make_mut(&mut snapshot.particle_effects).insert("spark".into(),spark.clone());
+  let publish=|snapshot:&WorldSnapshot|{
+   write("particles",snapshot,None).unwrap();let value=output();
+   let mut expected=serde_json::to_value(snapshot).unwrap();expected.as_object_mut().unwrap().remove("ui_image_batches");
+   assert_eq!(restored_world(&value),expected,"the published world is the complete canonical world");
+   assert_eq!(value["observation_digest"],unone_engine::observation_digest(snapshot).unwrap(),"and its digest is exact");
+   PARTICLE_EFFECTS.with(|c|assert!(std::sync::Arc::ptr_eq(&c.borrow().as_ref().unwrap().0,&snapshot.particle_effects),"the encoded registry is the snapshot's"));
+  };
+  publish(&snapshot);
+  // Same Arc: the cached bytes are written again.
+  snapshot.frame+=1;publish(&snapshot);
+  // A changed registry is a new Arc (the cache holds the old one), so it is encoded again and replaces the cache.
+  let mut changed=spark;changed.duration_frames+=1;
+  std::sync::Arc::make_mut(&mut snapshot.particle_effects).insert("spark".into(),changed);
+  snapshot.frame+=1;publish(&snapshot);
+  assert_eq!(restored_world(&output())["particle_effects"]["spark"]["duration_frames"],2);
+  // An empty registry is omitted and forgets the cache.
+  snapshot.particle_effects=Default::default();snapshot.frame+=1;write("particles",&snapshot,None).unwrap();
+  assert!(restored_world(&output()).get("particle_effects").is_none());PARTICLE_EFFECTS.with(|c|assert!(c.borrow().is_none()));
+  assert_eq!(unone_web_set_ui_transport(0),0);
+ }
+ #[test]
  fn large_world_fields_lease_by_revision_and_unchanged_fields_keep_their_view(){
   load("texture://fields");assert_eq!(unone_web_set_ui_transport(1),0);
   let mut snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());
@@ -511,9 +566,9 @@ mod tests{
   for _ in 0..8{assert_eq!(super::super::unone_web_tick(),0);assert_eq!(output()["ui_tree_transport"],first["ui_tree_transport"]);}
   let mut snapshot=RUNTIME.with(|r|r.borrow().as_ref().unwrap().observe());
   snapshot.observations.insert("nested".into(),serde_json::json!({"ui":{"ui_image_batches":"retain"},"ui_image_batches":{"ui":"retain"},"escape":"\\\"\n中文","number":1e-220}));
-  let mut encoded=Vec::new();let (start,end)=span(&canonical(&mut encoded,&snapshot).unwrap(),"ui").unwrap();
+  let mut encoded=Vec::new();let (start,end)=span(&canonical(&mut encoded,&snapshot,None).unwrap(),"ui").unwrap();
   assert_eq!(encoded,serde_json::to_vec(&snapshot).unwrap());assert_eq!(&encoded[start..end],serde_json::to_vec(snapshot.ui.as_ref().unwrap()).unwrap());
-  snapshot.ui=None;assert!(span(&canonical(&mut encoded,&snapshot).unwrap(),"ui").is_none());assert_eq!(encoded,serde_json::to_vec(&snapshot).unwrap());
+  snapshot.ui=None;assert!(span(&canonical(&mut encoded,&snapshot,None).unwrap(),"ui").is_none());assert_eq!(encoded,serde_json::to_vec(&snapshot).unwrap());
  }
  #[test]
  fn identical_ui_bytes_do_not_reuse_private_resource_usage_or_hide_registry_updates(){

@@ -166,9 +166,7 @@ pub(crate) fn apply_operations(
                     if effect.trim().is_empty() {
                         return Err("Particle ID must not be blank".into());
                     }
-                    world
-                        .particles
-                        .definitions
+                    std::sync::Arc::make_mut(&mut world.particles.definitions)
                         .insert(effect.clone(), definition.clone());
                 }
                 (Selector::Entity { id }, Change::SetTransform3d { transform }) => {
