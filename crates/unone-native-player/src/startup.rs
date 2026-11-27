@@ -546,6 +546,7 @@ impl Launcher {
 
 impl ApplicationHandler for Launcher {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+        crate::keep_awake();
         if self.stage == Stage::Running {
             if let Some(app) = &mut self.app { app.resumed(event_loop); }
             return;
@@ -555,8 +556,11 @@ impl ApplicationHandler for Launcher {
             // shows blank while the GPU starts.
             let mut attributes = Window::default_attributes()
                 .with_title("Unone Native Player")
-                .with_visible(false)
-                .with_inner_size(winit::dpi::PhysicalSize::new(self.size[0], self.size[1]));
+                .with_visible(false);
+            // A phone's window is its whole screen: on iOS a requested size shrinks it to a corner.
+            if !cfg!(target_os = "ios") {
+                attributes = attributes.with_inner_size(winit::dpi::PhysicalSize::new(self.size[0], self.size[1]));
+            }
             #[cfg(target_os = "windows")]
             { attributes = attributes.with_drag_and_drop(false); }
             match event_loop.create_window(attributes) {
@@ -612,7 +616,13 @@ impl ApplicationHandler for Launcher {
         }
     }
     fn about_to_wait(&mut self, event_loop: &ActiveEventLoop) {
-        if self.stage == Stage::Running && let Some(app) = &mut self.app { app.about_to_wait(event_loop); }
+        if self.stage == Stage::Running {
+            if let Some(app) = &mut self.app { app.about_to_wait(event_loop); }
+            return;
+        }
+        // Keep the startup work going from here too, as App does: iOS drops a redraw
+        // requested from inside RedrawRequested, which left the startup screen frozen.
+        if self.stage != Stage::Failed && let Some(window) = &self.window { window.request_redraw(); }
     }
 }
 

@@ -30,6 +30,9 @@ rodio = "0.22.2"
 naga = { version = "30.0.1", features = ["wgsl-in"] }
 [target.'cfg(not(target_os = "android"))'.dependencies]
 winit = "0.30.12"
+[target.'cfg(target_os = "ios")'.dependencies]
+# UIApplication.idleTimerDisabled (keep_awake); the same objc2 that wgpu already links.
+objc2 = "0.6"
 [target.'cfg(target_os = "android")'.dependencies]
 winit = {version = "0.30.12", features = ["android-native-activity"]}
 [workspace]

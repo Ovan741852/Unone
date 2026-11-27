@@ -943,16 +943,19 @@ impl App {
 }
 impl ApplicationHandler for App {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+        keep_awake();
         if self.window.is_some() {
             self.paused = false;
             self.last = None;
             return;
         }
         let result = (|| -> R<_> {
-            let mut attributes = Window::default_attributes()
-                .with_title("Unone Native Player")
-                .with_inner_size(winit::dpi::PhysicalSize::new(
+            let mut attributes = Window::default_attributes().with_title("Unone Native Player");
+            // A phone's window is its whole screen: on iOS a requested size shrinks it to a corner.
+            if !cfg!(target_os = "ios") {
+                attributes = attributes.with_inner_size(winit::dpi::PhysicalSize::new(
                     self.settings.width.unwrap_or(1280), self.settings.height.unwrap_or(720)));
+            }
             // The native player has no file-import contract. Keep Windows OLE
             // drag/drop registration disabled; this does not affect rendering.
             #[cfg(target_os = "windows")]
@@ -1229,6 +1232,10 @@ impl ApplicationHandler for App {
                 {
                     self.finish();
                     event_loop.exit();
+                    // winit cannot leave the iOS event loop: a finished measurement or
+                    // capture run would keep drawing and report again on every frame.
+                    #[cfg(target_os = "ios")]
+                    std::process::exit(0);
                 }
             }
             _ => {}
@@ -1375,6 +1382,71 @@ pub fn desktop() -> R<()> {
     }
     Ok(())
 }
+/// Mobile players keep the screen on while a game is open (Unone's default): a game
+/// played without touching the screen, or watched, must not dim and lock. Called on
+/// every resume, since the app may have been in the background.
+pub(crate) fn keep_awake() {
+    #[cfg(target_os = "ios")]
+    unsafe {
+        use objc2::{class, msg_send, runtime::{AnyObject, Bool}};
+        let app: *mut AnyObject = msg_send![class!(UIApplication), sharedApplication];
+        if !app.is_null() {
+            let _: () = msg_send![app, setIdleTimerDisabled: Bool::YES];
+        }
+    }
+}
+
+/// iOS entry point, called from `main`. The exported game ships inside the app
+/// bundle under `player/` (content, export.json and native-player.json, as in
+/// the Android package); saves go to the app's own container. winit's iOS event
+/// loop takes over the main thread and does not return.
+#[cfg(target_os = "ios")]
+pub fn ios_main() {
+    let boot = Instant::now();
+    let result = (|| -> R<()> {
+        let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+        let bundle = exe.parent().ok_or("IOS_BUNDLE_MISSING: the executable has no parent directory")?;
+        let base = bundle.join("player").canonicalize().map_err(|e| format!("IOS_BUNDLE_MISSING: player/ ({e})"))?;
+        let read = move |p: &str| -> R<Vec<u8>> {
+            let path = base.join(p).canonicalize().map_err(|e| format!("IOS_ASSET_MISSING: {p} ({e})"))?;
+            if !path.starts_with(&base) {
+                return Err("NATIVE_PATH_ESCAPE".into());
+            }
+            std::fs::read(path).map_err(|e| e.to_string())
+        };
+        let mut settings: Settings =
+            serde_json::from_slice(&read("native-player.json")?).map_err(|e| e.to_string())?;
+        // HOME is the app's sandbox container; deleting the app removes the save with it.
+        let home = std::env::var_os("HOME").map(PathBuf::from).ok_or("IOS_HOME_UNAVAILABLE")?;
+        // A packaged capture run cannot know the container path: a relative capture_dir
+        // lands in Documents, where `devicectl device copy from` can fetch it.
+        if let Some(dir) = settings.capture_dir.take() {
+            settings.capture_dir = Some(if dir.is_relative() { home.join("Documents").join(dir) } else { dir });
+        }
+        let data = home.join("Library").join("Application Support").join("Unone");
+        let store = match std::fs::create_dir_all(&data) {
+            Ok(()) => save::Store::App(data),
+            Err(e) => save::Store::Unavailable(format!("the app container is not writable: {e}")),
+        };
+        let documents = home.join("Documents");
+        std::fs::create_dir_all(&documents).map_err(|e| e.to_string())?;
+        let report = Some(documents.join("benchmark.json"));
+        let event_loop = EventLoop::new().map_err(|e| e.to_string())?;
+        if !tool_run(&settings) {
+            let mut launcher = startup::Launcher::new(Box::new(read), settings, report, boot, store);
+            event_loop.run_app(&mut launcher).map_err(|e| e.to_string())?;
+            return launcher.error().map_or(Ok(()), Err);
+        }
+        let package = Package::load(read)?;
+        let mut app = App::new(package, settings, report, boot, store)?;
+        event_loop.run_app(&mut app).map_err(|e| e.to_string())?;
+        Ok(())
+    })();
+    if let Err(e) = result {
+        emit(&json!({"error":e,"host":"ios"}));
+    }
+}
+
 #[cfg(target_os = "android")]
 #[unsafe(no_mangle)]
 fn android_main(android: winit::platform::android::activity::AndroidApp) {
