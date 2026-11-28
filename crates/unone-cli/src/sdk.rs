@@ -828,6 +828,9 @@ pub(crate) fn llms_txt() -> String {
          - `game systems list`: which engine systems this project runs.\n\
          - `game verify`: types, assets, layouts, tests and declared performance targets in one verdict.\n\
          - `game ui import-html --help`: import an HTML/CSS view as native Unone layout, textures and input actions.\n\
+         - `game export bundles --help`: create content-addressed native bundles from an existing export.\n\
+         - `game export diff --help`: compare two export.json inventories by SHA-256 and size.\n\
+         - For embedded iOS startup, see the `unone_player_start_installed` contract in the player export guide.\n\
          - `node scripts/audit-web-bundle.mjs --export <export>`: inspect bundle sizes, overlapping groups and duplicate content.\n\
          - `node scripts/measure-web-export.mjs --export <export> --scenario <scenario.json> --output <report.json>`: trace loaded and released groups across real player transitions with bundle_trace.\n\n## Guides\n\n",
     );

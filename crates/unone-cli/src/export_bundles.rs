@@ -168,7 +168,8 @@ pub fn export(package: &Path, requested_startup: &[String]) -> Result<serde_json
     manifest.persist(root.join("manifest.json"))?;
     Ok(
         serde_json::json!({"manifest":root.join("manifest.json"),"files":delivery.paths.len(),
-                          "bundles":delivery.manifest.bundles.len(),"startup":delivery.startup.len()}),
+                          "bundles":delivery.manifest.bundles.len(),"startup":delivery.startup.len(),
+                          "startup_files":delivery.startup}),
     )
 }
 
@@ -195,10 +196,11 @@ mod tests {
         let manifest = root.join("unone-bundles/manifest.json");
         let read =
             || serde_json::from_slice::<serde_json::Value>(&fs::read(&manifest).unwrap()).unwrap();
-        export(root, &startup).unwrap();
+        let report = export(root, &startup).unwrap();
         let initial = read();
         assert_eq!(initial["paths"].as_object().unwrap().len(), 5);
         assert_eq!(initial["paths"]["content/menu.png"], "startup-art");
+        assert_eq!(report["startup_files"], initial["startup"]);
         assert_eq!(initial["paths"]["content/arena.png"], "art");
         assert_eq!(
             initial["startup"],

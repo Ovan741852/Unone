@@ -19,6 +19,10 @@ The legacy `export web --runtime ...` command remains available with SDK templat
 source developers can run it from the checkout root without an SDK. No compiled-in
 checkout path is used. Plugin discovery also uses executable-relative paths.
 
+If `SDK_CLI_MISMATCH` appears, run the `bin/game` from the selected SDK
+directory. CLI builds can report the same version number and have different
+hashes. Install a matching SDK when you need commands added in a later build.
+
 `sdk inspect --json` verifies the manifest version, CLI version and host,
 confined paths, file hashes/sizes, runtime metadata and template inventory.
 It lists installed runtimes and supported/unavailable targets for AI or Editor use.
@@ -89,6 +93,13 @@ inventory and a JSON array of installed inventories. The host verifies the
 candidate on disk, fetches the requested file if the candidate fails
 verification, and makes the new generation available after verifying all
 files. Files absent from the new inventory stay in the old generation.
+
+On an existing export, both `game export bundles --package <export>` and
+`game export diff` work directly on files without loading an SDK. Use the
+export's two `export.json` inventories to compare individual files. To
+estimate bundle transfers, compare `manifest.bundles[].sha256` in the two
+`unone-bundles/manifest.json` files and add `size_bytes` for the missing
+hashes. See [native delivery and installed startup](player-export.md#optional-native-delivery-bundles).
 
 ## Publisher workflow
 

@@ -234,6 +234,7 @@ After exporting a player, run `game export bundles --package <export-directory>`
 write content-addressed archives alongside its loose `content/` files. Pass
 `--startup content/<file>` once per additional file the first frame needs.
 Bootstrap data and fonts are included in the startup list automatically.
+The CLI's JSON report includes the resolved `startup_files` list.
 
 `unone-bundles/manifest.json` contains the version 1 Unone bundle manifest, a
 map from each exported content path to its bundle ID, and the startup path list.
@@ -242,6 +243,25 @@ bootstrap data are grouped separately, with larger groups split between files.
 Publish the manifest and its referenced archives with the export. Rebuilding in
 the same directory retains older immutable archives for readers of an earlier
 manifest. A fresh output directory contains only the current generation.
+
+### Open an installed iOS game
+
+Use the source checkout's `crates/unone-native-player/include/unone_player.h`. The host selects a completed
+local generation and passes it to `unone_player_start_installed`. For a
+directory export, pass a null `bundle_cache`. For an archive export, install
+the following before opening it:
+
+- Under `package_dir`, keep `export.json` and `native-player.json` and save
+  `unone-bundles/manifest.json` as `bundles.json`.
+- In the shared `bundle_cache` directory, keep each verified archive named
+  `<sha256>.bundle`. Verify the size and SHA-256 before adding an archive.
+  Installed generations can share archives with the same hash.
+
+The player loads the startup files, then resolves other files from the same
+generation when needed. Call `unone_player_frame` from the display link.
+`unone_player_game_presented` becomes true after the first game frame is
+submitted. A host can also check the game's own ready observation if the
+first interactive screen needs game-specific setup.
 
 ## Screen shape
 
