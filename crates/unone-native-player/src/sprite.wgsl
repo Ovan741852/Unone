@@ -27,7 +27,9 @@ struct Out { @builtin(position) clip: vec4f, @location(0) uv: vec2f };
   out.clip = vec4f(
     (world.x - camera.position.x) / half_width,
     (world.y - camera.position.y) / half_height,
-    clamp(layer / 100000.0, -0.99, 0.99),
+    // Layers already determine painter order in sprites::Frame. The 2D pass
+    // has no depth buffer. Negative layers must still lie inside WebGPU's [0,1] clip range.
+    0.5,
     1.0,
   );
   out.uv = uv_rect.xy + uv * uv_rect.zw;

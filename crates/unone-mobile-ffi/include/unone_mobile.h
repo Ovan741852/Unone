@@ -53,6 +53,9 @@ int32_t unone_mobile_set_action(
     size_t action_length,
     int32_t is_down);
 
+/* Dimensions and insets are physical surface pixels. A resize before project
+   load makes safeInsets available in Game.start. Later resizes update
+   api.ui.getViewport() in normalized stage units. */
 int32_t unone_mobile_resize(
     UnoneMobileSession *session,
     uint32_t width_px,

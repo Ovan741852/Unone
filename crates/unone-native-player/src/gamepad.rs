@@ -65,6 +65,37 @@ pub fn apply(pads: &[Pad], input: &mut InputFrame) {
     }
 }
 
+#[cfg(any(target_os="ios", test))]
+#[derive(Default)]
+pub(crate) struct EmbeddedPads([Option<Pad>; 4]);
+
+#[cfg(any(target_os="ios", test))]
+impl EmbeddedPads {
+    pub(crate) fn update(&mut self, slot: u8, connected: bool, state: XInputGamepad) {
+        if (1..=4).contains(&slot) {
+            self.0[(slot-1) as usize] = connected.then(|| from_xinput(slot, &state));
+        }
+    }
+    pub(crate) fn apply(&self, input: &mut InputFrame) {
+        for pad in self.0.iter().flatten() { apply(std::slice::from_ref(pad), input); }
+    }
+}
+
+#[cfg(test)]
+#[test]
+fn embedded_pads_replace_only_the_addressed_slot_and_release_on_disconnect() {
+    let mut pads = EmbeddedPads::default();
+    pads.update(1, true, XInputGamepad {buttons:0x1000, ..Default::default()});
+    pads.update(2, true, XInputGamepad {buttons:0x4000, thumb_lx:i16::MAX, ..Default::default()});
+    pads.update(1, false, Default::default());
+    let mut input = InputFrame::default();
+    pads.apply(&mut input);
+    assert!(!input.actions.contains_key("Gamepad1_A"));
+    assert_eq!(input.actions.get("Gamepad2_X"), Some(&true));
+    assert_eq!(input.gamepads[0].left_x, 1.);
+    assert_eq!(input.gamepads.len(), 1);
+}
+
 /// Live controllers. XInput is slow to query an empty slot, so slots that
 /// were empty are checked again only every RETRY_TICKS ticks.
 pub struct Gamepads {

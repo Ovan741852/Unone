@@ -816,6 +816,18 @@ pub extern "C" fn unone_web_set_viewport_aspect(aspect: f64) -> i32 {
     })
 }
 
+/// Normalized percentages of the visible game stage, in left/top/right/bottom order.
+#[unsafe(no_mangle)]
+pub extern "C" fn unone_web_set_viewport_safe_area(left:f64,top:f64,right:f64,bottom:f64)->i32 {
+    RUNTIME.with(|cell| match cell.borrow_mut().as_mut() {
+        Some(runtime)=>match runtime.set_viewport_safe_area(left,top,right,bottom) {
+            Ok(())=>0,
+            Err(diagnostic)=>{ write_diagnostic(&diagnostic); -1 }
+        },
+        None=>{ write_error("no project is loaded"); -1 }
+    })
+}
+
 /// Physical drawing-buffer dimensions; available before the following simulation tick.
 #[unsafe(no_mangle)]
 pub extern "C" fn unone_web_set_viewport_size(width:u32,height:u32)->i32 {

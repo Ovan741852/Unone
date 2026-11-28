@@ -373,6 +373,14 @@ export type UiAnchor =
     | "bottom_left" | "bottom" | "bottom_right"
 
 export type UiCursor = {kind:"default"}|{kind:"hidden"}|{kind:"image",asset:string,width:number,height:number,hotspot_x:number,hotspot_y:number,filter:"nearest"|"linear"}
+-- Each horizontal inset is a percentage of the stage width, each vertical
+-- inset a percentage of the stage height. Bounds use a top-left origin;
+-- rect uses the same bottom-left origin as a stage UI leaf.
+export type UiStageViewport = {
+    read aspect: number, read revision: number,
+    read safeInsets: {read left:number, read top:number, read right:number, read bottom:number},
+    read safeBounds: UiViewport, read safeRect: UiRect,
+}
 export type UiApi = {
     -- Official Web cursor overlay; pixels/hotspot use drawing-buffer units, y-down.
     setCursor: (cursor:UiCursor) -> (),
@@ -384,9 +392,10 @@ export type UiApi = {
     -- strict default and returns false in a production Web or native player,
     -- which keeps the previous screen; inspect().last_rejection says why.
     setRoot: (root: UiScreen) -> boolean,
-    -- Current host width/height ratio, also used by anchored placement.
-    -- Read-only environment data; pass to components.createResponsiveLayout().resolve.
-    getViewport: () -> {aspect: number},
+    -- Host stage observation. Use layout.resolve(view, view.safeBounds) for a safe region.
+    getViewport: () -> UiStageViewport,
+    -- Map a local 0..100, bottom-left rect into the current usable stage area.
+    fitSafeArea: (rect: UiRect) -> UiRect,
     -- Helpers return a real scroll_view node. Content is local top-left/y-down;
     -- viewport uses explicit left/top; never pass a stage x/y rect here.
     scrollView: (options: UiScrollOptions) -> UiScrollNode,

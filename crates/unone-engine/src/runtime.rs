@@ -17,6 +17,8 @@ use crate::{
 
 const FIXED_DT: f64 = 1.0 / 60.0;
 mod bindings;
+mod ui_viewport;
+use ui_viewport::UiViewportState;
 mod host_time;
 mod deferred_data;
 mod save_state;
@@ -102,6 +104,8 @@ pub struct SourceProject {
     pub restored_save: Option<serde_json::Value>,
     pub viewport_aspect: Option<f64>,
     pub viewport_size: Option<[u32;2]>,
+    /// Normalized left, top, right and bottom insets, available at Game.start.
+    pub viewport_safe_area: Option<[f64;4]>,
     /// Declared data assets and the bytes the host delivered for each.
     pub data_assets: Vec<crate::DataAssetDecl>,
     pub data: BTreeMap<String, Vec<u8>>,
@@ -300,7 +304,7 @@ struct ApiState {
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     observations: Rc<RefCell<crate::ObservationFields>>,
     ui: Rc<RefCell<Option<Arc<UiTree>>>>,
-    viewport_aspect: Rc<RefCell<f64>>,
+    ui_viewport: Rc<RefCell<UiViewportState>>,
     save_payload: Rc<RefCell<SaveState>>,
     data_assets: Rc<RefCell<crate::data_assets::DataAssets>>,
     script_profile: Rc<RefCell<crate::performance::ScriptProfile>>,
@@ -370,7 +374,7 @@ struct ReloadRollbackState {
     trace: Vec<TraceEvent>,
     observations: crate::ObservationFields,
     ui: Option<Arc<UiTree>>,
-    viewport_aspect: f64,
+    ui_viewport: UiViewportState,
     save_payload: SaveState,
     generation: u64,
     last_seen_script_stamp: Option<ScriptStamp>,
@@ -401,7 +405,7 @@ pub struct EngineRuntime {
     trace: Rc<RefCell<Vec<TraceEvent>>>,
     observations: Rc<RefCell<crate::ObservationFields>>,
     ui: Rc<RefCell<Option<Arc<UiTree>>>>,
-    viewport_aspect: Rc<RefCell<f64>>,
+    ui_viewport: Rc<RefCell<UiViewportState>>,
     save_payload: Rc<RefCell<SaveState>>,
     /// The host and the active VM share the on-demand request registry.
     data_assets: Rc<RefCell<crate::data_assets::DataAssets>>,
@@ -629,7 +633,7 @@ impl EngineRuntime {
             Ok::<_, Box<Diagnostic>>((config, paths, world, data_assets, catalog, image_groups))
         })?;
         // Tools validate requests against the plan, but no host holds the images.
-        let mut runtime = Self::with_world(config, paths, world, None, None, None, seed, restored_save, None, None, data_assets, catalog, crate::ErrorPolicy::strict(), (image_groups, false))?;
+        let mut runtime = Self::with_world(config, paths, world, None, None, None, seed, restored_save, (None, None), None, data_assets, catalog, crate::ErrorPolicy::strict(), (image_groups, false))?;
         (runtime.startup.imports_ms, runtime.startup.project_ms) = (startup.imports_ms, startup.project_ms);
         Ok(runtime)
     }
@@ -734,6 +738,7 @@ impl EngineRuntime {
             restored_save,
             viewport_aspect,
             viewport_size,
+            viewport_safe_area,
             data_assets,
             data,
             asset_catalog,
@@ -786,7 +791,7 @@ impl EngineRuntime {
             Some(modules),
             seed,
             restored_save,
-            viewport_aspect,
+            (viewport_aspect, viewport_safe_area),
             Some(job_sources),
             data_assets,
             asset_catalog,
@@ -805,7 +810,7 @@ impl EngineRuntime {
         script_modules: Option<ScriptModules>,
         seed: u64,
         restored_save: Option<serde_json::Value>,
-        initial_viewport_aspect: Option<f64>,
+        (initial_viewport_aspect, initial_safe_area): (Option<f64>, Option<[f64;4]>),
         job_sources: Option<BTreeMap<String, String>>,
         data_assets: crate::data_assets::DataAssets,
         asset_catalog: Vec<crate::AssetCatalogEntry>,
@@ -834,7 +839,9 @@ impl EngineRuntime {
         let observations = Rc::new(RefCell::new(crate::ObservationFields::default()));
         let ui = Rc::new(RefCell::new(None));
         // The declared design shape until a host says what it draws into.
-        let viewport_aspect = Rc::new(RefCell::new(config.display.map_or(crate::ui::UI_REFERENCE_ASPECT, |display| display.aspect_ratio())));
+        let ui_viewport = Rc::new(RefCell::new(UiViewportState::new(
+            config.display.map_or(crate::ui::UI_REFERENCE_ASPECT, |display| display.aspect_ratio()),
+        )));
         // A game in design pixels reads the projected viewport, its physical points and scissors scaled.
         world.borrow_mut().projected_design = config.display.and_then(|display| display.design_pixels());
         // A restored save has to exist before Game.start runs: start is the only
@@ -861,7 +868,7 @@ impl EngineRuntime {
             trace: Rc::clone(&trace),
             observations: Rc::clone(&observations),
             ui: Rc::clone(&ui),
-            viewport_aspect: Rc::clone(&viewport_aspect),
+            ui_viewport: Rc::clone(&ui_viewport),
             save_payload: Rc::clone(&save_payload),
             data_assets: Rc::clone(&data_assets),
             script_profile: Rc::clone(&script_profile),
@@ -935,7 +942,7 @@ impl EngineRuntime {
             trace,
             observations,
             ui,
-            viewport_aspect,
+            ui_viewport,
             save_payload,
             data_assets,
             #[cfg(feature = "dev-tools")]
@@ -956,6 +963,9 @@ impl EngineRuntime {
         };
         if let Some(aspect) = initial_viewport_aspect {
             runtime.set_viewport_aspect(aspect)?;
+        }
+        if let Some(insets) = initial_safe_area {
+            runtime.ui_viewport.borrow_mut().set_insets(insets)?;
         }
         if !runtime.config.job_scripts.is_empty() && !runtime.systems.is_enabled("jobs") {
             return Err(Box::new(script_diagnostic(
@@ -1034,8 +1044,18 @@ impl EngineRuntime {
                 format!("The host provided {aspect}; the engine will not infer UI layout from it."),
             )));
         }
-        *self.viewport_aspect.borrow_mut() = aspect;
+        let mut view = self.ui_viewport.borrow_mut();
+        if view.aspect != aspect {
+            view.aspect = aspect;
+            view.revision += 1;
+        }
         Ok(())
+    }
+
+    /// Update normalized stage insets. Left/right are percentages of the stage
+    /// width, top/bottom of its height. Equal values leave the revision untouched.
+    pub fn set_viewport_safe_area(&mut self, left: f64, top: f64, right: f64, bottom: f64) -> Result<(), Box<Diagnostic>> {
+        self.ui_viewport.borrow_mut().set_insets([left, top, right, bottom])
     }
 
     /// The policy in force; strict unless the host's load payload chose one.
@@ -1088,7 +1108,7 @@ impl EngineRuntime {
     }
 
     pub fn viewport_aspect(&self) -> f64 {
-        *self.viewport_aspect.borrow()
+        self.ui_viewport.borrow().aspect
     }
 
     /// Physical render-target pixels. Hosts report this before each resized frame.
@@ -1954,7 +1974,7 @@ impl EngineRuntime {
             trace: Rc::clone(&self.trace),
             observations: Rc::clone(&self.observations),
             ui: Rc::clone(&self.ui),
-            viewport_aspect: Rc::clone(&self.viewport_aspect),
+            ui_viewport: Rc::clone(&self.ui_viewport),
             save_payload: Rc::clone(&self.save_payload),
             data_assets: Rc::clone(&self.data_assets),
             script_profile: Rc::clone(&self.script_profile),
@@ -2039,7 +2059,7 @@ impl EngineRuntime {
             trace: self.trace.borrow().clone(),
             observations: self.observations.borrow().clone(),
             ui: self.ui.borrow().clone(),
-            viewport_aspect: *self.viewport_aspect.borrow(),
+            ui_viewport: *self.ui_viewport.borrow(),
             save_payload: self.save_payload.borrow().clone(),
             generation: self.generation,
             last_seen_script_stamp: self.last_seen_script_stamp.clone(),
@@ -2055,7 +2075,7 @@ impl EngineRuntime {
         *self.trace.borrow_mut() = state.trace;
         *self.observations.borrow_mut() = state.observations;
         *self.ui.borrow_mut() = state.ui;
-        *self.viewport_aspect.borrow_mut() = state.viewport_aspect;
+        *self.ui_viewport.borrow_mut() = state.ui_viewport;
         *self.save_payload.borrow_mut() = state.save_payload;
         self.generation = state.generation;
         self.last_seen_script_stamp = state.last_seen_script_stamp;

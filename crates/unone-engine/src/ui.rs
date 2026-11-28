@@ -280,7 +280,7 @@ impl UiAnchor {
 /// the easiest thing for an author who cannot see the screen to get wrong.
 ///
 /// The platform host maps this design space to its viewport. The engine does
-/// not know about pixels, DPI, safe areas, fonts, or platform widgets.
+/// receives host safe-area measurements in this stage space, independent of pixel density.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq)]
 #[cfg_attr(feature = "dev-tools", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]

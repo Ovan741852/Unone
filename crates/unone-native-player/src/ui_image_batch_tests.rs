@@ -18,7 +18,7 @@ fn raster() -> Rasterizer {
     for y in 0..32 { for x in 0..32 { pixels.extend_from_slice(&colors[(y/16)*2+x/16]); } }
     // A uniformly half-transparent texture: tint must not touch its alpha.
     let glass = [200u8,100,40,128].repeat(4);
-    let package = Package { digest:String::new(), files:BTreeMap::from([
+    let package = Package { on_demand: None, digest:String::new(), files:BTreeMap::from([
         ("content/assets.json".into(), br#"{"assets":[{"kind":"texture2d","id":"texture://atlas","source":"atlas.png"},{"kind":"texture2d","id":"texture://glass","source":"glass.png"}]}"#.to_vec()),
         ("content/presentation.json".into(), b"{}".to_vec()), ("content/atlas.png".into(), png_bytes(32, 32, &pixels)),
         ("content/glass.png".into(), png_bytes(2, 2, &glass))]) };

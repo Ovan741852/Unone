@@ -19,12 +19,15 @@ mod sprite_resources;
 mod startup;
 mod ui;
 mod host;
+#[cfg(any(target_os = "ios", test))]
+mod bundle_package;
 #[cfg(target_os = "ios")]
 pub mod embed;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::{
+    cell::{OnceCell, RefCell},
     collections::BTreeMap,
     io::Write,
     path::{Path, PathBuf},
@@ -147,9 +150,16 @@ fn safe(s: &str) -> bool {
 pub struct Package {
     files: BTreeMap<String, Vec<u8>>,
     digest: String,
+    on_demand: Option<OnDemandFiles>,
 }
 type DataReader = Box<dyn FnMut(&str) -> R<Vec<u8>>>;
 struct LoadedPackage(Package, Option<DataReader>);
+
+struct OnDemandFiles {
+    entries: BTreeMap<String, (Value, Value, OnceCell<Vec<u8>>)>,
+    read: DataReaderCell,
+}
+type DataReaderCell = Rc<RefCell<DataReader>>;
 
 #[cfg(test)]
 impl From<Package> for LoadedPackage {
@@ -169,9 +179,13 @@ pub(crate) struct PackageLoader<F> {
     loaded_bytes: u64,
     total_bytes: u64,
     deferred: BTreeMap<String, (Value, Value)>,
+    startup: Option<Vec<String>>,
 }
 impl<F: FnMut(&str) -> R<Vec<u8>>> PackageLoader<F> {
-    pub(crate) fn open(mut read: F) -> R<Self> {
+    pub(crate) fn open(read: F) -> R<Self> {
+        Self::open_with_startup(read, None)
+    }
+    pub(crate) fn open_with_startup(mut read: F, startup: Option<Vec<String>>) -> R<Self> {
         let manifest = read("export.json")?;
         let value: Value = serde_json::from_slice(&manifest).map_err(|e| e.to_string())?;
         let mut entries = Vec::new();
@@ -192,7 +206,7 @@ impl<F: FnMut(&str) -> R<Vec<u8>>> PackageLoader<F> {
         let total_bytes = entries.iter().map(|entry| entry.1.as_u64().unwrap_or(0)).sum();
         let mut loader = Self {
             read, digest: hash(&manifest), entries, next: 0, files: BTreeMap::new(),
-            loaded_bytes: 0, total_bytes, deferred: BTreeMap::new(),
+            loaded_bytes: 0, total_bytes, deferred: BTreeMap::new(), startup,
         };
         loader.select_deferred()?;
         Ok(loader)
@@ -308,6 +322,16 @@ impl<F: FnMut(&str) -> R<Vec<u8>>> PackageLoader<F> {
     }
     /// Loads files until `budget` has passed (at least one); true when all are in.
     pub(crate) fn advance(&mut self, budget: Duration) -> R<bool> {
+        if let Some(startup) = self.startup.take() {
+            // Core metadata and the first screen's declared files are read before boot;
+            // all other consumers resolve their bytes from the same pinned package.
+            self.startup = Some(Vec::new());
+            for path in ["content/project.json", "content/presentation.json", "content/assets.json", "content/image-assets.json"]
+                .into_iter().chain(startup.iter().map(String::as_str)) {
+                self.file(path)?;
+            }
+            return Ok(true);
+        }
         let started = Instant::now();
         while self.next < self.entries.len() {
             self.load_entry(self.next)?;
@@ -333,13 +357,20 @@ impl<F: FnMut(&str) -> R<Vec<u8>>> PackageLoader<F> {
                 .map(Vec::as_slice),
         )?;
         let deferred = self.deferred;
-        let mut read = self.read;
+        let read: DataReaderCell = Rc::new(RefCell::new(Box::new(self.read)));
+        let on_demand = self.startup.is_some().then(|| OnDemandFiles {
+            entries: self.entries.into_iter()
+                .filter(|(path, _, _)| !self.files.contains_key(path))
+                .map(|(path, size, sha)| (path, (size, sha, OnceCell::new())))
+                .collect(),
+            read: Rc::clone(&read),
+        });
         let lazy: DataReader = Box::new(move |source| {
             let path = format!("content/{source}");
             let (size, sha) = deferred
                 .get(&path)
                 .ok_or_else(|| format!("NATIVE_FILE_MISSING: {path}"))?;
-            let bytes = read(&path)?;
+            let bytes = (read.borrow_mut())(&path)?;
             if *sha != hash(&bytes) || *size != bytes.len() as u64 {
                 return Err(format!("NATIVE_HASH_MISMATCH: {path}"));
             }
@@ -349,6 +380,7 @@ impl<F: FnMut(&str) -> R<Vec<u8>>> PackageLoader<F> {
             Package {
                 files: self.files,
                 digest: self.digest,
+                on_demand,
             },
             Some(lazy),
         ))
@@ -359,10 +391,15 @@ impl Package {
         PackageLoader::open(read)?.finish()
     }
     fn get(&self, path: &str) -> R<&[u8]> {
-        self.files
-            .get(path)
-            .map(|v| v.as_slice())
-            .ok_or_else(|| format!("NATIVE_FILE_MISSING: {path}"))
+        if let Some(bytes) = self.files.get(path) { return Ok(bytes); }
+        let on_demand = self.on_demand.as_ref().ok_or_else(|| format!("NATIVE_FILE_MISSING: {path}"))?;
+        let (size, sha, cell) = on_demand.entries.get(path).ok_or_else(|| format!("NATIVE_FILE_MISSING: {path}"))?;
+        if let Some(bytes) = cell.get() { return Ok(bytes); }
+        let bytes = (on_demand.read.borrow_mut())(path)?;
+        if *sha != hash(&bytes) || *size != bytes.len() as u64 {
+            return Err(format!("NATIVE_HASH_MISMATCH: {path}"));
+        }
+        Ok(cell.get_or_init(|| bytes))
     }
     #[cfg(test)]
     fn runtime(&self, seed: u64) -> R<EngineRuntime> {
@@ -446,6 +483,36 @@ mod seed_tests {
     }
 }
 
+#[test]
+fn installed_package_checks_later_files_on_first_use() {
+    let project = b"{}".to_vec();
+    let menu = b"menu".to_vec();
+    let level = b"level".to_vec();
+    let manifest = json!({"files":[
+        {"path":"content/project.json","bytes":project.len(),"sha256":hash(&project)},
+        {"path":"content/assets/menu.png","bytes":menu.len(),"sha256":hash(&menu)},
+        {"path":"content/assets/level.png","bytes":level.len(),"sha256":hash(&level)}
+    ]}).to_string().into_bytes();
+    let reads = Rc::new(RefCell::new(Vec::<String>::new()));
+    let log = Rc::clone(&reads);
+    let read = move |path: &str| {
+        log.borrow_mut().push(path.to_owned());
+        Ok(match path {
+            "export.json" => manifest.clone(),
+            "content/project.json" => project.clone(),
+            "content/assets/menu.png" => menu.clone(),
+            "content/assets/level.png" => b"other".to_vec(),
+            _ => return Err("unexpected read".into()),
+        })
+    };
+    let LoadedPackage(package, _) = PackageLoader::open_with_startup(
+        read, Some(vec!["content/assets/menu.png".into()])
+    ).unwrap().finish().unwrap();
+    assert_eq!(reads.borrow().as_slice(), ["export.json", "content/project.json", "content/assets/menu.png"]);
+    assert_eq!(package.get("content/assets/menu.png").unwrap(), b"menu");
+    assert!(package.get("content/assets/level.png").unwrap_err().starts_with("NATIVE_HASH_MISMATCH"));
+}
+
 #[derive(Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 struct Settings {
@@ -469,6 +536,9 @@ struct Settings {
     /// Explicit `--save` file; packaged Android settings cannot redirect saves.
     #[serde(skip)]
     save: Option<PathBuf>,
+    /// Set by the native host before the first script starts, in stage percentages (L/T/R/B).
+    #[serde(skip)]
+    host_safe_area: Option<[f64; 4]>,
 }
 
 fn windows_gpu_memory(presentation: &Value) -> R<WindowsGpuMemory> {
@@ -596,6 +666,9 @@ struct App {
     save: save::SaveFile,
     replay_pending_presentation: bool,
     host_input: unone_engine::InputFrame,
+    pending_host_data: std::collections::BTreeMap<String, String>,
+    #[cfg(target_os="ios")]
+    embedded_pads: gamepad::EmbeddedPads,
     /// Live controllers, created on the first interactive tick.
     gamepads: Option<gamepad::Gamepads>,
     keyboard_input: keyboard::ActionQueue,
@@ -644,6 +717,18 @@ impl App {
         }
         Ok(())
     }
+    #[cfg(any(target_os = "ios", test))]
+    fn set_host_data(&mut self, channel: &str, value: &str) -> bool {
+        use unone_engine::{valid_host_data_channel, HOST_DATA_MAX_BYTES, HOST_DATA_MAX_CHANNELS};
+        if self.input_replay.is_some() || !valid_host_data_channel(channel) || value.len() > HOST_DATA_MAX_BYTES
+            || (!self.pending_host_data.contains_key(channel) && self.pending_host_data.len() >= HOST_DATA_MAX_CHANNELS)
+            || serde_json::from_str::<serde_json::Value>(value).is_err() {
+            return false;
+        }
+        self.pending_host_data.insert(channel.to_owned(), value.to_owned());
+        true
+    }
+
     /// Both GUI and headless replay use the kernel's normalized input entry point.
     fn advance_tick(&mut self) -> R<()> {
         self.sync_sprite_resources()?;
@@ -656,6 +741,9 @@ impl App {
                 self.host_input.actions.insert(action, down);
             }
             let mut input = self.host_input.clone();
+            input.host_data = std::mem::take(&mut self.pending_host_data);
+            #[cfg(target_os="ios")]
+            self.embedded_pads.apply(&mut input);
             // Independent held sources with the same action name combine by OR.
             for action in self.keyboard_input.tick_actions() {
                 input.actions.insert(action.into(), true);
@@ -752,6 +840,9 @@ impl App {
             Some(replay::InputSequence::load(path)?)
         } else { None };
         let mut project = package.host_project()?;
+        if let Some(safe_area) = settings.host_safe_area {
+            project.viewport_safe_area = Some(safe_area);
+        }
         let error_policy = recovery::resolve(settings.error_policy.as_deref(), tool_run(&settings), &presentation)?;
         project.error_policy = error_policy.0;
         let mut save = save::SaveFile::open(&settings, store, &project)?;
@@ -789,7 +880,7 @@ impl App {
         }
         // Game.start may already have replaced the restored payload.
         save.persist(&runtime)?;
-        let audio = audio::NativeAudio::new(&package);
+        let audio = audio::NativeAudio::new(Rc::clone(&package));
         Ok(Self {
             gpu_memory,
             input_replay,
@@ -799,6 +890,9 @@ impl App {
             ui_input: Default::default(),
             cursor: [0., 0.],
             host_input: Default::default(),
+            pending_host_data: Default::default(),
+            #[cfg(target_os="ios")]
+            embedded_pads: Default::default(),
             gamepads: None,
             keyboard_input: Default::default(),
             mouse_right_input: Default::default(),
@@ -1140,6 +1234,19 @@ impl App {
                 if self.paused {
                     return;
                 }
+                // The UIKit safe rectangle can change while the drawable keeps the same size.
+                #[cfg(target_os = "ios")]
+                if self.input_replay.is_none()
+                    && let Some(safe) = self.window.as_ref().and_then(|window| window.system_safe_area())
+                    && self.settings.host_safe_area != Some(safe)
+                {
+                    let [left, top, right, bottom] = safe;
+                    if let Err(e) = self.runtime.set_viewport_safe_area(left, top, right, bottom) {
+                        self.fail(e.explanation, event_loop);
+                        return;
+                    }
+                    self.settings.host_safe_area = Some(safe);
+                }
                 let now = Instant::now();
                 let elapsed = self.last.replace(now).map_or(Duration::ZERO, |v| now - v);
                 self.units += elapsed.as_nanos() * 60;
@@ -1192,7 +1299,7 @@ impl App {
                     self.fail(error,event_loop);return;
                 }
                 let start = Instant::now();
-                let rendered = self.renderer.as_mut().unwrap().render(&self.snapshot);
+                let rendered = self.renderer.as_mut().unwrap().render(&self.snapshot, &self.package);
                 match rendered {
                     Ok(true) => {
                         self.replay_pending_presentation = false;
@@ -1273,7 +1380,7 @@ impl ApplicationHandler for App {
 pub fn desktop() -> R<()> {
     if std::env::args().nth(1).as_deref() == Some("--describe") {
         let mut descriptor =
-            json!({"compiled_systems":unone_engine::compiled_systems(),"runtime_packages":unone_engine::compiled_runtime_packages(&unone_engine::SystemSettings::default()),"renderer":NATIVE_RENDERER,"readiness":readiness_declaration(),"decoders":["unone-mesh-json","png-rgb-rgba","jpeg-rgba","webp-rgba","svg-static","audio-rodio"],"presentation":["mesh3d","instances3d","heightfield","sprite2d","particle","ui","bloom"],"bloom":{"implementation":"quarter-resolution threshold + separable blur + composite","configured_by":"player.presentation.json:bloom","static_until_relaunch":true},"ui":{"backend":"cpu-raster-wgpu-overlay","retained_image_batch":{"supported":false,"error":"UI_HOST_CAPABILITY_UNSUPPORTED","required_host":"official-web"},"image_batch_pixel_snap":{"supported":false,"error":"UI_HOST_CAPABILITY_UNSUPPORTED","required_host":"official-web"},"nodes":["text","button","image","panel","slider","combobox","component"],"images":["png","svg-static"],"input":"mouse/touch semantic down-up; rectangular reverse-order hit testing","font":"system fallback or packaged presentation.ui.fonts TTF/OTF family/weight aliases; legacy font_source supported","styles":"typed leaf typography and box styles; vertical design units; explicit font size never shrinks","limitations":["UI redraws/uploads the full surface when the tree changes","File drag/drop is not a supported input contract; Windows OLE registration is disabled","Spine skeletal animation and Effekseer effects still require their native runtimes","Physical Android/iOS GPU coverage is device-specific; BlueStacks release evidence is tracked separately","Windows GUI launch rejects a canonical executable path of 260 or more UTF-16 code units; install the runtime shallow, while long --root data paths remain supported"]},"audio":{"implementation":"rodio/cpal native output","status":"host-adapter"},"dev_tools":false,"preview_tools":false,"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"}})
+            json!({"compiled_systems":unone_engine::compiled_systems(),"runtime_packages":unone_engine::compiled_runtime_packages(&unone_engine::SystemSettings::default()),"renderer":NATIVE_RENDERER,"readiness":readiness_declaration(),"decoders":["unone-mesh-json","png-rgb-rgba","jpeg-rgba","webp-rgba","svg-static","audio-rodio"],"presentation":["mesh3d","instances3d","heightfield","sprite2d","particle","ui","bloom"],"bloom":{"implementation":"quarter-resolution threshold + separable blur + composite","configured_by":"player.presentation.json:bloom","static_until_relaunch":true},"ui":{"backend":"cpu-raster-wgpu-overlay","retained_image_batch":{"supported":false,"error":"UI_HOST_CAPABILITY_UNSUPPORTED","required_host":"official-web"},"image_batch_pixel_snap":{"supported":false,"error":"UI_HOST_CAPABILITY_UNSUPPORTED","required_host":"official-web"},"nodes":["text","button","image","panel","slider","combobox","component"],"images":["png","jpeg","svg-static"],"input":"mouse/touch semantic down-up; rectangular reverse-order hit testing","font":"system fallback or packaged presentation.ui.fonts TTF/OTF family/weight aliases; legacy font_source supported","styles":"typed leaf typography and box styles; vertical design units; explicit font size never shrinks","limitations":["UI redraws/uploads the full surface when the tree changes","File drag/drop is not a supported input contract; Windows OLE registration is disabled","Spine skeletal animation and Effekseer effects still require their native runtimes","Physical Android/iOS GPU coverage is device-specific; BlueStacks release evidence is tracked separately","Windows GUI launch rejects a canonical executable path of 260 or more UTF-16 code units; install the runtime shallow, while long --root data paths remain supported"]},"audio":{"implementation":"rodio/cpal native output","status":"host-adapter"},"dev_tools":false,"preview_tools":false,"native_codegen_compiled":cfg!(feature="native-codegen"),"profile":if cfg!(debug_assertions){"debug"}else{"release"}})
         ;
         descriptor["input_replay"] = replay::declaration();
         descriptor["save"] = save::declaration();
@@ -1618,6 +1725,7 @@ mod telemetry_tests {
     #[test]
     fn native_runtime_starts_with_declared_shader_materials_so_game_can_receive_their_status() {
         let make = |scene| super::Package {
+            on_demand: None,
             files: std::collections::BTreeMap::from([("content/project.json".into(), serde_json::to_vec(&serde_json::json!({
                 "config":{"name":"native-shader-gate","entry_script":"main.luau"},
                 "script":"return {start=function(api) end,update=function(api,dt) end}",
@@ -1639,6 +1747,7 @@ mod telemetry_tests {
             "local M = {n = 1}\nfunction M.step(dt) M.n = (M.n * 1.0001 + dt * 7) % 1000 end\nreturn M".to_string())]);
         let config = serde_json::json!({"name":"native-bytecode","entry_script":"scripts/main.luau"});
         let source = super::Package {
+            on_demand: None,
             files: std::collections::BTreeMap::from([("content/project.json".into(),
                 serde_json::to_vec(&serde_json::json!({"config":config,"script":main,"script_modules":modules})).unwrap())]),
             digest: "source".into(),
@@ -1650,6 +1759,7 @@ mod telemetry_tests {
             "script_bytecode":{"source":"script.luaubc","format":entry.format,"byte_length":entry.bytes.len()},
             "script_module_bytecode":{"source":"script-modules.luaubc","format":compiled.format,"byte_length":compiled.bytes.len(),"modules":compiled.modules}});
         let precompiled = super::Package {
+            on_demand: None,
             files: std::collections::BTreeMap::from([("content/project.json".into(), serde_json::to_vec(&payload).unwrap()),
                 ("content/script.luaubc".into(), entry.bytes), ("content/script-modules.luaubc".into(), compiled.bytes)]),
             digest: "precompiled".into(),
@@ -1665,6 +1775,7 @@ mod telemetry_tests {
     #[test]
     fn native_runtime_executes_builtin_passes_and_rejects_extensions() {
         let package = |passes: serde_json::Value| super::Package {
+            on_demand: None,
             files: std::collections::BTreeMap::from([("content/project.json".into(), serde_json::to_vec(&serde_json::json!({
                 "config":{"name":"native-pipeline-gate","entry_script":"main.luau",
                     "render_pipeline":{"version":1,"passes":passes}},
@@ -1712,7 +1823,7 @@ mod telemetry_tests {
 
     #[test]
     fn native_core_prepare_uses_verified_manifest_and_never_infers_gpu_readiness() {
-        let package=super::Package {files:std::collections::BTreeMap::from([
+        let package=super::Package {on_demand: None, files:std::collections::BTreeMap::from([
             ("content/project.json".into(),serde_json::to_vec(&serde_json::json!({
                 "config":{"name":"manifest-catalog","entry_script":"main.luau"},
                 "asset_catalog":[{"id":"forged","kind":"texture2d"}],
@@ -1765,7 +1876,7 @@ mod telemetry_tests {
     fn replay_auto_backend_is_rejected_before_loading_script_or_input_file() {
         // Neither file exists: the stable backend gate must run before either
         // input decoding or Game.start can have observable side effects.
-        let make=|presentation| super::Package {digest:"fixture".into(),files:std::collections::BTreeMap::from([
+        let make=|presentation| super::Package {on_demand: None, digest:"fixture".into(),files:std::collections::BTreeMap::from([
             ("content/presentation.json".into(),serde_json::to_vec(&presentation).unwrap())])};
         for (configured,override_backend) in [("auto",None),("cpu",Some("auto".to_owned()))] {
             let settings=super::Settings {input_sequence:Some("absent-input-sequence.json".into()),
@@ -1777,9 +1888,29 @@ mod telemetry_tests {
     }
 
     #[test]
+    fn embedded_host_data_is_validated_replaced_and_consumed_once() {
+        let payload = serde_json::json!({
+            "config": {"name":"host-bridge","entry_script":"main.luau","systems":{"save":false,"physics2d":false,"physics3d":false}},
+            "script": "local count=0; return {start=function() end, update=function(api) local v=api.input.getHostData('room'); if v then count+=1; api.observation.set('last',v.n) end; api.observation.set('count',count) end}"
+        });
+        let package = super::Package { on_demand: None, digest: "fixture".into(), files: std::collections::BTreeMap::from([
+            ("content/project.json".into(), serde_json::to_vec(&payload).unwrap())
+        ]) };
+        let mut app = super::App::new(package, Default::default(), None, std::time::Instant::now(),
+            super::save::Store::Unavailable("disabled".into())).unwrap();
+        assert!(!app.set_host_data(" ", "{}"));
+        assert!(!app.set_host_data("room", "{"));
+        assert!(app.set_host_data("room", r#"{"n":1}"#));
+        assert!(app.set_host_data("room", r#"{"n":2}"#));
+        for _ in 0..3 { app.advance_tick().unwrap(); }
+        assert_eq!(app.snapshot.observations["last"], 2);
+        assert_eq!(app.snapshot.observations["count"], 1);
+    }
+
+    #[test]
     fn interactive_play_runs_the_package_error_policy_and_tool_runs_fail_fast() {
         // Ticks 2..3 publish over the screen's budget; tick 4 raises.
-        let package=||super::Package {digest:"fixture".into(),files:std::collections::BTreeMap::from([
+        let package=||super::Package {on_demand: None, digest:"fixture".into(),files:std::collections::BTreeMap::from([
             ("content/project.json".into(),serde_json::to_vec(&serde_json::json!({
                 "config":{"name":"native-error-policy","entry_script":"main.luau","systems":{"save":false,"physics2d":false,"physics3d":false}},
                 "script":r#"
@@ -1823,7 +1954,7 @@ end}"#})).unwrap()),
     fn native_save_is_written_restored_on_the_next_boot_and_untouched_by_replay() {
         let dir=std::env::temp_dir().join(format!("unone-native-save-boot-{}",std::process::id()));
         let _=std::fs::remove_dir_all(&dir);
-        let package=||super::Package {digest:"fixture".into(),files:std::collections::BTreeMap::from([("content/project.json".into(),serde_json::to_vec(&serde_json::json!({
+        let package=||super::Package {on_demand: None, digest:"fixture".into(),files:std::collections::BTreeMap::from([("content/project.json".into(),serde_json::to_vec(&serde_json::json!({
             "config":{"name":"native-save","entry_script":"main.luau","systems":{"physics2d":false,"physics3d":false}},
             "scene":{"entities":[]},
             "script":r#"

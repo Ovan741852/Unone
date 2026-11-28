@@ -29,16 +29,16 @@ screen coordinates, 0–100, y-up; component wrappers do not transform them agai
 The [shared typography and box style contract](ui-styling.md) extends these
 existing leaves; game/SDK component functions remain the composition boundary.
 
-Portable artwork includes PNG and the native static SVG subset. Native accepts
+Portable artwork includes PNG, JPEG and the native static SVG subset. Native accepts
 `.svg` shapes, paths, gradients, internal references, masks/clips and inline
 presentation attributes at the current surface resolution. Script, animation,
 foreignObject, nested images, stylesheet elements and external references fail
 with an asset/source-specific diagnostic. SVG is limited to 8 MiB and 10000 XML
-nodes; it is not complete browser SVG/CSS. JPEG/WebP UI images need PNG companions.
+nodes; it is not complete browser SVG/CSS. WebP UI images need PNG companions.
 Image fit supports contain, cover and stretch. Existing buttons can now paint a
 typed background/border as well as text; image skins and nine-slice still compose
 beside semantic controls. The SDK checks the selected runtime's image capability
-declaration before allowing native SVG export.
+declaration before allowing native JPEG or SVG export.
 
 Both hosts route pointer actions to interactive rectangles in reverse leaf order.
 Text, image and decorative panel leaves pass through to a button/combobox behind

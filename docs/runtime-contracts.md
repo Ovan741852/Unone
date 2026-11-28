@@ -150,6 +150,8 @@ Headless replay coverage does not certify GLSL compilation or pixels.
 leaves with typed font, text and box presentation data. Web Canvas2D and native
 CPU-raster/wgpu hosts own font catalogs and painting; Core validates/observes
 data. Game Luau owns reusable component composition, themes and responsive
-placement, with `ui.getViewport` exposing the current aspect. Styles do not add
+placement. `ui.getViewport` exposes the stage aspect, safe-area insets, layout
+bounds and revision. `ui.fitSafeArea` maps a local y-up rectangle into the usable stage.
+Styles do not add
 an automatic layout engine, MVVM or game-owned renderer. Native scrolling remains
 unsupported; installed fallback fonts can differ and need target visual checks.

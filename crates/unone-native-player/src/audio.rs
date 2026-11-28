@@ -7,6 +7,7 @@ use std::{
     collections::{BTreeMap, BTreeSet},
     io::Cursor,
     num::NonZero,
+    rc::Rc,
     sync::{
         Arc,
         atomic::{AtomicU32, Ordering},
@@ -88,6 +89,8 @@ impl<S: Source<Item = f32>> Source for PannedSource<S> {
 pub struct NativeAudio {
     stream: Option<MixerDeviceSink>,
     assets: BTreeMap<String, Vec<u8>>,
+    bundled_assets: BTreeMap<String, String>,
+    package: Option<Rc<Package>>,
     declared_levels: BTreeMap<String, f32>,
     loops: BTreeMap<String, Player>,
     pans: BTreeMap<String, SharedPan>,
@@ -163,6 +166,8 @@ mod tests {
         let mut audio = NativeAudio {
             stream: None,
             assets: BTreeMap::from([(String::from("audio://tone"), wav)]),
+            bundled_assets: BTreeMap::new(),
+            package: None,
             declared_levels: BTreeMap::new(),
             loops: BTreeMap::new(),
             pans: BTreeMap::new(),
@@ -180,10 +185,12 @@ mod tests {
 }
 
 impl NativeAudio {
-    pub fn new(package: &Package) -> Self {
+    pub fn new(package: Rc<Package>) -> Self {
         let mut audio = Self {
             stream: None,
             assets: BTreeMap::new(),
+            bundled_assets: BTreeMap::new(),
+            package: package.on_demand.is_some().then(|| Rc::clone(&package)),
             declared_levels: BTreeMap::new(),
             loops: BTreeMap::new(),
             pans: BTreeMap::new(),
@@ -191,11 +198,11 @@ impl NativeAudio {
             failures: Vec::new(),
             unavailable: None,
         };
-        if let Err(error) = audio.load_assets(package) {
+        if let Err(error) = audio.load_assets(&package) {
             audio.failures.push(error);
         }
-        audio.load_declared_levels(package);
-        if audio.assets.is_empty() {
+        audio.load_declared_levels(&package);
+        if audio.assets.is_empty() && audio.bundled_assets.is_empty() {
             return audio;
         }
         match DeviceSinkBuilder::open_default_sink() {
@@ -223,10 +230,12 @@ impl NativeAudio {
             let source = asset["source"]
                 .as_str()
                 .ok_or("NATIVE_AUDIO_ASSET_SOURCE_MISSING")?;
-            self.assets.insert(
-                id.to_string(),
-                package.get(&format!("content/{source}"))?.to_vec(),
-            );
+            let path = format!("content/{source}");
+            if self.package.is_some() {
+                self.bundled_assets.insert(id.to_string(), path);
+            } else {
+                self.assets.insert(id.to_string(), package.get(&path)?.to_vec());
+            }
         }
         Ok(())
     }
@@ -260,11 +269,13 @@ impl NativeAudio {
         asset: &str,
         looping: bool,
     ) -> Result<Box<dyn Source<Item = f32> + Send>, String> {
-        let bytes = self
-            .assets
-            .get(asset)
-            .cloned()
-            .ok_or_else(|| format!("NATIVE_AUDIO_ASSET_MISSING: {asset}"))?;
+        let bytes = if let Some(bytes) = self.assets.get(asset) {
+            bytes.clone()
+        } else if let (Some(package), Some(path)) = (&self.package, self.bundled_assets.get(asset)) {
+            package.get(path)?.to_vec()
+        } else {
+            return Err(format!("NATIVE_AUDIO_ASSET_MISSING: {asset}"));
+        };
         let decoder = Decoder::try_from(Cursor::new(bytes))
             .map_err(|error| format!("NATIVE_AUDIO_DECODE_FAILED: {asset}: {error}"))?;
         if looping {
@@ -434,7 +445,7 @@ impl NativeAudio {
     pub fn report(&self) -> Value {
         serde_json::json!({
             "available": self.stream.is_some(),
-            "declared_assets": self.assets.len(),
+            "declared_assets": self.assets.len() + self.bundled_assets.len(),
             "live": self.loops.keys().collect::<Vec<_>>(),
             "failures": self.failures,
             "unavailable": self.unavailable,

@@ -58,3 +58,25 @@ test('aspect-only compatibility validates dimensions and does not mask a missing
  await assert.rejects(core.execute({kind:'viewport',width:100,height:100}),/VIEWPORT_ASPECT_ABI_UNAVAILABLE/);core.close();
  assert.throws(()=>createRuntimeCore(f.module,{requirePhysicalViewport:'yes'}),/VIEWPORT_POLICY_INVALID/);
 });
+test('legacy ABI drops safe-area fields before load and accepts later safe-only updates',async()=>{
+ for(const physical of [false,true]){
+  const f=fixture(physical),core=createRuntimeCore(f.module,{requirePhysicalViewport:physical});
+  const payload={config:{},viewport_size:[800,600],viewport_safe_area:[1,2,3,4]};
+  await core.execute({kind:'load',payload});
+  assert.equal('viewport_safe_area' in f.calls[0].payload,false);
+  assert.deepEqual(payload.viewport_safe_area,[1,2,3,4]);
+  assert.deepEqual(await core.execute({kind:'safeArea',value:[4,0,2,0]}),f.snapshot);
+  assert.equal(f.calls.length,1);core.close();
+ }
+});
+
+test('new ABI sees initial normalized insets and safe-only updates without gameplay ticks',async()=>{
+ const f=fixture(true);
+ f.module._unone_web_set_viewport_safe_area=(...value)=>{f.calls.push({kind:'safe',value});return 0;};
+ const core=createRuntimeCore(f.module),payload={config:{},viewport_size:[800,600],viewport_safe_area:[1,2,3,4]};
+ await core.execute({kind:'load',payload});assert.deepEqual(f.calls[0].payload,payload);
+ await core.execute({kind:'safeArea',value:[4,3,2,1]});
+ assert.deepEqual(f.calls.at(-1),{kind:'safe',value:[4,3,2,1]});
+ await assert.rejects(core.execute({kind:'safeArea',value:[80,0,25,0]}),/VIEWPORT_SAFE_AREA_INVALID/);
+ assert.equal(f.ticks(),0);core.close();
+});

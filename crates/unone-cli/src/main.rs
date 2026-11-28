@@ -7,7 +7,7 @@ use std::{
     sync::Arc,
 };
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
 use unone_engine::{
     AssetSpec, BundleManager, Camera3DData, EngineResult, EngineRuntime, InputFrame, Vec2, Vec3,
@@ -27,6 +27,7 @@ mod assets;
 mod capabilities;
 mod diagnostics_replay;
 mod export;
+mod export_bundles;
 mod find;
 mod font_subset;
 mod truetype_subset;
@@ -49,6 +50,17 @@ mod ui_preview_tests;
 
 #[derive(Debug, Subcommand)]
 enum ExportCommand {
+    /// Pack an existing export's content/ into indexed, content-addressed Unone archives.
+    Bundles {
+        #[arg(long)] package: PathBuf,
+        /// Additional exported content path needed at first play (repeatable).
+        #[arg(long)] startup: Vec<String>,
+    },
+    /// Plan a file-level update between two export.json inventories.
+    Diff {
+        #[arg(long)] from: PathBuf,
+        #[arg(long)] to: PathBuf,
+    },
     /// Select a compatible precompiled runtime from a portable SDK.
     Platform {
         #[arg(long)] target: String,
@@ -144,7 +156,7 @@ enum Command {
         #[arg(long)]
         input_sequence: Option<PathBuf>,
     },
-    /// Draw the game's UI as text and report structural layout problems.
+    /// Inspect native UI or import a view from an HTML/CSS authoring source.
     Ui {
         #[command(subcommand)]
         command: UiCommand,
@@ -347,6 +359,12 @@ enum ReplayCommand {
 
 #[derive(Debug, Subcommand)]
 enum UiCommand {
+    /// Import an HTML element as native assets, layout and action regions. See import-html --help.
+    #[command(disable_help_flag = true)]
+    ImportHtml {
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true, value_name = "IMPORTER_ARGS")]
+        args: Vec<std::ffi::OsString>,
+    },
     /// Run the project, then draw the published UI tree as a character grid.
     Preview {
         #[arg(long, default_value_t = 1, help = "Frames to run before drawing")]
@@ -496,6 +514,14 @@ fn run() -> Result<ExitCode> {
         }
         Command::Export {command:ExportCommand::Platform{target,output,runtime_id,development}} => {
             print_sdk_result(sdk::export(&cli.project,&output,cli.sdk.as_deref(),&target,runtime_id.as_deref(),development),cli.json)
+        }
+        Command::Export { command: ExportCommand::Bundles { package, startup } } => {
+            print_sdk_result(export_bundles::export(&package, &startup), cli.json)
+        }
+        Command::Export { command: ExportCommand::Diff { from, to } } => {
+            let previous = fs::read_to_string(from)?;
+            let next = fs::read_to_string(to)?;
+            print_sdk_result(unone_engine::export_update::plan(&next, &[&previous]), cli.json)
         }
 
         Command::Export {
@@ -841,6 +867,16 @@ fn run() -> Result<ExitCode> {
             Ok(ExitCode::SUCCESS)
         }
         Command::Ui { command } => match command {
+            UiCommand::ImportHtml { args } => {
+                let tool = sdk::root(cli.sdk.as_deref())?.join("tools/html-view/cli.mjs");
+                anyhow::ensure!(tool.is_file(), "HTML_VIEW_TOOL_MISSING: {}", tool.display());
+                let status = std::process::Command::new("node")
+                    .arg(&tool)
+                    .args(args)
+                    .status()
+                    .with_context(|| format!("Could not start Node.js for {}", tool.display()))?;
+                Ok(ExitCode::from(status.code().and_then(|n| u8::try_from(n).ok()).unwrap_or(1)))
+            }
             UiCommand::Preview {
                 frames,
                 seed,

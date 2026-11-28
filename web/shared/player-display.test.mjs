@@ -9,7 +9,7 @@ function fixture(){
  let context;const requests=[],accepted=[];
  const style=()=>({removeProperty(name){delete this[name];}});
  const canvas={style:style(),get clientWidth(){return parseFloat(this.style.width)||context.innerWidth;},get clientHeight(){return parseFloat(this.style.height)||context.innerHeight;}};
- const layer={style:style()};context=vm.createContext({canvas,document:{querySelector:()=>layer},window:{devicePixelRatio:1.5},innerWidth:800,innerHeight:1000,snapshot:null,renderer:null,fail:error=>{throw error;},backend:{request:async value=>{requests.push(value);return {world:{frame:1}};}},startupAbort:{signal:{aborted:false}},acceptSnapshot:(...args)=>accepted.push(args)});
+ const layer={style:style()};context=vm.createContext({readSafeArea:()=>[0,0,0,0],canvas,document:{querySelector:()=>layer},window:{devicePixelRatio:1.5},innerWidth:800,innerHeight:1000,snapshot:null,renderer:null,fail:error=>{throw error;},backend:{request:async value=>{requests.push(value);return {world:{frame:1}};}},startupAbort:{signal:{aborted:false}},acceptSnapshot:(...args)=>accepted.push(args)});
  vm.runInContext(source.slice(start,end),context);vm.runInContext('stageDisplay={width:720,height:1280,aspect:"keep"};fitStage()',context);
  return {context,canvas,layer,requests,accepted,resize:()=>vm.runInContext('resizeStageViewport()',context)};
 }

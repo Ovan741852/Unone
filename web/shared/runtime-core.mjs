@@ -74,6 +74,9 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
  const validSize=(width,height)=>[width,height].every(n=>Number.isInteger(n)&&n>0&&n<=32768);
  function viewportReport(){return {mode:hasPhysicalViewport()?'physical':requirePhysicalViewport?'physical-unavailable':'aspect-only',required:requirePhysicalViewport,physical_api:hasPhysicalViewport(),aspect_api:typeof module._unone_web_set_viewport_aspect==='function'};}
  function loadPayload(payload){
+  if(payload&&Object.hasOwn(payload,'viewport_safe_area')&&typeof module._unone_web_set_viewport_safe_area!=='function'){
+   const {viewport_safe_area,...compatible}=payload;payload=compatible;
+  }
   if(!payload||!Object.hasOwn(payload,'viewport_size')||hasPhysicalViewport())return payload;
   if(requirePhysicalViewport)throw Error('PROJECTED_VIEWPORT_ABI_UNAVAILABLE: rebuild the Web runtime');
   const {viewport_size:size,...compatible}=payload;
@@ -88,7 +91,7 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
  memory(){const heap=typeof module._unone_web_luau_heap_bytes==='function'?module._unone_web_luau_heap_bytes():-1;return {wasm_linear_bytes:module.HEAPU8.buffer.byteLength,luau_heap_bytes:Number.isFinite(heap)&&heap>=0?heap:null};},report(){return {closed,policy,pool:pool?.report()??null,binary_transport:binary.report(),spatial:spatial.report(),viewport:viewportReport(),observation_digest:observationDigestMode,fault:fault?String(fault):null};},async execute(command){
   if(closed)throw Error('RUNTIME_CLOSED');
   if(profile)lastTrace={kind:String(command?.kind),start_ms:performance.now(),marks:[]};
-  const allowed={load:['payload','seed','data','contentBaseURL'],tick:['input','presenting'],aspect:['value'],viewport:['width','height'],transport:['mode'],developer:['request'],ui:['request'],hostTime:['request']};
+  const allowed={load:['payload','seed','data','contentBaseURL'],tick:['input','presenting'],aspect:['value'],viewport:['width','height'],safeArea:['value'],transport:['mode'],developer:['request'],ui:['request'],hostTime:['request']};
   if(!command||!Object.hasOwn(allowed,command.kind)||Object.keys(command).some(k=>k!=='kind'&&!allowed[command.kind].includes(k)))throw Error('RUNTIME_COMMAND_INVALID');
   if(command.kind!=='load'&&!loaded)throw Error('RUNTIME_NOT_LOADED');
   switch(command.kind){
@@ -115,6 +118,12 @@ export function createRuntimeCore(module,{url,jobPolicy={},device={},spatialBack
    case 'tick':if(fault)throw fault;await barrier();if(closed)throw Error('RUNTIME_CLOSED');if(profile)mark('barrier_wait');if(typeof module._unone_web_set_presenting==='function')module._unone_web_set_presenting(command.presenting===false?0:1);const input=deferred?await deferred.input(command.input):command.input;if(closed)throw Error('RUNTIME_CLOSED');send('_unone_web_set_input_frame',input);if(profile)mark('input_abi');if(module._unone_web_tick()!==0)throw Error(JSON.stringify(read()));if(profile)mark('tick_abi_atomic');latest=profile?readObservation(module,mark):read();dispatchJobs();if(profile)mark('jobs_dispatch');spatial.dispatch();if(profile)mark('spatial_dispatch');deferred?.refresh();latest=withProfileMarks(withImageGroupPlan(withSpriteResourcePlan(latest)));return latest;
    case 'hostTime':if(typeof module._unone_web_host_time_request!=='function')throw Error('HOST_TIME_ABI_UNAVAILABLE: rebuild the Web runtime');send('_unone_web_host_time_request',command.request);return read();
    case 'ui':if(typeof module._unone_web_ui_request!=='function')throw Error('UI_SCROLL_ABI_UNAVAILABLE: rebuild the Web runtime');send('_unone_web_ui_request',command.request);latest=read();return latest;
+   case 'safeArea': {
+    const v=command.value;
+    if(!Array.isArray(v)||v.length!==4||!v.every(n=>Number.isFinite(n)&&n>=0)||v[0]+v[2]>=100||v[1]+v[3]>=100)throw Error('VIEWPORT_SAFE_AREA_INVALID');
+    if(typeof module._unone_web_set_viewport_safe_area==='function'&&module._unone_web_set_viewport_safe_area(...v)!==0)throw Error(JSON.stringify(read()));
+    return latest;
+   }
    case 'aspect':if(!Number.isFinite(command.value)||command.value<=0)throw Error('VIEWPORT_INVALID');if(module._unone_web_set_viewport_aspect(command.value)!==0)throw Error(JSON.stringify(read()));return latest;
    case 'viewport':{
     if(!validSize(command.width,command.height))throw Error('PROJECTED_VIEWPORT_INVALID');

@@ -92,6 +92,7 @@ pub(crate) const WEB_FILES: &[&str] = &[
         "shared/fixed-step-scheduler.mjs",
         "shared/async-scheduler.mjs",
         "shared/runtime-core.mjs",
+        "shared/viewport-safe-area.mjs",
         "shared/sprite-resource-host.mjs",
         "shared/image-group-host.mjs",
         "shared/deferred-data-host.mjs",

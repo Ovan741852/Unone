@@ -20,6 +20,16 @@ struct SurfaceState {
     safe_area: SafeArea,
 }
 
+impl SurfaceState {
+    fn normalized_insets(&self) -> [f64; 4] {
+        let w = f64::from(self.width_px);
+        let h = f64::from(self.height_px);
+        let safe = &self.safe_area;
+        [safe.left_px * 100.0 / w, safe.top_px * 100.0 / h,
+         safe.right_px * 100.0 / w, safe.bottom_px * 100.0 / h]
+    }
+}
+
 #[derive(Debug, Serialize)]
 struct MobileObservation {
     ok: bool,
@@ -116,13 +126,27 @@ impl UnoneMobileSession {
             .all(|value| value.is_finite() && *value >= 0.0);
         let dimensions_valid = width_px > 0 && height_px > 0;
         let scale_valid = scale_factor.is_finite() && scale_factor > 0.0;
-        let insets_fit = safe_left_px + safe_right_px <= f64::from(width_px)
-            && safe_top_px + safe_bottom_px <= f64::from(height_px);
+        let surface = SurfaceState {
+            width_px,
+            height_px,
+            scale_factor,
+            safe_area: SafeArea {
+                left_px: safe_left_px,
+                top_px: safe_top_px,
+                right_px: safe_right_px,
+                bottom_px: safe_bottom_px,
+            },
+        };
+        // Validate in the same units the runtime uses, before accepting the host resize.
+        let insets_fit = dimensions_valid && {
+            let [left, top, right, bottom] = surface.normalized_insets();
+            left + right < 100.0 && top + bottom < 100.0
+        };
         if !dimensions_valid || !scale_valid || !safe_values_valid || !insets_fit {
             let mut diagnostic = Diagnostic::error(
                 "MOBILE_SURFACE_INVALID",
                 "mobile surface descriptor is invalid",
-                "width and height must be positive, scale_factor must be finite and positive, and safe-area insets must be finite, non-negative, and fit inside the surface.",
+                "width and height must be positive, scale_factor must be finite and positive, and safe-area insets must be finite, non-negative, and leave a positive content area.",
             );
             diagnostic.facts = serde_json::json!({
                 "width_px": width_px,
@@ -137,17 +161,7 @@ impl UnoneMobileSession {
             });
             return Err(Box::new(diagnostic));
         }
-        Ok(SurfaceState {
-            width_px,
-            height_px,
-            scale_factor,
-            safe_area: SafeArea {
-                left_px: safe_left_px,
-                top_px: safe_top_px,
-                right_px: safe_right_px,
-                bottom_px: safe_bottom_px,
-            },
-        })
+        Ok(surface)
     }
 }
 
@@ -219,6 +233,9 @@ pub unsafe extern "C" fn unone_mobile_load_project(
     };
     if payload.viewport_aspect.is_none() {
         payload.viewport_aspect = session.surface.as_ref().map(|surface| f64::from(surface.width_px) / f64::from(surface.height_px));
+    }
+    if let Some(surface) = &session.surface {
+        payload.viewport_safe_area = Some(surface.normalized_insets());
     }
     let project_name = payload.config.name.clone();
     let runtime = match payload.into_runtime(seed) {
@@ -494,9 +511,13 @@ pub unsafe extern "C" fn unone_mobile_resize(
         Ok(surface) => surface,
         Err(diagnostic) => return session.write_diagnostic(*diagnostic),
     };
-    if let Some(runtime) = session.runtime.as_mut()
-        && let Err(diagnostic) = runtime.set_viewport_aspect(f64::from(width_px) / f64::from(height_px)) {
-        return session.write_diagnostic(*diagnostic);
+    if let Some(runtime) = session.runtime.as_mut() {
+        let [left, top, right, bottom] = surface.normalized_insets();
+        let updated = runtime.set_viewport_aspect(f64::from(width_px) / f64::from(height_px))
+            .and_then(|()| runtime.set_viewport_safe_area(left, top, right, bottom));
+        if let Err(diagnostic) = updated {
+            return session.write_diagnostic(*diagnostic);
+        }
     }
     session.surface = Some(surface);
     session.write_observation("surface_resized", None);
@@ -514,6 +535,10 @@ pub unsafe extern "C" fn unone_mobile_surface_lost(session: *mut UnoneMobileSess
     let Some(session) = (unsafe { session.as_mut() }) else {
         return -1;
     };
+    if let Some(runtime) = session.runtime.as_mut()
+        && let Err(diagnostic) = runtime.set_viewport_safe_area(0.0, 0.0, 0.0, 0.0) {
+        return session.write_diagnostic(*diagnostic);
+    }
     session.surface = None;
     session.write_observation("surface_lost", Some("renderer_surface_recreated_by_host"));
     0
@@ -907,6 +932,43 @@ return Game
         assert_eq!(resumed["world"]["frame"], json!(3));
         assert_eq!(resumed["surface"]["safe_area"]["bottom_px"], json!(90.0));
 
+        unsafe { unone_mobile_shutdown(session) };
+    }
+
+    #[test]
+    fn safe_area_reaches_luau_on_start_resize_and_surface_loss() {
+        let session = unone_mobile_init();
+        let script = r#"
+            local function publish(api, key)
+                local v = api.ui.getViewport()
+                api.observation.set(key, v.safeInsets)
+                api.observation.set("safe_rect", v.safeRect)
+                api.observation.set("aspect", v.aspect)
+            end
+            return { start = function(api) publish(api, "start_insets") end,
+                     update = function(api) publish(api, "tick_insets") end }
+        "#;
+        let project = payload_with_script(script);
+        assert_eq!(unsafe { unone_mobile_resize(session, 400, 1000, 2.0, 200., 0., 200., 0.) }, -1);
+        assert_eq!(output(session)["diagnostic"]["code"], json!("MOBILE_SURFACE_INVALID"));
+        assert_eq!(unsafe { unone_mobile_resize(session, 1000, 500, 3.0, 50., 10., 80., 20.) }, 0);
+        assert_eq!(unsafe { unone_mobile_load_project(session, project.as_ptr(), project.len(), 42) }, 0);
+        let start = &output(session)["world"]["observations"];
+        assert_eq!(start["start_insets"], json!({"left":5,"top":2,"right":8,"bottom":4}));
+        assert_eq!(start["safe_rect"], json!({"x":5,"y":4,"width":87,"height":94}));
+
+        assert_eq!(unsafe { unone_mobile_resize(session, 500, 1000, 2.0, 10., 60., 20., 30.) }, 0);
+        assert_eq!(unsafe { unone_mobile_resize(session, 1000, 500, 2.0, 400., 0., 600., 0.) }, -1);
+        assert_eq!(unsafe { unone_mobile_tick(session) }, 0);
+        let portrait = &output(session)["world"]["observations"];
+        assert_eq!(portrait["aspect"].as_f64(), Some(0.5));
+        assert_eq!(portrait["tick_insets"], json!({"left":2,"top":6,"right":4,"bottom":3}));
+        assert_eq!(portrait["safe_rect"], json!({"x":2,"y":3,"width":94,"height":91}));
+
+        assert_eq!(unsafe { unone_mobile_surface_lost(session) }, 0);
+        assert_eq!(unsafe { unone_mobile_tick(session) }, 0);
+        assert_eq!(output(session)["world"]["observations"]["tick_insets"],
+                   json!({"left":0,"top":0,"right":0,"bottom":0}));
         unsafe { unone_mobile_shutdown(session) };
     }
 

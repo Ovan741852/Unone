@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-Hant"><meta charset="utf-8"><title>Home</title>
+<style>
+  * { box-sizing:border-box } body {margin:0; font:16px/1.35 Arial,sans-serif}
+  main {width:calc(100% - 24px);margin:12px;padding:16px;background:#fff5e4;color:#302443}
+  .cards {display:flex;gap:12px} .card {width:195px;height:90px;padding:12px;color:#fff;
+    background:linear-gradient(120deg,#7549a4,#48367a);box-shadow:2px 3px 4px #0005;border-radius:12px}
+  .card strong {color:#ffdf4a}.card small {display:block}
+  #go {border:1px solid #444;border-radius:6px;background:#f6d997;color:#302443;font:700 16px Arial;height:36px;width:96px}
+  img {width:20px;height:20px;vertical-align:middle}
+  @media (max-width:500px) {.cards{flex-direction:column}}
+</style>
+<main id="home"><h1>選擇遊玩方式</h1><div class="cards">
+  <div class="card" data-party role="button" tabindex="0">開始 <strong>組隊</strong><small>找朋友一起玩</small></div>
+  <div class="card">另一張卡片</div>
+</div><p><img alt="blue" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='8' fill='blue'/%3E%3C/svg%3E"> 說明</p>
+<button id="go">開始遊戲</button><button disabled>未開放</button><span hidden>不應匯出</span>
+</main></html>

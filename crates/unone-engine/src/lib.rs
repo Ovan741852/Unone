@@ -1,4 +1,5 @@
 mod application;
+pub mod export_update;
 mod network;
 pub use network::{NetworkCommand, NETWORK_MAX_TEXT};
 pub use application::set_host_presenting;
@@ -157,7 +158,7 @@ pub use audio::{
 pub use bundle::{
     ASSET_ARCHIVE_VERSION, AssetArchiveEntry, BundleFetcher, BundleManager, BundleManifest,
     BundlePackReport, BundleReport, BundleSpec, BundleVerification, BundleVerifier, pack_project,
-    read_asset_from_archive,
+    build_bundle_archive, read_asset_from_archive,
 };
 #[cfg(feature = "dev-tools")]
 pub use developer::{
@@ -190,6 +191,7 @@ pub use performance_targets::{
 };
 pub use platform::{PlatformCapabilities, capabilities as platform_capabilities};
 pub use project::{AspectMode, DisplayConfig, PixelUnit};
+pub use project::{valid_host_data_channel, HOST_DATA_MAX_BYTES, HOST_DATA_MAX_CHANNELS};
 pub use project::{
     AnimationAssertion, AudioAssertion, EffectsAssertion, GAMEPAD_BUTTONS, GAMEPAD_SLOTS, GamepadInput, InputFrame, ObservationAssertion,
     PointerInput, SliderInteraction, SliderPhase, TextInputInteraction, TextInputPhase, ProjectConfig, ProjectFileStatus, ProjectInitAction, ProjectInitFile,

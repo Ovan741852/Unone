@@ -446,12 +446,16 @@ pub(crate) struct Launcher {
 impl Launcher {
     /// Reads only what the first frame needs: the manifest, the presentation,
     /// the logo and the design size. A failure here shows on the screen too.
-    pub(crate) fn new(read: Reader, mut settings: Settings, report: Option<PathBuf>, boot: Instant, store: save::Store) -> Self {
+    pub(crate) fn new(read: Reader, settings: Settings, report: Option<PathBuf>, boot: Instant, store: save::Store) -> Self {
+        Self::new_with_startup(read, settings, report, boot, store, None)
+    }
+
+    pub(crate) fn new_with_startup(read: Reader, mut settings: Settings, report: Option<PathBuf>, boot: Instant, store: save::Store, startup: Option<Vec<String>>) -> Self {
         let fonts = Fonts::load();
         let mut screen = Screen::new();
         screen.start("content");
         let opened = (|| -> R<(PackageLoader<Reader>, Look, WindowsGpuMemory)> {
-            let mut loader = PackageLoader::open(read)?;
+            let mut loader = PackageLoader::open_with_startup(read, startup)?;
             let presentation = loader.file("content/presentation.json")?;
             let presentation = read_presentation(presentation.as_deref())?;
             let gpu_memory = crate::windows_gpu_memory(&presentation)?;
@@ -486,6 +490,27 @@ impl Launcher {
     pub(crate) fn current_error(&self) -> Option<String> {
         self.error.clone().or_else(|| self.app.as_ref().and_then(|app| app.error.clone()))
     }
+    #[cfg(target_os = "ios")]
+    pub(crate) fn game(&self) -> Option<&App> { self.app.as_ref() }
+    #[cfg(target_os = "ios")]
+    pub(crate) fn game_mut(&mut self) -> Option<&mut App> { self.app.as_mut() }
+    /// During startup the next App must see the host geometry in its very first script callback.
+    #[cfg(target_os = "ios")]
+    pub(crate) fn set_host_viewport(&mut self, size: winit::dpi::PhysicalSize<u32>, safe_area: [f64; 4]) -> bool {
+        if let Some((settings, ..)) = &mut self.launch {
+            if settings.input_sequence.is_none() {
+                settings.width = Some(size.width);
+                settings.height = Some(size.height);
+                settings.host_safe_area = Some(safe_area);
+            }
+            return true;
+        }
+        let Some(app) = &mut self.app else { return false };
+        if app.input_replay.is_some() { return true; }
+        let [left, top, right, bottom] = safe_area;
+        app.runtime.set_viewport_size(size.width, size.height).is_ok()
+            && app.runtime.set_viewport_safe_area(left, top, right, bottom).is_ok()
+    }
     fn draw(&mut self) {
         let Some(window) = &self.window else { return };
         if self.gpu.is_none() && self.renderer.is_none() {
@@ -519,6 +544,10 @@ impl Launcher {
                 }
             }
             Stage::Game => {
+                #[cfg(target_os = "ios")]
+                if let Some(window) = &self.window && let Some(safe) = window.system_safe_area() {
+                    self.set_host_viewport(window.inner_size(), safe);
+                }
                 let (settings, report, boot, store) = self.launch.take().ok_or("NATIVE_STARTUP_STATE")?;
                 self.app = Some(App::new(self.package.take().ok_or("NATIVE_STARTUP_STATE")?, settings, report, boot, store)?);
                 self.screen.complete("game");

@@ -42,6 +42,9 @@ pub struct HostProject {
     /// Physical render-target pixels, supplied before Game.start when known.
     #[serde(default)]
     pub viewport_size: Option<[u32;2]>,
+    /// Stage safe area at startup, left/top/right/bottom in percentages of their respective axes.
+    #[serde(default)]
+    pub viewport_safe_area: Option<[f64;4]>,
     /// Data assets the game reads with api.assets.load. The host delivers their
     /// bytes beside this JSON (into_runtime_with_data), never inside it.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -148,6 +151,7 @@ impl HostProject {
             restored_save: self.restored_save,
             viewport_aspect: self.viewport_aspect,
             viewport_size: self.viewport_size,
+            viewport_safe_area: self.viewport_safe_area,
             data_assets: self.data_assets,
             asset_catalog: self.asset_catalog,
             data,

@@ -64,6 +64,33 @@ occurred while the project load was in flight, then sends later physical-size
 changes only when the reported dimensions differ. Resizing during image/runtime
 loading therefore does not leave the stage at its earlier size.
 
+## Keep controls inside the safe area
+
+The host can report display cutouts or system gesture insets before `Game.start`
+and update them on rotation. The stage still spans 0..100 on each axis. An inset
+of 5 at the left means 5% of stage width, while 5 at the bottom means 5% of
+height. Meet the host at the normalized stage after letterboxing.
+
+```luau
+local view = api.ui.getViewport()
+local menu = layout.resolve(view, view.safeBounds)
+local startButtonRect = menu.rect("start")
+local jumpTouchRect = api.ui.fitSafeArea({x=75, y=2, width=22, height=20})
+```
+
+`view.safeInsets` contains `left`, `top`, `right`, and `bottom`. Use
+`safeBounds` (left/top/width/height, y-down) as the optional responsive layout
+bounds or scroll viewport. Use `safeRect` (x/y/width/height, y-up) directly on a
+stage leaf. `fitSafeArea` maps one locally authored stage rectangle into the same
+area. Full-bleed artwork can keep full-stage coordinates. A game that retains a
+view should rebuild its safe controls when `view.revision` changes. Repeating the
+same host insets or aspect preserves this revision.
+
+Headless and older hosts default to zero insets. A custom host may provide
+`HostProject.viewport_safe_area = [left, top, right, bottom]` in the initial
+payload and use `EngineRuntime::set_viewport_safe_area` on later changes.
+Insets must be finite and nonnegative, with positive remaining width and height.
+
 ## Create once, resolve in a pure View
 
 `createResponsiveLayout` snapshots its options. Retain the model and call

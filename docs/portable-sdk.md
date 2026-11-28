@@ -72,6 +72,24 @@ directory before index, revalidate index, and retain old generations for open
 clients. Unversioned aliases remain for older CLI consumers, not browser launch.
 See [warm-cache acceptance](reviews/2026-09-10-warm-cache.md).
 
+### File-level updates
+
+```sh
+game export diff --from previous/export.json --to next/export.json --json
+```
+
+The plan lists the requested generation's files in manifest order.
+`reuse` points to an installed inventory index and source path when the
+SHA-256 and byte length match, including renamed files. A null `reuse`
+means the file has to be fetched. `download_bytes` and `reuse_bytes`
+count file payloads. Plan results assume all listed local files are intact.
+
+Embedded iOS hosts can call `unone_player_plan_update` with the next
+inventory and a JSON array of installed inventories. The host verifies the
+candidate on disk, fetches the requested file if the candidate fails
+verification, and makes the new generation available after verifying all
+files. Files absent from the new inventory stay in the old generation.
+
 ## Publisher workflow
 
 Build the desired production/development release runtimes with
@@ -114,9 +132,10 @@ shape (`family`, `exportable`, `renderer`, `presentation`, `decoders`).
 
 Native export rejects enabled `spine`/`effekseer` and non-default web-only overlay keys in `player.presentation.json` (`runtime_backend=worker`, interpolation, show_performance, non-default `job_policy`). `bloom` is a shared native/WGPU presentation primitive and is accepted; changing it still takes effect on the next launch. Native audio is a rodio/cpal host adapter and reports device/asset failures instead of failing silently. `sdk inspect --json` splits those as `export_blocked_systems` vs `runtime_blocked_systems`. Android packaging requires a platform runtime plus SDK/Java/signing tools.
 
-The current native host supports non-DOM UI. UI images support PNG and a
-self-contained static SVG subset when the **selected runtime** advertises
-`ui.images: svg-static`. The target catalog describes current host code;
+The current native host supports non-DOM UI and PNG images. JPEG (`.jpg` and
+`.jpeg`) and self-contained static SVG are available when the **selected runtime**
+lists the corresponding `jpeg` or `svg-static` capability in `ui.images`.
+The target catalog describes current host code;
 `sources.runtimes[].descriptor` records the installed bytes' declared capabilities.
 Older runtimes do not gain UI/SVG support merely by using a new CLI. Windows
 SVG/UI evidence is in the [compatibility ledger](reviews/2026-09-10-svg-sdk.md);

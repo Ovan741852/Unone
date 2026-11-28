@@ -787,7 +787,8 @@ pub struct AssetArchiveEntry {
     pub sha256: String,
 }
 
-fn build_bundle_archive(mut entries: Vec<(String, Vec<u8>)>) -> Result<Vec<u8>, String> {
+/// Build the deterministic, indexed archive used by asset packs and exported players.
+pub fn build_bundle_archive(mut entries: Vec<(String, Vec<u8>)>) -> Result<Vec<u8>, String> {
     entries.sort_by(|left, right| left.0.cmp(&right.0));
     let mut unique: Vec<(String, Vec<u8>)> = Vec::with_capacity(entries.len());
     for (path, bytes) in entries {

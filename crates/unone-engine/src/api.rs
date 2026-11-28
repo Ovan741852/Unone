@@ -110,6 +110,11 @@ pub fn search(query: &str) -> Vec<ApiDescriptor> {
 /// adding an unknown word cannot turn a query into a broad OR search.
 fn ui_authoring_search(terms: &[&str]) -> Option<Vec<ApiDescriptor>> {
     let has = |aliases: &[&str]| terms.iter().any(|term| aliases.contains(term));
+    let safe_area = ["safe", "area", "insets", "notch", "cutout", "display", "viewport", "ui", "layout", "safearea", "安全區", "安全区", "瀏海", "刘海"];
+    if has(&["safe", "safearea", "insets", "notch", "cutout", "安全區", "安全区", "瀏海", "刘海"])
+        && terms.iter().all(|term| safe_area.contains(term)) {
+        return Some(["ui.getViewport", "ui.fitSafeArea", "ui.components.createResponsiveLayout"].into_iter().filter_map(describe).collect());
+    }
     // Ordinary artwork discovery starts with logical resources/instances. GPU
     // acceleration is a host decision; expert projected buffers stay explicit.
     let artwork = ["artwork", "image", "images", "imagebatch", "image_batch", "圖片", "图片", "圖像", "图像", "大量圖片", "大量图片"];
@@ -2808,16 +2813,30 @@ fn descriptors() -> Vec<ApiDescriptor> {
         descriptor(
             "ui.getViewport",
             "ui",
-            "Read the host-reported viewport aspect ratio; feed it to ui.components.createResponsiveLayout for shared authored responsive composition.",
-            "Advanced environment observation, or input to layout.resolve(api.ui.getViewport()). Start responsive authoring at ui.components.createResponsiveLayout and docs/ui-responsive.md instead of copying breakpoint conditionals. The host reports the actual stage aspect; until it does, and in headless runs and tests, it is the project's declared display (project.unone.json display: width/height), else 16:9. display.aspect \"keep\" makes hosts present exactly that shape.",
-            "This environment getter does not itself choose rectangles, reflow content or report device pixels. Project-authored responsive models own layout policy; do not use font raster metrics as simulation input.",
+            "Read the host stage aspect ratio, safe-area insets, usable bounds and viewport revision.",
+            "Use layout.resolve(view, view.safeBounds) to place controls inside display cutouts and system gesture edges. Without a host viewport the project display sets the aspect (default 16:9) and the entire stage is safe.",
+            "Insets use percentages of their own stage axis. safeBounds is left/top/width/height, top-left y-down. safeRect is x/y/width/height, bottom-left y-up.",
             vec![],
-            "{aspect:number}; width divided by height.",
+            "UiStageViewport = {aspect, revision, safeInsets, safeBounds, safeRect}",
             vec!["Read-only host viewport observation"],
-            "Reads the current runtime viewport aspect without advancing a frame or mutating the UI tree.",
+            "Revision changes only when the aspect ratio or normalized safe-area insets change.",
             vec![],
-            "local resolved = responsiveLayout.resolve(api.ui.getViewport()); api.observation.set(\"ui_variant\", resolved.variant)",
-            vec!["ui.components.createResponsiveLayout", "ui.setRoot", "ui.inspect"],
+            "local view=api.ui.getViewport(); local resolved=responsiveLayout.resolve(view, view.safeBounds); api.observation.set(\"ui_variant\", resolved.variant)",
+            vec!["ui.fitSafeArea", "ui.components.createResponsiveLayout", "ui.setRoot"],
+        ),
+        descriptor(
+            "ui.fitSafeArea",
+            "ui",
+            "Map a normalized, bottom-left UI rect into the safe area of the current stage.",
+            "Fit an authored or imported flat control rectangle to the usable screen. Use the same result for visual and hit bounds.",
+            "Pass the local rect before any safe-area adjustment. Scroll-local coordinates use top-left bounds.",
+            vec![parameter("rect", "UiRect", "Local x/y/width/height in the safe area's 0..100 stage coordinates.")],
+            "UiRect with bottom-left x/y and dimensions in full-stage units.",
+            vec!["Pure coordinate conversion"],
+            "The full stage is the default when the host provides no insets.",
+            vec!["UI_SAFE_RECT_INVALID for malformed rectangles or negative dimensions."],
+            "local dock = api.ui.fitSafeArea({x=0,y=0,width=100,height=16})",
+            vec!["ui.getViewport", "ui.components.createResponsiveLayout"],
         ),
         descriptor(
             "ui.inspect",

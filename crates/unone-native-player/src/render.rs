@@ -2398,14 +2398,14 @@ impl Renderer {
     fn pipeline_scene(&self) -> bool {
         self.render_pipeline.is_none_or(|frame| frame.scene)
     }
-    pub fn render(&mut self, s: &WorldSnapshot) -> R<bool> {
+    pub fn render(&mut self, s: &WorldSnapshot, package: &Package) -> R<bool> {
         crate::ensure_shader_backend(s)?;
         self.render_pipeline = s.render_pipeline.as_ref().map(PipelineFrame::from_snapshot);
         let started = std::time::Instant::now();
         self.prepare(s)?;
         self.projected.prepare(&self.device,&self.queue,&self.textures,&s.projected_geometry)?;
         self.uploaded+=self.projected.uploaded;
-        self.ui.prepare(&self.device,&self.queue,s.ui.as_deref(),self.config.width,self.config.height)?;
+        self.ui.prepare(&self.device,&self.queue,s.ui.as_deref(),self.config.width,self.config.height,package)?;
         self.uploaded+=self.ui.upload_bytes;
         self.prepare_ms = started.elapsed().as_secs_f64() * 1000.;
         let started = std::time::Instant::now();

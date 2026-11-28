@@ -1,3 +1,4 @@
+import {createStageSafeAreaReader} from '../shared/viewport-safe-area.mjs';
 import {createThreeRenderer,THREE_LIBRARY_URL} from '../renderer/three.js';
 import {createPlayerRenderer,createRendererDisposer,rendererModuleUrls} from '../shared/renderer-selection.mjs';
 import {createCanvasUi,loadPresentationFonts} from '../shared/canvas-ui.mjs';
@@ -128,6 +129,7 @@ function dataAssets(project,onProgress=null){return fetchProjectData(project,doc
 // The project's display (project.unone.json): with aspect "keep" the stage is the largest
 // rectangle of the design shape that fits the window, centred, the page showing around it;
 // otherwise it fills the window and the game takes the device's shape.
+const readSafeArea=createStageSafeAreaReader(canvas);
 let stageDisplay=null;
 function fitStage(){const display=stageDisplay,keep=display?.aspect==='keep'&&display.width>0&&display.height>0;
  // Whole CSS pixels: the drawing buffer is sized from the rounded clientWidth/clientHeight, and a
@@ -150,10 +152,25 @@ function followPixelRatio(){const ratio=playerPixelRatio();
  renderer.setPixelRatio(ratio);appliedPixelRatio=ratio;}
 // Resize events come in bursts while a window edge is dragged: the stage and pixel ratio follow
 // each one, the runtime hears once a frame and only about a size it has not been told.
-let sentViewport=null,viewportQueued=false;
-function sendViewport(){viewportQueued=false;if(!snapshot||!backend||startupAbort.signal.aborted)return Promise.resolve();const [width,height]=physicalViewport();
- if(sentViewport?.[0]===width&&sentViewport?.[1]===height)return;sentViewport=[width,height];
- return backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})).catch(fail);}
+let sentViewport=null, sentSafeArea=[0,0,0,0], viewportQueued=false;
+function sendViewport(){
+ viewportQueued=false;
+ if(!snapshot||!backend||startupAbort.signal.aborted)return Promise.resolve();
+ const [width,height]=physicalViewport(),safe=readSafeArea();
+ const sizeChanged=sentViewport?.[0]!==width||sentViewport?.[1]!==height;
+ const safeChanged=safe&&safe.some((n,i)=>n!==sentSafeArea[i]);
+ if(!sizeChanged&&!safeChanged)return;
+ const changes=[];
+ if(sizeChanged){
+  sentViewport=[width,height];
+  changes.push(backend.request({kind:'viewport',width,height}).then(value=>acceptSnapshot(value,{reset:true})));
+ }
+ if(safeChanged){
+  sentSafeArea=safe;
+  changes.push(backend.request({kind:'safeArea',value:safe}));
+ }
+ return Promise.all(changes).catch(fail);
+}
 function viewportChanged(){fitStage();followPixelRatio();if(!snapshot||!backend||startupAbort.signal.aborted)return;if(!viewportQueued){viewportQueued=true;requestAnimationFrame(sendViewport);}}
 function resizeStageViewport(){fitStage();followPixelRatio();return sendViewport();}
 function acceptSnapshot(value,{reset=false,newSession=false}={}){if(!value?.world)throw Error('HOST_SNAPSHOT_INVALID');snapshot=value;recovery.accept(value.world);if(newSession){resourceHost?.reset();imageGroupHost?.reset();}resourceHost?.acceptSnapshot(snapshot);imageGroupHost?.acceptSnapshot(snapshot);playerCompletion.accept(snapshot,newSession,scheduler?.totalDroppedSteps??0);if(reset)interpolator?.reset();interpolator?.accept(snapshot,b=>backend.memory(b));}
@@ -232,7 +249,7 @@ function tickOnce(presenting){if(tickFlight){if(profiler)profiler.record('update
 async function setPaused(value){frozen=value;orderedRouter?.setPaused(value);publishPhysical();manualInput=null;textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();if(value){scheduler?.pause();await tickFlight;interpolator.reset();interpolator.accept(snapshot,b=>backend.memory(b));}else scheduler?.resume();}
 async function coreRequest(request){const value=await backend.request({kind:'developer',request});if(value.observation)acceptSnapshot(value.observation,{reset:request.method==='invoke'});return value;}
 async function setTransport(mode){const value=await backend.request({kind:'transport',mode});acceptSnapshot(value,{reset:true});}
-async function restart(){errors.reset();const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();sentViewport=projectPayload.viewport_size;projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,contentBaseURL:new URL('content/',document.baseURI).href,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});await resizeStageViewport();configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
+async function restart(){errors.reset();const wasPaused=frozen;await setPaused(true);projectPayload=withCatalog(await json('content/project.json'),uiAssetManifest);stageDisplay=projectPayload.config?.display??null;fitStage();projectPayload.viewport_aspect=canvas.clientWidth/canvas.clientHeight;projectPayload.viewport_size=physicalViewport();sentViewport=projectPayload.viewport_size;projectPayload.viewport_safe_area=sentSafeArea=readSafeArea()??[0,0,0,0];projectPayload.restored_save=JSON.parse(saved??'null');if(errorPolicy)projectPayload.error_policy=errorPolicy;if(imageGroupHost)projectPayload.image_group_host=true;const preparation=await imageAssets.prepareScene(projectPayload.scene);if(startupAbort.signal.aborted)throw startupCancelled();assertRequiredImagePreparation(imagePreloadPlan,preparation);acceptSnapshot(await backend.request({kind:'load',payload:projectPayload,contentBaseURL:new URL('content/',document.baseURI).href,seed:sessionSeed(),data:await dataAssets(projectPayload)}),{reset:true,newSession:true});await resizeStageViewport();configurePhysical();orderedRouter?.activate();orderedRouter?.setPaused(wasPaused);audio?.reset();audio?.sync(snapshot.world);scheduler.resetClock();draw();persistSave();await setPaused(wasPaused);}
 async function finishStartup(presentation,kind){
  if(startupAbort.signal.aborted)throw startupCancelled();
  startupScreen.start('present');
@@ -367,7 +384,7 @@ async function start(){
  try{saved=localStorage.getItem(key);project.restored_save=JSON.parse(saved??'null');}catch(error){throw new Error(`SAVE_READ_FAILED: ${error.message}`);}
  stageDisplay=project.config.display??null;fitStage();
  project.viewport_aspect=canvas.clientWidth/canvas.clientHeight;
- project.viewport_size=physicalViewport();sentViewport=project.viewport_size;
+ project.viewport_size=physicalViewport();sentViewport=project.viewport_size;project.viewport_safe_area=sentSafeArea=readSafeArea()??[0,0,0,0];
  if(errorPolicy)project.error_policy=errorPolicy;
  if(imageGroupHost)project.image_group_host=true;
  interpolator=createPresentationInterpolator({enabled:presentation.interpolation??false,instanceBatches:presentation.interpolate_instances??[]});
@@ -405,6 +422,8 @@ canvas.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{if(!orderedRouter&&!textInputs.routeKey(e,true))routeBrowserKey(input,e,true);});window.addEventListener('keyup',e=>{if(!orderedRouter&&!textInputs.routeKey(e,false))routeBrowserKey(input,e,false);});window.addEventListener('blur',()=>{textInputs.suspend();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();});
 window.addEventListener('unone-host-pause',()=>{textInputs.suspend();uiScroll.cancel();uiRenderer.releaseAll();input.releaseAll();releaseLegacyPointer();scheduler?.pause();audio?.setVisibility(false);});window.addEventListener('unone-host-resume',()=>{if(!frozen)scheduler?.resume();audio?.setVisibility(true);});
 window.addEventListener('resize',()=>viewportChanged());
+window.addEventListener('orientationchange',viewportChanged);
+window.visualViewport?.addEventListener('resize',viewportChanged);
 window.addEventListener('pageshow',e=>{if(e.persisted)location.reload();});
 window.addEventListener('pagehide',()=>{removeAssetGroupsAccessor();removePerformanceAccessor();disposePerformanceFeed();recovery.dispose();errors.dispose();startupAbort.abort();orderedRouter?.dispose();textInputs.dispose();uiScroll.dispose();cursorHost.dispose();uiRenderer.dispose?.();scheduler?.stop();resourceHost?.close();imageGroupHost?.close();try{disposeRenderer(renderer);}catch(error){console.error(error);}imageAssets?.dispose();const retiringAudio=audio;audio=null;retiringAudio?.dispose();backend?.close();});
 canvas.addEventListener('lostpointercapture',e=>{legacyPointer.lostCapture(e.pointerId);if(!orderedRouter)routeUi(e,'cancel');});

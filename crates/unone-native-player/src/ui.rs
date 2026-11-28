@@ -221,6 +221,7 @@ pub(crate) fn escape(s: &str) -> String {
 struct Rasterizer {
     images: BTreeMap<String, String>,
     image_sizes: BTreeMap<String, (f64, f64)>,
+    image_sources: BTreeMap<String, String>,
     options: resvg::usvg::Options<'static>,
     family: String,
 }
@@ -472,8 +473,10 @@ impl Rasterizer {
             .to_owned();
         let assets: serde_json::Value = serde_json::from_slice(package.get("content/assets.json")?)
             .map_err(|e| e.to_string())?;
-        let mut images = BTreeMap::new();
-        let mut image_sizes = BTreeMap::new();
+        let mut raster = Self {
+            images: BTreeMap::new(), image_sizes: BTreeMap::new(),
+            image_sources: BTreeMap::new(), options, family,
+        };
         for asset in assets["assets"]
             .as_array()
             .ok_or("UI_ASSET_MANIFEST_INVALID")?
@@ -483,43 +486,62 @@ impl Rasterizer {
             }
             let id = asset["id"].as_str().ok_or("UI_ASSET_ID_MISSING")?;
             let source = asset["source"].as_str().ok_or("UI_ASSET_SOURCE_MISSING")?;
+            if package.on_demand.is_some() {
+                raster.image_sources.insert(id.into(), source.into());
+            } else {
+                raster.load_image(package, id, source)?;
+            }
+        }
+        Ok(raster)
+    }
+
+    fn ensure_image(&mut self, package: &Package, id: &str) -> R<()> {
+        if let Some(source) = self.image_sources.get(id).cloned() {
+            self.load_image(package, id, &source)?;
+            self.image_sources.remove(id);
+        }
+        Ok(())
+    }
+
+    fn load_image(&mut self, package: &Package, id: &str, source: &str) -> R<()> {
             let bytes = package.get(&format!("content/{source}"))?;
             let mime = if bytes.starts_with(b"\x89PNG\r\n\x1a\n") {
                 let reader = png::Decoder::new(std::io::Cursor::new(bytes))
                     .read_info()
                     .map_err(|e| format!("UI_IMAGE_INVALID: asset={id}; {e}"))?;
-                image_sizes.insert(
+                self.image_sizes.insert(
                     id.to_string(),
                     (reader.info().width as f64, reader.info().height as f64),
                 );
                 "image/png"
+            } else if bytes.starts_with(&[0xff, 0xd8, 0xff]) {
+                let reader = image::ImageReader::with_format(std::io::Cursor::new(bytes), image::ImageFormat::Jpeg);
+                // This catalog includes world textures too. An unreadable JPEG
+                // is unavailable to UI nodes without blocking unrelated UI.
+                let Ok((width, height)) = reader.into_dimensions() else { return Ok(()) };
+                self.image_sizes.insert(id.into(), (f64::from(width), f64::from(height)));
+                "image/jpeg"
             } else if source.to_ascii_lowercase().ends_with(".svg") {
-                validate_svg(bytes, &options)
+                validate_svg(bytes, &self.options)
                     .map_err(|e| format!("{e}; asset={id}; source={source}"))?;
                 let tree =
-                    resvg::usvg::Tree::from_data(bytes, &options).map_err(|e| e.to_string())?;
-                image_sizes.insert(
+                    resvg::usvg::Tree::from_data(bytes, &self.options).map_err(|e| e.to_string())?;
+                self.image_sizes.insert(
                     id.to_string(),
                     (tree.size().width() as f64, tree.size().height() as f64),
                 );
                 "image/svg+xml"
             } else {
-                continue;
+                return Ok(());
             };
-            images.insert(
+            self.images.insert(
                 id.into(),
                 format!(
                     "data:{mime};base64,{}",
                     base64::engine::general_purpose::STANDARD.encode(bytes)
                 ),
             );
-        }
-        Ok(Self {
-            images,
-            image_sizes,
-            options,
-            family,
-        })
+        Ok(())
     }
 
     fn styled_text(
@@ -610,7 +632,7 @@ impl Rasterizer {
         let mut tints: BTreeMap<[u64; 7], usize> = BTreeMap::new();
         for (index, quad) in quads.iter().enumerate() {
             let asset = &quad.asset;
-            let uri = self.images.get(asset).ok_or_else(|| format!("UI_IMAGE_UNAVAILABLE: {asset}; image_batch quad={index}; native UI accepts PNG or self-contained static SVG"))?;
+            let uri = self.images.get(asset).ok_or_else(|| format!("UI_IMAGE_UNAVAILABLE: {asset}; image_batch quad={index}; native UI accepts PNG, JPEG or self-contained static SVG"))?;
             let (iw, ih) = self.image_sizes[asset];
             let source = quad.source_for_size(iw, ih)
                 .map_err(|e| format!("{e}; asset={asset}; quad={index}"))?;
@@ -704,7 +726,7 @@ impl Rasterizer {
                 id,
                 ..
             } => {
-                let uri=self.images.get(asset).ok_or_else(||format!("UI_IMAGE_UNAVAILABLE: {asset}; native UI accepts PNG or self-contained static SVG"))?;
+                let uri=self.images.get(asset).ok_or_else(||format!("UI_IMAGE_UNAVAILABLE: {asset}; native UI accepts PNG, JPEG or self-contained static SVG"))?;
                 if let Some(slice) = slice {
                     let (iw, ih) = self.image_sizes[asset];
                     let patches = slice
@@ -1064,6 +1086,7 @@ impl Surface {
         tree: Option<&UiTree>,
         width: u32,
         height: u32,
+        package: &Package,
     ) -> R<()> {
         self.raster_ms = 0.;
         self.upload_bytes = 0;
@@ -1121,6 +1144,13 @@ impl Surface {
         self.wasted |= self.tiles.len() != before;
         for i in self.place(device, &live) {
             let item = &live[i];
+            match item.node {
+                UiNode::Image { asset, .. } => self.raster.ensure_image(package, asset)?,
+                UiNode::ImageBatch { quads, .. } => {
+                    for quad in quads { self.raster.ensure_image(package, &quad.asset)?; }
+                }
+                _ => {}
+            }
             let markup = self.raster.node_markup(item.index, item.node, width, height)?;
             let pixels = self.raster.rasterize(&markup, item.origin, item.size)?;
             let tile = self.tiles.get_mut(&item.slot).expect("placed tile");
@@ -1294,6 +1324,7 @@ mod tests {
 
     fn empty_package(presentation: serde_json::Value) -> Package {
         Package {
+            on_demand: None,
             digest: String::new(),
             files: BTreeMap::from([
                 ("content/assets.json".into(), br#"{"assets":[]}"#.to_vec()),
@@ -1479,7 +1510,7 @@ mod tests {
                 pixels.extend_from_slice(&colors[(y / 3) * 3 + x / 3]);
             }
         }
-        let package=Package{digest:String::new(),files:BTreeMap::from([
+        let package=Package{on_demand:None,digest:String::new(),files:BTreeMap::from([
             ("content/assets.json".into(),br#"{"assets":[{"kind":"texture2d","id":"texture://nine","source":"nine.png"}]}"#.to_vec()),
             ("content/presentation.json".into(),b"{}".to_vec()),("content/nine.png".into(),png_bytes(&pixels,9,9))])};
         let raster = Rasterizer::new(&package).unwrap();
@@ -1495,7 +1526,7 @@ mod tests {
             );
         }
         svg += "</svg>";
-        let svg_package = Package { digest:String::new(), files:BTreeMap::from([
+        let svg_package = Package { on_demand: None, digest:String::new(), files:BTreeMap::from([
             ("content/assets.json".into(),br#"{"assets":[{"kind":"texture2d","id":"texture://nine","source":"nine.svg"}]}"#.to_vec()),
             ("content/presentation.json".into(),b"{}".to_vec()), ("content/nine.svg".into(),svg.into_bytes())]) };
         let svg_raster = Rasterizer::new(&svg_package).unwrap();
@@ -1554,9 +1585,47 @@ mod tests {
         }
     }
     #[test]
+    fn jpeg_textures_render_in_images_and_atlas_crops() {
+        let pixels: Vec<u8> = (0..32 * 16)
+            .flat_map(|i| if i % 32 < 16 { [250, 10, 0] } else { [0, 10, 250] })
+            .collect();
+        let mut jpeg = Vec::new();
+        image::codecs::jpeg::JpegEncoder::new_with_quality(&mut jpeg, 95)
+            .encode(&pixels, 32, 16, image::ExtendedColorType::Rgb8).unwrap();
+        let package = Package { on_demand: None, digest: String::new(), files: BTreeMap::from([
+            ("content/assets.json".into(), br#"{"assets":[
+                {"kind":"texture2d","id":"asset://photo","source":"cover.JPG"},
+                {"kind":"texture2d","id":"asset://broken","source":"unused.jpeg"}
+            ]}"#.to_vec()),
+            ("content/presentation.json".into(), b"{}".to_vec()),
+            ("content/cover.JPG".into(), jpeg),
+            ("content/unused.jpeg".into(), vec![0xff, 0xd8, 0xff, 0xe0]),
+        ]) };
+        let raster = Rasterizer::new(&package).unwrap();
+        let mut tree = serde_json::json!({"kind":"screen","id":"s","node":"s","children":[
+            {"kind":"image","id":"cover","asset":"asset://photo","fit":"stretch",
+             "rect":{"x":0,"y":0,"width":50,"height":100}},
+            {"kind":"image_batch","id":"slice","rect":{"x":50,"y":0,"width":50,"height":100},
+             "quads":[{"asset":"asset://photo","rect":{"x":50,"y":0,"width":50,"height":100},
+                       "source":{"x":16,"y":0,"width":16,"height":16}}]}
+        ]});
+        let surface = raster.draw(&UiTree::from_json(tree.clone()).unwrap(), 64, 16).unwrap();
+        let pixel = |x: usize| &surface[(8 * 64 + x) * 4..][..4];
+        assert!(pixel(8)[0] > 225 && pixel(8)[2] < 30 && pixel(8)[3] == 255, "{:?}", pixel(8));
+        for x in [24, 40, 56] {
+            assert!(pixel(x)[2] > 225 && pixel(x)[0] < 30 && pixel(x)[3] == 255, "{:?}", pixel(x));
+        }
+        assert_eq!(raster.image_sizes["asset://photo"], (32., 16.));
+        tree["children"][0]["asset"] = serde_json::json!("asset://broken");
+        let error = raster.draw(&UiTree::from_json(tree).unwrap(), 64, 16).unwrap_err();
+        assert!(error.contains("asset://broken"), "{error}");
+    }
+
+    #[test]
     fn svg_static_validation_and_scaled_pixels() {
         let svg=br##"<svg xmlns="http://www.w3.org/2000/svg" width="20" height="10"><defs><linearGradient id="g"><stop stop-color="red"/><stop offset="1" stop-color="blue"/></linearGradient></defs><rect width="20" height="10" fill="url(#g)" opacity="0.5"/></svg>"##;
         let package = Package {
+            on_demand: None,
             digest: String::new(),
             files: BTreeMap::from([
                 (
@@ -1611,7 +1680,7 @@ mod tests {
     #[ignore = "requires a native GPU and installed fonts; run explicitly on a verified host"]
     fn gpu_png_cjk_transparent_button_surface() {
         pollster::block_on(async {
-            let package=Package{digest:String::new(),files:BTreeMap::from([
+            let package=Package{on_demand:None,digest:String::new(),files:BTreeMap::from([
             ("content/assets.json".into(),br#"{"assets":[{"kind":"texture2d","id":"asset://red","source":"red.png"}]}"#.to_vec()),
             ("content/presentation.json".into(),b"{}".to_vec()),("content/red.png".into(),png_bytes(&[255,0,0,128],1,1))])};
             let adapter = wgpu::Instance::default()
@@ -1629,7 +1698,7 @@ mod tests {
             {"kind":"button","id":"b","text":"","action":"Hold","rect":{"x":0,"y":0,"width":50,"height":50}},
             {"kind":"text","id":"cjk","text":"中文 Unone","rect":{"x":0,"y":60,"width":100,"height":30}}]})).unwrap();
             surface
-                .prepare(&device, &queue, Some(&tree), 512, 256)
+                .prepare(&device, &queue, Some(&tree), 512, 256, &package)
                 .unwrap();
             assert!(surface.upload_bytes > 0);
             let size = wgpu::Extent3d {
@@ -1723,7 +1792,7 @@ mod tests {
             drop(data);
             buffer.unmap();
             surface
-                .prepare(&device, &queue, Some(&tree), 512, 256)
+                .prepare(&device, &queue, Some(&tree), 512, 256, &package)
                 .unwrap();
             assert_eq!(surface.upload_bytes, 0);
         });

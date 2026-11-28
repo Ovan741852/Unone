@@ -358,7 +358,7 @@ end
 local layoutOptionFields: Fields = {space=true,variants=true}
 local layoutVariantFields: Fields = {name=true,minAspect=true,layout=true,values=true}
 local layoutNodeFields: Fields = {id=true,kind=true,size=true,grow=true,padding=true,gap=true,columns=true,children=true}
-local layoutViewportFields: Fields = {aspect=true}
+local layoutViewportFields: Fields = {aspect=true, revision=true, safeInsets=true, safeBounds=true, safeRect=true}
 local layoutBoundsFields: Fields = {left=true,top=true,width=true,height=true}
 type LayoutAllocatedBounds = {left: number,top: number,right: number,bottom: number,epsilonX: number,epsilonY: number}
 

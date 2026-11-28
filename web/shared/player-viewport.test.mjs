@@ -15,7 +15,7 @@ const plain=value=>JSON.parse(JSON.stringify(value));
 function fixture({devicePixelRatio=1,rendererRatio=null}={}){
  const frames=[],requests=[],fits=[],ratios=[];
  const context={
-  snapshot:{world:{}},startupAbort:{signal:{aborted:false}},window:{devicePixelRatio},canvas:{clientWidth:800,clientHeight:600},
+  readSafeArea:()=>[0,0,0,0],snapshot:{world:{}},startupAbort:{signal:{aborted:false}},window:{devicePixelRatio},canvas:{clientWidth:800,clientHeight:600},
   renderer:rendererRatio===null?null:{ratio:rendererRatio,pixelRatio(){return this.ratio;},setPixelRatio(value){ratios.push(value);this.ratio=value;}},
   requestAnimationFrame:callback=>frames.push(callback),fitStage:()=>fits.push(true),
   backend:{request:command=>{requests.push(command);return Promise.resolve({world:{}});}},acceptSnapshot(){},fail(error){throw error;},
@@ -57,4 +57,13 @@ test('before the renderer exists the player ratio sizes the viewport',()=>{
  const f=fixture({devicePixelRatio:2.5});
  assert.deepEqual(plain(f.api.physicalViewport()),[1600,1200]);
  f.api.followPixelRatio();assert.deepEqual(f.ratios,[]);
+});
+
+test('rotation can change only safe-area edges; duplicate events need no backend call',()=>{
+ const f=fixture();f.api.setSent([800,600]);
+ f.context.readSafeArea=()=>[8,0,0,2];f.api.viewportChanged();f.flush();
+ assert.deepEqual(plain(f.requests),[{kind:'safeArea',value:[8,0,0,2]}]);
+ f.api.viewportChanged();f.flush();assert.equal(f.requests.length,1);
+ f.context.readSafeArea=()=>[0,0,0,0];f.api.viewportChanged();f.flush();
+ assert.deepEqual(plain(f.requests.at(-1)),{kind:'safeArea',value:[0,0,0,0]});
 });

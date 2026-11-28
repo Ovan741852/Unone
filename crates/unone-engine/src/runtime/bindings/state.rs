@@ -50,7 +50,7 @@ pub(super) fn observation(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
 #[cfg(feature = "ui")]
 pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     let ui = Rc::clone(&state.ui);
-    let viewport_aspect = Rc::clone(&state.viewport_aspect);
+    let viewport = Rc::clone(&state.ui_viewport);
     let ui_api = lua.create_table()?;
     let pure_depth=Rc::clone(&state.pure_view);
     let resources=lua.create_table()?;
@@ -88,9 +88,24 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
     })?)?;
     ui_api.set("imageBatch",resources)?;
     super::ui_cursor::install(lua,state,&ui_api)?;
-    let viewport_state = Rc::clone(&viewport_aspect);
+    let viewport_state = Rc::clone(&viewport);
     ui_api.set("getViewport", lua.create_function(move |lua, ()| {
-        json_to_lua(lua, serde_json::json!({"aspect": *viewport_state.borrow()}))
+        let v = *viewport_state.borrow();
+        let rect = v.safe_rect();
+        json_to_lua(lua, serde_json::json!({
+            "aspect":v.aspect, "revision":v.revision, "safeInsets":v.insets, "safeRect":rect,
+            "safeBounds":{"left":rect.x, "top":v.insets.top, "width":rect.width, "height":rect.height}
+        }))
+    })?)?;
+    let fit_viewport = Rc::clone(&viewport);
+    ui_api.set("fitSafeArea", lua.create_function(move |lua, value: Value| {
+        let json = lua_value_to_json(value).map_err(mlua::Error::RuntimeError)?;
+        let rect: crate::UiRect = serde_json::from_value(json)
+            .map_err(|e| mlua::Error::RuntimeError(format!("UI_SAFE_RECT_INVALID: {e}")))?;
+        if rect.width < 0.0 || rect.height < 0.0 {
+            return Err(mlua::Error::RuntimeError("UI_SAFE_RECT_INVALID: width and height must be nonnegative".into()));
+        }
+        json_to_lua(lua, serde_json::json!(fit_viewport.borrow().fit(rect)))
     })?)?;
     let ui_state = Rc::clone(&ui);
     let inspect_state = Rc::clone(&ui);
@@ -100,7 +115,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
         json_to_lua(lua, serde_json::json!({"contract": crate::ui::ui_contract(), "usage": inspect_state.borrow().as_deref().map(UiTree::usage),
             "rejections": errors.ui_rejections, "last_rejection": errors.last_ui_rejection}))
     })?)?;
-    let ui_aspect = Rc::clone(&viewport_aspect);
+    let ui_viewport = viewport;
     let resource_world=Rc::clone(&state.world);
     let publish_errors = Rc::clone(&state.errors);
     // The last immutable root and the publication stamp of the tree built from it.
@@ -121,7 +136,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             let root = match (&value, immutable) { (Value::Table(table), Some(true)) => Some(table.clone()), _ => None };
             if let (Some(root), Some((last, stamp))) = (&root, published.borrow().as_ref()) {
                 if root.to_pointer() == last.to_pointer() && ui_state.borrow().as_ref()
-                    .is_some_and(|tree| tree.publication == *stamp && tree.viewport_aspect == *ui_aspect.borrow()) {
+                    .is_some_and(|tree| tree.publication == *stamp && tree.viewport_aspect == ui_viewport.borrow().aspect) {
                     return Ok(true);
                 }
             }
@@ -135,7 +150,7 @@ pub(super) fn ui(lua: &Lua, state: &ApiState) -> mlua::Result<Table> {
             // Name the vocabulary this build accepts. A host binary that is
             // older than the CLI fails here, and without this the message sends
             // the author to debug their game instead of their toolchain.
-            let parse=|| UiTree::try_from_json_for_viewport_with_resources(value, *ui_aspect.borrow(),&resource_world.borrow().ui_image_batches);
+            let parse=|| UiTree::try_from_json_for_viewport_with_resources(value, ui_viewport.borrow().aspect,&resource_world.borrow().ui_image_batches);
             #[cfg(feature = "phase-profile")]
             let parsed=phase_profile::measure(_lua,Phase::UiValidate,parse);
             #[cfg(not(feature = "phase-profile"))]

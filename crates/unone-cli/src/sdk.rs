@@ -827,6 +827,7 @@ pub(crate) fn llms_txt() -> String {
          - `game api search \"<meaning>\"`, then `game api describe <name>`: the exact API, its errors and an example.\n\
          - `game systems list`: which engine systems this project runs.\n\
          - `game verify`: types, assets, layouts, tests and declared performance targets in one verdict.\n\
+         - `game ui import-html --help`: import an HTML/CSS view as native Unone layout, textures and input actions.\n\
          - `node scripts/audit-web-bundle.mjs --export <export>`: inspect bundle sizes, overlapping groups and duplicate content.\n\
          - `node scripts/measure-web-export.mjs --export <export> --scenario <scenario.json> --output <report.json>`: trace loaded and released groups across real player transitions with bundle_trace.\n\n## Guides\n\n",
     );
@@ -845,7 +846,7 @@ pub(crate) fn llms_txt() -> String {
 // Keep the public entry guide and its preview/validation tools together. They
 // come from the CLI's compiled authoring contract, like the package guides, so a
 // different template checkout cannot silently replace the documented tools.
-fn authoring_files() -> [(&'static str, &'static str); 43] {
+fn authoring_files() -> [(&'static str, &'static str); 51] {
     [
         ("README.md", include_str!("../../../docs/sdk-readme.md")),
         ("docs/profiling.md", include_str!("../../../docs/profiling.md")),
@@ -892,6 +893,14 @@ fn authoring_files() -> [(&'static str, &'static str); 43] {
         ("examples/spatial-diagnostics/scene.json", include_str!("../../../examples/spatial-diagnostics/scene.json")),
         ("examples/spatial-diagnostics/main.luau", include_str!("../../../examples/spatial-diagnostics/main.luau")),
         ("tools/benchmark-spatial.mjs", include_str!("../../../scripts/benchmark-spatial.mjs")),
+        ("tools/html-view/cli.mjs", include_str!("../../../tools/html-view/cli.mjs")),
+        ("tools/html-view/capture.mjs", include_str!("../../../tools/html-view/capture.mjs")),
+        ("tools/html-view/dom.mjs", include_str!("../../../tools/html-view/dom.mjs")),
+        ("tools/html-view/package.json", include_str!("../../../tools/html-view/package.json")),
+        ("tools/html-view/test.mjs", include_str!("../../../tools/html-view/test.mjs")),
+        ("tools/html-view/README.md", include_str!("../../../tools/html-view/README.md")),
+        ("tools/html-view/example/home.html", include_str!("../../../tools/html-view/example/home.html")),
+        ("tools/html-view/example/actions.json", include_str!("../../../tools/html-view/example/actions.json")),
     ]
 }
 
@@ -1012,16 +1021,16 @@ fn native_asset_gate(assets: &Value, metadata: &Value) -> Result<()> {
         if asset["kind"] == "texture2d" {
             // This gate admits UI sources. Mesh references are validated by the
             // player separately; SVG here does not imply a mesh texture decoder.
-            let source = asset["source"].as_str().unwrap_or("").to_ascii_lowercase();
-            ensure!(
-                source.ends_with(".png")
-                    || (source.ends_with(".svg")
-                        && metadata["ui"]["images"]
-                            .as_array()
-                            .is_some_and(|v| v.iter().any(|x| x == "svg-static"))),
-                "NATIVE_TEXTURE_FORMAT_UNSUPPORTED: {}; SVG UI requires a runtime advertising ui.images=svg-static; use a matching runtime or PNG companion",
-                asset["source"]
-            );
+            let source = asset["source"].as_str().unwrap_or("");
+            let extension = Path::new(source).extension().and_then(|s| s.to_str()).unwrap_or("");
+            let capability = match extension.to_ascii_lowercase().as_str() {
+                "png" => continue,
+                "jpg" | "jpeg" => "jpeg",
+                "svg" => "svg-static",
+                _ => bail!("NATIVE_TEXTURE_FORMAT_UNSUPPORTED: {source}; native UI supports PNG, JPEG and static SVG"),
+            };
+            ensure!(metadata["ui"]["images"].as_array().is_some_and(|images| images.iter().any(|v| v == capability)),
+                "NATIVE_TEXTURE_FORMAT_UNSUPPORTED: {source}; requires a runtime advertising ui.images={capability}; use a matching runtime or PNG companion");
         }
     }
     Ok(())
@@ -1080,6 +1089,22 @@ fn native_readiness_gate(metadata: &Value) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn native_texture_gate_checks_installed_ui_jpeg_support() {
+        let older = serde_json::json!({"decoders":["jpeg-rgba"],"ui":{"images":["png","svg-static"]}});
+        let current = serde_json::json!({"ui":{"images":["png","jpeg","svg-static"]}});
+        let manifest = |source: &str| serde_json::json!({"assets":[{"kind":"texture2d","source":source}]});
+        for name in ["cover.jpg", "covers/PHOTO.JPEG"] {
+            native_asset_gate(&manifest(name), &current).unwrap();
+            let error = native_asset_gate(&manifest(name), &older).unwrap_err().to_string();
+            assert!(error.contains(name) && error.contains("ui.images=jpeg"), "{error}");
+        }
+        native_asset_gate(&manifest("card.PNG"), &serde_json::json!({})).unwrap();
+        native_asset_gate(&manifest("card.SVG"), &older).unwrap();
+        assert!(native_asset_gate(&manifest("card.svg"), &serde_json::json!({})).is_err());
+        assert!(native_asset_gate(&manifest("card.webp"), &current).is_err());
+    }
 
     fn runtime(id: &str, target: &str, variant: &str, systems: &[&str], bytes: u64) -> Runtime {
         Runtime {
@@ -1327,7 +1352,9 @@ mod tests {
             "scripts/immutable-bytes-emitted-runtime.mjs", "scripts/refresh-official-web.mjs",
             "scripts/web-export-host.mjs", "scripts/web-export-content.mjs", "scripts/web-export-validate-worker.mjs",
             "scripts/measure-web-export.mjs", "scripts/measure-web-scenario.mjs", "scripts/web-bundle-trace.mjs",
-            "examples/spatial-diagnostics/README.md", "examples/spatial-diagnostics/project.unone.json", "examples/spatial-diagnostics/scene.json", "examples/spatial-diagnostics/main.luau", "tools/benchmark-spatial.mjs"];
+            "examples/spatial-diagnostics/README.md", "examples/spatial-diagnostics/project.unone.json", "examples/spatial-diagnostics/scene.json", "examples/spatial-diagnostics/main.luau", "tools/benchmark-spatial.mjs",
+            "tools/html-view/cli.mjs", "tools/html-view/capture.mjs", "tools/html-view/dom.mjs", "tools/html-view/package.json", "tools/html-view/test.mjs", "tools/html-view/README.md",
+            "tools/html-view/example/home.html", "tools/html-view/example/actions.json"];
         for name in added {
             assert!(manifest.files.iter().any(|file| file.path == name), "missing documented SDK entry: {name}");
             assert!(output.join(name).is_file());

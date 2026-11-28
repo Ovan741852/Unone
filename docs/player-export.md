@@ -228,6 +228,21 @@ correct WASM/MJS MIME types, no-store responses and optional gzip. It is a local
 test utility, not a production server.
 
 
+## Optional native delivery bundles
+
+After exporting a player, run `game export bundles --package <export-directory>` to
+write content-addressed archives alongside its loose `content/` files. Pass
+`--startup content/<file>` once per additional file the first frame needs.
+Bootstrap data and fonts are included in the startup list automatically.
+
+`unone-bundles/manifest.json` contains the version 1 Unone bundle manifest, a
+map from each exported content path to its bundle ID, and the startup path list.
+Archive entries use the original `content/...` paths. Art, audio, fonts, and
+bootstrap data are grouped separately, with larger groups split between files.
+Publish the manifest and its referenced archives with the export. Rebuilding in
+the same directory retains older immutable archives for readers of an earlier
+manifest. A fresh output directory contains only the current generation.
+
 ## Screen shape
 
 The official players read the project's `display` (see
